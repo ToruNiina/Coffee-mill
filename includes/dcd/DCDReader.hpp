@@ -37,7 +37,7 @@ namespace coffeemill
             std::pair<SnapShot, double> get_snapshot(int i)
             {return std::make_pair(data.at(i), delta_t * i);}
 
-            int get_size() const {return data.size();}
+            int get_size() const {return static_cast<int>(data.size());}
             SnapShot& at(int i){return data.at(i);}
 
             std::vector<SnapShot>& get_all_data(){return data;}
@@ -287,7 +287,7 @@ namespace coffeemill
             std::vector<double> z(read_z());
 
             SnapShot temp_snapshot(nparticle);
-            for(int c(0); c != x.size(); ++c)
+            for(int c(0); c != static_cast<int>(x.size()); ++c)
             {
                 Eigen::Vector3d coord(x.at(c), y.at(c), z.at(c));
                 temp_snapshot.at(c) = coord;

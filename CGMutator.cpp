@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
             std::string buffer;
 
             bool end_program(false);
-            for(int full_length(input_sequence.size());
+            for(size_t full_length(input_sequence.size());
                 full_length > width_of_shell;
                 full_length -= width_of_shell)
             {

@@ -50,7 +50,7 @@ namespace coffeemill
 
         std::vector<BeadSptr> chain(input->get_chain());
 
-        if(mutated_seq.size() != input->get_ResNum())
+        if(static_cast<int>(mutated_seq.size()) != input->get_ResNum())
         {
             std::cout << "mut_seq: " << mutated_seq.size() << std::endl;
             std::cout << "chain  : " << chain.size() << std::endl;

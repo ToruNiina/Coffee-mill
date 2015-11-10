@@ -105,7 +105,7 @@ namespace coffeemill
         std::vector<Eigen::Vector3d> rA(structure1.size());
         std::vector<Eigen::Vector3d> rB(structure2.size());
 
-        for(int i(0); i<structure1.size(); ++i)
+        for(size_t i(0); i<structure1.size(); ++i)
         {
             rA.at(i) = structure1.at(i) + structure2.at(i);
             rB.at(i) = structure2.at(i) - structure1.at(i);

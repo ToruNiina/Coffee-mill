@@ -135,7 +135,6 @@ namespace coffeemill
 
     void InpNativeInfo::read_block(std::ifstream& ifs)
     {
-//         bool read(false);
         while(!ifs.eof())
         {
             std::string line;
@@ -152,7 +151,6 @@ namespace coffeemill
                 {
                     if(iter->substr(iter->size()-6, 6) == "\x2eninfo")
                     {
-//                         read = true;
                         ninfo_files[iunits] = *iter;
                         return;
                     }
@@ -178,7 +176,6 @@ namespace coffeemill
                 {
                     if(itr->substr(itr->size()-6, 6) == "\x2eninfo")
                     {
-//                         read = true;
                         ninfo_files[iunits] = *itr;
                         break;
                     }
@@ -186,7 +183,6 @@ namespace coffeemill
             }
             else if(line.substr(0,4) == ">>>>")
             {
-//                 read = true;
                 break;
             }
             else

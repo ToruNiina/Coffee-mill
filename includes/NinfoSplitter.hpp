@@ -90,7 +90,7 @@ namespace coffeemill
     {
         return filename + '_' + std::to_string(iu.first) +'_'+ std::to_string(iu.second) + "\x2eninfo";
     }
-//TODO
+
     std::vector<std::pair<iUnits, BlockSptr> > NinfoSplitter::get_subBlock( BlockSptr block )
     {
         std::vector<std::pair<iUnits, BlockSptr> > subBlocks;

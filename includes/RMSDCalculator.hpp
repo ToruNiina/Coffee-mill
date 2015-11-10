@@ -89,7 +89,7 @@ namespace coffeemill
         std::vector<Eigen::Vector3d> rA(molecule1.size());
         std::vector<Eigen::Vector3d> rB(molecule2.size());
 
-        for(int i(0); i<molecule1.size(); ++i)
+        for(int i(0); i<static_cast<int>(molecule1.size()); ++i)
         {
             rA.at(i) = molecule1.at(i) + molecule2.at(i);
             rB.at(i) = molecule2.at(i) - molecule1.at(i);

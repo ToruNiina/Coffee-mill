@@ -97,7 +97,7 @@ namespace coffeemill
 
     int CGModel::find_id(const char ID)
     {
-        for(int i(0); i<chains.size(); ++i)
+        for(size_t i(0); i<chains.size(); ++i)
         {
             if(chains.at(i)->get_chainID() == ID)
                 return i;

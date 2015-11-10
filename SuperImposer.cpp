@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     simposer.superimpose();
     imposed.at(0) = simposer.get_data2();//SuperImposer rotates data2
 
-    for(int i(2); i<data.size(); ++i)
+    for(size_t i(2); i<data.size(); ++i)
     {
         simposer.set_data_push(data.at(i));
         simposer.superimpose();
