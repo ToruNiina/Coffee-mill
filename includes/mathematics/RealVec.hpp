@@ -1,16 +1,17 @@
-#ifndef ARABICA_REALVEC_H
-#define ARABICA_REALVEC_H
+#ifndef COFFEE_MILL_REALVEC_H
+#define COFFEE_MILL_REALVEC_H
 #include <array>
 #include <iostream>
 #include <iomanip>
 #include "VectorExTen.hpp"
 
-namespace arabica
+namespace coffeemill
 {
     class Realvec
     {
         public:
 
+            typedef Vector value_trait;
             std::array<double, 3> values;
 
         public:
@@ -33,7 +34,7 @@ namespace arabica
                 ;
             }
 
-            template<class E>
+            template<class E, typename std::enable_if<is_Expression<typename E::value_trait>::value>::type*& = enabler>
             Realvec(const E& exp)
             {
                 values[0] = exp[0];
@@ -53,7 +54,7 @@ namespace arabica
                 return values[i];
             }
 
-            template <class E>
+            template <class E, typename std::enable_if<is_Expression<typename E::value_trait>::value>::type*& = enabler>
             Realvec& operator=(const E& rhs)
             {
                 values[0] = rhs[0];
@@ -62,14 +63,14 @@ namespace arabica
                 return *this;
             }
 
-            template <class E>
+            template <class E, typename std::enable_if<is_Expression<typename E::value_trait>::value>::type*& = enabler>
             Realvec& operator+=(const E& rhs)
             {
                 *this = add<Realvec, E>(*this, rhs);
                 return *this;
             }
 
-            template <class E>
+            template <class E, typename std::enable_if<is_Expression<typename E::value_trait>::value>::type*& = enabler>
             Realvec& operator-=(const E& rhs)
             {
                 *this = sub<Realvec, E>(*this, rhs);
@@ -90,27 +91,33 @@ namespace arabica
 
     };
 
-    template <class L, class R>
+    template <class L, class R, typename std::enable_if<is_Expression<typename L::value_trait>::value>::type*& = enabler>
     add<L, R> operator+(const L& lhs, const R& rhs)
     {
         return add<L,R>(lhs, rhs);
     }
 
-    template <class L, class R>
+    template <class L, class R, typename std::enable_if<is_Expression<typename L::value_trait>::value>::type*& = enabler>
     sub<L, R> operator-(const L& lhs, const R& rhs)
     {
         return sub<L,R>(lhs, rhs);
     }
 
-    //TODO: if rhs is not double type, return error.
-    template <class L, class R>
+    template <class L, class R, typename std::enable_if<is_Scalar<R>::value>::type*& = enabler,
+              typename std::enable_if<is_Expression<typename L::value_trait>::value>::type*& = enabler>
     Realvec operator*(const L& lhs, const R& rhs)
     {
         return mul<L>(lhs, rhs);
     }
 
-    //TODO: if rhs is not double type, return error.
-    template <class L, class R>
+    template <class L, class R, typename std::enable_if<is_Scalar<L>::value>::type*& = enabler,
+              typename std::enable_if<is_Expression<typename R::value_trait>::value>::type*& = enabler>
+    Realvec operator*(const L& lhs, const R& rhs)
+    {
+        return mul<R>(rhs, lhs);
+    }
+
+    template <class L, class R, typename std::enable_if<is_Scalar<R>::value>::type*& = enabler>
     Realvec operator/(const L& lhs, const R& rhs)
     {
         return div<L>(lhs, rhs);
@@ -124,4 +131,4 @@ namespace arabica
         return os;
     }
 }
-#endif //ARABICA_REALVEC_H
+#endif //COFFEE_MILL_REALVEC_H
