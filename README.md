@@ -1,14 +1,16 @@
 Coffee-mill
 ====
 
-(plobably) useful tools for using CafeMol[1]
+useful(?) tools for using CafeMol [1].
 
 ##Build
 
-if you have cmake, it is very easy.
+If you have CMake and already installed Eigen library, it is very easy to build.
 
     $ cmake .
     $ make
+
+RMSDCalculator and SuperImposer depend on Eigen library, so if you don't want to install Eigen, please edit CMakeLists and comment out some lines to build.
 
 ##Usage
 
@@ -18,9 +20,7 @@ splitter splits all in one style ninfo file to one by one style ninfo files.
 
 `./nsplit <filename>.ninfo [-sim N(1 by default)]`
 
-`outputs <filename>_iunit1_iunit2.ninfo and native_info_simN.inp`
-
-this inp file contains only native-info-simN block for one by one style.
+this outputs some ninfo files and cafemol input file that contains only native-info-simN block for one-by-one style.
 
 ###seqextr
 
@@ -48,7 +48,7 @@ if you want to quit the mutation, type "quit", "end", "exit", or "bye" instead o
 
 `$./rmsdcalc <filename> <chainIDs(alphabet)>`
 
-rmsdcalc outputs time series of RMSD value of chain <chainIDs> between structure in each time-point and initial structure(__not reference structure__).
+rmsdcalc outputs time series of RMSD value of chain <chainIDs> between snapshot at each point of time and initial structure(__not reference structure__).
 
 This reads CG style pdb file and dcd file that has same filename as pdb file.
 
@@ -62,14 +62,14 @@ and you can set chain IDs that you want to calculate RMSD value.
 
 `$./superimpose <filename>.dcd`
 
-superimposer outputs dcd file including superimposed structure.
+superimposer outputs dcd file that contains snapshots superimposed on the previous snapshot.
 
 ##included library
 
 - boost(boost regular expression)
 - Eigen(for calculate eigenvalue)
 
-to use my tool, install Eigen on /usr/include (Ubuntu) or re-write #include path
+to use my tool, install Eigen on /usr/include (Ubuntu) or edit #include path.
 
 ##Reference
 
