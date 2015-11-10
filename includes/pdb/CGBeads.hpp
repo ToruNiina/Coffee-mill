@@ -70,19 +70,20 @@ namespace coffeemill
     }
 
     void CGBead::line_input(std::string line)
-    {
-        std::istringstream ls(line);
-        ls >> head >> imp >> bead >> seq >> chainID >> iResNum;
-        ls >> x >> y >> z;
-//         this->head       = line.substr(0,6);
-//         this->imp        = std::stoi(line.substr(6,5));
-//         this->bead       = line.substr(11,4);
-//         this->seq        = line.substr(16,4);
-//         this->chainID    = line.at(21);
-//         this->iResNum    = std::stoi(line.substr(22, 4));
-//         this->x          = std::stod(line.substr(30, 8));
-//         this->y          = std::stod(line.substr(38, 8));
-//         this->z          = std::stod(line.substr(46, 8));
+    {/* typical example
+0         1         2         3         4         5
+ATOM    880 DB   DG  B 147     -34.372   7.815  22.375
+ATOM    881  CA  ALA C   1      50.743   2.865 -23.747
+        */
+        this->head       = line.substr(0,6);
+        this->imp        = std::stoi(line.substr(6,5));
+        this->bead       = line.substr(12,4);
+        this->seq        = line.substr(17,3);
+        this->chainID    = line.at(21);
+        this->iResNum    = std::stoi(line.substr(22, 4));
+        this->x          = std::stod(line.substr(30, 8));
+        this->y          = std::stod(line.substr(38, 8));
+        this->z          = std::stod(line.substr(46, 8));
 
         return;
     }
@@ -97,8 +98,8 @@ namespace coffeemill
 
     std::ostream& operator<<(std::ostream& os, const CGBead& a)
     {
-        os << std::setw(6) << std::left << a.head;
-        os << std::setw(5) << std::right<< a.imp;
+        os << std::setw(6) << a.head;
+        os << std::setw(5) << a.imp;
         os << std::setw(4) << a.bead;
         os << std::setw(4) << a.seq;
         os << std::setw(3) << a.chainID;
