@@ -4,20 +4,21 @@
 using namespace coffeemill;
 
 SnapShot pickup_chain(const SnapShot& ss, 
-                                 const std::vector<int>& chain_ids,
-                                 const std::vector<int>& chain_sizes);
+                      const std::vector<int>& chain_ids,
+                      const std::vector<int>& chain_sizes);
 
 int main(int argc, char *argv[])
 {
     if(argc != 3)
     {
         std::cout << "RMSDCalculator" << std::endl;
-        std::cout << "USAGE: ./rmsd <filename> <chainIDs>" << std::endl;
+        std::cout << "USAGE: ./rmsdcalc <filename> <chainIDs>" << std::endl;
         std::cout << "       input the filename without extension" << std::endl;
         std::cout << "       input IDs(alphabet) of the chain you want to calculate RMSD"
                   << std::endl;
         std::cout << "       this reads pdb(cg style) and dcd file." << std::endl;
-        std::cout << "       please confirm these files exist and have same name." << std::endl;
+        std::cout << "       please confirm these files exist and have same name."
+                  << std::endl;
         return -1;
     }
 
@@ -49,23 +50,21 @@ int main(int argc, char *argv[])
     DCDReader dcdreader;
     dcdreader.read_file(dcd);
 
-    std::string output(IDs + "_RMSD.ts");
+    std::string output(filename + "_" + IDs + "_RMSD.ts");
     std::ofstream ofs(output);
 
     RMSDCalculator rmsdcalc;
 
     if(dcdreader.get_size() < 2)
     {
-        std::cout << "there is only" << dcdreader.get_size() << "snapshots." << std::endl;
+        std::cout << "there is only" << dcdreader.get_size()
+                  << "snapshots." << std::endl;
         std::cout << "it is not enough to calculate RMSD." << std::endl;
         return 1;
     }
 
-    std::pair<SnapShot, double> initial
-        (dcdreader.get_snapshot(0));
-
-    std::pair<SnapShot, double> second_
-        (dcdreader.get_snapshot(1));
+    std::pair<SnapShot, double> initial(dcdreader.get_snapshot(0));
+    std::pair<SnapShot, double> second_(dcdreader.get_snapshot(1));
 
 
     SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
