@@ -2,8 +2,7 @@
 #define COFFEE_MILL_SUPER_IMPOSER
 #include <iostream>
 #include <vector>
-#include <eigen3/Eigen/Core>
-#include <eigen3/Eigen/Eigenvalues>
+#include "mathematics/linear_algebra.hpp"
 
 namespace coffeemill
 {
@@ -14,37 +13,37 @@ namespace coffeemill
             SuperImposer(): superimposed(false){}
             ~SuperImposer(){}
 
-            void set_data(const std::vector<Eigen::Vector3d>& data1,
-                          const std::vector<Eigen::Vector3d>& data2);
-            void set_data1(const std::vector<Eigen::Vector3d>& data1);
-            void set_data2(const std::vector<Eigen::Vector3d>& data2);
+            void set_data(const std::vector<Realvec>& data1,
+                          const std::vector<Realvec>& data2);
+            void set_data1(const std::vector<Realvec>& data1);
+            void set_data2(const std::vector<Realvec>& data2);
 
-            void set_data_push(const std::vector<Eigen::Vector3d>& data);
+            void set_data_push(const std::vector<Realvec>& data);
 
             void superimpose();
 
-            std::vector<Eigen::Vector3d>& get_data1();
-            std::vector<Eigen::Vector3d>& get_data2();
+            std::vector<Realvec>& get_data1();
+            std::vector<Realvec>& get_data2();
 
         private:
 
-            Eigen::Vector3d mean(std::vector<Eigen::Vector3d>& structure);
+            Realvec mean(std::vector<Realvec>& structure);
             void move_to_zero();
-            Eigen::Matrix3d get_R(const Eigen::Vector4d& q);
-            Eigen::Matrix4d get_B(const std::vector<Eigen::Vector3d>& rA,
-                                  const std::vector<Eigen::Vector3d>& rB);
-            Eigen::Vector4d get_eigenvec(const Eigen::Matrix4d& B);
-            void rotate(const Eigen::Matrix3d& R);
+            Matrix3 get_R(const std::array<double, 4>& q);
+            Matrix4 get_B(const std::vector<Realvec>& rA,
+                          const std::vector<Realvec>& rB);
+            std::array<double, 4> get_eigenvec(const Matrix4& B);
+            void rotate(const Matrix3& R);
 
         private:
 
             bool superimposed;
-            std::vector<Eigen::Vector3d> structure1;
-            std::vector<Eigen::Vector3d> structure2;
+            std::vector<Realvec> structure1;
+            std::vector<Realvec> structure2;
     };
 
-    void SuperImposer::set_data(const std::vector<Eigen::Vector3d>& data1,
-                  const std::vector<Eigen::Vector3d>& data2)
+    void SuperImposer::set_data(const std::vector<Realvec>& data1,
+                  const std::vector<Realvec>& data2)
     {
         structure1 = data1;
         structure2 = data2;
@@ -52,21 +51,21 @@ namespace coffeemill
         return;
     }
 
-    void SuperImposer::set_data1(const std::vector<Eigen::Vector3d>& data1)
+    void SuperImposer::set_data1(const std::vector<Realvec>& data1)
     {
         structure1 = data1;
         superimposed = false;
         return;
     }
 
-    void SuperImposer::set_data2(const std::vector<Eigen::Vector3d>& data2)
+    void SuperImposer::set_data2(const std::vector<Realvec>& data2)
     {
         structure2 = data2;
         superimposed = false;
         return;
     }
 
-    void SuperImposer::set_data_push(const std::vector<Eigen::Vector3d>& data)
+    void SuperImposer::set_data_push(const std::vector<Realvec>& data)
     {
         structure2 = structure1;
         structure1 = data;
@@ -74,14 +73,14 @@ namespace coffeemill
         return;
     }
 
-    std::vector<Eigen::Vector3d>& SuperImposer::get_data1()
+    std::vector<Realvec>& SuperImposer::get_data1()
     {
         if(!superimposed)
             std::cout << "Warning: data you got have not superimposed" << std::endl;
         return structure1;
     }
 
-    std::vector<Eigen::Vector3d>& SuperImposer::get_data2()
+    std::vector<Realvec>& SuperImposer::get_data2()
     {
         if(!superimposed)
             std::cout << "Warning: data you got have not superimposed" << std::endl;
@@ -102,8 +101,8 @@ namespace coffeemill
 
         move_to_zero();
 
-        std::vector<Eigen::Vector3d> rA(structure1.size());
-        std::vector<Eigen::Vector3d> rB(structure2.size());
+        std::vector<Realvec> rA(structure1.size());
+        std::vector<Realvec> rB(structure2.size());
 
         for(size_t i(0); i<structure1.size(); ++i)
         {
@@ -111,9 +110,9 @@ namespace coffeemill
             rB.at(i) = structure2.at(i) - structure1.at(i);
         }
 
-        Eigen::Matrix4d B(get_B(rA, rB));
-        Eigen::Vector4d q = get_eigenvec(B);
-        Eigen::Matrix3d R(get_R(q));
+        Matrix4 B(get_B(rA, rB));
+        std::array<double, 4> q = get_eigenvec(B);
+        Matrix3 R(get_R(q));
 
         rotate(R);
         superimposed = true;
@@ -123,28 +122,28 @@ namespace coffeemill
 
     void SuperImposer::move_to_zero()
     {
-        Eigen::Vector3d mean1(mean(structure1));
-        for(std::vector<Eigen::Vector3d>::iterator iter = structure1.begin();
+        Realvec mean1(mean(structure1));
+        for(std::vector<Realvec>::iterator iter = structure1.begin();
             iter != structure1.end(); ++iter)
         {
-            *iter = (*iter - mean1);
+            *iter -= mean1;
         }
 
-        Eigen::Vector3d mean2(mean(structure2));
-        for(std::vector<Eigen::Vector3d>::iterator iter = structure2.begin();
+        Realvec mean2(mean(structure2));
+        for(std::vector<Realvec>::iterator iter = structure2.begin();
             iter != structure2.end(); ++iter)
         {
-            *iter = (*iter - mean2);
+            *iter -= mean2;
         }
 
         return;
     }
 
-    Eigen::Vector3d SuperImposer::mean(std::vector<Eigen::Vector3d>& structure)
+    Realvec SuperImposer::mean(std::vector<Realvec>& structure)
     {//mass is undefined
         int num_particle(structure.size());
-        Eigen::Vector3d sum(0e0, 0e0, 0e0);
-        for(std::vector<Eigen::Vector3d>::iterator iter = structure.begin();
+        Realvec sum(0e0, 0e0, 0e0);
+        for(std::vector<Realvec>::iterator iter = structure.begin();
             iter != structure.end(); ++iter)
         {
             sum += *iter;
@@ -152,14 +151,14 @@ namespace coffeemill
         return (sum / static_cast<double>(num_particle));
     }
 
-    Eigen::Matrix4d
-    SuperImposer::get_B(const std::vector<Eigen::Vector3d>& a,
-                        const std::vector<Eigen::Vector3d>& b)
+    Matrix4
+    SuperImposer::get_B(const std::vector<Realvec>& a,
+                        const std::vector<Realvec>& b)
     {
         if(a.size() != b.size())
             throw std::invalid_argument("cannot make matrix B");
 
-        Eigen::Matrix4d retval = Eigen::MatrixXd::Zero(4, 4);
+        Matrix4 retval;
 
         int N(a.size());
         for(int i(0); i<N; ++i)
@@ -197,45 +196,17 @@ namespace coffeemill
         return retval;
     }
 
-    Eigen::Vector4d SuperImposer::get_eigenvec(const Eigen::Matrix4d& B)
+    std::array<double, 4> SuperImposer::get_eigenvec(const Matrix4& B)
     {
-        Eigen::EigenSolver<Eigen::Matrix4d> solver(B);
-        std::vector<std::complex<double> > eigenval(4);
-        eigenval.at(0) = solver.eigenvalues()(0);
-        eigenval.at(1) = solver.eigenvalues()(1);
-        eigenval.at(2) = solver.eigenvalues()(2);
-        eigenval.at(3) = solver.eigenvalues()(3);
-
-        int index(0);
-        double min(real(eigenval.at(0)));
-        if(imag(eigenval.at(0)) != 0e0)
-            std::cout << "Warning: B has complex eigenvalue 0. imag: " 
-                      << imag(eigenval.at(0));
-
-        for(int i(1); i<4; ++i)
-        {
-            if(imag(eigenval.at(i)) != 0e0)
-            {
-                std::cout << "Warning: B has complex eigenvalue " << i
-                          << " imag: " << imag(eigenval.at(i)) << std::endl;
-            }
-
-            if(real(eigenval.at(i)) < min)
-            {
-                min = real(eigenval.at(i));
-                index = i;
-            }
-        }
-
-        Eigen::Vector4cd col = solver.eigenvectors().col(index);
-        Eigen::Vector4d retval(real(col[0]), real(col[1]), real(col[2]), real(col[3]));
-
-        return retval;
+        Jacobi44Solver solver(B);
+        std::pair<double, std::array<double, 4> > min_pair
+            = solver.get_mineigenpair();
+        return min_pair.second;
     }
 
-    Eigen::Matrix3d SuperImposer::get_R(const Eigen::Vector4d& q)
+    Matrix3 SuperImposer::get_R(const std::array<double, 4>& q)
     {
-        Eigen::Matrix3d R = Eigen::MatrixXd::Zero(3,3);
+        Matrix3 R;
         R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;
         R(0,1) = 2e0*q[1]*q[2] - 2e0*q[0]*q[3];
         R(0,2) = 2e0*q[1]*q[3] + 2e0*q[0]*q[2];
@@ -248,12 +219,13 @@ namespace coffeemill
         return R;
     }
 
-    void SuperImposer::rotate(const Eigen::Matrix3d& R)
+    void SuperImposer::rotate(const Matrix3& R)
     {
-        for(std::vector<Eigen::Vector3d>::iterator iter = structure1.begin();
+        for(std::vector<Realvec>::iterator iter = structure1.begin();
             iter != structure1.end(); ++iter)
         {
-            *iter = R * (*iter);
+            Realvec temp(R * (*iter));
+            *iter = temp;
         }
         return;
     }

@@ -4,11 +4,11 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <eigen3/Eigen/Core>
+#include "../mathematics/linear_algebra.hpp"
 
 namespace coffeemill
 {
-    typedef std::vector<Eigen::Vector3d> SnapShot;
+    typedef std::vector<Realvec> SnapShot;
 }
 
 

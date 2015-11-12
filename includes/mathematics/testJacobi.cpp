@@ -34,6 +34,7 @@ int main()
     std::cout << solver.get_eigenvalue(1) << std::endl;
     std::cout << solver.get_eigenvalue(2) << std::endl;
     std::cout << solver.get_eigenvalue(3) << std::endl;
+    std::cout << (solver.get_mineigenpair()).first << std::endl;
 
 //     Matrix4d M = MatrixXd::Zero(4,4);
 //

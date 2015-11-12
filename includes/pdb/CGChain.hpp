@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <boost/regex.hpp>
-#include <eigen3/Eigen/Core>
+#include "../mathematics/linear_algebra.hpp"
 #include "CGBeads.hpp"
 #include "ProteinSeq.hpp"
 
@@ -36,7 +36,7 @@ namespace coffeemill
         void write_block(std::ofstream& ofs);
 
         std::vector<BeadSptr> get_chain(){return residue;}
-        std::vector<Eigen::Vector3d> get_coord();
+        std::vector<Realvec> get_coord();
 
         void sort_imp();
 
@@ -209,14 +209,14 @@ namespace coffeemill
         return;
     }
 
-    std::vector<Eigen::Vector3d> CGChain::get_coord()
+    std::vector<Realvec> CGChain::get_coord()
     {
-        std::vector<Eigen::Vector3d> retval;
+        std::vector<Realvec> retval;
         for(auto iter = residue.begin(); iter != residue.end(); ++iter)
         {
-            retval.emplace_back(Eigen::Vector3d((*iter)->get_coordx(), 
-                                                (*iter)->get_coordy(),
-                                                (*iter)->get_coordz() ));
+            retval.emplace_back(Realvec((*iter)->get_coordx(), 
+                                        (*iter)->get_coordy(),
+                                        (*iter)->get_coordz()));
         }
         return retval;
     }

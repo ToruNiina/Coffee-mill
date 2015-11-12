@@ -53,10 +53,8 @@ namespace coffeemill
                 return std::make_pair(eigenvalue[i], eigenvector[i]);
             }
 
-            std::pair<double, std::array<double, 4> >
-                get_maxeigenpair(const int i);
-            std::pair<double, std::array<double, 4> >
-                get_mineigenpair(const int i);
+            std::pair<double, std::array<double, 4> > get_maxeigenpair();
+            std::pair<double, std::array<double, 4> > get_mineigenpair();
 
             void solve();
 
@@ -81,7 +79,7 @@ namespace coffeemill
 
     const int Jacobi44Solver::MAX_LOOP = 10000;
     const double Jacobi44Solver::ABS_TOLERANCE = 1e-8;
-    const double Jacobi44Solver::REL_TOLERANCE = 1e-14;
+    const double Jacobi44Solver::REL_TOLERANCE = 1e-12;
 
     void Jacobi44Solver::solve()
     {
@@ -150,7 +148,17 @@ namespace coffeemill
 //         std::cout << num_Jacobi_loop
 //                   << " times" << std::endl;
         if(num_Jacobi_loop == MAX_LOOP)
-            throw std::invalid_argument("cannot solve");
+        {
+            std::cout << "Warning: Cannot solve on absolute tolerance"
+                      << ABS_TOLERANCE << ", relative tolerance "
+                      << REL_TOLERANCE << " in loop " << MAX_LOOP << "times"
+                      << std::endl;
+            std::cout << "P^-1AP = " << std::endl;
+            std::cout << target << std::endl;
+            std::cout << "P = " << std::endl;
+            std::cout << Ps << std::endl;
+//             throw std::invalid_argument("cannot solve");
+        }
 
 //         std::cout << "Ps" << std::endl;
 //         std::cout << Ps << std::endl;
@@ -170,7 +178,7 @@ namespace coffeemill
     }
 
     std::pair<double, std::array<double, 4> >
-        Jacobi44Solver::get_maxeigenpair(const int i)
+        Jacobi44Solver::get_maxeigenpair()
     {
         double max(eigenvalue[0]);
         int index(0);
@@ -186,7 +194,7 @@ namespace coffeemill
     }
 
     std::pair<double, std::array<double, 4> >
-        Jacobi44Solver::get_mineigenpair(const int i)
+        Jacobi44Solver::get_mineigenpair()
     {
         double min(eigenvalue[0]);
         int index(0);

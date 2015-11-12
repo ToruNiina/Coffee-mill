@@ -20,7 +20,7 @@ namespace coffeemill
         writer->set_npart(reader->get_npart());
         writer->set_delta_t(reader->get_delta_t());
         return;
-    }  
+    }
 
     void set_from_reader(DCDWriter *writer, DCDReader *reader)
     {

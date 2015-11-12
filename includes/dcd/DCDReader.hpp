@@ -289,7 +289,7 @@ namespace coffeemill
             SnapShot temp_snapshot(nparticle);
             for(int c(0); c != static_cast<int>(x.size()); ++c)
             {
-                Eigen::Vector3d coord(x.at(c), y.at(c), z.at(c));
+                Realvec coord(x.at(c), y.at(c), z.at(c));
                 temp_snapshot.at(c) = coord;
             }
 

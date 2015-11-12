@@ -221,7 +221,7 @@ namespace coffeemill
     }
 
     void DCDWriter::write_core()
-    {//snapshot := std::vector<Eigen::Vector3d>
+    {
         for(std::vector<SnapShot>::iterator iter = data.begin();
             iter != data.end(); ++iter)
         {
