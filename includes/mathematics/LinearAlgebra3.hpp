@@ -34,6 +34,37 @@ namespace coffeemill
     {
         return MatVecMul<M,V>(mat, vec);
     }
+
+    template<class V, class M>
+    class VecMatMul
+    {
+        public:
+
+            typedef VectorExp value_trait;
+
+            VecMatMul(const V& lhs, const M& rhs)
+                :vec(lhs), mat(rhs) 
+            {}
+
+            double operator[](const int i) const
+            {
+                return vec[0] * mat(0, i) + vec[1] * mat(1, i) + vec[2] * mat(2, i);
+            }
+
+        private:
+
+            const V& vec;//vector
+            const M& mat;//matrix
+    };
+
+    template<class V, class M, typename std::enable_if<
+             is_Matrix33Expression<typename M::value_trait>::value&&
+             is_VectorExpression<typename V::value_trait>::value>::type*& = enabler>
+    VecMatMul<V,M> operator*(const V& vec, const M& mat)
+    {
+        return VecMatMul<V,M>(vec, mat);
+    }
+
 }
 
 #endif //COFFEE_MILL_LINEAR_ALGEBRA_3
