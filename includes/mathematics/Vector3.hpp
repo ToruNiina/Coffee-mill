@@ -14,15 +14,15 @@ namespace coffeemill
         public:
 
             RealVector3()
-                : values({0e0, 0e0, 0e0})
+                : values({{0e0, 0e0, 0e0}})
             {}
 
             RealVector3(double d)
-                : values({d, d, d})
+                : values({{d, d, d}})
             {} 
 
             RealVector3(double x, double y, double z)
-                : values({x, y, z})
+                : values({{x, y, z}})
             {} 
 
             template<class E, 

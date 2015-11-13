@@ -170,7 +170,7 @@ namespace coffeemill
         {
             eigenvalue[i] = target(i,i);
             eigenvector[i]
-                = std::array<double, 4>({Ps(0,i),Ps(1,i),Ps(2,i),Ps(3,i)});
+                = std::array<double, 4>({{Ps(0,i),Ps(1,i),Ps(2,i),Ps(3,i)}});
         }
 
         solved = true;

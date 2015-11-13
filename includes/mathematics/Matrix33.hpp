@@ -96,7 +96,7 @@ namespace coffeemill
                          typename E::value_trait>::value>::type*& = enabler>
             RealMatrix33& operator/=(const double rhs)
             {
-                *this = Matrix33SclDiv<RealMatrix33>(rhs, *this);
+                *this = Matrix33SclDiv<RealMatrix33>(*this, rhs);
                 return *this;
             }
 
