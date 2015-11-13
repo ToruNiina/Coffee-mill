@@ -5,12 +5,10 @@ useful(?) tools for using CafeMol [1].
 
 ##Build
 
-If you have CMake and already installed Eigen library, it is very easy to build.
+If you have CMake , it is very easy to build.
 
     $ cmake .
     $ make
-
-RMSDCalculator and SuperImposer depend on Eigen library, so if you don't want to install Eigen, please edit CMakeLists and comment out some lines to build.
 
 ##Usage
 
@@ -48,7 +46,7 @@ if you want to quit the mutation, type "quit", "end", "exit", or "bye" instead o
 
 `$./rmsdcalc <filename> <chainIDs(alphabet)>`
 
-rmsdcalc outputs time series of RMSD value of chain <chainIDs> between snapshot at each point of time and initial structure(__not reference structure__).
+rmsdcalc outputs time series of RMSD value of certain chains between snapshot at each point of time and initial structure(__not reference structure__).
 
 This reads CG style pdb file and dcd file that has same filename as pdb file.
 
@@ -67,9 +65,6 @@ superimposer outputs dcd file that contains snapshots superimposed on the previo
 ##included library
 
 - boost(boost regular expression)
-- Eigen(for calculate eigenvalue)
-
-to use my tool, install Eigen on /usr/include (Ubuntu) or edit #include path.
 
 ##Reference
 
