@@ -58,9 +58,13 @@ and you can set chain IDs that you want to calculate RMSD value.
 
 ###superimpose
 
-`$./superimpose <filename>.dcd`
+`$./superimpose <filename>.dcd`[Optional: chainIDs(default: all)]
 
 superimposer outputs dcd file that contains snapshots superimposed on the previous snapshot.
+
+you can set chain IDs to use in the same way as rmsdcalc.
+
+and when you set the chainIDs, superimpose requires the CG style PDB file having same name as dcd file.
 
 ##included library
 

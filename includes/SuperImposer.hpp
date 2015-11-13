@@ -25,11 +25,13 @@ namespace coffeemill
             std::vector<Realvec>& get_data1();
             std::vector<Realvec>& get_data2();
 
+            Matrix3 get_R();
+
         private:
 
             Realvec mean(std::vector<Realvec>& structure);
             void move_to_zero();
-            Matrix3 get_R(const std::array<double, 4>& q);
+            Matrix3 calc_R(const std::array<double, 4>& q);
             Matrix4 get_B(const std::vector<Realvec>& rA,
                           const std::vector<Realvec>& rB);
             std::array<double, 4> get_eigenvec(const Matrix4& B);
@@ -112,12 +114,42 @@ namespace coffeemill
 
         Matrix4 B(get_B(rA, rB));
         std::array<double, 4> q = get_eigenvec(B);
-        Matrix3 R(get_R(q));
+        Matrix3 R(calc_R(q));
 
         rotate(R);
         superimposed = true;
 
         return;
+    }
+
+    Matrix3 SuperImposer::get_R()
+    {
+        if(structure1.empty() || structure2.empty())
+            throw std::invalid_argument(
+                    "SuperImposer does not have two structures");
+
+        if(structure1.size() != structure2.size())
+            throw std::invalid_argument(
+                    "SuperImposer has two structures that have different sizes");
+
+        move_to_zero();
+
+        std::vector<Realvec> rA(structure1.size());
+        std::vector<Realvec> rB(structure2.size());
+
+        for(size_t i(0); i<structure1.size(); ++i)
+        {
+            rA.at(i) = structure1.at(i) + structure2.at(i);
+            rB.at(i) = structure2.at(i) - structure1.at(i);
+        }
+
+        Matrix4 B(get_B(rA, rB));
+        std::array<double, 4> q = get_eigenvec(B);
+        Matrix3 R(calc_R(q));       
+        rotate(R);
+        superimposed = true;
+
+        return R;
     }
 
     void SuperImposer::move_to_zero()
@@ -204,7 +236,7 @@ namespace coffeemill
         return min_pair.second;
     }
 
-    Matrix3 SuperImposer::get_R(const std::array<double, 4>& q)
+    Matrix3 SuperImposer::calc_R(const std::array<double, 4>& q)
     {
         Matrix3 R;
         R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;

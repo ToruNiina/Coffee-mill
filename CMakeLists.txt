@@ -27,3 +27,6 @@ target_link_libraries(rmsdcalc
 
 add_executable(superimpose
     SuperImposer.cpp)
+
+target_link_libraries(superimpose
+    ${BOOST_REGEX})
