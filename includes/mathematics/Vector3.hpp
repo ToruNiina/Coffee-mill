@@ -1,34 +1,36 @@
 #ifndef COFFEE_MILL_VECTOR_3_H
 #define COFFEE_MILL_VECTOR_3_H
-#include <array>
-#include <iostream>
-#include "Vector3Exp.hpp"
+#include "Vector.hpp"
 
 namespace coffeemill
 {
-    class RealVector3
+    template <>
+    class RealVector<3>
     {
         public:
             typedef Vector value_trait;
+            constexpr static size_t size = 3;
 
         public:
 
-            RealVector3()
+            RealVector()
                 : values({{0e0, 0e0, 0e0}})
             {}
 
-            RealVector3(double d)
+            RealVector(double d)
                 : values({{d, d, d}})
             {} 
 
-            RealVector3(double x, double y, double z)
+            RealVector(double x, double y, double z)
                 : values({{x, y, z}})
             {} 
 
             template<class E, 
-                     typename std::enable_if<is_VectorExpression<
-                         typename E::value_trait>::value>::type*& = enabler>
-            RealVector3(const E& exp)
+                     typename std::enable_if<
+                         is_VectorExpression<typename E::value_trait>::value&&
+                         is_SameSize<E::size, 3>::value
+                         >::type*& = enabler>
+            RealVector(const E& exp)
             {
                 (*this)[0] = exp[0];
                 (*this)[1] = exp[1];
@@ -36,9 +38,11 @@ namespace coffeemill
             } 
 
             template<class E, 
-                     typename std::enable_if<is_VectorExpression<
-                         typename E::value_trait>::value>::type*& = enabler>
-            RealVector3& operator=(const E& exp)
+                     typename std::enable_if<
+                         is_VectorExpression<typename E::value_trait>::value&&
+                         is_SameSize<E::size, 3>::value
+                         >::type*& = enabler>
+            RealVector& operator=(const E& exp)
             {
                 (*this)[0] = exp[0];
                 (*this)[1] = exp[1];
@@ -47,37 +51,41 @@ namespace coffeemill
             } 
 
             template<class E, 
-                     typename std::enable_if<is_VectorExpression<
-                         typename E::value_trait>::value>::type*& = enabler>
-            RealVector3& operator+=(const E& exp)
+                     typename std::enable_if<
+                         is_VectorExpression<typename E::value_trait>::value&&
+                         is_SameSize<E::size, 3>::value
+                         >::type*& = enabler>
+            RealVector& operator+=(const E& exp)
             {
-                *this = VectorAdd<RealVector3, E>(*this, exp);
+                *this = VectorAdd<RealVector, E>(*this, exp);
                 return *this;
             } 
 
 
             template<class E, 
-                     typename std::enable_if<is_VectorExpression<
-                         typename E::value_trait>::value>::type*& = enabler>
-            RealVector3& operator-=(const E& exp)
+                     typename std::enable_if<
+                         is_VectorExpression<typename E::value_trait>::value&&
+                         is_SameSize<E::size, 3>::value
+                         >::type*& = enabler>
+            RealVector& operator-=(const E& exp)
             {
-                *this = VectorSub<RealVector3, E>(*this, exp);
+                *this = VectorSub<RealVector, E>(*this, exp);
                 return *this;
             } 
 
-            template<class E, 
-                     typename std::enable_if<is_ScalarType<E>::value>::type*& = enabler>
-            RealVector3& operator*=(const E& exp)
+            template<class E, typename std::enable_if<
+                         is_ScalarType<E>::value>::type*& = enabler>
+            RealVector& operator*=(const E& exp)
             {
-                *this = VectorSclMul<RealVector3>(*this, exp);
+                *this = VectorSclMul<RealVector>(*this, exp);
                 return *this;
             } 
 
-            template<class E, 
-                     typename std::enable_if<is_ScalarType<E>::value>::type*& = enabler>
-            RealVector3& operator/=(const E& exp)
+            template<class E, typename std::enable_if<
+                         is_ScalarType<E>::value>::type*& = enabler>
+            RealVector& operator/=(const E& exp)
             {
-                *this = VectorSclDiv<RealVector3>(*this, exp);
+                *this = VectorSclDiv<RealVector>(*this, exp);
                 return *this;
             } 
 
@@ -96,11 +104,7 @@ namespace coffeemill
             std::array<double, 3> values;
     };
 
-    std::ostream& operator<<(std::ostream& os, const RealVector3& vec)
-    {
-        os << vec[0] << " " << vec[1] << " " << vec[2];
-        return os;
-    }
+    typedef RealVector<3> Realvec;
 }
 
 #endif//COFFEE_MILL_VECTOR_H

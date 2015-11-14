@@ -1,34 +1,40 @@
-#ifndef COFFEE_MILL_JACOBI_4x4_H
-#define COFFEE_MILL_JACOBI_4x4_H
+#ifndef COFFEE_MILL_JACOBI_METHOD_H
+#define COFFEE_MILL_JACOBI_METHOD_H
 #include <utility>
 #include <algorithm>
 #include <cmath>
-#include "Matrix44.hpp"
+#include "Matrix.hpp"
+#include "Vector.hpp"
 
 namespace coffeemill
 {
-    class Jacobi44Solver
+    template <size_t S>
+    class JacobiSolver
     {
         public:
 
-            Jacobi44Solver()
+            JacobiSolver()
                 : solved(false)
             {}
 
             template<class M, typename std::enable_if<
-                is_Matrix44Expression<typename M::value_trait>::value>::type*&
-                = enabler>
-            Jacobi44Solver(const M& m)
+                is_MatrixExpression<typename M::value_trait>::value&&
+                is_SameSize<M::row, S>::value&&
+                is_SameSize<M::col, S>::value
+                >::type*& = enabler>
+            JacobiSolver(const M& m)
                 :solved(false), matrix(m)
             {
                 solve();
             }
 
-            ~Jacobi44Solver(){}
+            ~JacobiSolver(){}
 
             template<class M, typename std::enable_if<
-                is_Matrix44Expression<typename M::value_trait>::value>::type*&
-                = enabler>
+                is_MatrixExpression<typename M::value_trait>::value&&
+                is_SameSize<M::row, S>::value&&
+                is_SameSize<M::col, S>::value
+                >::type*& = enabler>
             void set_matrix(const M& m)
             {
                 solved = false;
@@ -41,30 +47,30 @@ namespace coffeemill
                 return eigenvalue[i];
             }
 
-            std::array<double, 4> get_eigenvec(const int i)
+            RealVector<S> get_eigenvec(const int i)
             {
                 if(!solved) solve();
                 return eigenvector[i];
             }
 
-            std::pair<double, std::array<double, 4> > get_eigenpair(const int i)
+            std::pair<double, RealVector<S> > get_eigenpair(const int i)
             {
                 if(!solved) solve();
                 return std::make_pair(eigenvalue[i], eigenvector[i]);
             }
 
-            std::pair<double, std::array<double, 4> > get_maxeigenpair();
-            std::pair<double, std::array<double, 4> > get_mineigenpair();
+            std::pair<double, RealVector<S> > get_maxeigenpair();
+            std::pair<double, RealVector<S> > get_mineigenpair();
 
             void solve();
 
         private:
 
-            bool is_symmetric(const RealMatrix44& m) const;
+            bool is_symmetric(const RealMatrix<S,S>& m) const;
             std::pair<int, int>
-                get_maxindex(const RealMatrix44& m) const;
-            double get_max_relative_tolerance(const RealMatrix44& ta,
-                                              const RealMatrix44& tm) const;
+                get_maxindex(const RealMatrix<S,S>& m) const;
+            double get_max_relative_tolerance(const RealMatrix<S,S>& ta,
+                                              const RealMatrix<S,S>& tm) const;
 
         private:
 
@@ -72,16 +78,20 @@ namespace coffeemill
             static const double ABS_TOLERANCE;
             static const double REL_TOLERANCE;
             static const int MAX_LOOP;
-            std::array<double, 4> eigenvalue;
-            std::array<std::array<double, 4>,4> eigenvector;
-            RealMatrix44 matrix;
+            std::array<double, S> eigenvalue;
+            std::array<RealVector<S>, S> eigenvector;
+            RealMatrix<S,S> matrix;
     };
 
-    const int Jacobi44Solver::MAX_LOOP = 10000;
-    const double Jacobi44Solver::ABS_TOLERANCE = 1e-8;
-    const double Jacobi44Solver::REL_TOLERANCE = 1e-12;
+    template<size_t S>
+    const int JacobiSolver<S>::MAX_LOOP = 10000;
+    template<size_t S>
+    const double JacobiSolver<S>::ABS_TOLERANCE = 1e-10;
+    template<size_t S>
+    const double JacobiSolver<S>::REL_TOLERANCE = 1e-12;
 
-    void Jacobi44Solver::solve()
+    template<size_t S>
+    void JacobiSolver<S>::solve()
     {
         if(!is_symmetric(matrix))
         {
@@ -91,8 +101,8 @@ namespace coffeemill
             return;
         }
 
-        RealMatrix44 target(matrix);
-        RealMatrix44 Ps(1e0);
+        RealMatrix<S,S> target(matrix);
+        RealMatrix<S,S> Ps(1e0);
 
         int num_Jacobi_loop(0);
         for(; num_Jacobi_loop < MAX_LOOP; ++num_Jacobi_loop)
@@ -110,7 +120,7 @@ namespace coffeemill
             if(fabs(target(index.first, index.second)) < ABS_TOLERANCE)
                 break;
 
-            RealMatrix44 Ppri(1e0);
+            RealMatrix<S,S> Ppri(1e0);
 
             double alpha
                 = (target(index.first, index.first) -
@@ -131,11 +141,11 @@ namespace coffeemill
             Ppri(index.second, index.first) = -sin;
             Ppri(index.second, index.second) = cos;
 
-            RealMatrix44 Pinv(Ppri);
+            RealMatrix<S,S> Pinv(Ppri);
             Pinv(index.first, index.second) = -sin;
             Pinv(index.second, index.first) =  sin;
 
-            RealMatrix44 temp(Pinv * target * Ppri);
+            RealMatrix<S,S> temp(Pinv * target * Ppri);
 
             if(get_max_relative_tolerance(target, temp) < REL_TOLERANCE)
                 break;
@@ -157,7 +167,7 @@ namespace coffeemill
             std::cout << target << std::endl;
             std::cout << "P = " << std::endl;
             std::cout << Ps << std::endl;
-//             throw std::invalid_argument("cannot solve");
+            throw std::invalid_argument("cannot solve");
         }
 
 //         std::cout << "Ps" << std::endl;
@@ -166,23 +176,28 @@ namespace coffeemill
 //         std::cout << "target" << std::endl;
 //         std::cout << target << std::endl;
 
-        for(int i(0); i<4; ++i)
+        for(size_t i(0); i<S; ++i)
         {
             eigenvalue[i] = target(i,i);
-            eigenvector[i]
-                = std::array<double, 4>({{Ps(0,i),Ps(1,i),Ps(2,i),Ps(3,i)}});
+            std::array<double, S> evec;
+            for(size_t j(0); j<S; ++j)
+                evec[j] = Ps(j,i);
+
+            eigenvector[i] = RealVector<S>(evec);
+//                 = std::array<double, S>({{Ps(0,i),Ps(1,i),Ps(2,i),Ps(3,i)}});
         }
 
         solved = true;
         return;
     }
 
-    std::pair<double, std::array<double, 4> >
-        Jacobi44Solver::get_maxeigenpair()
+    template<size_t S>
+    std::pair<double, RealVector<S> >
+        JacobiSolver<S>::get_maxeigenpair()
     {
         double max(eigenvalue[0]);
-        int index(0);
-        for(int i(1); i<4; ++i)
+        size_t index(0);
+        for(size_t i(1); i<S; ++i)
         {
             if(max < eigenvalue[i])
             {
@@ -193,12 +208,13 @@ namespace coffeemill
         return std::make_pair(eigenvalue[index], eigenvector[index]);
     }
 
-    std::pair<double, std::array<double, 4> >
-        Jacobi44Solver::get_mineigenpair()
+    template<size_t S>
+    std::pair<double, RealVector<S> >
+        JacobiSolver<S>::get_mineigenpair()
     {
         double min(eigenvalue[0]);
-        int index(0);
-        for(int i(1); i<4; ++i)
+        size_t index(0);
+        for(size_t i(1); i<S; ++i)
         {
             if(min > eigenvalue[i])
             {
@@ -210,20 +226,22 @@ namespace coffeemill
     }
 
 
+    template<size_t S>
     std::pair<int, int>
-        Jacobi44Solver::get_maxindex(const RealMatrix44& m) const
+        JacobiSolver<S>::get_maxindex(const RealMatrix<S,S>& m) const
     {
         double max = fabs(m(0,1));
         std::pair<int, int> index = std::make_pair(0,1);
 
-        for(int i(0); i<4; ++i)
+        for(size_t i(0); i<S-1; ++i)
         {
-            for(int j(i+1); j<4; ++j)
+            for(size_t j(i+1); j<S; ++j)
             {
                 if(max < fabs(m(i,j)))
                 {
                     max = fabs(m(i,j));
-                    index = std::make_pair(i, j);
+                    index = std::make_pair(static_cast<int>(i),
+                                           static_cast<int>(j));
                 }
             }
         }
@@ -234,12 +252,12 @@ namespace coffeemill
         return index;
     }
 
-    double
-        Jacobi44Solver::get_max_relative_tolerance(const RealMatrix44& ta, 
-                                                   const RealMatrix44& tm) const
+    template<size_t S>
+    double JacobiSolver<S>::get_max_relative_tolerance
+        (const RealMatrix<S,S>& ta,  const RealMatrix<S,S>& tm) const
     {
         double max_reltol(0e0);
-        for(int i(0); i<4; ++i)
+        for(size_t i(0); i<S; ++i)
         {
             double temp(fabs(ta(i,i) - tm(i,i)));
             if(temp > max_reltol) max_reltol = temp;
@@ -247,18 +265,20 @@ namespace coffeemill
         return max_reltol;
     }
 
-    bool Jacobi44Solver::is_symmetric(const RealMatrix44& m) const
+    template<size_t S>
+    bool JacobiSolver<S>::is_symmetric(const RealMatrix<S,S>& m) const
     {
         double TOL_EQUAL(1e-10);
-        if(fabs(m(0,1) - m(1,0)) > TOL_EQUAL) return false;
-        if(fabs(m(0,2) - m(2,0)) > TOL_EQUAL) return false;
-        if(fabs(m(0,3) - m(3,0)) > TOL_EQUAL) return false;
-        if(fabs(m(1,2) - m(2,1)) > TOL_EQUAL) return false;
-        if(fabs(m(1,3) - m(3,1)) > TOL_EQUAL) return false;
-        if(fabs(m(2,3) - m(3,2)) > TOL_EQUAL) return false;
+        for(size_t i(0); i<S-1; ++i)
+        {
+            for(size_t j(i+1); j<S; ++j)
+            {
+                if(fabs(m(i,j) - m(j,i)) > TOL_EQUAL) return false;
+            }
+        }
         return true;
     }
 
 }
 
-#endif //COFFEE_MILL_JACOBI_4x4_H
+#endif //COFFEE_MILL_JACOBI_METHOD_H

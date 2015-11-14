@@ -3,7 +3,7 @@
 #include <vector>
 #include <algorithm>
 #include <boost/regex.hpp>
-#include "../mathematics/linear_algebra.hpp"
+#include "../mathematics/LinearAlgebra.hpp"
 #include "CGBeads.hpp"
 #include "ProteinSeq.hpp"
 

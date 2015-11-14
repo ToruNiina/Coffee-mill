@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "../mathematics/linear_algebra.hpp"
+#include "../mathematics/LinearAlgebra.hpp"
 
 namespace coffeemill
 {

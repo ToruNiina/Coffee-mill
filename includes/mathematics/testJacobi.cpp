@@ -1,5 +1,5 @@
 // #include "Jacobi44.hpp"
-#include "linear_algebra.hpp"
+#include "LinearAlgebra.hpp"
 #include <iostream>
 #include <iomanip>
 // #include <eigen3/Eigen/Core>
@@ -29,7 +29,7 @@ int main()
     m(3,2) = 0e0;
     m(3,3) = 2e0;
 
-    Jacobi44Solver solver(m);
+    JacobiSolver<4> solver(m);
     std::cout << std::setprecision(16) << solver.get_eigenvalue(0) << std::endl;
     std::cout << solver.get_eigenvalue(1) << std::endl;
     std::cout << solver.get_eigenvalue(2) << std::endl;

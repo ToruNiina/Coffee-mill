@@ -2,7 +2,7 @@
 #define COFFEE_MILL_SUPER_IMPOSER
 #include <iostream>
 #include <vector>
-#include "mathematics/linear_algebra.hpp"
+#include "mathematics/LinearAlgebra.hpp"
 
 namespace coffeemill
 {
@@ -31,10 +31,10 @@ namespace coffeemill
 
             Realvec mean(std::vector<Realvec>& structure);
             void move_to_zero();
-            Matrix3 calc_R(const std::array<double, 4>& q);
+            Matrix3 calc_R(const RealVector<4>& q);
             Matrix4 get_B(const std::vector<Realvec>& rA,
                           const std::vector<Realvec>& rB);
-            std::array<double, 4> get_eigenvec(const Matrix4& B);
+            RealVector<4> get_eigenvec(const Matrix4& B);
             void rotate(const Matrix3& R);
 
         private:
@@ -113,7 +113,7 @@ namespace coffeemill
         }
 
         Matrix4 B(get_B(rA, rB));
-        std::array<double, 4> q = get_eigenvec(B);
+        RealVector<4> q = get_eigenvec(B);
         Matrix3 R(calc_R(q));
 
         rotate(R);
@@ -144,7 +144,7 @@ namespace coffeemill
         }
 
         Matrix4 B(get_B(rA, rB));
-        std::array<double, 4> q = get_eigenvec(B);
+        RealVector<4> q = get_eigenvec(B);
         Matrix3 R(calc_R(q));       
         rotate(R);
         superimposed = true;
@@ -228,15 +228,15 @@ namespace coffeemill
         return retval;
     }
 
-    std::array<double, 4> SuperImposer::get_eigenvec(const Matrix4& B)
+    RealVector<4> SuperImposer::get_eigenvec(const Matrix4& B)
     {
-        Jacobi44Solver solver(B);
-        std::pair<double, std::array<double, 4> > min_pair
+        JacobiSolver<4> solver(B);
+        std::pair<double, RealVector<4> > min_pair
             = solver.get_mineigenpair();
         return min_pair.second;
     }
 
-    Matrix3 SuperImposer::calc_R(const std::array<double, 4>& q)
+    Matrix3 SuperImposer::calc_R(const RealVector<4>& q)
     {
         Matrix3 R;
         R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;

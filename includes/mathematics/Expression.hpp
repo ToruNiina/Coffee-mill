@@ -1,32 +1,23 @@
 #ifndef COFFEE_MILL_EXPRESSION_H
 #define COFFEE_MILL_EXPRESSION_H
 #include <type_traits>
+#include <cstddef>
 
 namespace coffeemill
 {
     extern void* enabler;
 
-    class Matrix33{};
-    class Matrix33Exp{};
-    class Matrix44{};
-    class Matrix44Exp{};
-
+    class Matrix{};
+    class MatrixExp{};
     class Vector{};
     class VectorExp{};
 
     template <typename T>
-    class is_Matrix33Expression:public std::false_type{};
+    class is_MatrixExpression:public std::false_type{};
     template <>
-    class is_Matrix33Expression<Matrix33>:public std::true_type{};
+    class is_MatrixExpression<Matrix>:public std::true_type{};
     template <>
-    class is_Matrix33Expression<Matrix33Exp>: public std::true_type{};
-
-    template <typename T>
-    class is_Matrix44Expression:public std::false_type{};
-    template <>
-    class is_Matrix44Expression<Matrix44>:public std::true_type{};
-    template <>
-    class is_Matrix44Expression<Matrix44Exp>: public std::true_type{};
+    class is_MatrixExpression<MatrixExp>: public std::true_type{};
 
     template <typename T>
     class is_VectorExpression:public std::false_type{};
@@ -34,6 +25,11 @@ namespace coffeemill
     class is_VectorExpression<Vector>:public std::true_type{};
     template <>
     class is_VectorExpression<VectorExp>:public std::true_type{};
+
+    template <size_t LN, size_t RN>
+    class is_SameSize: public std::false_type{};
+    template <size_t LN>
+    class is_SameSize<LN, LN>: public std::true_type{};
 
     template <typename T>
     class is_ScalarType: public std::false_type{};
