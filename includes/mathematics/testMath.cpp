@@ -1,11 +1,6 @@
-#include "Matrix33.hpp"
-#include "Matrix44.hpp"
-#include "Vector3.hpp"
+#include "LinearAlgebra.hpp"
 
 using namespace coffeemill;
-typedef RealVector3 Realvec;
-typedef RealMatrix33 Matrix3;
-typedef RealMatrix44 Matrix4;
 
 int main()
 {
@@ -48,7 +43,7 @@ int main()
     std::cout << "dot_prod(v2, v3)   : " << dot_prod(v2, v3) << std::endl;
     Realvec temp;
     temp = cross_prod(v2, v3);
-    std::cout << "cross_prod(v2, v3) : " << cross_prod(v2, v3) << std::endl;
+    std::cout << "cross_prod(v2, v3) : " << temp << std::endl;
 
 //     Matrix3 m1;
 //     Matrix3 m2(2e0);
