@@ -63,14 +63,37 @@ int main(int argc, char *argv[])
         simposer.set_data(data1, data0);
         Matrix3 R(simposer.get_R());
 
+        SnapShot data0_rot(data.at(0));
         SnapShot data1_rot(data.at(1));
+
+        Realvec sum0(0e0, 0e0, 0e0);
+        Realvec sum1(0e0, 0e0, 0e0);
+        SnapShot::iterator iter0 = data0_rot.begin();
+        for(SnapShot::iterator iter = data1_rot.begin();
+            iter != data1_rot.end(); ++iter)
+        {
+            sum0 += (*iter0);
+            sum1 += (*iter);
+            ++iter0;
+        }
+        sum0 /= static_cast<double>(data0_rot.size());
+        sum1 /= static_cast<double>(data1_rot.size());
+        iter0 = data0_rot.begin();
+        for(SnapShot::iterator iter = data1_rot.begin();
+            iter != data1_rot.end(); ++iter)
+        {
+            *iter0 -= sum0;
+            *iter -= sum1;
+            ++iter0;
+        }
+
         for(SnapShot::iterator iter = data1_rot.begin();
             iter != data1_rot.end(); ++iter)
         {
             Realvec temp(R * (*iter));
             *iter = temp;
         }
-        imposed.at(0) = data.at(0);
+        imposed.at(0) = data0_rot;
         imposed.at(1) = data1_rot;
     }
     
@@ -87,8 +110,23 @@ int main(int argc, char *argv[])
             SnapShot datai(pickup_chain(data.at(i), chain_nums, chain_sizes));
             simposer.set_data_push(datai);
             Matrix3 R(simposer.get_R());
-            
+
             SnapShot data_rot(data.at(i));
+
+            Realvec sum(0e0, 0e0, 0e0);
+            for(SnapShot::iterator iter = data_rot.begin();
+                iter != data_rot.end(); ++iter)
+            {
+                sum += *iter;
+            }
+            sum /= static_cast<double>(data_rot.size());
+
+            for(SnapShot::iterator iter = data_rot.begin();
+                iter != data_rot.end(); ++iter)
+            {
+                *iter -= sum;
+            }
+
             for(SnapShot::iterator iter = data_rot.begin();
                 iter != data_rot.end(); ++iter)
             {
