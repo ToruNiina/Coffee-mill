@@ -141,11 +141,7 @@ namespace coffeemill
             Ppri(index.second, index.first) = -sin;
             Ppri(index.second, index.second) = cos;
 
-            RealMatrix<S,S> Pinv(Ppri);
-            Pinv(index.first, index.second) = -sin;
-            Pinv(index.second, index.first) =  sin;
-
-            RealMatrix<S,S> temp(Pinv * target * Ppri);
+            RealMatrix<S,S> temp(transpose(Ppri) * target * Ppri);
 
             if(get_max_relative_tolerance(target, temp) < REL_TOLERANCE)
                 break;
