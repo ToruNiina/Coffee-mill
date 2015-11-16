@@ -128,6 +128,29 @@ namespace coffeemill
             const double& r;
     };
 
+    template<class L>
+    class MatrixTranspose
+    {
+        public:
+
+            typedef MatrixExp value_trait;
+            constexpr static size_t row = L::col;
+            constexpr static size_t col = L::row;
+
+            MatrixTranspose(const L& lhs)
+                : l(lhs)
+            {}
+
+            double operator()(const int i, const int j) const
+            {
+                return l(j,i);
+            }
+
+        private:
+
+            const L& l;
+    };
+
     template<class L, class R,
              typename std::enable_if<
                  is_MatrixExpression<typename L::value_trait>::value&&
@@ -191,6 +214,14 @@ namespace coffeemill
     MatrixSclDiv<L> operator/(const L& lhs, const R& rhs)
     {
         return MatrixSclDiv<L>(lhs, rhs);
+    }
+
+    template<class L, typename std::enable_if<
+                 is_MatrixExpression<typename L::value_trait>::value
+                 >::type*& = enabler>
+    MatrixTranspose<L> transpose(const L& lhs)
+    {
+        return MatrixTranspose<L>(lhs);
     }
 }
 #endif//COFFEE_MILL_EXPRESSION_H
