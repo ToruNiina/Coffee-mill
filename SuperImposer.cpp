@@ -68,22 +68,23 @@ int main(int argc, char *argv[])
 
         Realvec sum0(0e0, 0e0, 0e0);
         Realvec sum1(0e0, 0e0, 0e0);
-        SnapShot::iterator iter0 = data0_rot.begin();
-        for(SnapShot::iterator iter = data1_rot.begin();
-            iter != data1_rot.end(); ++iter)
+        SnapShot::iterator iter0 = data0.begin();
+        for(SnapShot::iterator iter1 = data1.begin();
+            iter1 != data1.end(); ++iter1)
         {
             sum0 += (*iter0);
-            sum1 += (*iter);
+            sum1 += (*iter1);
             ++iter0;
         }
-        sum0 /= static_cast<double>(data0_rot.size());
-        sum1 /= static_cast<double>(data1_rot.size());
+        sum0 /= static_cast<double>(data0.size());
+        sum1 /= static_cast<double>(data1.size());
+
         iter0 = data0_rot.begin();
-        for(SnapShot::iterator iter = data1_rot.begin();
-            iter != data1_rot.end(); ++iter)
+        for(SnapShot::iterator iter1 = data1_rot.begin();
+            iter1 != data1_rot.end(); ++iter1)
         {
             *iter0 -= sum0;
-            *iter -= sum1;
+            *iter1 -= sum1;
             ++iter0;
         }
 
@@ -114,12 +115,12 @@ int main(int argc, char *argv[])
             SnapShot data_rot(data.at(i));
 
             Realvec sum(0e0, 0e0, 0e0);
-            for(SnapShot::iterator iter = data_rot.begin();
-                iter != data_rot.end(); ++iter)
+            for(SnapShot::iterator iter = datai.begin();
+                iter != datai.end(); ++iter)
             {
                 sum += *iter;
             }
-            sum /= static_cast<double>(data_rot.size());
+            sum /= static_cast<double>(datai.size());
 
             for(SnapShot::iterator iter = data_rot.begin();
                 iter != data_rot.end(); ++iter)
