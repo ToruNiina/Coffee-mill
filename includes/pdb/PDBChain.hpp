@@ -10,6 +10,10 @@ namespace coffeemill
     {
     public:
 
+        typedef std::vector<AtomSptr>::iterator iterator;
+
+    public:
+
         PDBChain(): there_is_chain(false) {}
         ~PDBChain(){}
 
@@ -18,10 +22,32 @@ namespace coffeemill
         void read_block(std::ifstream& ifs);
         void write_block(std::ofstream& ofs);
 
-        std::vector<AtomSptr> get_chain(){return atoms;}
-        char get_chainID(){return chainID;}
+        iterator begin()
+        {
+            return atoms.begin();
+        }
+
+        iterator end()
+        {
+            return atoms.end();
+        }
+
+        std::vector<AtomSptr>& get_chain()
+        {
+            return atoms;
+        }
+
+        char get_chainID()
+        {
+            return chainID;
+        }
+
         std::string get_sequence();
-        bool is_there_chain() const {return there_is_chain;}
+
+        bool is_there_chain() const 
+        {
+            return there_is_chain;
+        }
 
     private:
 
@@ -108,5 +134,7 @@ namespace coffeemill
         }
         return return_seq;
     }
+
+    typedef std::shared_ptr<PDBChain> PDBChnSptr;
 }
 #endif //COFFEE_MILL_PDB_CHAIN
