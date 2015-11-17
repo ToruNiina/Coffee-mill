@@ -58,7 +58,7 @@ and you can set chain IDs that you want to calculate RMSD value.
 
 ###superimpose
 
-`$./superimpose <filename>.dcd`[Optional: chainIDs(default: all)]
+`$./superimpose <filename>.dcd [Optional: chainIDs(default: all)]`
 
 superimposer outputs dcd file that contains snapshots superimposed on the previous snapshot.
 

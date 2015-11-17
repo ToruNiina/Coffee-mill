@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 
 
     SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
-    SnapShot seco(pickup_chain(initial.first, chain_IDs, chain_sizes));
+    SnapShot seco(pickup_chain(second_.first, chain_IDs, chain_sizes));
 
     rmsdcalc.set_data(init, init);
     ofs << 0e0 << " " << rmsdcalc.get_RMSD() << std::endl;
