@@ -74,12 +74,6 @@ namespace coffeemill
             chains.push_back(chain);
         }
 
-        if(!model_found)
-        {
-            std::cout << "Warning: model description not found" << std::endl;
-            return;
-        }
-
         std::cout << "Warning: end of model not found" << std::endl;
         return;
     }
