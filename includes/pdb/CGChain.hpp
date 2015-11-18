@@ -15,10 +15,13 @@ namespace coffeemill
         typedef std::vector<BeadSptr>::iterator iterator;
 
     public:
-        CGChain(): there_is_chain(false){}
+        CGChain()
+            : there_is_chain(false)
+        {}
 
         CGChain(const BeadSptr& bead)
-            : there_is_chain(true), chainID(bead->get_chainID()), seqmap()
+            : there_is_chain(true), chainID(bead->get_chainID()),
+              seqmap()
         {
             residue.push_back(bead);
         }
@@ -35,7 +38,7 @@ namespace coffeemill
         void push_back(BeadSptr& bead);
 
         void read_block(std::ifstream& ifs);
-        void write_block(std::ofstream& ofs);
+        void write_block(std::ofstream& ofs, const int chain_Number = 1);
 
         std::vector<BeadSptr> get_chain(){return residue;}
         std::vector<Realvec> get_coord();
@@ -164,9 +167,9 @@ namespace coffeemill
         std::sort(residue.begin(), residue.end(), less_imp);
     }
 
-    void CGChain::write_block(std::ofstream& ofs)
+    void CGChain::write_block(std::ofstream& ofs, const int chain_Number)
     {
-        ofs << "<< protein_ " << std::endl;
+        ofs << "<< protein_" << std::setw(3) << chain_Number << std::endl;
         for(std::vector<BeadSptr>::iterator iter = residue.begin();
             iter != residue.end(); ++iter)
         {

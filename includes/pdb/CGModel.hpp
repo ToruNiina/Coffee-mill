@@ -18,8 +18,10 @@ namespace coffeemill
 
             void read_file(std::ifstream& pdbfile);
             void write_file(std::ofstream& outfile)
-            {//TODO
-                std::cout << "not supported yet" << std::endl;
+            {
+                for(auto iter = chains.begin(); iter != chains.end(); ++iter)
+                    (*iter)->write_block(outfile);
+                return;
             }
 
             bool empty(){return chains.empty();}
