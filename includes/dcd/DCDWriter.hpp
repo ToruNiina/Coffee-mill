@@ -1,5 +1,6 @@
 #ifndef COFFEE_MILL_DCD_WRITER
 #define COFFEE_MILL_DCD_WRITER
+#include <cstring>
 #include "DCDDef.hpp"
 
 namespace coffeemill
@@ -8,9 +9,10 @@ namespace coffeemill
     {
         public:
 
-            DCDWriter(){}
+            DCDWriter():header_written(false), header_set(false){}
             DCDWriter(const std::string& filename_)
-                :dcdfile(filename_, std::ios::out|std::ios::binary),
+                :header_written(false), header_set(false),
+                 dcdfile(filename_, std::ios::out|std::ios::binary),
                  filename(filename_)
             {
                 if(dcdfile.fail())
@@ -24,6 +26,9 @@ namespace coffeemill
             void write_file();
             void write_file(const std::string& filename);
 
+            void write_header();
+            void write_SnapShot(SnapShot& snapshot);
+
             void set_nset(int nset_){nset = nset_;}
             void set_istart(int istart_){istart = istart_;}
             void set_nstep_save(int nsave_){nstep_save = nsave_;}
@@ -31,6 +36,7 @@ namespace coffeemill
             void set_nunit(int nunit_){nunit = nunit_;}
             void set_npart(int npart_){nparticle = npart_;}
             void set_delta_t(double dt){delta_t = dt;}
+            void set_header(const std::vector<std::string>& h);
 
             SnapShot& at(int i){return data.at(i);}
 
@@ -39,15 +45,17 @@ namespace coffeemill
 
         private:
 
-            void write_header();
             void write_core();
             void write_head_block1();
             void write_head_block2();
             void write_head_block3();
+            void write_user_set_header();
             void write_coord(std::vector<double>& coord);
     
         private:
 
+            bool header_written;
+            bool header_set;
             int nset;// number of frame
             int istart;// initial value of isteps
             int nstep_save;// saving frequency
@@ -59,19 +67,21 @@ namespace coffeemill
             std::vector<SnapShot> data;
             std::ofstream dcdfile;
             std::string filename;
+            std::vector<std::string> header;
 
         private:
 
-            static const int size_int;
-            static const int size_float;
-            static const int size_char;
+            static constexpr int size_int = sizeof(int);
+            static constexpr int size_float = sizeof(float);
+            static constexpr int size_char = sizeof(char);
     };
 
     void DCDWriter::write_file(const std::string& filename_)
     {
         if(dcdfile.is_open())
         {
-            std::cout << "Warning: DCDWriter already open a dcd file."
+            std::cout << "Warning: DCDWriter already open a dcd file: "
+                      << filename
                       << std::endl;
         }
         else
@@ -88,17 +98,77 @@ namespace coffeemill
     {
         if(dcdfile.fail())
             throw std::invalid_argument("file open error");
+        if(header_written)
+            throw std::invalid_argument("file is partially written");
         write_header();
         write_core();
         std::cout << "Info   : write_file completed" << std::endl;
         return;
     }
 
+
+    void DCDWriter::write_SnapShot(SnapShot& snapshot)
+    {
+        if(!header_written)
+            throw std::invalid_argument("write DCD file without header");
+
+        std::vector<double> x((snapshot).size());
+        std::vector<double> y((snapshot).size());
+        std::vector<double> z((snapshot).size());
+        int counter(0);
+        for(SnapShot::iterator ssiter = (snapshot).begin();
+            ssiter != (snapshot).end(); ++ssiter)
+        {
+            x.at(counter) = (*ssiter)[0];
+            y.at(counter) = (*ssiter)[1];
+            z.at(counter) = (*ssiter)[2];
+            ++counter;
+        }
+        write_coord(x);
+        write_coord(y);
+        write_coord(z);
+
+        return;
+    }
+
+    void DCDWriter::set_header(const std::vector<std::string>& h)
+    {
+        if(!header.empty())
+            std::cout << "Warning: trying to set header but header is not empty"
+                      << std::endl;
+        for(auto iter = h.begin(); iter != h.end(); ++iter)
+        {
+            if((*iter).size() > 80)
+            {
+                throw std::invalid_argument("too long header line");
+            }
+            else if((*iter).size() < 80)
+            {
+                std::string filler((80 - (*iter).size()), '=');
+                header.push_back((*iter) + filler);
+            }
+            else
+            {
+                header.push_back(*iter);
+            }
+        }
+        header_set = true;
+        return;
+    }
+
     void DCDWriter::write_header()
     {
         write_head_block1();
-        write_head_block2();
+        if(header_set)
+        {
+            write_user_set_header();
+        }
+        else
+        {
+            write_head_block2();
+        }
         write_head_block3();
+        header_written = true;
         return;
     }
 
@@ -210,6 +280,33 @@ namespace coffeemill
         dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
         return;
     }
+
+    void DCDWriter::write_user_set_header()
+    {
+        int lines(header.size());
+        int bytes(4 + 80*lines);
+        int wrote(0);
+        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+
+        dcdfile.write(reinterpret_cast<char*>(&lines), sizeof(int));
+        wrote += sizeof(int);
+
+        for(auto iter = header.begin(); iter != header.end(); ++iter)
+        {
+            char* line = new char[81];
+            memcpy(line, (*iter).c_str(), 81);
+            dcdfile.write(reinterpret_cast<char*>(&line), sizeof(char)*80);
+            wrote += sizeof(char)*80;
+        }
+
+        if(wrote != bytes)
+            throw std::invalid_argument("byte information error");
+
+        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        return;
+    }
+
+
 
     void DCDWriter::write_head_block3()
     {
