@@ -84,6 +84,7 @@ namespace coffeemill
             case PDBAtom::EMPTY:
                 break;
             case PDBAtom::ATOM:
+                there_is_chain = true;
                 push_back(atom);
                 break;
             case PDBAtom::TER:

@@ -35,7 +35,6 @@ namespace coffeemill
 
             std::ifstream pdbfile;
             std::vector<PDBChnSptr> chains;
-    
     };
 
     void PDBReader::read_file(const std::string& filename)
@@ -65,7 +64,8 @@ namespace coffeemill
         {
             PDBChnSptr chain(new PDBChain);
             chain->read_block(pdbfile);
-            chains.push_back(chain);
+            if(chain->is_there_chain())
+                chains.push_back(chain);
         }
         return;
     }
