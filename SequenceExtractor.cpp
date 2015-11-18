@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
             CGChain chain;
             chain.read_block(pdbfile);
 
-            if(chain.is_there_chain())
+            if(chain.chain_exist())
             {
                 std::cout << "Chain " << chain.get_chainID() << ": ";
                 std::cout << chain.get_sequence() << std::endl;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
             PDBChain chain;
             chain.read_block(pdbfile);
 
-            if(chain.is_there_chain())
+            if(chain.chain_exist())
             {
                 std::cout << "Chain " << chain.get_chainID() << ": ";
                 std::cout << chain.get_sequence() << std::endl;

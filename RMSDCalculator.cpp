@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     std::vector<int> chain_sizes;
     for(int i(0); i<model->size(); ++i)
     {
-        chain_sizes.push_back(model->at(i)->get_size());
+        chain_sizes.push_back(model->at(i)->size());
     }
 
     //this contains what is the ID of the chain to calculate RMSD

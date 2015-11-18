@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         CGMdlSptr model(cgreader.get_model(0));
 
         for(int i(0); i < model->size(); ++i)
-            chain_sizes.push_back(model->at(i)->get_size());
+            chain_sizes.push_back(model->at(i)->size());
 
         for(auto iter = chainIDs.begin(); iter != chainIDs.end(); ++iter)
             chain_nums.push_back(model->find_id(*iter));

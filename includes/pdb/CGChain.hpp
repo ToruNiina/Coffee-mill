@@ -11,6 +11,8 @@ namespace coffeemill
 {
     class CGChain
     {
+    public:
+        typedef std::vector<BeadSptr>::iterator iterator;
 
     public:
         CGChain(): there_is_chain(false){}
@@ -40,14 +42,18 @@ namespace coffeemill
 
         void sort_imp();
 
+        size_t size() const {return residue.size();}
+        bool empty() const {return residue.empty();}
+        iterator begin() {return residue.begin();}
+        iterator end() {return residue.end();}
+        BeadSptr& at(size_t i) {return residue.at(i);}
+
         char get_chainID() const {return chainID;}
         int get_iunit() const {return iunit;}
         int get_ResNum() const {return (*(residue.end()-1))->get_iResNum();}
-        int get_size() const {return residue.size();}
-        bool empty() const {return residue.empty();}
         std::string get_sequence() const {return sequence;}
         MOLECULE_TYPE get_moltype() const {return mol_type;}
-        bool is_there_chain() const {return there_is_chain;}
+        bool chain_exist() const {return there_is_chain;}
 
     private:
 

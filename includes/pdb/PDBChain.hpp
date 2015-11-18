@@ -44,7 +44,7 @@ namespace coffeemill
 
         std::string get_sequence();
 
-        bool is_there_chain() const 
+        bool chain_exist() const 
         {
             return there_is_chain;
         }

@@ -25,12 +25,20 @@ namespace coffeemill
 
             void read_file();
             void read_file(const std::string& filename);
+            size_t size()
+            {
+                return chains.size();
+            }
+            bool empty()
+            {
+                return chains.empty();
+            }
 
             std::vector<PDBChnSptr>& get_chains()
             {
                 return chains;
             }
-                
+
         private:
 
             std::ifstream pdbfile;
@@ -64,7 +72,7 @@ namespace coffeemill
         {
             PDBChnSptr chain(new PDBChain);
             chain->read_block(pdbfile);
-            if(chain->is_there_chain())
+            if(chain->chain_exist())
                 chains.push_back(chain);
         }
         return;
