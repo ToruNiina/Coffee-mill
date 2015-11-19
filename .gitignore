@@ -5,6 +5,7 @@
 *.ninfo
 *.ts
 *.data
+*.vmd
 data/
 
 *.dat
