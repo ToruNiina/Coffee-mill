@@ -26,8 +26,7 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    const std::string prefix("out");
-    const std::string suffix(".pdb");
+    const std::string suffix("_mut.pdb");
 
     while(!ifs.eof())
     {
@@ -111,7 +110,7 @@ int main(int argc, char *argv[])
         char Chain_ID(chain->get_chainID());
         if(!pass_chain)
         {
-            std::string outputfilename = prefix + Chain_ID + suffix;
+            std::string outputfilename = Chain_ID + suffix;
             std::ofstream ofs(outputfilename.c_str());
 
             CGMutator mut(chain, mutated_sequence);

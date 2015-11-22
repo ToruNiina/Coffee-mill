@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
     if(argc == 2)
         imposed.at(data.size()-1) = simposer.get_data1();
 
-    std::string outfile("SupImp"+infile);
+    std::string outfile(infile.substr(0, infile.size()-4) + "_SupImp.dcd");
     DCDWriter writer(outfile);
 
     set_header_from_reader(&writer, &reader);
