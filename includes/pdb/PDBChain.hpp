@@ -17,20 +17,16 @@ namespace coffeemill
         PDBChain(): there_is_chain(false) {}
         ~PDBChain(){}
 
-        void push_back(AtomSptr& atom);
 
         void read_block(std::ifstream& ifs);
         void write_block(std::ofstream& ofs);
 
-        iterator begin()
-        {
-            return atoms.begin();
-        }
-
-        iterator end()
-        {
-            return atoms.end();
-        }
+        bool empty(){return atoms.empty();}
+        size_t size(){return atoms.size();}
+        void push_back(AtomSptr& atom);
+        iterator begin(){return atoms.begin();}
+        iterator end(){return atoms.end();}
+        AtomSptr& at(size_t i){return atoms.at(i);}
 
         std::vector<AtomSptr>& get_chain()
         {

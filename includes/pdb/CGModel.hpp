@@ -7,6 +7,10 @@ namespace coffeemill
     class CGModel
     {
         public:
+
+            typedef std::vector<CGChnSptr>::iterator iterator;
+
+        public:
             CGModel()
             {
                 ;
@@ -25,8 +29,15 @@ namespace coffeemill
             }
 
             bool empty(){return chains.empty();}
-            int size(){return chains.size();}
+            size_t size(){return chains.size();}
             CGChnSptr& at(const int i){return chains.at(i);}
+            iterator begin(){return chains.begin();}
+            iterator end(){return chains.end();}
+            void push_back(CGChnSptr chn)
+            {
+                chains.push_back(chn);
+            }
+
             std::vector<CGChnSptr>& get_data(){return chains;}
             CGChnSptr& find(const char ID);
             int find_id(const char ID);
