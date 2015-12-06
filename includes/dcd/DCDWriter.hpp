@@ -319,24 +319,9 @@ namespace coffeemill
 
     void DCDWriter::write_core()
     {
-        for(std::vector<SnapShot>::iterator iter = data.begin();
-            iter != data.end(); ++iter)
+        for(auto iter = data.begin(); iter != data.end(); ++iter)
         {
-            std::vector<double> x((*iter).size());
-            std::vector<double> y((*iter).size());
-            std::vector<double> z((*iter).size());
-            int counter(0);
-            for(SnapShot::iterator ssiter = (*iter).begin();
-                ssiter != (*iter).end(); ++ssiter)
-            {
-                x.at(counter) = (*ssiter)[0];
-                y.at(counter) = (*ssiter)[1];
-                z.at(counter) = (*ssiter)[2];
-                ++counter;
-            }
-            write_coord(x);
-            write_coord(y);
-            write_coord(z);
+            write_SnapShot(*iter);
         }
         return;
     }
