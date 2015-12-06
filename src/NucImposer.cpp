@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
     {
         SnapShot datai(data.at(i));
         SnapShot datai_histone(pickupHistoneCore(datai, DNA_length));
-        simposer.set_data_push(datai);
+        simposer.set_data_push(datai_histone);
         Matrix3 R(simposer.get_R());
 
         Realvec sum(0e0, 0e0, 0e0);
