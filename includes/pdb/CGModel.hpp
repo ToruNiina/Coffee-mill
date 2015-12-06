@@ -87,7 +87,8 @@ namespace coffeemill
             chains.push_back(chain);
         }
 
-        std::cout << "Warning: end of model not found" << std::endl;
+        if(model_found)
+            std::cout << "Warning: end of model not found" << std::endl;
         return;
     }
 

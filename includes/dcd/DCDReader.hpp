@@ -160,7 +160,7 @@ namespace coffeemill
         nstep_save = *reinterpret_cast<int*>(cnstep_save);
         delete [] cnstep_save;
 
-        std::cout << "nstep_save: " << nstep_save << std::endl;
+        std::cout << "Info   : nstep_save: " << nstep_save << std::endl;
 
         char *cnstep = new char[size_int];
         dcdfile.read(cnstep, size_int);

@@ -1,7 +1,7 @@
 Coffee-mill
 ====
 
-useful(?) tools for using CafeMol [1].
+tools for using CafeMol [1].
 
 ##Build
 
@@ -50,11 +50,13 @@ rmsdcalc outputs time series of RMSD value of certain chains between snapshot at
 
 This reads CG style pdb file and dcd file that has same filename as pdb file.
 
-CafeMol can output these two files when you specify dcd in the OUTPUT.
+CafeMol outputs these two files when you specify dcd in the OUTPUT in filename block.
 
 rmsdcalc automatically adds the extension(.pdb and .dcd), so you should input filename without extension.
 
 and you can set chain IDs that you want to calculate RMSD value. 
+
+the value is same as cafemol .ts file. you can check this if you specify cafemol reference structure that is same as the initial structure.
 
 ###superimpose
 
@@ -65,6 +67,8 @@ superimposer outputs dcd file that contains snapshots superimposed on the previo
 you can set chain IDs to use in the same way as rmsdcalc.
 
 and when you set the chainIDs, superimpose requires the CG style PDB file having same name as dcd file.
+
+(This program is a by-product of rmsdcalc. rmsdcalc calls this as subroutine when calculate rmsd of each snapshot)
 
 ##included library
 
