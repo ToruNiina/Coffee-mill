@@ -6,14 +6,17 @@
 *.ts
 *.data
 *.vmd
-data/
-
 *.dat
 *.out
 *test
 
+data/
+build/
+bin/
+
 !*.cpp
 !*.hpp
+
 CMakeCache.txt
 cmake_install.cmake
 Makefile

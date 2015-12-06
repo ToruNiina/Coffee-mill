@@ -1,5 +1,5 @@
-#include "includes/PDBtoCG.hpp"
-#include "includes/pdb/PDBReader.hpp"
+#include "../includes/PDBtoCG.hpp"
+#include "../includes/pdb/PDBReader.hpp"
 using namespace coffeemill;
 
 int main(int argc, char *argv[])
