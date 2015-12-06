@@ -1,6 +1,6 @@
-#include "includes/SuperImposer.hpp"
-#include "includes/dcd/DCDManager.hpp"
-#include "includes/pdb/CGReader.hpp"
+#include "../includes/SuperImposer.hpp"
+#include "../includes/dcd/DCDManager.hpp"
+#include "../includes/pdb/CGReader.hpp"
 using namespace coffeemill;
 
 SnapShot pickup_chain(const SnapShot& ss, 

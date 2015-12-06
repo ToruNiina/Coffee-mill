@@ -2,7 +2,7 @@
  *  Ninfo Splitter                       *
  *  written by Toru Niina in Oct. 4 2015 *
  *****************************************/
-#include "includes/NinfoSplitter.hpp"
+#include "../includes/NinfoSplitter.hpp"
 
 using namespace coffeemill;
 

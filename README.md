@@ -5,9 +5,9 @@ useful(?) tools for using CafeMol [1].
 
 ##Build
 
-If you have CMake , it is very easy to build.
-
-    $ cmake .
+    $ mkdir build
+    $ cd build
+    $ cmake ..
     $ make
 
 ##Usage
