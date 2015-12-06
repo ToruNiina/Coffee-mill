@@ -10,14 +10,16 @@ namespace coffeemill
         public:
 
             DCDWriter():header_written(false), header_set(false){}
+
             DCDWriter(const std::string& filename_)
                 :header_written(false), header_set(false),
-                 dcdfile(filename_, std::ios::out|std::ios::binary),
-                 filename(filename_)
+                 filename(filename_),
+                 dcdfile(filename_, std::ios::out|std::ios::binary)
             {
                 if(dcdfile.fail())
                     throw std::invalid_argument("file open error");
             }
+
             ~DCDWriter()
             {
                 dcdfile.close();
@@ -64,10 +66,10 @@ namespace coffeemill
             int verCHARMM;
             int nparticle;// total number of particle
             double delta_t;
-            std::vector<SnapShot> data;
-            std::ofstream dcdfile;
             std::string filename;
+            std::ofstream dcdfile;
             std::vector<std::string> header;
+            std::vector<SnapShot> data;
 
         private:
 
@@ -106,7 +108,6 @@ namespace coffeemill
         return;
     }
 
-
     void DCDWriter::write_SnapShot(SnapShot& snapshot)
     {
         if(!header_written)
@@ -116,12 +117,11 @@ namespace coffeemill
         std::vector<double> y((snapshot).size());
         std::vector<double> z((snapshot).size());
         int counter(0);
-        for(SnapShot::iterator ssiter = (snapshot).begin();
-            ssiter != (snapshot).end(); ++ssiter)
+        for(auto iter = (snapshot).begin(); iter != (snapshot).end(); ++iter)
         {
-            x.at(counter) = (*ssiter)[0];
-            y.at(counter) = (*ssiter)[1];
-            z.at(counter) = (*ssiter)[2];
+            x.at(counter) = (*iter)[0];
+            y.at(counter) = (*iter)[1];
+            z.at(counter) = (*iter)[2];
             ++counter;
         }
         write_coord(x);
@@ -176,55 +176,55 @@ namespace coffeemill
     {
         int wrote(0);
         int bytes(84);
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
 
         char cord[5] = "CORD";
-        dcdfile.write(reinterpret_cast<char*>(&cord), sizeof(char)*4);
-        wrote += sizeof(char)*4;
+        dcdfile.write(reinterpret_cast<char*>(&cord), size_char*4);
+        wrote += size_char*4;
 
-        dcdfile.write(reinterpret_cast<char*>(&nset), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&nset), size_int);
+        wrote += size_int;
 
-        dcdfile.write(reinterpret_cast<char*>(&istart), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&istart), size_int);
+        wrote += size_int;
 
-        dcdfile.write(reinterpret_cast<char*>(&nstep_save), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&nstep_save), size_int);
+        wrote += size_int;
 
-        dcdfile.write(reinterpret_cast<char*>(&nstep), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&nstep), size_int);
+        wrote += size_int;
 
-        dcdfile.write(reinterpret_cast<char*>(&nunit), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&nunit), size_int);
+        wrote += size_int;
 
         // null data
         int fill_zero(0);
         for(int i(0); i<4; ++i)
         {
-            dcdfile.write(reinterpret_cast<char*>(&fill_zero), sizeof(int));
-            wrote += sizeof(int);
+            dcdfile.write(reinterpret_cast<char*>(&fill_zero), size_int);
+            wrote += size_int;
         }
 
         float dt(static_cast<float>(delta_t));
-        dcdfile.write(reinterpret_cast<char*>(&dt), sizeof(float));
-        wrote += sizeof(float);
+        dcdfile.write(reinterpret_cast<char*>(&dt), size_float);
+        wrote += size_float;
 
         // null data
         for(int i(0); i<9; ++i)
         {
-            dcdfile.write(reinterpret_cast<char*>(&fill_zero), sizeof(int));
-            wrote += sizeof(int);
+            dcdfile.write(reinterpret_cast<char*>(&fill_zero), size_int);
+            wrote += size_int;
         }
 
-        dcdfile.write(reinterpret_cast<char*>(&verCHARMM), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&verCHARMM), size_int);
+        wrote += size_int;
 
         if(wrote != bytes)
         {
             throw std::invalid_argument("byte information error");
         }
 
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
         return;
     }
 
@@ -233,10 +233,10 @@ namespace coffeemill
         int lines(4);
         int bytes(4 + 80*lines);
         int wrote(0);
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
 
-        dcdfile.write(reinterpret_cast<char*>(&lines), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&lines), size_int);
+        wrote += size_int;
 
         size_t filename_length(filename.size());
         std::string fileinfo;
@@ -265,19 +265,19 @@ namespace coffeemill
         char line4[81];
         sprintf(line4, "%s", fileinfo.c_str());
 
-        dcdfile.write(reinterpret_cast<char*>(&line1), sizeof(char)*80);
-        wrote += sizeof(char)*80;
-        dcdfile.write(reinterpret_cast<char*>(&line2), sizeof(char)*80);
-        wrote += sizeof(char)*80;
-        dcdfile.write(reinterpret_cast<char*>(&line3), sizeof(char)*80);
-        wrote += sizeof(char)*80;
-        dcdfile.write(reinterpret_cast<char*>(&line4), sizeof(char)*80);
-        wrote += sizeof(char)*80;
+        dcdfile.write(reinterpret_cast<char*>(&line1), size_char*80);
+        wrote += size_char*80;
+        dcdfile.write(reinterpret_cast<char*>(&line2), size_char*80);
+        wrote += size_char*80;
+        dcdfile.write(reinterpret_cast<char*>(&line3), size_char*80);
+        wrote += size_char*80;
+        dcdfile.write(reinterpret_cast<char*>(&line4), size_char*80);
+        wrote += size_char*80;
 
         if(wrote != bytes)
             throw std::invalid_argument("byte information error");
 
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
         return;
     }
 
@@ -286,34 +286,32 @@ namespace coffeemill
         int lines(header.size());
         int bytes(4 + 80*lines);
         int wrote(0);
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
 
-        dcdfile.write(reinterpret_cast<char*>(&lines), sizeof(int));
-        wrote += sizeof(int);
+        dcdfile.write(reinterpret_cast<char*>(&lines), size_int);
+        wrote += size_int;
 
         for(auto iter = header.begin(); iter != header.end(); ++iter)
         {
             char* line = new char[81];
             memcpy(line, (*iter).c_str(), 81);
-            dcdfile.write(reinterpret_cast<char*>(&line), sizeof(char)*80);
-            wrote += sizeof(char)*80;
+            dcdfile.write(reinterpret_cast<char*>(&line), size_char*80);
+            wrote += size_char*80;
         }
 
         if(wrote != bytes)
             throw std::invalid_argument("byte information error");
 
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
         return;
     }
 
-
-
     void DCDWriter::write_head_block3()
     {
-        int bytes(sizeof(int));
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
-        dcdfile.write(reinterpret_cast<char*>(&nparticle), sizeof(int));
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        int bytes(size_int);
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+        dcdfile.write(reinterpret_cast<char*>(&nparticle), size_int);
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
         return;
     }
 
@@ -329,17 +327,16 @@ namespace coffeemill
     void DCDWriter::write_coord(std::vector<double>& coord)
     {
         int size(coord.size());
-        int bytes(size * sizeof(float));
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        int bytes(size * size_float);
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
 
-        for(std::vector<double>::iterator iter = coord.begin();
-            iter != coord.end(); ++iter)
+        for(auto iter = coord.begin(); iter != coord.end(); ++iter)
         {
             float temp(static_cast<float>(*iter));
-            dcdfile.write(reinterpret_cast<char*>(&temp), sizeof(float));
+            dcdfile.write(reinterpret_cast<char*>(&temp), size_float);
         }
 
-        dcdfile.write(reinterpret_cast<char*>(&bytes), sizeof(int));
+        dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
         return;
     }
 
