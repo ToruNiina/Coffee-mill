@@ -29,3 +29,9 @@ add_executable(superimpose
 
 target_link_libraries(superimpose
     ${BOOST_REGEX})
+
+add_executable(nucimpose
+    NucImposer.cpp)
+
+target_link_libraries(nucimpose
+    ${BOOST_REGEX})
