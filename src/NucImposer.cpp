@@ -4,7 +4,6 @@
 using namespace coffeemill;
 
 SnapShot pickupHistoneCore(const SnapShot& ss, const int DNA_length);
-SnapShot truncate(const SnapShot& ss);
 
 int main(int argc, char *argv[])
 {
@@ -28,7 +27,7 @@ int main(int argc, char *argv[])
     DCDReader reader(infile);
     reader.read_file();
 
-    int DNA_length(147);
+    int DNA_length(440);
     if(argc == 3)
     {
         std::string arg_DNA_len(argv[2]);
@@ -49,16 +48,17 @@ int main(int argc, char *argv[])
     Matrix3 R(simposer.get_R());
 
     Realvec sum0(0e0);
-    for(auto iter = data0.begin(); iter != data0.end(); ++iter)
+    for(auto iter = data0_histone.begin(); iter != data0_histone.end(); ++iter)
         sum0 += (*iter);
-    sum0 /= static_cast<double>(data0.size());
+    sum0 /= static_cast<double>(data0_histone.size());
+
     for(auto iter = data0.begin(); iter != data0.end(); ++iter)
         *iter -= sum0;
 
     Realvec sum1(0e0);
-    for(auto iter = data1.begin(); iter != data1.end(); ++iter)
+    for(auto iter = data1_histone.begin(); iter != data1_histone.end(); ++iter)
         sum1 += (*iter);
-    sum1 /= static_cast<double>(data1.size());
+    sum1 /= static_cast<double>(data1_histone.size());
     for(auto iter = data1.begin(); iter != data1.end(); ++iter)
         *iter -= sum1;
 
@@ -78,11 +78,11 @@ int main(int argc, char *argv[])
         Matrix3 R(simposer.get_R());
 
         Realvec sum(0e0, 0e0, 0e0);
-        for(auto iter = datai.begin(); iter != datai.end(); ++iter)
+        for(auto iter = datai_histone.begin(); iter != datai_histone.end(); ++iter)
         {
             sum += *iter;
         }
-        sum /= static_cast<double>(datai.size());
+        sum /= static_cast<double>(datai_histone.size());
 
         for(auto iter = datai.begin(); iter != datai.end(); ++iter)
         {
@@ -115,15 +115,16 @@ SnapShot pickupHistoneCore(const SnapShot& ss, const int DNA_length)
 
     for(int i(0); i < 2; ++i)
     {
-        retval.erase(iter, iter + 44); //size of each tail.
-        iter = iter + 91;              //size of histone. 135 - tail.
-        retval.erase(iter, iter + 24);
-        iter = iter + 78;              //size of histone. 102 - tail.
+        retval.erase(iter, iter + 45); //size of each tail.
+        iter = iter + 90;              //size of histone. 135 - tail.
+        retval.erase(iter, iter + 25);
+        iter = iter + 77;              //size of histone. 102 - tail.
         retval.erase(iter, iter + 16);
         iter = iter + 99;              //size of histone. 128 - tail.
         retval.erase(iter, iter + 13);
         retval.erase(iter, iter + 34);
         iter = iter + 91;              //size of histone. 125 - tail.
     }
+    std::cout << "debug  : iter == ss.end() : " << (iter == ss.end()) << std::endl;
     return retval;
 }
