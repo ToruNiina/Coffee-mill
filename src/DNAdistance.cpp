@@ -1,5 +1,4 @@
 #include "../includes/dcd/DCDManager.hpp"
-#include "../includes/SuperImposer.hpp"
 using namespace coffeemill;
 
 SnapShot pickupHistoneCore(const SnapShot& ss, const int DNA_length);
@@ -124,6 +123,6 @@ SnapShot pickupHistoneCore(const SnapShot& ss, const int DNA_length)
         retval.erase(iter, iter + 34);
         iter = iter + 91;              //size of histone. 125 - tail.
     }
-//     std::cout << "debug  : iter == ss.end() : " << (iter == ss.end()) << std::endl;
+    std::cout << "debug  : iter == ss.end() : " << (iter == ss.end()) << std::endl;
     return retval;
 }

@@ -35,3 +35,6 @@ add_executable(nucimpose
 
 target_link_libraries(nucimpose
     ${BOOST_REGEX})
+
+add_executable(nucdnadist
+    NucDNAdist.cpp)
