@@ -102,3 +102,45 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+
+SnapShot pickupHistoneCore(const SnapShot& ss, const int DNA_length)
+{
+    SnapShot retval(ss);
+    SnapShot::iterator iter = retval.begin();
+    retval.erase(iter, iter + (2 * DNA_length));
+
+    for(int i(0); i < 2; ++i)
+    {
+        retval.erase(iter, iter + 45); //size of each tail.
+        iter = iter + 90;              //size of histone. 135 - tail.
+        retval.erase(iter, iter + 25);
+        iter = iter + 77;              //size of histone. 102 - tail.
+        retval.erase(iter, iter + 16);
+        iter = iter + 99;              //size of histone. 128 - tail.
+        retval.erase(iter, iter + 13);
+        retval.erase(iter, iter + 34);
+        iter = iter + 91;              //size of histone. 125 - tail.
+    }
+    return retval;
+}
+
+SnapShot pickupHistoneTail(const SnapShot& ss, const int DNA_length)
+{
+    SnapShot retval(ss);
+    SnapShot::iterator iter = retval.begin();
+    retval.erase(iter, iter + (2 * DNA_length));
+
+    for(int i(0); i < 2; ++i)
+    {
+        retval.erase(iter, iter + 45); //size of each tail.
+        iter = iter + 90;              //size of histone. 135 - tail.
+        retval.erase(iter, iter + 25);
+        iter = iter + 77;              //size of histone. 102 - tail.
+        retval.erase(iter, iter + 16);
+        iter = iter + 99;              //size of histone. 128 - tail.
+        retval.erase(iter, iter + 13);
+        retval.erase(iter, iter + 34);
+        iter = iter + 91;              //size of histone. 125 - tail.
+    }
+    return retval;
+}
