@@ -25,6 +25,10 @@ namespace coffeemill
                 : values({{x, y, z}})
             {} 
 
+            RealVector(const std::array<double, 3>& array)
+                : values(array)
+            {} 
+
             template<class E, 
                      typename std::enable_if<
                          is_VectorExpression<typename E::value_trait>::value&&

@@ -27,7 +27,7 @@ namespace coffeemill
                     values[i] = d;
             } 
 
-            RealVector(const std::array<double, size>& v)
+            RealVector(const std::array<double, N>& v)
                 : values(v)
             {} 
 
