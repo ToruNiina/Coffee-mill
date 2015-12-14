@@ -262,8 +262,8 @@ namespace coffeemill
         char line1[81] = "==================== Molecular Dynamics Code : CafeMol ver.  2.01.1485 =========";
         char line2[81] = "==================== Developed by Kyoto University =============================";
         char line3[81] = "==================== This file is modified using coffee-mill ===================";
-        char line4[81];
-        sprintf(line4, "%s", fileinfo.c_str());
+        char line4[81] = "==================================== test ======================================";
+//         sprintf(line4, "%s", fileinfo.c_str());
 
         dcdfile.write(reinterpret_cast<char*>(&line1), size_char*80);
         wrote += size_char*80;
