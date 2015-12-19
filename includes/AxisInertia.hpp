@@ -9,16 +9,14 @@ namespace coffeemill
         public:
 
             AxisInertia(): calculated(false){}
-            AxisInertia(const std::vector<std::pair<Realvec, double>>)
-                : calculated(true)
+            AxisInertia(const std::vector<std::pair<Realvec, double>> data)
+                : calculated(true), system(data)
             {
                 calculate();
             }
             ~AxisInertia(){}
 
             const Realvec get_axis(const int i);
-
-        private:
 
             void calculate();
             Realvec get_CoM();
@@ -64,6 +62,7 @@ namespace coffeemill
         Inertia(2,1) = Inertia(1,2);
 
         JacobiSolver<3> solver(Inertia);
+        std::cout << "solved" << std::endl;
 
         axises.at(0) = solver.get_eigenvec(0);
         axises.at(1) = solver.get_eigenvec(1);

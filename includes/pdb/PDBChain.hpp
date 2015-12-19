@@ -28,7 +28,7 @@ namespace coffeemill
         iterator end(){return atoms.end();}
         AtomSptr& at(size_t i){return atoms.at(i);}
 
-        std::vector<AtomSptr>& get_chain()
+        std::vector<AtomSptr>& get_chain()//rename to atoms
         {
             return atoms;
         }

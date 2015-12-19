@@ -1,5 +1,9 @@
 #ifndef COFFEE_MILL_MASS_CONST
 #define COFFEE_MILL_MASS_CONST
+#include <string>
+#include <stdexcept>
+
+//maybe map<char,double> is better
 
 namespace coffeemill
 {
@@ -21,14 +25,17 @@ namespace coffeemill
 
         public:
 
+            static double get_mass_atom(const char atom);
+//             static double get_mass_amino(const std::string& amino);
+
             constexpr static double mass_P = 30.973761e0;
             constexpr static double mass_O = 15.9994e0;
             constexpr static double mass_C = 12.0107e0;
             constexpr static double mass_N = 14.0067e0;
             constexpr static double mass_H = 1.008e0;
-            constexpr static double mass_BR= 79.904e0;
             constexpr static double mass_F = 18.9984032e0;
             constexpr static double mass_S = 32.065e0;
+            constexpr static double mass_BR= 79.904e0;
 
             constexpr static double mass_PO4 = mass_P + mass_O * 4;
             constexpr static double mass_ALA = mass_C * 3 + mass_H * 7 +
@@ -78,5 +85,29 @@ namespace coffeemill
         static AtomMass instance;
         return instance;
     }
+
+    double AtomMass::get_mass_atom(const char atom)
+    {
+        switch(atom)
+        {
+            case 'H':
+                return mass_H;
+            case 'C':
+                return mass_C;
+            case 'N':
+                return mass_N;
+            case 'O':
+                return mass_O;
+            case 'P':
+                return mass_P;
+            case 'S':
+                return mass_S;
+            case 'F':
+                return mass_F;
+            default:
+                throw std::invalid_argument("not defined atom");
+        }
+    }
+
 }
 #endif //COFFEE_MILL_MASS_CONST

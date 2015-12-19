@@ -38,3 +38,9 @@ target_link_libraries(nucimpose
 
 add_executable(nucdnadist
     NucDNAdist.cpp)
+
+add_executable(inertia
+    CalcInertia.cpp)
+target_link_libraries(inertia
+    ${BOOST_REGEX})
+

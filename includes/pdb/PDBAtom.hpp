@@ -96,6 +96,8 @@ namespace coffeemill
 
     void PDBAtom::read_line(std::string line)
     {
+        //typical example
+        // ATOM      1  O5'  DA I -73      24.126 139.747  27.198  1.00 82.07           O  
         this->serial     = stoi(line.substr(6, 5));
         this->name       = line.substr(12, 4);
         this->altLoc     = line[16];
