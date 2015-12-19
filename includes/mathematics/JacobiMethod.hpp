@@ -110,7 +110,9 @@ namespace coffeemill
             if(!is_symmetric(target))
             {
                 std::cout << "Error  : "
-                          << "target is not symmetric" << std::endl;
+                          << "target is not symmetric : "
+                          << "loop " << num_Jacobi_loop << "times"
+                          << std::endl;
                 std::cout << target << std::endl;
                 throw std::invalid_argument("asymmetric");
             }
@@ -142,6 +144,8 @@ namespace coffeemill
             Ppri(index.second, index.second) = cos;
 
             RealMatrix<S,S> temp(transpose(Ppri) * target * Ppri);
+            temp(index.first, index.second) = 0e0;// typically
+            temp(index.second, index.first) = 0e0;// 1e-15 * other element
 
             if(get_max_relative_tolerance(target, temp) < REL_TOLERANCE)
                 break;
