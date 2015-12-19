@@ -230,7 +230,7 @@ namespace coffeemill
 
     void DCDWriter::write_head_block2()
     {
-        int lines(4);
+        int lines(3);
         int bytes(4 + 80*lines);
         int wrote(0);
         dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
@@ -238,40 +238,15 @@ namespace coffeemill
         dcdfile.write(reinterpret_cast<char*>(&lines), size_int);
         wrote += size_int;
 
-        size_t filename_length(filename.size());
-        std::string fileinfo;
-        if(filename_length > 41)
-        {
-            fileinfo = "==================== original file is " + filename.substr(0,63);
-        }
-        else
-        {
-            fileinfo = "==================== original file is " + filename + ' ';
-//             std::cout << "fileinfo size: " << fileinfo.size() << std::endl;
-            std::string filler((80 - fileinfo.size()), '=');
-            fileinfo = fileinfo + filler;
-            if(fileinfo.size() != 80)
-            {
-                std::cout << "filename: " << filename.size() << std::endl;
-                std::cout << "filler size: " << filler.size() << std::endl;
-                std::cout << "fileinfo size: " << fileinfo.size() << std::endl;
-                throw std::invalid_argument("line size error");
-            }
-        }
-
         char line1[81] = "==================== Molecular Dynamics Code : CafeMol ver.  2.01.1485 =========";
         char line2[81] = "==================== Developed by Kyoto University =============================";
         char line3[81] = "==================== This file is modified using coffee-mill ===================";
-        char line4[81] = "==================================== test ======================================";
-//         sprintf(line4, "%s", fileinfo.c_str());
 
         dcdfile.write(reinterpret_cast<char*>(&line1), size_char*80);
         wrote += size_char*80;
         dcdfile.write(reinterpret_cast<char*>(&line2), size_char*80);
         wrote += size_char*80;
         dcdfile.write(reinterpret_cast<char*>(&line3), size_char*80);
-        wrote += size_char*80;
-        dcdfile.write(reinterpret_cast<char*>(&line4), size_char*80);
         wrote += size_char*80;
 
         if(wrote != bytes)
