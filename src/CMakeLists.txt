@@ -44,3 +44,8 @@ add_executable(inertia
 target_link_libraries(inertia
     ${BOOST_REGEX})
 
+add_executable(cginertia
+    CGInertia.cpp)
+target_link_libraries(cginertia
+    ${BOOST_REGEX})
+

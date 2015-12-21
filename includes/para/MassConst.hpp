@@ -105,7 +105,7 @@ namespace coffeemill
             case 'F':
                 return mass_F;
             default:
-                throw std::invalid_argument("not defined atom");
+                throw std::invalid_argument("not defined atom" + std::string(&atom));
         }
     }
 
