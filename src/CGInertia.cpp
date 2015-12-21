@@ -48,25 +48,25 @@ int main(int argc, char *argv[])
             Realvec position((*atom_iter)->get_coordx(),
                              (*atom_iter)->get_coordy(),
                              (*atom_iter)->get_coordz());
-            particles.at(atom_index) = std::make_pair(position,
-                    AtomMass::getInstance().get_mass_atom(element[0]));
+            particles.at(atom_index) = std::make_pair(position, 1e0);
+//                     AtomMass::getInstance().get_mass_atom(element[0]));
             ++atom_index;
         }
     }
 
     AxisInertia inertia(particles);
 
-//     Realvec axisline1 = inertia.get_CoM() + 1e2 * inertia.get_axis(0);
-//     Realvec axisline2 = inertia.get_CoM() + 1e2 * inertia.get_axis(1);
-//     Realvec axisline3 = inertia.get_CoM() + 1e2 * inertia.get_axis(2);
+    Realvec axisline1 = inertia.get_CoM() + 1e2 * inertia.get_axis(0);
+    Realvec axisline2 = inertia.get_CoM() + 1e2 * inertia.get_axis(1);
+    Realvec axisline3 = inertia.get_CoM() + 1e2 * inertia.get_axis(2);
 
     std::cout << "Center of Mass: " << inertia.get_CoM() << std::endl;
     std::cout << "Axis 1        : " << inertia.get_axis(0) << ", length: " << length(inertia.get_axis(0)) << std::endl;
     std::cout << "Axis 2        : " << inertia.get_axis(1) << ", length: " << length(inertia.get_axis(1)) << std::endl;
     std::cout << "Axis 3        : " << inertia.get_axis(2) << ", length: " << length(inertia.get_axis(2)) << std::endl;
-//     std::cout << "Axis 1 line   : " << axisline1 << std::endl;
-//     std::cout << "Axis 2 line   : " << axisline2 << std::endl;
-//     std::cout << "Axis 3 line   : " << axisline3 << std::endl;
+    std::cout << "Axis 1 line   : " << axisline1 << std::endl;
+    std::cout << "Axis 2 line   : " << axisline2 << std::endl;
+    std::cout << "Axis 3 line   : " << axisline3 << std::endl;
 
     return 0;
 }
