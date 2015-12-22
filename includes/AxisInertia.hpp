@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_AXIS_INERTIA
 #define COFFEE_MILL_AXIS_INERTIA
 #include "mathematics/LinearAlgebra.hpp"
+#include <vector>
 
 namespace coffeemill
 {
@@ -42,6 +43,14 @@ namespace coffeemill
     void AxisInertia::calculate()
     {
         Realvec center_of_mass(get_CoM());
+        if(length(center_of_mass) > 1e-12)
+        {
+            for(auto iter = system.begin(); iter != system.end(); ++iter)
+            {
+                iter->first -= center_of_mass;
+            }
+        }
+
         Matrix3 Inertia(0e0);
 
         for(auto iter = system.begin(); iter != system.end(); ++iter)
