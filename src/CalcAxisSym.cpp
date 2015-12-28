@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
     for(auto chain_iter = chains.begin(); chain_iter != chains.end();
         ++chain_iter)
     {
-        std::cout << "chain ID : " << (*chain_iter)->get_chainID() << std::endl;
+//         std::cout << "chain ID : " << (*chain_iter)->get_chainID() << std::endl;
         for(auto atom_iter = (*chain_iter)->begin();
             atom_iter != (*chain_iter)->end(); ++atom_iter)
         {
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
             ++atom_index;
         }
     }
-    std::cout << "chain reading end" << std::endl;
+//     std::cout << "chain reading end" << std::endl;
 
     AxisSymmetryNuc symaxis(particles);
     Realvec CoM  = symaxis.get_CoM();

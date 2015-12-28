@@ -2,6 +2,8 @@
 #define COFFEE_MILL_AXIS_SYMMETRY_NUCLEOSOME
 #include "mathematics/LinearAlgebra.hpp"
 #include <vector>
+#include <iostream>
+#include <fstream>
 #include <cassert>
 
 namespace coffeemill
@@ -12,7 +14,7 @@ namespace coffeemill
             enum USE_CHAIN
             {
                 DNA,
-                HISTONE,//automatically truncated
+                HISTONE,
                 ALL,
             };
 
@@ -117,6 +119,17 @@ namespace coffeemill
                 throw std::logic_error("invalid enum value");
         }
 
+        //dump
+        std::ofstream dump("symaxis_dump.dat");
+        for(auto iter = points_on_axis.begin(); iter != points_on_axis.end();
+                ++iter)
+        {
+            dump << (*iter)[0] << " "
+                 << (*iter)[1] << " " 
+                 << (*iter)[2] << std::endl;
+        }
+        //end dump
+
         // obtain axis
         Realvec temp = points_on_axis.at(0);
         Realvec sum_fw(0e0);
@@ -169,7 +182,7 @@ namespace coffeemill
         for(std::size_t i(0); i < 440; ++i)
         {
             Realvec temp1(system.at(index));
-            Realvec temp2(system.at(880 - index));
+            Realvec temp2(system.at(440 + index));
             v.at(index) = (temp1 + temp2) / 2e0;
             ++index;
         }
