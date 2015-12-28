@@ -49,7 +49,7 @@ namespace coffeemill
             {
                 iter->first -= center_of_mass;
             }
-        }
+        }// zeroing
 
         Matrix3 Inertia(0e0);
 

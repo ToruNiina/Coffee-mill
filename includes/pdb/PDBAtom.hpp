@@ -54,8 +54,6 @@ namespace coffeemill
         void set_y(double _y){y = _y;}
         void set_z(double _z){z = _z;}
 
-        friend std::ostream& operator<<(std::ostream& os, const PDBAtom& a);
-
     private:
 
         int serial, resSeq;
@@ -119,24 +117,29 @@ namespace coffeemill
     std::ostream& operator<<(std::ostream& os, const PDBAtom& a)
     {
         os << "ATOM  ";
-        os << std::setw(5) << a.serial;
+        os << std::setw(5) << a.get_serial();
         os << " ";
-        os << std::setw(4) << a.name;
-        os << std::setw(1) << a.altLoc;
-        os << std::setw(3) << a.resName;
+        os << std::setw(4) << a.get_name();
+        os << std::setw(1) << a.get_altLoc();
+        os << std::setw(3) << a.get_resName();
         os << " ";
-        os << std::setw(1) << a.chainID;
-        os << std::setw(4) << a.resSeq;
-        os << std::setw(1) << a.iCode;
+        os << std::setw(1) << a.get_chainID();
+        os << std::setw(4) << a.get_resSeq();
+        os << std::setw(1) << a.get_iCode();
         os << "   ";
-        os << std::setw(8) << std::fixed << std::setprecision(3) << a.x;
-        os << std::setw(8) << std::fixed << std::setprecision(3) << a.y;
-        os << std::setw(8) << std::fixed << std::setprecision(3) << a.z;
-        os << std::setw(6) << std::fixed << std::setprecision(2) << a.occupancy;
-        os << std::setw(6) << std::fixed << std::setprecision(2) << a.tempFactor;
+        os << std::setw(8) << std::fixed << std::setprecision(3)
+           << a.get_x();
+        os << std::setw(8) << std::fixed << std::setprecision(3)
+           << a.get_y();
+        os << std::setw(8) << std::fixed << std::setprecision(3)
+           << a.get_z();
+        os << std::setw(6) << std::fixed << std::setprecision(2)
+           << a.get_occupancy();
+        os << std::setw(6) << std::fixed << std::setprecision(2)
+           << a.get_tempFactor();
         os << "          ";
-        os << std::setw(2) << a.element;
-        os << std::setw(2) << a.charge;
+        os << std::setw(2) << a.get_element();
+        os << std::setw(2) << a.get_charge();
         return os;
     }
 
