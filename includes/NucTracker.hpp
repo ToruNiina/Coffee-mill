@@ -29,7 +29,7 @@ namespace coffeemill
         if(retval.size() != 2 * (490 - 32 - 23 - 14 - 8 - 21))
         {
             std::cout << "truncated size: " << retval.size() << std::endl;
-            throw std::invalid_argument("");
+            throw std::logic_error("internal error");
         }
         return retval;
     }
