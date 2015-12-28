@@ -49,3 +49,8 @@ add_executable(cginertia
 target_link_libraries(cginertia
     ${BOOST_REGEX})
 
+add_executable(symaxis
+    CalcAxisSym.cpp)
+target_link_libraries(symaxis
+    ${BOOST_REGEX})
+
