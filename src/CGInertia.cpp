@@ -60,10 +60,13 @@ int main(int argc, char *argv[])
     Realvec axisline2 = inertia.get_CoM() + 1e2 * inertia.get_axis(1);
     Realvec axisline3 = inertia.get_CoM() + 1e2 * inertia.get_axis(2);
 
-    std::cout << "Center of Mass: " << inertia.get_CoM() << std::endl;
-    std::cout << "Axis 1        : " << inertia.get_axis(0) << std::endl;
-    std::cout << "Axis 2        : " << inertia.get_axis(1) << std::endl;
-    std::cout << "Axis 3        : " << inertia.get_axis(2) << std::endl;
+    std::cout << "Center of Mass: " << inertia.get_CoM()    << std::endl;
+    std::cout << "Axis 1        : " << inertia.get_axis(0)  << std::endl;
+    std::cout << "EigenValue 1  : " << inertia.get_value(0) << std::endl;
+    std::cout << "Axis 2        : " << inertia.get_axis(1)  << std::endl;
+    std::cout << "EigenValue 2  : " << inertia.get_value(1) << std::endl;
+    std::cout << "Axis 3        : " << inertia.get_axis(2)  << std::endl;
+    std::cout << "EigenValue 3  : " << inertia.get_value(2) << std::endl;
     std::cout << "Axis 1 line   : " << axisline1 << std::endl;
     std::cout << "Axis 2 line   : " << axisline2 << std::endl;
     std::cout << "Axis 3 line   : " << axisline3 << std::endl;

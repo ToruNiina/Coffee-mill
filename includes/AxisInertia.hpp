@@ -19,6 +19,7 @@ namespace coffeemill
             ~AxisInertia(){}
 
             const Realvec get_axis(const int i);
+            const double get_value(const int i);
 
             void calculate();
             Realvec get_CoM();
@@ -26,7 +27,8 @@ namespace coffeemill
         private:
 
             bool calculated;
-            std::array<Realvec, 3> axises;
+            std::array<Realvec, 3> axes;
+            std::array<double, 3> values;
             std::vector<std::pair<Realvec, double>> system;//(position, mass)
     };
 
@@ -45,12 +47,23 @@ namespace coffeemill
     const Realvec AxisInertia::get_axis(const int i)
     {
         if(i < 0 || 2 < 0)
-            throw std::invalid_argument("out of range");
+            throw std::invalid_argument("AxisInertia: get_axis: out of range");
 
         if(!calculated)
             calculate();
 
-        return axises.at(i);
+        return axes.at(i);
+    }
+
+    const double AxisInertia::get_value(const int i)
+    {
+        if(i < 0 || 2 < 0)
+            throw std::invalid_argument("AxisInertia: get_value: out of range");
+
+        if(!calculated)
+            calculate();
+
+        return values.at(i);
     }
 
     void AxisInertia::calculate()
@@ -86,9 +99,13 @@ namespace coffeemill
         JacobiSolver<3> solver(Inertia);
         std::cout << "solved" << std::endl;
 
-        axises.at(0) = solver.get_eigenvec(0);
-        axises.at(1) = solver.get_eigenvec(1);
-        axises.at(2) = solver.get_eigenvec(2);
+        axes.at(0) = solver.get_eigenvec(0);
+        axes.at(1) = solver.get_eigenvec(1);
+        axes.at(2) = solver.get_eigenvec(2);
+
+        values.at(0) = solver.get_eigenvalue(0);
+        values.at(1) = solver.get_eigenvalue(1);
+        values.at(2) = solver.get_eigenvalue(2);
 
         calculated = true;
         return;
