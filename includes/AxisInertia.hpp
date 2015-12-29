@@ -21,6 +21,9 @@ namespace coffeemill
             const Realvec get_axis(const int i);
             const double get_value(const int i);
 
+            const std::array<Realvec, 3> get_axes();
+            const std::array<double, 3> get_values();
+
             void calculate();
             Realvec get_CoM();
 
@@ -64,6 +67,22 @@ namespace coffeemill
             calculate();
 
         return values.at(i);
+    }
+
+    const std::array<Realvec, 3> AxisInertia::get_axes()
+    {
+        if(!calculated)
+            calculate();
+
+        return axes;
+    }
+
+    const std::array<double, 3> AxisInertia::get_values()
+    {
+        if(!calculated)
+            calculate();
+
+        return values;
     }
 
     void AxisInertia::calculate()

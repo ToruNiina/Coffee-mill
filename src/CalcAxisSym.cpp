@@ -1,6 +1,5 @@
 #include "../includes/AxisSymmetry.hpp"
 #include "../includes/pdb/CGReader.hpp"
-#include "../includes/para/MassConst.hpp"
 using namespace coffeemill;
 
 int main(int argc, char *argv[])
