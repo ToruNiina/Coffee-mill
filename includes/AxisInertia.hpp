@@ -10,11 +10,12 @@ namespace coffeemill
         public:
 
             AxisInertia(): calculated(false){}
-            AxisInertia(const std::vector<std::pair<Realvec, double>> data)
+            AxisInertia(const std::vector<std::pair<Realvec, double>>& data)
                 : calculated(true), system(data)
             {
                 calculate();
             }
+            AxisInertia(const std::vector<Realvec>& data);
             ~AxisInertia(){}
 
             const Realvec get_axis(const int i);
@@ -28,6 +29,18 @@ namespace coffeemill
             std::array<Realvec, 3> axises;
             std::vector<std::pair<Realvec, double>> system;//(position, mass)
     };
+
+    AxisInertia::AxisInertia(const std::vector<Realvec>& data)
+        : calculated(true), system(data.size())
+    {
+        auto sysiter = system.begin();
+        for(auto iter = data.begin(); iter != data.end(); ++iter)
+        {
+            *sysiter = std::make_pair(*iter, 1e0);
+            ++sysiter;
+        }
+        calculate();
+    }
 
     const Realvec AxisInertia::get_axis(const int i)
     {
