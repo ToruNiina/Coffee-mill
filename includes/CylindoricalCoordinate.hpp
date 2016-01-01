@@ -36,7 +36,10 @@ namespace coffeemill
         double r = length(planner);
         double theta = acos(dot_prod(planner, r_axis)/r);
 
-        return std::array<double, 3>{r, theta, z};
+        if(dot_prod(cross_prod(planner, r_axis), z_axis) > 0e0)
+            theta *= -1e0;
+
+        return std::array<double, 3>({r, theta, z});
     }
 
     Realvec CylindoricalCoordinate::translate(const std::array<double, 3>&
