@@ -36,9 +36,8 @@ namespace coffeemill
                          typename E::value_trait>::value>::type*& = enabler>
             RealVector(const E& exp)
             {
-                (*this)[0] = exp[0];
-                (*this)[1] = exp[1];
-                (*this)[2] = exp[2];
+                for(size_t i(0); i<size; ++i)
+                    (*this)[i] = exp[i];
             } 
 
             template<class E, 
@@ -46,9 +45,8 @@ namespace coffeemill
                          typename E::value_trait>::value>::type*& = enabler>
             RealVector& operator=(const E& exp)
             {
-                (*this)[0] = exp[0];
-                (*this)[1] = exp[1];
-                (*this)[2] = exp[2];
+                for(size_t i(0); i<size; ++i)
+                    (*this)[i] = exp[i];
                 return *this;
             } 
 
