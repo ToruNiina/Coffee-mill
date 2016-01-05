@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
 {
     if(argc != 2)
     {
-        std::cerr << "Usage : ./nucanalyze <filename>.dcd" << std::endl;
+        std::cerr << "Usage : ./reinterpret <filename>.dcd" << std::endl;
         std::cerr << "      : this considers the file is already superimposed"
                   << std::endl;
         std::cerr << "      : this may not work correctly generally."
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
     SnapShot initial(data[0]);
 
     if(initial.size() != 1860)
-        throw std::invalid_argument("this program is for 1KX5 CGPDB only");
+        throw std::invalid_argument("bead size != 1860");
 
     // Axis of Symmetry is obtained without tails
     AxisSymmetryNuc symaxis(initial);
@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     // type alias
     using Cylindorical = std::array<double, 3>;
 
-    std::ofstream dyad(filename + "dyad.out");
+//     std::ofstream dyad(filename + "dyad.out");
 
     // prepare output
     std::string outfilename(filename + ".out");
@@ -75,9 +75,25 @@ int main(int argc, char *argv[])
             << std::endl;
     outfile << "# each index corresponds to each snapshot."
             << std::endl;
-    outfile << "# imp(beads) , r , theta , z" << std::endl;
+    outfile << "# base , r , theta , z" << std::endl;
 
-    unsigned int t_step = 0;
+    std::string proteinfilename(filename + "_protein.out");
+    std::ofstream outprotein(proteinfilename);
+    outprotein << "# 881-1015  : C H3" << std::endl;
+    outprotein << "# 1016-1117 : D H4" << std::endl;
+    outprotein << "# 1118-1245 : E H2A" << std::endl;
+    outprotein << "# 1246-1370 : F H2B" << std::endl;
+    outprotein << "# 1371-1505 : G H3" << std::endl;
+    outprotein << "# 1506-1607 : H H4" << std::endl;
+    outprotein << "# 1608-1735 : I H2A" << std::endl;
+    outprotein << "# 1736-1860 : J H2B" << std::endl;
+    outprotein << "# indexes are separated by two empty lines(for gnuplot)."
+               << std::endl;
+    outprotein << "# each index corresponds to each snapshot."
+               << std::endl;
+    outprotein << "# imp(AminoAcids) , r , theta , z" << std::endl;
+
+//     unsigned int t_step = 0;
     // dcd data processing
     for(auto snapiter = data.begin(); snapiter != data.end(); ++snapiter)
     {
@@ -93,19 +109,19 @@ int main(int argc, char *argv[])
             Cylindorical cycoordRv = cylindcoord.translate(beadRv);
             Cylindorical cycoordMd = cylindcoord.translate(beadMd);
 
-            if(DNAindex == 220)
-            {
-                dyad << t_step       << " "
-                     << cycoordFw[0] << " "
-                     << cycoordFw[1] << " "
-                     << cycoordFw[2] << " "
-                     << cycoordRv[0] << " "
-                     << cycoordRv[1] << " "
-                     << cycoordRv[2] << " "
-                     << cycoordMd[0] << " "
-                     << cycoordMd[1] << " "
-                     << cycoordMd[2] << std::endl;
-            }
+//             if(DNAindex == 220)
+//             {
+//                 dyad << t_step       << " "
+//                      << cycoordFw[0] << " "
+//                      << cycoordFw[1] << " "
+//                      << cycoordFw[2] << " "
+//                      << cycoordRv[0] << " "
+//                      << cycoordRv[1] << " "
+//                      << cycoordRv[2] << " "
+//                      << cycoordMd[0] << " "
+//                      << cycoordMd[1] << " "
+//                      << cycoordMd[2] << std::endl;
+//             }
 
             unsigned int resNum = (DNAindex - 1) / 3 + 1;
             outfile << resNum       << " "
@@ -120,11 +136,26 @@ int main(int argc, char *argv[])
                     << cycoordMd[2]
                     << std::endl;
         }
+
+        for(std::size_t Histoneindex(880); Histoneindex < 1860; ++Histoneindex)
+        {
+            Realvec beadpos = snapiter->at(Histoneindex);
+            Cylindorical cycoordpos = cylindcoord.translate(beadpos);
+
+            outprotein << Histoneindex+1 << " "
+                       << cycoordpos[0]  << " "
+                       << cycoordpos[1]  << " "
+                       << cycoordpos[2]  << std::endl;
+        }
+
         outfile << std::endl;
         outfile << std::endl;
-        t_step++;
+        outprotein << std::endl;
+        outprotein << std::endl;
+//         t_step++;
     }
     outfile.close();
+    outprotein.close();
 
     return 0;
 }
