@@ -54,3 +54,8 @@ add_executable(symaxis
 target_link_libraries(symaxis
     ${BOOST_REGEX})
 
+add_executable(reinterpret
+    CylinderReinterpreter.cpp)
+target_link_libraries(reinterpret
+    ${BOOST_REGEX})
+
