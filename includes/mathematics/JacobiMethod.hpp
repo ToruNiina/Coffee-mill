@@ -135,8 +135,8 @@ namespace coffeemill
             double sign(1e0);
             if(alpha * beta < 0e0) sign *= -1e0;
 
-            double cos = sqrt((1e0 + gamma) / 2e0);
-            double sin = sqrt((1e0 - gamma) / 2e0) * sign;
+            double cos = sqrt((1e0 + gamma) * 0.5);
+            double sin = sqrt((1e0 - gamma) * 0.5) * sign;
 
             Ppri(index.first, index.first)   = cos;
             Ppri(index.first, index.second)  = sin;

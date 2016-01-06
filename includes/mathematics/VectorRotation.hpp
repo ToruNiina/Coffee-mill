@@ -9,9 +9,9 @@ namespace coffeemill
 
     Realvec rotation(const double angle, const Realvec& axis, const Realvec& target)
     {
-        const double sin_normalize(sin(angle / 2e0) / length(axis));
+        const double sin_normalize(sin(angle * 0.5) / length(axis));
       
-        const Realquat Q(cos(angle / 2e0), axis[0] * sin_normalize, 
+        const Realquat Q(cos(angle * 0.5), axis[0] * sin_normalize, 
                                            axis[1] * sin_normalize,
                                            axis[2] * sin_normalize);
         const Realquat P(0e0, target[0], target[1], target[2]);
