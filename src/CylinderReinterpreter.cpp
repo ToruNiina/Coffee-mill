@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
                   << std::endl;
         std::cerr << "      : this may not work correctly generally."
                   << std::endl;
+        return EXIT_FAILURE;
     }
 
     std::string filename(argv[1]);
