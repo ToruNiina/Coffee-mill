@@ -6,9 +6,9 @@ using namespace coffeemill;
 
 int main(int argc, char *argv[])
 {
-    if(argc != 2)
+    if(argc != 2 && argc != 3)
     {
-        std::cerr << "Usage : ./reinterpret <filename>.dcd" << std::endl;
+        std::cerr << "Usage : ./reinterpret <filename>.dcd [bps]" << std::endl;
         std::cerr << "      : this considers the file is already superimposed"
                   << std::endl;
         std::cerr << "      : this may not work correctly generally."
@@ -24,8 +24,21 @@ int main(int argc, char *argv[])
 
     SnapShot initial(data[0]);
 
-    if(initial.size() != 1860)
-        throw std::invalid_argument("bead size != 1860");
+    std::size_t dna_beads = 880;
+    std::size_t protein_beads = 980;
+    std::size_t bead_num = 1860;
+    if(argc == 3)
+    {
+        dna_beads =
+            static_cast<std::size_t>((std::stoi(std::string(argv[2])) * 3 - 1) * 2);
+        bead_num = dna_beads + protein_beads;
+    }
+
+    if(initial.size() != bead_num)
+    {
+        std::cout << "invalid bead size != " + std::to_string(bead_num) << std::endl;
+        return EXIT_FAILURE;
+    }
 
     // Axis of Symmetry is obtained without tails
     AxisSymmetryNuc symaxis(initial);
@@ -33,8 +46,8 @@ int main(int argc, char *argv[])
     Realvec axis_symmetry = symaxis.get_axis(condition);
 
     // Axis of Inertia is obtained by using DNA chain only
-    SnapShot initial_DNAonly(880);
-    for(std::size_t index(0); index < 880; ++index)
+    SnapShot initial_DNAonly(dna_beads);
+    for(std::size_t index(0); index < dna_beads; ++index)
     {
         initial_DNAonly.at(index) = initial.at(index);
     }
@@ -98,13 +111,13 @@ int main(int argc, char *argv[])
     // dcd data processing
     for(auto snapiter = data.begin(); snapiter != data.end(); ++snapiter)
     {
-        for(std::size_t DNAindex(0); DNAindex < 440; ++DNAindex)
+        for(std::size_t DNAindex(0); DNAindex < (dna_beads/2); ++DNAindex)
         {
             //base only
             if(DNAindex % 3 != 1) continue;
             Realvec beadFw = snapiter->at(DNAindex);
-            Realvec beadRv = snapiter->at(879 - DNAindex);
-            Realvec beadMd = (beadFw + beadRv) / 2e0;
+            Realvec beadRv = snapiter->at(dna_beads - 1 - DNAindex);
+            Realvec beadMd = (beadFw + beadRv) * 0.5;
 
             Cylindorical cycoordFw = cylindcoord.translate(beadFw);
             Cylindorical cycoordRv = cylindcoord.translate(beadRv);
@@ -138,7 +151,7 @@ int main(int argc, char *argv[])
                     << std::endl;
         }
 
-        for(std::size_t Histoneindex(880); Histoneindex < 1860; ++Histoneindex)
+        for(std::size_t Histoneindex(dna_beads); Histoneindex < bead_num; ++Histoneindex)
         {
             Realvec beadpos = snapiter->at(Histoneindex);
             Cylindorical cycoordpos = cylindcoord.translate(beadpos);
