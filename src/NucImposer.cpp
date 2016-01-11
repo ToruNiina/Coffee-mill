@@ -6,17 +6,17 @@ int main(int argc, char *argv[])
     if(argc != 2 && argc != 3)
     {
         std::cout << "Usage: ./nucanalysis <filename> [DNA length]" << std::endl;
-        std::cout << "     : this considers chain AB is DNA and"
-                  << "CDEFGHIJ is histone 8-mer" << std::endl;
-        std::cout << "     : DNA length is 147 by default. " << std::endl;
-        std::cout << "     : DNA particle numbers are calculated as "
-                  << "3 * DNA length - 1. the case of 147, it is 440."
-                  << std::endl;
-        std::cout << "     : this considers histone as 1kx5."
-                  << "histones has " << std::endl;
-        std::cout << "135, 102, 128, 125 amino acid, respectively."
-                  << " And the order is also this"
-                  << std::endl;
+//         std::cout << "     : this considers chain AB is DNA and"
+//                   << "CDEFGHIJ is histone 8-mer" << std::endl;
+//         std::cout << "     : DNA length is 147 by default. " << std::endl;
+//         std::cout << "     : DNA particle numbers are calculated as "
+//                   << "3 * DNA length - 1. the case of 147, it is 440."
+//                   << std::endl;
+//         std::cout << "     : this considers histone as 1kx5."
+//                   << "histones has " << std::endl;
+//         std::cout << "135, 102, 128, 125 amino acid, respectively."
+//                   << " And the order is also this"
+//                   << std::endl;
         return 1;
     }
     std::string infile(argv[1]);
@@ -26,8 +26,7 @@ int main(int argc, char *argv[])
     int DNA_length(440);
     if(argc == 3)
     {
-        std::string arg_DNA_len(argv[2]);
-        DNA_length = (std::stoi(arg_DNA_len) * 3) - 1;
+        DNA_length = (std::stoi(std::string(argv[3])) * 3) - 1;
     }
 
     std::vector<SnapShot> data(reader.get_all_data());
