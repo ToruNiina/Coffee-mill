@@ -21,16 +21,17 @@ namespace coffeemill
         public:
 
             AxisSymmetryNuc(){}
-            AxisSymmetryNuc(const std::vector<Realvec>& data)
-                : system(data)
+            AxisSymmetryNuc(const std::vector<Realvec>& data, const int DNA_len = 147)
+                : DNA_beads(DNA_len * 3 - 1), system(data)
             {
-                assert(data.size() == 1860);
+                assert(data.size() == static_cast<std::size_t>((DNA_len * 3 - 1)*2 + 980));
             }
             ~AxisSymmetryNuc(){}
 
-            void set_data(const std::vector<Realvec>& data)
+            void set_data(const std::vector<Realvec>& data, const int DNA_len = 147)
             {
-                assert(data.size() == 1860);
+                assert(data.size() == static_cast<std::size_t>((DNA_len * 3 - 1)*2 + 980));
+                DNA_beads = DNA_len * 3 - 1;
                 system = data;
             }
 
@@ -49,6 +50,7 @@ namespace coffeemill
 
         private:
 
+            std::size_t DNA_beads; // length * 3 - 1
             Realvec axis;
             Realvec CoM;
             std::vector<Realvec> system;//(position, mass)
@@ -73,24 +75,7 @@ namespace coffeemill
             center_of_mass = calc_CoM(system);
         }
 
-        /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-         * This class is very hardly coded for CG PDB files        *
-         * of 1KX5. it may not work collectly on other condition.  *
-         *                                                         *
-         * 1KX5 (CG) PDB:                                          *
-         * chain A DNA imp 1-440                                   *
-         * chain B DNA imp 441-880                                 *
-         * chain C H3  imp 881-1015                                *
-         * chain D H4  imp 1016-1117                               *
-         * chain E H2A imp 1118-1245                               *
-         * chain F H2B imp 1246-1370                               *
-         * chain G H3  imp 1371-1505                               *
-         * chain H H4  imp 1506-1607                               *
-         * chain I H2A imp 1608-1735                               *
-         * chain J H2B imp 1736-1860                               *
-         * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-        std::vector<Realvec> points_on_axis(930);
+        std::vector<Realvec> points_on_axis(system.size() / 2);
         switch(condition)
         {
             case DNA:
@@ -119,8 +104,8 @@ namespace coffeemill
                 throw std::logic_error("invalid enum value");
         }
 
-        //dump
-        std::ofstream dump("symaxis_dump.dat");
+        //this outputs midpoints. includes some zero cause tails are ignored
+        std::ofstream dump("symaxis_axispoints_dump.dat");
         for(auto iter = points_on_axis.begin(); iter != points_on_axis.end();
                 ++iter)
         {
@@ -128,6 +113,7 @@ namespace coffeemill
                  << (*iter)[1] << " " 
                  << (*iter)[2] << std::endl;
         }
+        dump.close();
         //end dump
 
         // obtain axis
@@ -154,20 +140,17 @@ namespace coffeemill
                       << "dot_product(Fw, Rv): " 
                       << dot_prod(Forward, Reverse)
                       << std::endl;
-//             throw std::logic_error("internal error");
         }
 
         axis = Forward;
-
         return;
     }
 
     const Realvec AxisSymmetryNuc::calc_CoM(const std::vector<Realvec>& v)
     {
-        std::vector<Realvec>& container = const_cast<std::vector<Realvec>&>(v);
         unsigned int index(0);
         Realvec sum_pos(0e0);
-        for(auto iter = container.begin(); iter != container.end(); ++iter)
+        for(auto iter = v.cbegin(); iter != v.cend(); ++iter)
         {
             sum_pos += *iter;
             ++index;
@@ -179,11 +162,11 @@ namespace coffeemill
                                                      const std::size_t index_)
     {
         std::size_t index(index_);
-        for(std::size_t i(0); i < 440; ++i)
+        for(std::size_t i(0); i < DNA_beads; ++i)
         {
             Realvec temp1(system.at(index));
-            Realvec temp2(system.at(440 + index));
-            v.at(index) = (temp1 + temp2) / 2e0;
+            Realvec temp2(system.at(DNA_beads + index));
+            v.at(index) = (temp1 + temp2) * 0.5;
             ++index;
         }
         return index;
@@ -193,44 +176,42 @@ namespace coffeemill
                                                      const std::size_t index_)
     {
         std::size_t point_index(index_);
-        // H3
-        for(std::size_t index(0); index < 90; ++index)//0 <= i < 135
+        // H3 0 <= i < 135
+        for(std::size_t index(0); index < 90; ++index)
         {// remove 1 to 45
-            Realvec temp1(system.at(925 + index));//881(+1) to +135
-            Realvec temp2(system.at(1415 + index));//1371(+1) to +135
-            v.at(point_index) = (temp1 + temp2) / 2e0;
+            Realvec temp1(system.at(DNA_beads * 2 + 45 + index));
+            Realvec temp2(system.at(DNA_beads * 2 + 490 + 45 + index));
+            v.at(point_index) = (temp1 + temp2) * 0.5;
             ++point_index;
         }
 
-        // H4
-        for(std::size_t index(0); index < 77; ++index)// 0<= i < 102
+        // H4 0 <= i < 102
+        for(std::size_t index(0); index < 77; ++index)
         {//remove 1 to 25
-            Realvec temp1(system.at(1040 + index));//1016(+1) to +102
-            Realvec temp2(system.at(1530 + index));//1506(+1) to +102
-            v.at(point_index) = (temp1 + temp2) / 2e0;
+            Realvec temp1(system.at(DNA_beads * 2 + 135 + 25 + index));
+            Realvec temp2(system.at(DNA_beads * 2 + 490 + 135 + 25 + index));
+            v.at(point_index) = (temp1 + temp2) * 0.5; 
             ++point_index;
         }
 
-        // H2A.1
-        for(std::size_t index(0); index < 104; ++index)// 0 <= i < 128
+        // H2A.1 0 <= i < 128
+        for(std::size_t index(0); index < 104; ++index)
         {//remove 1 to 16, 121 to 128 -> 24 residues
-            Realvec temp1(system.at(1133 + index));//1118(+1) to 1245
-            Realvec temp2(system.at(1623 + index));//1608(+1) to 1735
-            v.at(point_index) = (temp1 + temp2) / 2e0;
+            Realvec temp1(system.at(DNA_beads * 2 + 135 + 102 + 16 + index));
+            Realvec temp2(system.at(DNA_beads * 2 + 490 + 135 + 102 + 16 + index));
+            v.at(point_index) = (temp1 + temp2) * 0.5;
             ++point_index;
         }
 
-        // H2B.2
-        for(std::size_t index(0); index < 90; ++index)//0 <= i < 125
+        // H2B.2 0 <= i < 125
+        for(std::size_t index(0); index < 90; ++index)
         {//remove 1 to 35
-            Realvec temp1(system.at(1280 + index));//1246(+1) to +125
-            Realvec temp2(system.at(1770 + index));//1736(+1) to +125
-            v.at(point_index) = (temp1 + temp2) / 2e0;
+            Realvec temp1(system.at(DNA_beads * 2 + 135 + 102 + 128 + 35 + index));
+            Realvec temp2(system.at(DNA_beads * 2 + 490 + 135 + 102 + 128 + 35 + index));
+            v.at(point_index) = (temp1 + temp2) * 0.5;
             ++point_index;
         }
         return point_index;
     }
-
-
 }
 #endif//COFFEE_MILL_AXIS_INERTIA
