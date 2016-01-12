@@ -30,6 +30,8 @@ namespace coffeemill
                     std::cout << "dotp(z axis, r_axis) = "
                               << dot_prod(z_axis, r_axis) << std::endl;
                 }
+                assert(fabs(length(r_axis) - 1e0) < 1e-12);
+                assert(fabs(length(z_axis) - 1e0) < 1e-12);
             }
             ~CylindoricalCoordinate(){};
 
