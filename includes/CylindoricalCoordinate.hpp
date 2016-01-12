@@ -14,7 +14,22 @@ namespace coffeemill
                                    const Realvec& z)
                 : center(c), r_axis(r/length(r)), z_axis(z/length(z))
             {
-                assert(dot_prod(r_axis, z_axis) < 1e-12);
+                if(fabs(dot_prod(r_axis, z_axis)) > 1e-12)
+                {
+                    std::cout << "Warning: dotp(r, z) = "
+                              << dot_prod(r_axis, z_axis)
+                              <<  " is not zero. over tolerance" << std::endl;
+                    double z_axis_r = dot_prod(r_axis, z_axis);
+                    z_axis -= z_axis_r * r_axis;
+                    z_axis /= length(z_axis);
+                    assert(fabs(dot_prod(r_axis, z_axis)) < 1e-12);
+                    assert(fabs(length(z_axis) - 1e0) < 1e-12);
+                    std::cout << "new z axis = " << z_axis << std::endl;
+                    std::cout << "length(z axis) = " << length(z_axis)
+                              << std::endl;
+                    std::cout << "dotp(z axis, r_axis) = "
+                              << dot_prod(z_axis, r_axis) << std::endl;
+                }
             }
             ~CylindoricalCoordinate(){};
 
@@ -24,7 +39,7 @@ namespace coffeemill
         private:
             const Realvec center;
             const Realvec r_axis;
-            const Realvec z_axis;
+            Realvec z_axis;
     };
 
     std::array<double, 3> CylindoricalCoordinate::translate(
