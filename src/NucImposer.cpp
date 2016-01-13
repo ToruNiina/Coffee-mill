@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     int DNA_length(440);
     if(argc == 3)
     {
-        DNA_length = (std::stoi(std::string(argv[3])) * 3) - 1;
+        DNA_length = (std::stoi(std::string(argv[2])) * 3) - 1;
     }
 
     std::vector<SnapShot> data(reader.get_all_data());
