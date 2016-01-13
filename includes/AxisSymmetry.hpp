@@ -21,17 +21,17 @@ namespace coffeemill
         public:
 
             AxisSymmetryNuc(){}
-            AxisSymmetryNuc(const std::vector<Realvec>& data, const int DNA_len = 147)
-                : DNA_beads(DNA_len * 3 - 1), system(data)
+            AxisSymmetryNuc(const std::vector<Realvec>& data, const int DNAbeads = 880)
+                : DNA_beads(DNAbeads / 2), system(data)
             {
-                assert(data.size() == static_cast<std::size_t>((DNA_len * 3 - 1)*2 + 980));
+                assert(data.size() == static_cast<std::size_t>(DNAbeads + 980));
             }
             ~AxisSymmetryNuc(){}
 
-            void set_data(const std::vector<Realvec>& data, const int DNA_len = 147)
+            void set_data(const std::vector<Realvec>& data, const int DNAbeads = 880)
             {
-                assert(data.size() == static_cast<std::size_t>((DNA_len * 3 - 1)*2 + 980));
-                DNA_beads = DNA_len * 3 - 1;
+                assert(data.size() == static_cast<std::size_t>(DNAbeads + 980));
+                DNA_beads = DNAbeads / 2;
                 system = data;
             }
 

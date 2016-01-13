@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     }
 
     // Axis of Symmetry is obtained without tails
-    AxisSymmetryNuc symaxis(initial);
+    AxisSymmetryNuc symaxis(initial, dna_beads);
     AxisSymmetryNuc::USE_CHAIN condition(AxisSymmetryNuc::USE_CHAIN::ALL);
     Realvec axis_symmetry = symaxis.get_axis(condition);
 
