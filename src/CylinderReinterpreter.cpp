@@ -1,6 +1,6 @@
 #include "../includes/AxisSymmetry.hpp"
 #include "../includes/AxisInertia.hpp"
-#include "../includes/CylindoricalCoordinate.hpp"
+#include "../includes/CylindricalCoordinate.hpp"
 #include "../includes/dcd/DCDReader.hpp"
 using namespace coffeemill;
 
@@ -76,9 +76,9 @@ int main(int argc, char *argv[])
     center /= static_cast<double>(number_of_beads);
 
     // define nucleosome coordinate
-    CylindoricalCoordinate cylindcoord(center, axis_symmetry, axis_inertia);
+    CylindricalCoordinate cylindcoord(center, axis_symmetry, axis_inertia);
     // type alias
-    using Cylindorical = std::array<double, 3>;
+    using Cylindrical = std::array<double, 3>;
 
 //     std::ofstream dyad(filename + "dyad.out");
 
@@ -119,9 +119,9 @@ int main(int argc, char *argv[])
             Realvec beadRv = snapiter->at(dna_beads - 1 - DNAindex);
             Realvec beadMd = (beadFw + beadRv) * 0.5;
 
-            Cylindorical cycoordFw = cylindcoord.translate(beadFw);
-            Cylindorical cycoordRv = cylindcoord.translate(beadRv);
-            Cylindorical cycoordMd = cylindcoord.translate(beadMd);
+            Cylindrical cycoordFw = cylindcoord.translate(beadFw);
+            Cylindrical cycoordRv = cylindcoord.translate(beadRv);
+            Cylindrical cycoordMd = cylindcoord.translate(beadMd);
 
 //             if(DNAindex == 220)
 //             {
@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
         for(std::size_t Histoneindex(dna_beads); Histoneindex < bead_num; ++Histoneindex)
         {
             Realvec beadpos = snapiter->at(Histoneindex);
-            Cylindorical cycoordpos = cylindcoord.translate(beadpos);
+            Cylindrical cycoordpos = cylindcoord.translate(beadpos);
 
             outprotein << Histoneindex+1 << " "
                        << cycoordpos[0]  << " "

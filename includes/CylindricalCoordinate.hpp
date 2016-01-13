@@ -1,15 +1,15 @@
-#ifndef COFFEE_MILL_CYLINDORICAL_COORDINATE
-#define COFFEE_MILL_CYLINDORICAL_COORDINATE
+#ifndef COFFEE_MILL_CYLINDRICAL_COORDINATE
+#define COFFEE_MILL_CYLINDRICAL_COORDINATE
 #include "mathematics/LinearAlgebra.hpp"
 #include "mathematics/VectorRotation.hpp"
 #include <cassert>
 
 namespace coffeemill
 {
-    class CylindoricalCoordinate
+    class CylindricalCoordinate
     {
         public:
-            CylindoricalCoordinate(const Realvec& c,
+            CylindricalCoordinate(const Realvec& c,
                                    const Realvec& r,
                                    const Realvec& z)
                 : center(c), r_axis(r/length(r)), z_axis(z/length(z))
@@ -33,7 +33,7 @@ namespace coffeemill
                 assert(fabs(length(r_axis) - 1e0) < 1e-12);
                 assert(fabs(length(z_axis) - 1e0) < 1e-12);
             }
-            ~CylindoricalCoordinate(){};
+            ~CylindricalCoordinate(){};
 
             std::array<double, 3> translate(const Realvec& position);
             Realvec translate(const std::array<double, 3>& position);
@@ -44,7 +44,7 @@ namespace coffeemill
             Realvec z_axis;
     };
 
-    std::array<double, 3> CylindoricalCoordinate::translate(
+    std::array<double, 3> CylindricalCoordinate::translate(
                                                     const Realvec& position)
     {
         Realvec relative_position = position - center;
@@ -56,10 +56,10 @@ namespace coffeemill
         if(dot_prod(cross_prod(planner, r_axis), z_axis) > 0e0)
             theta *= -1e0;
 
-        return std::array<double, 3>({{r, theta, z}});
+        return std::array<double, 3>({{r, theta * 180 / M_PI, z}});
     }
 
-    Realvec CylindoricalCoordinate::translate(const std::array<double, 3>&
+    Realvec CylindricalCoordinate::translate(const std::array<double, 3>&
                                                                  position)
     {
         return center
@@ -69,4 +69,4 @@ namespace coffeemill
 
 }
 
-#endif//COFFEE_MILL_CYLINDORICAL_COORDINATE
+#endif//COFFEE_MILL_CYLINDRICAL_COORDINATE
