@@ -181,6 +181,15 @@ namespace coffeemill
         return std::sqrt(len_square(l));
     }
 
+    template <class L,
+              typename std::enable_if<
+                  is_VectorExpression<typename L::value_trait>::value
+                  >::type*& = enabler>
+    VectorSclDiv<L> normalize(const L& l)
+    {
+        return VectorSclDiv<L>(l, length(l));
+    }
+
     template <class L, class R,
               typename std::enable_if<
                   is_VectorExpression<typename L::value_trait>::value&&
