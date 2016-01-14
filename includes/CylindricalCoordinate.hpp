@@ -35,8 +35,8 @@ namespace coffeemill
             }
             ~CylindricalCoordinate(){};
 
-            std::array<double, 3> translate(const Realvec& position);
-            Realvec translate(const std::array<double, 3>& position);
+            std::array<double, 3> translate(const Realvec& position) const;
+            Realvec translate(const std::array<double, 3>& position) const;
 
             Realvec get_center() const {return center;}
             Realvec get_r_axis() const {return r_axis;}
@@ -49,7 +49,7 @@ namespace coffeemill
     };
 
     std::array<double, 3> CylindricalCoordinate::translate(
-                                                    const Realvec& position)
+                                                    const Realvec& position) const
     {
         Realvec relative_position = position - center;
         double z = dot_prod(relative_position, z_axis);
@@ -60,11 +60,11 @@ namespace coffeemill
         if(dot_prod(cross_prod(planner, r_axis), z_axis) > 0e0)
             theta *= -1e0;
 
-        return std::array<double, 3>({{r, theta * 180 / M_PI, z}});
+        return std::array<double, 3>({{r, theta, z}});
     }
 
     Realvec CylindricalCoordinate::translate(const std::array<double, 3>&
-                                                                 position)
+                                                                 position) const
     {
         return center
              + rotation(position[1], z_axis, position[0] * r_axis)
