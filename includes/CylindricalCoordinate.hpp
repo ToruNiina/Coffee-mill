@@ -38,6 +38,10 @@ namespace coffeemill
             std::array<double, 3> translate(const Realvec& position);
             Realvec translate(const std::array<double, 3>& position);
 
+            Realvec get_center() const {return center;}
+            Realvec get_r_axis() const {return r_axis;}
+            Realvec get_z_axis() const {return z_axis;}
+
         private:
             const Realvec center;
             const Realvec r_axis;
