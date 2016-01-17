@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
             //base only
             if(DNAindex % 3 != 1) continue;
             Realvec beadFw = snapiter->at(DNAindex);
-            Realvec beadRv = snapiter->at(dna_beads - 1 - DNAindex);
+            Realvec beadRv = snapiter->at(dna_beads - DNAindex);
             Realvec beadMd = (beadFw + beadRv) * 0.5;
 
             Cylindrical cycoordFw = cylindcoord.translate(beadFw);
