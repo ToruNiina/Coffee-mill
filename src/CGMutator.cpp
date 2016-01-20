@@ -3,6 +3,13 @@ using namespace coffeemill;
 
 int main(int argc, char *argv[])
 {
+    if(argc != 2)
+    {
+        std::cout << "Usage : ./mutator <filename>.pdb (CG style)" << std::endl;
+        std::cout << std::endl;
+        return -1;
+    }
+
     const size_t width_of_shell(75);
     std::ifstream ifs(argv[1]);
     if(ifs.fail())
@@ -18,14 +25,6 @@ int main(int argc, char *argv[])
     std::cout << "Note: only mutation is supported. insertion,";
     std::cout << " elongation, deletion is not supported yet." << std::endl;
     std::cout << std::endl;
-
-    if(argc != 2)
-    {
-        std::cout << "Usage : ./mutator <filename>.pdb (CG style)" << std::endl;
-        std::cout << std::endl;
-        return -1;
-    }
-
     const std::string suffix("_mut.pdb");
 
     while(!ifs.eof())
