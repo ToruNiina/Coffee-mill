@@ -9,6 +9,7 @@ namespace coffeemill
         public:
 
             typedef std::vector<CGChnSptr>::iterator iterator;
+            typedef std::vector<CGChnSptr>::const_iterator const_iterator;
 
         public:
             CGModel()
@@ -33,6 +34,9 @@ namespace coffeemill
             CGChnSptr& at(const int i){return chains.at(i);}
             iterator begin(){return chains.begin();}
             iterator end(){return chains.end();}
+            const_iterator cbegin() const {return chains.cbegin();}
+            const_iterator cend() const {return chains.cend();}
+
             void push_back(CGChnSptr chn)
             {
                 chains.push_back(chn);

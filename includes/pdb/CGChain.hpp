@@ -13,6 +13,7 @@ namespace coffeemill
     {
     public:
         typedef std::vector<BeadSptr>::iterator iterator;
+        typedef std::vector<BeadSptr>::const_iterator const_iterator;
 
     public:
         CGChain()
@@ -49,6 +50,8 @@ namespace coffeemill
         bool empty() const {return residue.empty();}
         iterator begin() {return residue.begin();}
         iterator end() {return residue.end();}
+        const_iterator cbegin() const {return residue.begin();}
+        const_iterator cend() const {return residue.end();}
         BeadSptr& at(size_t i) {return residue.at(i);}
 
         char get_chainID() const {return chainID;}
