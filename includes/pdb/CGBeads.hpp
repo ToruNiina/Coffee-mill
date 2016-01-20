@@ -14,7 +14,10 @@ namespace coffeemill
     {
     public:
         CGBead(){}
-        ~CGBead(){}
+        CGBead(const CGBead& bead) = default;
+        CGBead(CGBead&& bead) = default;
+        ~CGBead() = default;
+        CGBead& operator=(CGBead& bead) = default;
 
         void get_line(std::string& line);
 
