@@ -6,191 +6,212 @@
 
 namespace coffeemill
 {
+    /*@brief > This class superimposes(structural alignment) the Structure *
+     * (a.k.a. std::vector<RealVector<3>>). Mainly used for preparation of *
+     * RMSD calculation. This rotate subject structure to fit reference    *
+     * structure.                                                          */
     class SuperImposer
     {
         public:
 
-            SuperImposer(): superimposed(false){}
-            ~SuperImposer(){}
+            SuperImposer(): is_superimposed(false){}
+            SuperImposer(const std::vector<Realvec>& ref)
+                : is_superimposed(false), is_rotation_matrix_calculated(false),
+                  reference(ref)
+            {}
+            // attention the order of argument.
+            SuperImposer(const std::vector<Realvec>& ref,
+                         const std::vector<Realvec>& sub)
+                : is_superimposed(false), is_rotation_matrix_calculated(false),
+                  reference(ref), subject(sub)
+            {}
 
-            void set_data(const std::vector<Realvec>& data1,
-                          const std::vector<Realvec>& data2);
-            void set_data1(const std::vector<Realvec>& data1);
-            void set_data2(const std::vector<Realvec>& data2);
+            SuperImposer(const SuperImposer& s) = delete;
+            SuperImposer(SuperImposer&& s) = delete;
+            SuperImposer& operator=(const SuperImposer& s) = delete;
+            ~SuperImposer() = default;
 
-            void set_data_push(const std::vector<Realvec>& data);
+            void set_reference(const std::vector<Realvec>& ref);
+            void set_subject(const std::vector<Realvec>& subj);
+            void set_ref_and_sub(const std::vector<Realvec>& ref,
+                                 const std::vector<Realvec>& sub);
+
+            // this method returns reference structure and make subject structure
+            // reference. the next subject structure is argument, ref.
+            // image) return <== reference <== subject <== argument
+            std::vector<Realvec>
+                push_datas(const std::vector<Realvec>& newsub);
 
             void superimpose();
+            Matrix3 calc_and_get_R();
 
-            std::vector<Realvec>& get_data1();
-            std::vector<Realvec>& get_data2();
-
-            Matrix3 get_R();
+            std::vector<Realvec>& get_reference(){return reference;};
+            std::vector<Realvec>& get_subject(){return subject;};
+            std::vector<Realvec> copy_reference() const;
+            std::vector<Realvec> copy_subject() const;
 
         private:
 
-            Realvec mean(std::vector<Realvec>& structure);
+            void calc_R();
+            Realvec mean(const std::vector<Realvec>& structure);
             void move_to_zero();
-            Matrix3 calc_R(const RealVector<4>& q);
-            Matrix4 get_B(const std::vector<Realvec>& rA,
-                          const std::vector<Realvec>& rB);
+            Matrix3 make_R_from_quaternion(const RealVector<4>& q);
+            Matrix4 calc_B(const std::vector<Realvec>& rA,
+                           const std::vector<Realvec>& rB);
             RealVector<4> get_eigenvec(const Matrix4& B);
-            void rotate(const Matrix3& R);
+            void rotate_subject(const Matrix3& R);
 
         private:
 
-            bool superimposed;
-            std::vector<Realvec> structure1;
-            std::vector<Realvec> structure2;
+            bool is_superimposed;
+            bool is_rotation_matrix_calculated;
+            Matrix3 rotation_matrix;
+            std::vector<Realvec> reference;// keep this const
+            std::vector<Realvec> subject;  // modify this!
     };
 
-    void SuperImposer::set_data(const std::vector<Realvec>& data1,
-                  const std::vector<Realvec>& data2)
+    void SuperImposer::set_ref_and_sub(const std::vector<Realvec>& ref,
+                                       const std::vector<Realvec>& sub)
     {
-        structure1 = data1;
-        structure2 = data2;
-        superimposed = false;
+        reference = ref;
+        subject   = sub;
+        is_superimposed = false;
         return;
     }
 
-    void SuperImposer::set_data1(const std::vector<Realvec>& data1)
+    void SuperImposer::set_reference(const std::vector<Realvec>& ref)
     {
-        structure1 = data1;
-        superimposed = false;
+        reference = ref;
+        is_superimposed = false;
         return;
     }
 
-    void SuperImposer::set_data2(const std::vector<Realvec>& data2)
+    void SuperImposer::set_subject(const std::vector<Realvec>& sub)
     {
-        structure2 = data2;
-        superimposed = false;
+        subject = sub;
+        is_superimposed = false;
         return;
     }
 
-    void SuperImposer::set_data_push(const std::vector<Realvec>& data)
+    std::vector<Realvec>
+        SuperImposer::push_datas(const std::vector<Realvec>& newsub)
     {
-        structure2 = structure1;
-        structure1 = data;
-        superimposed = false;
-        return;
+        std::vector<Realvec> temp = std::move(reference);
+        reference = std::move(subject);
+        subject = newsub;
+        is_superimposed = false;
+        return temp;
     }
 
-    std::vector<Realvec>& SuperImposer::get_data1()
+    std::vector<Realvec> SuperImposer::copy_reference() const
     {
-        if(!superimposed)
-            std::cout << "Warning: data you got have not superimposed" << std::endl;
-        return structure1;
+        if(!is_superimposed)
+            std::cout << "Warning: data you got have not superimposed"
+                      << std::endl;
+        return reference;
     }
 
-    std::vector<Realvec>& SuperImposer::get_data2()
+    std::vector<Realvec> SuperImposer::copy_subject() const
     {
-        if(!superimposed)
-            std::cout << "Warning: data you got have not superimposed" << std::endl;
-        return structure2;
+        if(!is_superimposed)
+            std::cout << "Warning: data you got have not superimposed"
+                      << std::endl;
+        return subject;
     }
 
     void SuperImposer::superimpose()
     {
-        if(superimposed) return;
+        if(is_superimposed) return;
 
-        if(structure1.empty() || structure2.empty())
-            throw std::invalid_argument(
-                    "SuperImposer does not have two structures");
-
-        if(structure1.size() != structure2.size())
-            throw std::invalid_argument(
-                    "SuperImposer has two structures that have different sizes");
-
-        move_to_zero();
-
-        std::vector<Realvec> rA(structure1.size());
-        std::vector<Realvec> rB(structure2.size());
-
-        for(size_t i(0); i<structure1.size(); ++i)
-        {
-            rA.at(i) = structure1.at(i) + structure2.at(i);
-            rB.at(i) = structure2.at(i) - structure1.at(i);
-        }
-
-        Matrix4 B(get_B(rA, rB));
-        RealVector<4> q = get_eigenvec(B);
-        Matrix3 R(calc_R(q));
-
-        rotate(R);
-        superimposed = true;
+        calc_R();
+        rotate_subject(rotation_matrix);
+        is_superimposed = true;
 
         return;
     }
 
-    Matrix3 SuperImposer::get_R()
+    Matrix3 SuperImposer::calc_and_get_R()
     {
-        if(structure1.empty() || structure2.empty())
+        calc_R();
+        return rotation_matrix;
+    }
+    
+    void SuperImposer::calc_R()
+    {
+        if(is_rotation_matrix_calculated)
+            return;
+
+        if(reference.empty() || subject.empty())
             throw std::invalid_argument(
                     "SuperImposer does not have two structures");
 
-        if(structure1.size() != structure2.size())
+        if(reference.size() != subject.size())
             throw std::invalid_argument(
-                    "SuperImposer has two structures that have different sizes");
+                    "SuperImposer has different structure");
 
         move_to_zero();
 
-        std::vector<Realvec> rA(structure1.size());
-        std::vector<Realvec> rB(structure2.size());
+        std::vector<Realvec> rA(reference.size());
+        std::vector<Realvec> rB(reference.size());
 
-        for(size_t i(0); i<structure1.size(); ++i)
+        for(size_t i(0); i<reference.size(); ++i)
         {
-            rA.at(i) = structure1.at(i) + structure2.at(i);
-            rB.at(i) = structure2.at(i) - structure1.at(i);
+            rA.at(i) = reference[i] + subject[i];
+            rB.at(i) = reference[i] - subject[i];
         }
 
-        Matrix4 B(get_B(rA, rB));
+        Matrix4 B(calc_B(rA, rB));
         RealVector<4> q = get_eigenvec(B);
-        Matrix3 R(calc_R(q));       
-        rotate(R);
-        superimposed = true;
+        rotation_matrix = (make_R_from_quaternion(q));
+        is_rotation_matrix_calculated = true;
 
-        return R;
+        return;
     }
 
     void SuperImposer::move_to_zero()
     {
-        Realvec mean1(mean(structure1));
-        for(std::vector<Realvec>::iterator iter = structure1.begin();
-            iter != structure1.end(); ++iter)
+        Realvec mean_ref(mean(reference));
+        if(length(mean_ref) > 1e-12)
         {
-            *iter -= mean1;
+            for(auto iter = reference.begin();
+                    iter != reference.end(); ++iter)
+            {
+                *iter -= mean_ref;
+            }
         }
 
-        Realvec mean2(mean(structure2));
-        for(std::vector<Realvec>::iterator iter = structure2.begin();
-            iter != structure2.end(); ++iter)
+        Realvec mean_sub(mean(subject));
+        if(length(mean_sub) > 1e-12)
         {
-            *iter -= mean2;
+            for(auto iter = subject.begin();
+                    iter != subject.end(); ++iter)
+            {
+                *iter -= mean_sub;
+            }
         }
-
         return;
     }
 
-    Realvec SuperImposer::mean(std::vector<Realvec>& structure)
-    {//mass is undefined
-        int num_particle(structure.size());
+    // mass is not defined.
+    // this calculates geometric center, mean of positions.
+    Realvec SuperImposer::mean(const std::vector<Realvec>& structure)
+    {
         Realvec sum(0e0, 0e0, 0e0);
-        for(std::vector<Realvec>::iterator iter = structure.begin();
-            iter != structure.end(); ++iter)
+        for(auto iter = structure.cbegin(); iter != structure.cend(); ++iter)
         {
             sum += *iter;
         }
-        return (sum / static_cast<double>(num_particle));
+        return (sum / static_cast<double>(structure.size()));
     }
 
     Matrix4
-    SuperImposer::get_B(const std::vector<Realvec>& a,
-                        const std::vector<Realvec>& b)
+    SuperImposer::calc_B(const std::vector<Realvec>& a,
+                         const std::vector<Realvec>& b)
     {
         if(a.size() != b.size())
-            throw std::invalid_argument("cannot make matrix B");
+            throw std::invalid_argument("different size in calculation B");
 
-        Matrix4 retval;
+        Matrix4 retval(0e0);
 
         int N(a.size());
         for(int i(0); i<N; ++i)
@@ -218,12 +239,13 @@ namespace coffeemill
         retval(2,3) = retval(2,3) / static_cast<double>(N);
         retval(3,3) = retval(3,3) / static_cast<double>(N);
 
+        // this matrix is symmetric matrix
         retval(1,0) = retval(0,1);
         retval(2,0) = retval(0,2);
         retval(2,1) = retval(1,2);
         retval(3,0) = retval(0,3);
         retval(3,1) = retval(1,3);
-        retval(3,2) = retval(2,3);//symmetric
+        retval(3,2) = retval(2,3);
 
         return retval;
     }
@@ -231,12 +253,12 @@ namespace coffeemill
     RealVector<4> SuperImposer::get_eigenvec(const Matrix4& B)
     {
         JacobiSolver<4> solver(B);
-        std::pair<double, RealVector<4> > min_pair
+        std::pair<double, RealVector<4>> min_pair
             = solver.get_mineigenpair();
         return min_pair.second;
     }
 
-    Matrix3 SuperImposer::calc_R(const RealVector<4>& q)
+    Matrix3 SuperImposer::make_R_from_quaternion(const RealVector<4>& q)
     {
         Matrix3 R;
         R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;
@@ -251,10 +273,10 @@ namespace coffeemill
         return R;
     }
 
-    void SuperImposer::rotate(const Matrix3& R)
+    //this rotates subject.
+    void SuperImposer::rotate_subject(const Matrix3& R)
     {
-        for(std::vector<Realvec>::iterator iter = structure1.begin();
-            iter != structure1.end(); ++iter)
+        for(auto iter = subject.begin(); iter != subject.end(); ++iter)
         {
             Realvec temp(R * (*iter));
             *iter = temp;
