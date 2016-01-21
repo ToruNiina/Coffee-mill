@@ -12,6 +12,14 @@ tools for using CafeMol [1].
 
 ##Usage
 
+###dcdtomovie
+
+dcdtomovie recieves dcd file and pdb file and outputs movie file.
+
+`./dcdtomovie <filename>.pdb <filename>.dcd`
+
+this is still being adjusted but it works.
+
 ###nsplit
 
 splitter splits all in one style ninfo file to one by one style ninfo files.

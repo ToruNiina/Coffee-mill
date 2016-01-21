@@ -30,32 +30,8 @@ add_executable(superimpose
 target_link_libraries(superimpose
     ${BOOST_REGEX})
 
-add_executable(nucimpose
-    NucImposer.cpp)
+add_executable(dcdtomovie
+    DCDtoMovie.cpp)
 
-target_link_libraries(nucimpose
+target_link_libraries(dcdtomovie
     ${BOOST_REGEX})
-
-add_executable(nucdnadist
-    NucDNAdist.cpp)
-
-add_executable(inertia
-    CalcInertia.cpp)
-target_link_libraries(inertia
-    ${BOOST_REGEX})
-
-add_executable(cginertia
-    CGInertia.cpp)
-target_link_libraries(cginertia
-    ${BOOST_REGEX})
-
-add_executable(symaxis
-    CalcAxisSym.cpp)
-target_link_libraries(symaxis
-    ${BOOST_REGEX})
-
-add_executable(reinterpret
-    CylinderReinterpreter.cpp)
-target_link_libraries(reinterpret
-    ${BOOST_REGEX})
-
