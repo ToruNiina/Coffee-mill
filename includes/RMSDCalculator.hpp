@@ -1,108 +1,45 @@
 #ifndef COFFEE_MILL_RMSD_CALCULATOR
 #define COFFEE_MILL_RMSD_CALCULATOR
-#include <vector>
-#include <iostream>
-#include <cmath>
 #include "SuperImposer.hpp"
-#include "mathematics/LinearAlgebra.hpp"
 
 namespace coffeemill
 {
+    /*@brief > this calculates RMSD value. All of the imposing process   *
+     * is done by SuperImposer, so this calculates only the distance and *
+     * some of square of the distances(this is just RMSD).               */
     class RMSDCalculator
     {
         public:
-            RMSDCalculator(): calculated(false){}
-            ~RMSDCalculator(){}
+            RMSDCalculator(){}
+            ~RMSDCalculator() = default;
 
-            void set_data(const std::vector<Realvec>& data1,
-                          const std::vector<Realvec>& data2);
-            void set_data2(const std::vector<Realvec>& data2);
-
-            double get_RMSD();
+            double get_RMSD(const std::vector<Realvec>& reference,
+                            const std::vector<Realvec>& subject);
 
         private:
-
-            void move_to_zero();
-
-            Realvec mean(std::vector<Realvec>& structure);
-
-            Matrix3 get_R(const std::array<double, 4>& eigenV);
-
-            Matrix4 get_B(const std::vector<Realvec>& rA,
-                                  const std::vector<Realvec>& rB);
-
-            std::array<double, 4> get_eigenvec(const Matrix4& B);
 
             double calc_RMSD(const std::vector<Realvec>& rA, 
                              const std::vector<Realvec>& rB);
-
-        private:
-
-            bool calculated;
-            double rmsd_value;
-            std::vector<Realvec> molecule1;
-            std::vector<Realvec> molecule2;
-
     };
 
-    void RMSDCalculator::set_data(const std::vector<Realvec>& data1,
-                                  const std::vector<Realvec>& data2)
+    double RMSDCalculator::get_RMSD(const std::vector<Realvec>& reference,
+                                    const std::vector<Realvec>& subject)
     {
-        if(data1.size() != data2.size())
-        {
-            throw std::invalid_argument(
-                "structures having different number of particles is unsupported");
-        }
-        molecule1 = data1;
-        molecule2 = data2;
-        calculated = false;
-        return;
-    }
-
-    void RMSDCalculator::set_data2(const std::vector<Realvec>& data2)
-    {
-        if(molecule1.size() != data2.size())
-        {
-            throw std::invalid_argument(
-                "structures having different number of particles is unsupported");
-        }
-        molecule2 = data2;
-        calculated = false;
-        return;
-    }
-
-    double RMSDCalculator::get_RMSD()
-    {
-        if(calculated)
-            return rmsd_value;
-
-        if(molecule1.empty() || molecule2.empty())
-        {
-            throw std::invalid_argument(
-                    "RMSDCalculator does not have two structures");
-        }
-
-        SuperImposer imposer;
-        imposer.set_data(molecule1, molecule2);
+        SuperImposer imposer(reference, subject);
         imposer.superimpose();
-        molecule1 = imposer.get_data1();
-        molecule2 = imposer.get_data2();
 
-        rmsd_value = calc_RMSD(molecule1, molecule2);
-        calculated = true;
-        return rmsd_value;
+        return calc_RMSD(imposer.get_reference(), imposer.get_subject());
     }
 
-    double RMSDCalculator::calc_RMSD(const std::vector<Realvec>& rA,
-                                     const std::vector<Realvec>& rB)
+    double RMSDCalculator::calc_RMSD(const std::vector<Realvec>& reference,
+                                     const std::vector<Realvec>& subject)
     {
-        int N(rA.size());
         double sigma(0e0);
-        for(int i(0); i<N; ++i)
+        for(std::size_t i(0); i<reference.size(); ++i)
         {
-            sigma += len_square(rB.at(i) - rA.at(i));
+            sigma += len_square(reference[i] - subject[i]);
         }
-        return std::sqrt(sigma / static_cast<double>(N));
+        return std::sqrt(sigma / static_cast<double>(reference.size()));
     }
 
 }
