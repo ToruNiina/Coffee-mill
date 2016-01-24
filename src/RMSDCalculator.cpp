@@ -57,10 +57,10 @@ int main(int argc, char *argv[])
 
     if(dcdreader.get_size() < 2)
     {
-        std::cout << "there is only" << dcdreader.get_size()
+        std::cout << "there are only" << dcdreader.get_size()
                   << "snapshots." << std::endl;
         std::cout << "it is not enough to calculate RMSD." << std::endl;
-        return 1;
+        return EXIT_FAILURE;
     }
 
     std::pair<SnapShot, double> initial(dcdreader.get_snapshot(0));
@@ -70,20 +70,19 @@ int main(int argc, char *argv[])
     SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
     SnapShot seco(pickup_chain(second_.first, chain_IDs, chain_sizes));
 
-    rmsdcalc.set_data(init, init);
-    ofs << 0e0 << " " << rmsdcalc.get_RMSD() << std::endl;
+    ofs << 0e0 << " " << rmsdcalc.get_RMSD(init, init) << std::endl;
 
-    rmsdcalc.set_data(init, seco);
-    ofs << second_.second << " " << rmsdcalc.get_RMSD() << std::endl;
+    ofs << second_.second << " " << rmsdcalc.get_RMSD(init, seco) << std::endl;
 
+    SnapShot old_snapshot(seco);
     for(int i(2); i < dcdreader.get_size(); ++i)
     {
-        std::pair<SnapShot, double> snapshot
-            (dcdreader.get_snapshot(i));
+        std::pair<SnapShot, double> snapshot(dcdreader.get_snapshot(i));
         SnapShot sshot(pickup_chain(snapshot.first, chain_IDs, chain_sizes));
 
-        rmsdcalc.set_data2(sshot);
-        ofs << snapshot.second << " " << rmsdcalc.get_RMSD() << std::endl;
+        ofs << snapshot.second << " "
+            << rmsdcalc.get_RMSD(old_snapshot, sshot) << std::endl;
+        old_snapshot = sshot;
     }
 
     return 0;
