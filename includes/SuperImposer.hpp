@@ -36,8 +36,8 @@ namespace coffeemill
             void set_ref_and_sub(const std::vector<Realvec>& ref,
                                  const std::vector<Realvec>& sub);
 
-            // this method returns reference structure and make subject structure
-            // reference. the next subject structure is argument, ref.
+            // this method returns reference structure and make subject
+            // structure reference. the next subject structure is argument, ref.
             // image) return <== reference <== subject <== argument
             std::vector<Realvec>
                 push_datas(const std::vector<Realvec>& newsub);
