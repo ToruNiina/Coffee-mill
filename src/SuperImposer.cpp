@@ -1,7 +1,13 @@
-#include "../includes/SuperImposer.hpp"
-#include "../includes/dcd/DCDManager.hpp"
-#include "../includes/pdb/CGReader.hpp"
+#include "SuperImposer.hpp"
+#include "dcd/DCDManager.hpp"
+#include "pdb/CGReader.hpp"
 using namespace coffeemill;
+
+/* @brief> this code generates superimposed dcd file. reference snapshot *
+ *         to fit each snapshot is the previous snapshot. you can select *
+ *         chains to use as reference. if you specify chains, rotation   *
+ *         matrixes are calculated only using the chains.                *
+ *    XXX> NOT FULLY TUNED                                               */
 
 SnapShot pickup_chain(const SnapShot& ss, 
                       const std::vector<int>& chain_ids,
@@ -22,142 +28,113 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    std::string infile(argv[1]);
-    DCDReader reader(infile);
+    std::string inputfilename(argv[1]);
+    DCDReader reader(inputfilename);
     reader.read_file();
 
-    std::vector<int> chain_nums;
-    std::vector<int> chain_sizes;
+    // if chain IDs are specified, extract structures to use as references.
+    // else, this reference is same as whole data.
+    std::vector<SnapShot> rotation_reference(reader.get_size());
     if(argc == 3)
     {
-        std::string chainIDs = argv[2];
-        std::transform(chainIDs.cbegin(), chainIDs.cend(),
-                       chainIDs.begin(), toupper);
-        std::string cgpdb(infile.substr(0, infile.size()-3) + "pdb");
+        std::size_t filename_length = inputfilename.size();
+        std::string filename(inputfilename.substr(0, filename_length - 4));
+        std::string cgpdb(filename + ".pdb");
         CGReader cgreader(cgpdb);
         cgreader.read_file();
         CGMdlSptr model(cgreader.get_model(0));
 
-        for(int i(0); i < model->size(); ++i)
+        std::string IDwhitelist(argv[2]);
+        std::transform(IDwhitelist.cbegin(),
+                       IDwhitelist.cend(),
+                       IDwhitelist.begin(),
+                       toupper);
+        //this contains how many mass points the chain has
+        std::vector<int> chain_sizes;
+        for(int i(0); i<model->size(); ++i)
+        {
             chain_sizes.push_back(model->at(i)->size());
+        }
 
-        for(auto iter = chainIDs.begin(); iter != chainIDs.end(); ++iter)
-            chain_nums.push_back(model->find_id(*iter));
+        //this contains what is the ID of the chain to calculate RMSD
+        std::vector<int> chain_IDs;
+        for(auto iter = IDwhitelist.begin(); iter != IDwhitelist.end(); ++iter)
+        {
+            chain_IDs.push_back(model->find_id(*iter));
+        }
+
+        auto ref_iter = rotation_reference.begin();
+        for(auto iter = reader.cbegin(); iter < reader.cend(); ++iter)
+        {
+            *ref_iter = pickup_chain(*iter, chain_IDs, chain_sizes);
+            ++ref_iter;
+        }
     }
-
-    std::vector<SnapShot> data(reader.get_all_data());
-    std::vector<SnapShot> imposed(data.size());
-
-    SuperImposer simposer;
-
-    if(argc == 2)
+    else
     {
-        simposer.set_data(data.at(1), data.at(0));
-        simposer.superimpose();
-        imposed.at(0) = simposer.get_data2();
+        // simply copy.
+        auto ref_iter = rotation_reference.begin();
+        for(auto iter = reader.cbegin(); iter < reader.cend(); ++iter)
+        {
+            *ref_iter = *iter;
+            ++ref_iter;
+        }
     }
-    else if(argc == 3)
+
+    // obtain rotation matrix from reference structures
+    std::vector<Matrix3> rotation_matrixes(rotation_reference.size());
+    SuperImposer supimposer(rotation_reference.at(0), rotation_reference.at(1));
+    rotation_matrixes.at(0) = Matrix3(1e0); // reference structure itself
+    rotation_matrixes.at(1) = supimposer.calc_and_get_R();
+    for(std::size_t i = 2; i < rotation_reference.size(); ++i)
     {
-        SnapShot data0(pickup_chain(data.at(0), chain_nums, chain_sizes));
-        SnapShot data1(pickup_chain(data.at(1), chain_nums, chain_sizes));
-        simposer.set_data(data1, data0);
-        Matrix3 R(simposer.get_R());
-
-        SnapShot data0_rot(data.at(0));
-        SnapShot data1_rot(data.at(1));
-
-        Realvec sum0(0e0, 0e0, 0e0);
-        Realvec sum1(0e0, 0e0, 0e0);
-        SnapShot::iterator iter0 = data0.begin();
-        for(SnapShot::iterator iter1 = data1.begin();
-            iter1 != data1.end(); ++iter1)
-        {
-            sum0 += (*iter0);
-            sum1 += (*iter1);
-            ++iter0;
-        }
-        sum0 /= static_cast<double>(data0.size());
-        sum1 /= static_cast<double>(data1.size());
-
-        iter0 = data0_rot.begin();
-        for(SnapShot::iterator iter1 = data1_rot.begin();
-            iter1 != data1_rot.end(); ++iter1)
-        {
-            *iter0 -= sum0;
-            *iter1 -= sum1;
-            ++iter0;
-        }
-
-        for(SnapShot::iterator iter = data1_rot.begin();
-            iter != data1_rot.end(); ++iter)
-        {
-            Realvec temp(R * (*iter));
-            *iter = temp;
-        }
-        imposed.at(0) = data0_rot;
-        imposed.at(1) = data1_rot;
+        auto discard = supimposer.push_datas(rotation_reference.at(i));
+        rotation_matrixes.at(i) = supimposer.calc_and_get_R();
     }
-    
-    for(size_t i(2); i<data.size(); ++i)
+
+    // rotate subject structures.
+    // (snapshot[t] * rotation_matrix[t]) -> imposed_snapshot[t]
+    std::vector<SnapShot> imposed_output(reader.get_size());
+    for(std::size_t timestep = 0; timestep < reader.get_size(); ++timestep)
     {
-        if(argc == 2)
+        SnapShot imposed_snapshot(reader[timestep].size());
+
+        Realvec mean(0e0);
+        for(auto iter = reader[timestep].cbegin();
+                iter != reader[timestep].cend(); ++iter)
         {
-            simposer.set_data_push(data.at(i));
-            simposer.superimpose();
-            imposed.at(i-1) = simposer.get_data2();
+            mean += *iter;
         }
-        else if(argc == 3)
+        mean = mean / static_cast<double>(reader[timestep].size());
+
+        for(std::size_t particleindex = 0;
+            particleindex < reader[timestep].size();
+            ++particleindex)
         {
-            SnapShot datai(pickup_chain(data.at(i), chain_nums, chain_sizes));
-            simposer.set_data_push(datai);
-            Matrix3 R(simposer.get_R());
-
-            SnapShot data_rot(data.at(i));
-
-            Realvec sum(0e0, 0e0, 0e0);
-            for(SnapShot::iterator iter = datai.begin();
-                iter != datai.end(); ++iter)
-            {
-                sum += *iter;
-            }
-            sum /= static_cast<double>(datai.size());
-
-            for(SnapShot::iterator iter = data_rot.begin();
-                iter != data_rot.end(); ++iter)
-            {
-                *iter -= sum;
-            }
-
-            for(SnapShot::iterator iter = data_rot.begin();
-                iter != data_rot.end(); ++iter)
-            {
-                Realvec temp(R * (*iter));
-                *iter = temp;
-            }
-            imposed.at(i) = data_rot;
+            imposed_snapshot[particleindex]
+                = rotation_matrixes[timestep] *
+                    (reader[timestep][particleindex] - mean);
         }
+        imposed_output[timestep] = imposed_snapshot;
     }
-    if(argc == 2)
-        imposed.at(data.size()-1) = simposer.get_data1();
 
-    std::string outfile(infile.substr(0, infile.size()-4) + "_SupImp.dcd");
-    DCDWriter writer(outfile);
-
+    // output superimposed dcd
+    std::string outputfilename(inputfilename.substr(0, inputfilename.size()-4)
+                               + "_SupImp.dcd");
+    DCDWriter writer(outputfilename);
     set_header_from_reader(&writer, &reader);
-    writer.set_all_data(imposed);
-
+    writer.set_all_data(imposed_output);
     writer.write_file();
 
-    return 0;
+    return EXIT_SUCCESS;
 }
 
 SnapShot pickup_chain(const SnapShot& ss, 
-                                 const std::vector<int>& chain_ids,
-                                 const std::vector<int>& chain_sizes)
+                      const std::vector<int>& chain_ids,
+                      const std::vector<int>& chain_sizes)
 {
     SnapShot retval(ss);
-
-    SnapShot::iterator ssiter = retval.begin();
+    auto ssiter = retval.begin();
 
     for(size_t i(0); i<chain_sizes.size(); ++i)
     {
@@ -173,4 +150,3 @@ SnapShot pickup_chain(const SnapShot& ss,
 
     return retval;
 }
-//(c)Toru Niina 2015 all rights reserved.
