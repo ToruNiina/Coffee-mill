@@ -1,6 +1,6 @@
-#include "../includes/RMSDCalculator.hpp"
-#include "../includes/dcd/DCDReader.hpp"
-#include "../includes/pdb/CGReader.hpp"
+#include "RMSDCalculator.hpp"
+#include "dcd/DCDReader.hpp"
+#include "pdb/CGReader.hpp"
 using namespace coffeemill;
 
 SnapShot pickup_chain(const SnapShot& ss, 

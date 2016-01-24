@@ -1,5 +1,5 @@
-#include "../includes/pdb/PDBChain.hpp"
-#include "../includes/pdb/CGChain.hpp"
+#include "pdb/PDBChain.hpp"
+#include "pdb/CGChain.hpp"
 
 using namespace coffeemill;
 

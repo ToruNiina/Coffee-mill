@@ -1,4 +1,4 @@
-#include "../includes/CGMutator.hpp"
+#include "CGMutator.hpp"
 using namespace coffeemill;
 
 int main(int argc, char *argv[])

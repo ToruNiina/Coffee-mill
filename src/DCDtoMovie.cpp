@@ -1,5 +1,5 @@
-#include "../includes/dcd/DCDReader.hpp"
-#include "../includes/pdb/CGReader.hpp"
+#include "dcd/DCDReader.hpp"
+#include "pdb/CGReader.hpp"
 using namespace coffeemill;
 
 int main(int argc, char *argv[])
