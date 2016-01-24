@@ -1,4 +1,4 @@
-include_directories("${CMAKE_SOURCE_DIR}")
+include_directories("${CMAKE_SOURCE_DIR}/includes/")
 add_definitions("-std=c++11 -O3 -Wall")
 
 find_library(BOOST_REGEX boost_regex)
