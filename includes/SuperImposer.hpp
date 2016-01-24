@@ -67,7 +67,7 @@ namespace coffeemill
             bool is_rotation_matrix_calculated;
             Matrix3 rotation_matrix;
             std::vector<Realvec> reference;// keep this const
-            std::vector<Realvec> subject;  // modify this!
+            std::vector<Realvec> subject;  // rotate this!
     };
 
     void SuperImposer::set_ref_and_sub(const std::vector<Realvec>& ref,
@@ -96,8 +96,8 @@ namespace coffeemill
     std::vector<Realvec>
         SuperImposer::push_datas(const std::vector<Realvec>& newsub)
     {
-        std::vector<Realvec> temp = std::move(reference);
-        reference = std::move(subject);
+        std::vector<Realvec> temp = reference;
+        reference = subject;
         subject = newsub;
         is_superimposed = false;
         return temp;
@@ -133,6 +133,9 @@ namespace coffeemill
     Matrix3 SuperImposer::calc_and_get_R()
     {
         calc_R();
+        rotate_subject(rotation_matrix);
+        is_superimposed = true;
+
         return rotation_matrix;
     }
     
