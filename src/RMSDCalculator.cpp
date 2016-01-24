@@ -50,11 +50,6 @@ int main(int argc, char *argv[])
     DCDReader dcdreader;
     dcdreader.read_file(dcd);
 
-    std::string output(filename + "_" + IDs + "_RMSD.ts");
-    std::ofstream ofs(output);
-
-    RMSDCalculator rmsdcalc;
-
     if(dcdreader.get_size() < 2)
     {
         std::cout << "there are only" << dcdreader.get_size()
@@ -63,26 +58,21 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    std::pair<SnapShot, double> initial(dcdreader.get_snapshot(0));
-    std::pair<SnapShot, double> second_(dcdreader.get_snapshot(1));
+    SnapShot initial(pickup_chain(dcdreader.at(0), chain_IDs, chain_sizes));
+    const int nstep_save = dcdreader.get_nstep_save();
 
+    RMSDCalculator rmsdcalc;
+    std::string output(filename + "_" + IDs + "_RMSD.ts");
+    std::ofstream ofs(output);
 
-    SnapShot init(pickup_chain(initial.first, chain_IDs, chain_sizes));
-    SnapShot seco(pickup_chain(second_.first, chain_IDs, chain_sizes));
+    ofs << 0 << " " << rmsdcalc.get_RMSD(initial, initial) << std::endl;
 
-    ofs << 0e0 << " " << rmsdcalc.get_RMSD(init, init) << std::endl;
-
-    ofs << second_.second << " " << rmsdcalc.get_RMSD(init, seco) << std::endl;
-
-    SnapShot old_snapshot(seco);
-    for(int i(2); i < dcdreader.get_size(); ++i)
+    for(int i(1); i < dcdreader.get_size(); ++i)
     {
-        std::pair<SnapShot, double> snapshot(dcdreader.get_snapshot(i));
-        SnapShot sshot(pickup_chain(snapshot.first, chain_IDs, chain_sizes));
-
-        ofs << snapshot.second << " "
-            << rmsdcalc.get_RMSD(old_snapshot, sshot) << std::endl;
-        old_snapshot = sshot;
+        ofs << nstep_save * i << " "
+            << rmsdcalc.get_RMSD(initial,
+                    pickup_chain(dcdreader.at(i), chain_IDs, chain_sizes))
+            << std::endl;
     }
 
     return 0;
