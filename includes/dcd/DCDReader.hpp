@@ -49,6 +49,8 @@ namespace coffeemill
             std::size_t get_size()            const {return data.size();}
             SnapShot  at(const std::size_t i) const {return data.at(i);}
             SnapShot& at(const std::size_t i)       {return data.at(i);}
+            SnapShot  operator[](const std::size_t i) const {return data[i];}
+            SnapShot& operator[](const std::size_t i)       {return data[i];}
             iterator begin(){return data.begin();}
             iterator end(){return data.end();}
             const_iterator cbegin() const {return data.cbegin();}
