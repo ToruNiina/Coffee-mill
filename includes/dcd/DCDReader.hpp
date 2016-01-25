@@ -45,8 +45,9 @@ namespace coffeemill
             }
 
             bool is_file_specified()          const {return filename.empty();}
-            bool is_data_empty()              const {return data.empty();}
-            std::size_t get_size()            const {return data.size();}
+            bool is_open()                    const {return dcdfile.is_open();}
+            bool empty()                      const {return data.empty();}
+            std::size_t size()                const {return data.size();}
             SnapShot  at(const std::size_t i) const {return data.at(i);}
             SnapShot& at(const std::size_t i)       {return data.at(i);}
             SnapShot  operator[](const std::size_t i) const {return data[i];}

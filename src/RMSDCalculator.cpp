@@ -50,9 +50,9 @@ int main(int argc, char *argv[])
     DCDReader dcdreader;
     dcdreader.read_file(dcd);
 
-    if(dcdreader.get_size() < 2)
+    if(dcdreader.size() < 2)
     {
-        std::cout << "there are only" << dcdreader.get_size()
+        std::cout << "there are only" << dcdreader.size()
                   << "snapshots." << std::endl;
         std::cout << "it is not enough to calculate RMSD." << std::endl;
         return EXIT_FAILURE;
@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
     ofs << 0 << " " << rmsdcalc.get_RMSD(initial, initial) << std::endl;
 
-    for(int i(1); i < dcdreader.get_size(); ++i)
+    for(int i(1); i < dcdreader.size(); ++i)
     {
         ofs << nstep_save * i << " "
             << rmsdcalc.get_RMSD(initial,

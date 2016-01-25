@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 
     // if chain IDs are specified, extract structures to use as references.
     // else, this reference is same as whole data.
-    std::vector<SnapShot> rotation_reference(reader.get_size());
+    std::vector<SnapShot> rotation_reference(reader.size());
     if(argc == 3)
     {
         std::size_t filename_length = inputfilename.size();
@@ -94,8 +94,8 @@ int main(int argc, char *argv[])
 
     // rotate subject structures.
     // (snapshot[t] * rotation_matrix[t]) -> imposed_snapshot[t]
-    std::vector<SnapShot> imposed_output(reader.get_size());
-    for(std::size_t timestep = 0; timestep < reader.get_size(); ++timestep)
+    std::vector<SnapShot> imposed_output(reader.size());
+    for(std::size_t timestep = 0; timestep < reader.size(); ++timestep)
     {
         SnapShot imposed_snapshot(reader[timestep].size());
 
