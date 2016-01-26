@@ -76,6 +76,7 @@ namespace coffeemill
         reference = ref;
         subject   = sub;
         is_superimposed = false;
+        is_rotation_matrix_calculated = false;
         return;
     }
 
@@ -83,6 +84,7 @@ namespace coffeemill
     {
         reference = ref;
         is_superimposed = false;
+        is_rotation_matrix_calculated = false;
         return;
     }
 
@@ -90,6 +92,7 @@ namespace coffeemill
     {
         subject = sub;
         is_superimposed = false;
+        is_rotation_matrix_calculated = false;
         return;
     }
 
@@ -100,6 +103,7 @@ namespace coffeemill
         reference = subject;
         subject = newsub;
         is_superimposed = false;
+        is_rotation_matrix_calculated = false;
         return temp;
     }
 
