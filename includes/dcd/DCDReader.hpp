@@ -327,7 +327,7 @@ namespace coffeemill
     {
         data.reserve(nset);
 
-        for(int i(0); i<=nset; ++i)
+        for(int i(0); i<nset; ++i)
         {
             std::vector<double> x(read_coord());
             std::vector<double> y(read_coord());
