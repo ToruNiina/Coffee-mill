@@ -357,7 +357,7 @@ namespace coffeemill
         char *cbytes = new char[size_int];
         dcdfile.read(cbytes, size_int);
         int bytes(*reinterpret_cast<int*>(cbytes));
-        if(bytes / size_float != nparticle)
+        if(bytes / static_cast<int>(size_float) != nparticle)
         {
             std::cout << "Error  : "
                       << "dcd file coordinate has "
