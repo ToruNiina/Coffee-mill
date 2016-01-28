@@ -16,9 +16,11 @@ tools for using CafeMol [1].
 
 dcdtomovie recieves dcd file and pdb file and outputs movie file.
 
-`./dcdtomovie <filename>.pdb <filename>.dcd`
+`./dcdtomovie <filename>.pdb <filename>.dcd [option]`
 
-this is still being adjusted but it works.
+option: 
+- default -> same as cafemol output
+- pymol   -> pymol can read the file. same as PDB file coding NMR structure.
 
 ###nsplit
 
