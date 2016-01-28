@@ -11,6 +11,12 @@ int main(int argc, char *argv[])
     }
 
     std::string pdbfilename(argv[1]);
+    if(pdbfilename.substr(pdbfilename.size()-3, 3) != "pdb")
+    {
+        std::cerr << "Usage : ./dcdtomovie <filename>.pdb <filename>.dcd" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     CGReader cgreader(pdbfilename);
     cgreader.read_file();
     CGMdlSptr model(cgreader.get_model(0));
@@ -21,6 +27,12 @@ int main(int argc, char *argv[])
     }
 
     std::string dcdfilename(argv[2]);
+    if(dcdfilename.substr(dcdfilename.size()-3, 3) != "dcd")
+    {
+        std::cerr << "Usage : ./dcdtomovie <filename>.pdb <filename>.dcd" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     std::shared_ptr<DCDReader> dcdreader(new DCDReader(dcdfilename));
     dcdreader->read_file();
     std::vector<SnapShot> data(dcdreader->get_all_data());
