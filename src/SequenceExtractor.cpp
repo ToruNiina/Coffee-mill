@@ -1,6 +1,5 @@
 #include "pdb/PDBChain.hpp"
 #include "pdb/CGChain.hpp"
-
 using namespace coffeemill;
 
 int main(int argc, char* argv[])
@@ -31,18 +30,26 @@ int main(int argc, char* argv[])
     }
     else
     {//read plane PDB
-        std::ifstream pdbfile(argv[1]);
+        try{
+            std::ifstream pdbfile(argv[1]);
 
-        while(!pdbfile.eof())
-        {
-            PDBChain chain;
-            chain.read_block(pdbfile);
-
-            if(chain.chain_exist())
+            while(!pdbfile.eof())
             {
-                std::cout << "Chain " << chain.get_chainID() << ": ";
-                std::cout << chain.get_sequence() << std::endl;
+                PDBChain chain;
+                chain.read_block(pdbfile);
+
+                if(chain.chain_exist())
+                {
+                    std::cout << "Chain " << chain.get_chainID() << ": ";
+                    std::cout << chain.get_sequence() << std::endl;
+                }
             }
+        }
+        catch(std::exception& exp)
+        {
+            std::cerr << "while reading file, exception " << exp.what() << "was caught." << std::endl;
+            std::cerr << "please use -cg option to read CG PDB" << std::endl;
+            return EXIT_FAILURE;
         }
     }
     return 0;
