@@ -19,13 +19,13 @@ namespace coffeemill
         public:
 
             DCDWriter()
-                : header_set(false), header_written(false)
+                : header_written(false)
             {
                 ;
             }
 
             DCDWriter(const std::string& filename_)
-                : header_set(false), header_written(false), filename(filename_)
+                : header_written(false), filename(filename_)
             {
                 ;
             }
@@ -63,14 +63,13 @@ namespace coffeemill
     
         private:
 
-            bool header_set;    // whether header is set. <==> !header.empty()
             bool header_written;// already write header
             int nset;           // number of frame
             int istart;         // initial value of isteps
             int nstep_save;     // saving frequency
             int nstep;          // total step number
             int nunit;          // total unit number
-            int verCHARMM;      // have no meaning but write something
+            int verCHARMM = 24; // have no meaning but write something
             int nparticle;      // total number of particle
             double delta_t;
             std::string filename;
@@ -173,19 +172,20 @@ namespace coffeemill
                 header.push_back(temp);
             }
             else
-            {
+            {// just 80 chars
                 header.push_back(*iter);
             }
         }
-        header_set = true;
         return;
     }
 
     void DCDWriter::write_header()
     {
+        dcdfile.open(filename, std::ios::binary);
         write_head_block1();
         write_head_block2();
         write_head_block3();
+        dcdfile.close();
         header_written = true;
         return;
     }
@@ -234,6 +234,7 @@ namespace coffeemill
             wrote += size_int;
         }
 
+//         verCHARMM = 24;
         dcdfile.write(reinterpret_cast<char*>(&verCHARMM), size_int);
         wrote += size_int;
 
@@ -248,9 +249,7 @@ namespace coffeemill
 
     void DCDWriter::write_head_block2()
     {
-//         int wrote(0);
-
-        if(!header_set)
+        if(header.empty())
         {
             header.push_back("==================== Molecular Dynamics Code : CafeMol ver.  2.02 ==============");
             header.push_back("==================== Developed by Kyoto University =============================");
@@ -268,9 +267,10 @@ namespace coffeemill
 
         for(auto iter = header.begin(); iter != header.end(); ++iter)
         {
-            char* line = new char[81];
-            memcpy(line, (*iter).c_str(), 81);
-            dcdfile.write(reinterpret_cast<char*>(&line), size_char*80);
+//             char* line = new char[81];
+//             memcpy(line, iter->c_str(), 81);
+            dcdfile << *iter;
+//             dcdfile.write(reinterpret_cast<char*>(&line), size_char*80);
             wrote += size_char*80;
         }
 
