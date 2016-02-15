@@ -5,8 +5,15 @@
 
 namespace coffeemill
 {
+    /*@brief > this class recieves data of trajectory(array of snapshot) and *
+     *         output the data to dcd file. you can set all trajectory data  *
+     *         and also write each snapshot step by step.                    */
     class DCDWriter
     {
+        public:
+            using iterator = std::vector<SnapShot>::iterator;
+            using const_iterator = std::vector<SnapShot>::const_iterator;
+
         public:
 
             DCDWriter():header_written(false), header_set(false){}
