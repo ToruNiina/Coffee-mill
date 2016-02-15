@@ -81,11 +81,11 @@ namespace coffeemill
             int nparticle;  // total number of particle
             double delta_t;
 
-            std::size_t file_size;         // binary file size(byte)
-            std::size_t header1_size;      // header block1 size(byte)
-            std::size_t header2_size;      // 
-            std::size_t header3_size;      // 
-            std::size_t snapshot_size;     // each snapshot size(byte)
+            std::size_t file_size;     // binary file size(byte)
+            std::size_t header1_size;  // header block1 size(byte)
+            std::size_t header2_size;  // 
+            std::size_t header3_size;  // 
+            std::size_t snapshot_size; // each snapshot size(byte)
             std::string filename;
             std::ifstream dcdfile;
             std::vector<std::string> header; // comments in header block 2
@@ -96,9 +96,9 @@ namespace coffeemill
             //XXX: size_value depends on the environment that the simulation
             //     runs, not on the environment where you analysis the dcd file.
             //     so these size value perhaps differ from the true value.
-            static constexpr std::size_t size_int = sizeof(int);
+            static constexpr std::size_t size_int   = sizeof(int);
             static constexpr std::size_t size_float = sizeof(float);
-            static constexpr std::size_t size_char = sizeof(char);
+            static constexpr std::size_t size_char  = sizeof(char);
     };
     typedef std::shared_ptr<DCDReader> DCDReaderSptr;
 
@@ -147,6 +147,7 @@ namespace coffeemill
 
         read_header();
 
+        // if file size is incorrect, warn and redefine the number of snapshot
         if(!validate_filesize())
         {
             std::cerr << "Warning: filesize is not correct! total filesize is "
@@ -160,6 +161,19 @@ namespace coffeemill
             std::cerr << "       : so this file must have "
                       << (header1_size + header2_size + header3_size +
                          snapshot_size * nset) << " bytes." << std::endl;
+
+            if((file_size - header1_size - header2_size - header3_size)
+                    % snapshot_size == 0)
+            {
+                nset = (file_size - header1_size - header2_size - header3_size)
+                        / snapshot_size;
+                std::cerr << "       : guess snapshot size as "
+                          << nset << std::endl;
+            }
+            else
+            {
+                throw std::invalid_argument("invalid dcd file size");
+            }
         }
 
         read_core();
@@ -174,7 +188,6 @@ namespace coffeemill
         read_head_block1();
         read_head_block2();
         read_head_block3();
-
         return;
     }
 
