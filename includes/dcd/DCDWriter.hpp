@@ -79,9 +79,9 @@ namespace coffeemill
 
         private:
 
-            static constexpr int size_int = sizeof(int);
+            static constexpr int size_int   = sizeof(int);
             static constexpr int size_float = sizeof(float);
-            static constexpr int size_char = sizeof(char);
+            static constexpr int size_char  = sizeof(char);
     };
 
     void DCDWriter::write_file(const std::string& filename_)
@@ -110,45 +110,6 @@ namespace coffeemill
         return;
     }
 
-    void DCDWriter::write_SnapShot(const SnapShot& snapshot)
-    {
-        if(filename.empty())
-            throw std::invalid_argument("filename is not specified!");
-
-        if(!header_written)
-            throw std::invalid_argument("write DCD file without header");
-
-        if(dcdfile.is_open())
-        {
-            throw std::invalid_argument("DCDWriter: file already open");
-        }
-        else
-        {
-            dcdfile.open(filename, std::ios::binary | std::ios::app);
-            if(dcdfile.fail())
-                throw std::invalid_argument("file open error: " + filename);
-        }
-
-        std::vector<double> x(snapshot.size());
-        std::vector<double> y(snapshot.size());
-        std::vector<double> z(snapshot.size());
-        int counter(0);
-        for(auto iter = (snapshot).cbegin(); iter != (snapshot).cend(); ++iter)
-        {
-            x[counter] = (*iter)[0];
-            y[counter] = (*iter)[1];
-            z[counter] = (*iter)[2];
-            ++counter;
-        }
-
-        write_coord(x);
-        write_coord(y);
-        write_coord(z);
-
-        dcdfile.close();
-
-        return;
-    }
 
     void DCDWriter::set_header(const std::vector<std::string>& h)
     {
@@ -234,7 +195,6 @@ namespace coffeemill
             wrote += size_int;
         }
 
-//         verCHARMM = 24;
         dcdfile.write(reinterpret_cast<char*>(&verCHARMM), size_int);
         wrote += size_int;
 
@@ -296,6 +256,46 @@ namespace coffeemill
         {
             write_SnapShot(*iter);
         }
+        return;
+    }
+
+    void DCDWriter::write_SnapShot(const SnapShot& snapshot)
+    {
+        if(filename.empty())
+            throw std::invalid_argument("filename is not specified!");
+
+        if(!header_written)
+            throw std::invalid_argument("write DCD file without header");
+
+        if(dcdfile.is_open())
+        {
+            throw std::invalid_argument("DCDWriter: file already open");
+        }
+        else
+        {
+            dcdfile.open(filename, std::ios::binary | std::ios::app);
+            if(dcdfile.fail())
+                throw std::invalid_argument("file open error: " + filename);
+        }
+
+        std::vector<double> x(snapshot.size());
+        std::vector<double> y(snapshot.size());
+        std::vector<double> z(snapshot.size());
+        int counter(0);
+        for(auto iter = (snapshot).cbegin(); iter != (snapshot).cend(); ++iter)
+        {
+            x[counter] = (*iter)[0];
+            y[counter] = (*iter)[1];
+            z[counter] = (*iter)[2];
+            ++counter;
+        }
+
+        write_coord(x);
+        write_coord(y);
+        write_coord(z);
+
+        dcdfile.close();
+
         return;
     }
 
