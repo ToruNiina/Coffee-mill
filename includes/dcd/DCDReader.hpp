@@ -104,18 +104,15 @@ namespace coffeemill
 
     void DCDReader::read_file(const std::string& fname)
     {
-        if(filename.empty())
-        {
-            filename = fname;
-        }
-        else
+        if(!filename.empty())
         {
             std::cout << "Warning: DCDReader: you already specify filename. "
                       << filename << " but now you are trying to open "
                       << fname << ", so now open " << fname
                       << std::endl;
-            filename = fname;
         }
+
+        filename = fname;
         read_file();
         return;
     }
