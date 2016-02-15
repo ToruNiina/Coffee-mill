@@ -30,6 +30,7 @@ namespace coffeemill
 
             void read_file();
             void read_file(const std::string& fname);
+            bool validate_filesize();
 
             int get_nset()       const {return nset;}
             int get_istart()     const {return istart;}
@@ -80,6 +81,11 @@ namespace coffeemill
             int nparticle;  // total number of particle
             double delta_t;
 
+            std::size_t file_size;         // binary file size(byte)
+            std::size_t header1_size;      // header block1 size(byte)
+            std::size_t header2_size;      // 
+            std::size_t header3_size;      // 
+            std::size_t snapshot_size;     // each snapshot size(byte)
             std::string filename;
             std::ifstream dcdfile;
             std::vector<std::string> header; // comments in header block 2
@@ -133,7 +139,29 @@ namespace coffeemill
             throw std::logic_error(
                     "filename is not specified but file is open!?");
         }
+        std::cerr << "Info   : DCD file reading start" << std::endl;
+
+        dcdfile.seekg(0, dcdfile.end);
+        file_size = dcdfile.tellg();
+        dcdfile.seekg(0, dcdfile.beg);
+
         read_header();
+
+        if(!validate_filesize())
+        {
+            std::cerr << "Warning: filesize is not correct! total filesize is "
+                      << file_size << " [byte]" << std::endl;
+            std::cerr << "       : but file says there are " << nset 
+                      << " snapshots. number of containing particles is "
+                      << nparticle <<std::endl;
+            std::cerr << "       : header block 1 size : " << header1_size << std::endl;
+            std::cerr << "       : header block 2 size : " << header2_size << std::endl;
+            std::cerr << "       : header block 3 size : " << header3_size << std::endl;
+            std::cerr << "       : so this file must have "
+                      << (header1_size + header2_size + header3_size +
+                         snapshot_size * nset) << " bytes." << std::endl;
+        }
+
         read_core();
         dcdfile.close();
         std::cout << "Info   : dcd file(" << filename
@@ -141,13 +169,21 @@ namespace coffeemill
         return;
     }
 
-    // necessary?
     void DCDReader::read_header()
     {
         read_head_block1();
         read_head_block2();
         read_head_block3();
+
         return;
+    }
+
+    bool DCDReader::validate_filesize()
+    {
+        snapshot_size = 12 * (nparticle + 2);
+
+        return file_size == (header1_size + header2_size + header3_size +
+                            snapshot_size * nset);
     }
 
     void DCDReader::read_head_block1()
@@ -183,7 +219,7 @@ namespace coffeemill
         else
         {
             std::cout << "Error  : unknown signature : " << cord << std::endl;
-            throw std::invalid_argument("Unknown File");
+            throw std::invalid_argument("Unknown File Signeture");
         }
 
         char *cnset = new char[size_int];
@@ -250,6 +286,7 @@ namespace coffeemill
         }
         delete [] cbytes_f;
 
+        header1_size = byte + size_int * 2;
         return;
     }
 
@@ -294,6 +331,9 @@ namespace coffeemill
                     "header block2 has invalid size information");
         }
         delete [] cbytes_f;
+
+        header2_size = bytes + size_int * 2;
+        return;
     }
 
     void DCDReader::read_head_block3()
@@ -319,6 +359,8 @@ namespace coffeemill
                     "header block3 has invalid size information");
         }
         delete [] cbytes_f;
+
+        header3_size = bytes + size_int * 2;
         return;
     }
 
