@@ -39,6 +39,7 @@ namespace coffeemill
             int get_nunit()      const {return nunit;}
             int get_npart()      const {return nparticle;}
             double get_delta_t() const {return delta_t;}
+            std::vector<std::string> get_header() const {return header;}
 
             std::pair<SnapShot, double> get_snapshot(const std::size_t i) const
             {
