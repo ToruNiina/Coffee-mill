@@ -50,7 +50,7 @@ namespace coffeemill
             SnapShot& at(const std::size_t i)       {return data.at(i);}
             SnapShot  at(const std::size_t i) const {return data.at(i);}
 
-            void set_all_data(const std::vector<SnapShot>& data_){data = data_;}
+            void set_all_data(const std::vector<SnapShot>& dat);
 
         private:
 
@@ -83,6 +83,12 @@ namespace coffeemill
             static constexpr int size_float = sizeof(float);
             static constexpr int size_char  = sizeof(char);
     };
+
+    void DCDWriter::set_all_data(const std::vector<SnapShot>& dat)
+    {
+        data = dat;
+        nset = data.size();
+    }
 
     void DCDWriter::write_file(const std::string& filename_)
     {
