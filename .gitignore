@@ -9,13 +9,11 @@
 *.dat
 *.out
 *test
+test*
 
 data/
 build/
 bin/
-
-!*.cpp
-!*.hpp
 
 CMakeCache.txt
 cmake_install.cmake
