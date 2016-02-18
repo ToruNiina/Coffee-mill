@@ -5,10 +5,46 @@
 
 namespace coffeemill
 {
-//     class DCDManager
-//     {
-//
-//     };
+    class DCDManager
+    {
+        public:
+            DCDManager(){}
+
+            void set_ifname(const std::string& ifname){readfilename = ifname;}
+            void set_ofname(const std::string& ofname){writefilename = ofname;}
+
+            void read_file(const std::string& filename);
+            void write_file(const std::string& filename);
+
+        private:
+
+            std::string readfilename;
+            std::string writefilename;
+            std::unique_ptr<DCDReader> reader;
+            std::unique_ptr<DCDWriter> writer;
+    };
+
+    void DCDManager::read_file(const std::string& filename)
+    {
+        if(reader)
+        {
+            std::cerr << "Warning: DCDManager has read a dcd file\""
+                      << reader->get_filename() << "\"" << std::endl;
+            std::cerr << "       : but now discard the file "
+                      << " and starting to read " << filename
+                      << std::endl;
+        }
+        reader.reset(new DCDReader(filename));
+        reader->read_file();
+        return;
+    }
+
+    void DCDManager::write_file(const std::string& filename)
+    {
+        reader.reset(new DCDReader(filename));
+        reader->read_file();
+        return;
+    }
  
     void set_header_from_reader(DCDWriter *writer, DCDReader *reader)
     {
