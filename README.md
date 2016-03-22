@@ -12,6 +12,12 @@ tools for using CafeMol [1].
 
 ##Usage
 
+###dcdjoiner
+
+dcdjoiner joins any numbers (>2) of dcdfile into "joined.dcd".
+
+`./dcdjoin <file1>.dcd <file2>.dcd ... <fileN>.dcd`
+
 ###dcdtomovie
 
 dcdtomovie recieves dcd file and pdb file and outputs movie file.
