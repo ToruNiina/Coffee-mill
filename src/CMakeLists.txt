@@ -35,3 +35,9 @@ add_executable(dcdtomovie
 
 target_link_libraries(dcdtomovie
     ${BOOST_REGEX})
+
+add_executable(dcdjoin
+    DCDJoiner.cpp)
+
+target_link_libraries(dcdjoin
+    ${BOOST_REGEX})
