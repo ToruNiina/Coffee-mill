@@ -2,10 +2,12 @@
 #define COFFEE_MILL_SUPER_IMPOSER
 #include <iostream>
 #include <vector>
-#include "mathematics/LinearAlgebra.hpp"
+#include "math/LinearAlgebra.hpp"
 
 namespace coffeemill
 {
+    using namespace ax;
+
     /*@brief > This class superimposes(structural alignment) the Structure *
      * (a.k.a. std::vector<RealVector<3>>). Mainly used for preparation of *
      * RMSD calculation. This rotate subject structure to fit reference    *

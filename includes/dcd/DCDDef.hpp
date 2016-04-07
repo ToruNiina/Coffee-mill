@@ -4,10 +4,11 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include "../mathematics/LinearAlgebra.hpp"
+#include "math/LinearAlgebra.hpp"
 
 namespace coffeemill
 {
+    using namespace ax;
     typedef std::vector<Realvec> SnapShot;
 }
 

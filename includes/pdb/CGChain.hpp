@@ -3,12 +3,13 @@
 #include <vector>
 #include <algorithm>
 #include <boost/regex.hpp>
-#include "../mathematics/LinearAlgebra.hpp"
+#include "math/LinearAlgebra.hpp"
 #include "CGBeads.hpp"
 #include "ProteinSeq.hpp"
 
 namespace coffeemill
 {
+    using namespace ax;
     class CGChain
     {
     public:
