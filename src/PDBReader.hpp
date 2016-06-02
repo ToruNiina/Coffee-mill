@@ -4,79 +4,29 @@
 
 namespace coffeemill
 {
-    class PDBReader
-    {
-        public:
-            PDBReader(){}
-            PDBReader(const std::string& filename)
-                : pdbfile(filename)
-            {
-                if(pdbfile.fail())
-                {
-                    std::cout << "filename: " << filename << std::endl;
-                    throw std::invalid_argument("file open error");
-                }
-            }
 
-            ~PDBReader()
-            {
-                pdbfile.close();
-            }
+class PDBReader
+{
+  public:
 
-            void read_file();
-            void read_file(const std::string& filename);
-            size_t size()
-            {
-                return chains.size();
-            }
-            bool empty()
-            {
-                return chains.empty();
-            }
+    PDBReader(){}
+    PDBReader(const std::string& filename)
+        : filename_(filename)
+    {}
+    ~PDBReader(){}
 
-            std::vector<PDBChnSptr>& get_chains()
-            {
-                return chains;
-            }
+    void  read_file();
 
-        private:
+          std::string& filename()       {return filename_;}
+    const std::string& filename() const {return filename_;}
+          std::vector<std::shared_ptr<PDBAtom>>& atoms()       {return atoms_;}
+    const std::vector<std::shared_ptr<PDBAtom>>& atoms() const {return atoms_;}
 
-            std::ifstream pdbfile;
-            std::vector<PDBChnSptr> chains;
-    };
+  private:
 
-    void PDBReader::read_file(const std::string& filename)
-    {
-        if(pdbfile.is_open())
-        {
-            std::cout << "file already open" << std::endl;
-        }
-        else
-        {
-            pdbfile.open(filename);
-        }
-
-        if(pdbfile.fail())
-        {
-            std::cout << "filename: " << filename << std::endl;
-            throw std::invalid_argument("file open error");
-        }
-
-        read_file();
-        return;
-    }
-
-    void PDBReader::read_file()
-    {
-        while(!pdbfile.eof())
-        {
-            PDBChnSptr chain(new PDBChain);
-            chain->read_block(pdbfile);
-            if(chain->chain_exist())
-                chains.push_back(chain);
-        }
-        return;
-    }
+    std::string filename_;
+    std::vector<std::shared_ptr<PDBAtom>> atoms_;
+};
 
 }
 
