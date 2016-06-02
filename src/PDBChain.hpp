@@ -1,137 +1,50 @@
 #ifndef COFFEE_MILL_PDB_CHAIN
 #define COFFEE_MILL_PDB_CHAIN
-#include <vector>
 #include <boost/regex.hpp>
-#include "PDBAtom.hpp"
+#include "PDBResidue.hpp"
 
 namespace coffeemill
 {
-    class PDBChain
-    {
-    public:
 
-        typedef std::vector<AtomSptr>::iterator iterator;
+class PDBChain
+{
+  public:
 
-    public:
+    using size_type      = std::size_t;
+    using index_type     = size_type;
+    using element_type   = std::shared_ptr<PDBResidue>;
+    using container_type = std::vector<element_type>;
+    using iterator       = container_type::iterator;
+    using const_iterator = container_type::const_iterator;
 
-        PDBChain(): there_is_chain(false) {}
-        ~PDBChain(){}
+  public:
 
+    PDBChain(){}
+    PDBChain(size_type size) : residues_(size){}
+    ~PDBChain() = default;
 
-        void read_block(std::ifstream& ifs);
-        void write_block(std::ofstream& ofs);
+    const std::string& chain_id() const {return this->front()->front()->chain_id();}
 
-        bool empty(){return atoms.empty();}
-        size_t size(){return atoms.size();}
-        void push_back(AtomSptr& atom);
-        iterator begin(){return atoms.begin();}
-        iterator end(){return atoms.end();}
-        AtomSptr& at(size_t i){return atoms.at(i);}
+    bool      empty() const {return residues_.empty();}
+    size_type size()  const {return residues_.size();}
+    void      push_back(const element_type& elem) {return residues_.push_back(elem);}
 
-        std::vector<AtomSptr>& get_chain()//rename to atoms
-        {
-            return atoms;
-        }
+    const element_type& at(index_type i) const {return residues_.at(i);}
+          element_type& at(index_type i)       {return residues_.at(i);}
+    const element_type& operator[](index_type i) const {return residues_[i];}
+          element_type& operator[](index_type i)       {return residues_[i];}
+    const element_type& front() const {return residues_.front();}
+          element_type& front()       {return residues_.front();}
 
-        char get_chainID()
-        {
-            return chainID;
-        }
+    iterator begin(){return residues_.begin();}
+    iterator end()  {return residues_.end();}
+    const_iterator cbegin() const {return residues_.cbegin();}
+    const_iterator cend()   const {return residues_.cend();}
 
-        std::string get_sequence();
+  private:
 
-        bool chain_exist() const 
-        {
-            return there_is_chain;
-        }
+    container_type residues_;
+};
 
-    private:
-
-        bool there_is_chain;
-        char chainID;
-        std::vector<AtomSptr> atoms;
-    };
-
-    void PDBChain::push_back(AtomSptr& atom)
-    {
-        if(atoms.empty())
-        {
-            there_is_chain = true;
-            chainID = atom->get_chainID();
-        }
-
-        if(!atoms.empty() && atom->get_chainID() != chainID)
-        {
-            std::cout << "Error: push_back different chainID atom" << std::endl;
-            throw std::invalid_argument("invalid Chain ID");
-        }
-        atoms.push_back(atom);
-        return;
-    }
-
-    void PDBChain::read_block(std::ifstream& ifs)
-    {
-        while(!ifs.eof())
-        {
-            AtomSptr atom(new PDBAtom);
-            PDBAtom::LINE_TYPE line_type(atom->getAtomLine(ifs));
-            switch(line_type)
-            {
-            case PDBAtom::EMPTY:
-                break;
-            case PDBAtom::ATOM:
-                there_is_chain = true;
-                push_back(atom);
-                break;
-            case PDBAtom::TER:
-                return;
-            case PDBAtom::END:
-                return;
-            case PDBAtom::UNKNOWN:
-                break;
-            default:
-                throw std::invalid_argument("unknown linetype");
-            }
-        }
-        return;
-    }
-    void PDBChain::write_block(std::ofstream& ofs)
-    {
-        for(std::vector<AtomSptr>::iterator iter = atoms.begin();
-            iter != atoms.end(); ++iter)
-        {
-            ofs << *(*iter) << std::endl;
-        }
-        ofs << "TER" << std::endl;
-        return;
-    }
-
-    std::string PDBChain::get_sequence()
-    {
-        std::string return_seq;
-        int current_seq(-1);
-        for(std::vector<AtomSptr>::iterator iter = atoms.begin();
-            iter != atoms.end(); ++iter)
-        {
-            if(current_seq == (*iter)->get_resSeq()) continue;
-            else current_seq = (*iter)->get_resSeq();
-
-            std::string seqbuf((*iter)->get_resName());
-            boost::regex seqdna("D[ACGT]");
-            if(boost::regex_search(seqbuf, seqdna))
-            {
-                size_t dpos(seqbuf.find('D'));
-                return_seq += seqbuf[dpos+1];
-            }
-            else
-            {
-                seqbuf += ' ';
-                return_seq += seqbuf;
-            }
-        }
-        return return_seq;
-    }
-
-    typedef std::shared_ptr<PDBChain> PDBChnSptr;
 }
 #endif //COFFEE_MILL_PDB_CHAIN
