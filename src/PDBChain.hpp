@@ -1,6 +1,5 @@
 #ifndef COFFEE_MILL_PDB_CHAIN
 #define COFFEE_MILL_PDB_CHAIN
-#include <boost/regex.hpp>
 #include "PDBResidue.hpp"
 
 namespace coffeemill
