@@ -1,4 +1,5 @@
 #include "PDBAtom.hpp"
+#include "includes/utility.hpp"
 #include <iomanip>
 
 namespace coffeemill
@@ -43,7 +44,20 @@ std::ostream& operator<<(std::ostream& os, const PDBAtom& a)
     os << std::setw(6) << a.prefix();
     os << std::setw(5) << a.atom_id();
     os << " ";
-    os << std::setw(4) << a.atom();
+    if(remove_all<' '>(a.atom()) == "CA")
+    {
+        os << " CA ";
+    }
+    else if(remove_all<' '>(a.atom()) == "DB" ||
+            remove_all<' '>(a.atom()) == "DS" ||
+            remove_all<' '>(a.atom()) == "DP")
+    {
+        os << std::setw(4) << std::left << remove_all<' '>(a.atom());
+    }
+    else
+    {
+        os << std::setw(4) << a.atom();
+    }
     os << std::setw(1) << a.altloc();
     os << std::setw(3) << a.residue();
     os << " ";
