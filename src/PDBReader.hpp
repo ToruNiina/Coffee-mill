@@ -15,7 +15,8 @@ class PDBReader
     {}
     ~PDBReader(){}
 
-    void  read_file();
+    void  read();
+    std::vector<PDBChain> parse();
 
           std::string& filename()       {return filename_;}
     const std::string& filename() const {return filename_;}
@@ -27,6 +28,7 @@ class PDBReader
     std::string filename_;
     std::vector<std::shared_ptr<PDBAtom>> atoms_;
 };
+
 
 }
 
