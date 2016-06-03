@@ -13,15 +13,22 @@ add_library(coffeemill
 
 # find_library(BOOST_REGEX boost_regex)
 
+add_executable(mill
+    coffee_mill.cpp)
+
+target_link_libraries(mill
+    coffeemill)
+
+
+# add_executable(seqextr
+#     SequenceExtractor.cpp)
+#
+# target_link_libraries(seqextr
+#     coffeemill)
+#
+
 # add_executable(nsplit
 #     NinfoSplitter.cpp)
-
-add_executable(seqextr
-    SequenceExtractor.cpp)
-
-target_link_libraries(seqextr
-    coffeemill)
-#
 # add_executable(mutator
 #     CGMutator.cpp)
 #
