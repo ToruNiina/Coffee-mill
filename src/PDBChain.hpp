@@ -27,18 +27,32 @@ class PDBChain
     bool      empty() const {return residues_.empty();}
     size_type size()  const {return residues_.size();}
     void      push_back(const element_type& elem) {return residues_.push_back(elem);}
+    void      clear(){return residues_.clear();}
 
     const element_type& at(index_type i) const {return residues_.at(i);}
           element_type& at(index_type i)       {return residues_.at(i);}
     const element_type& operator[](index_type i) const {return residues_[i];}
           element_type& operator[](index_type i)       {return residues_[i];}
+
     const element_type& front() const {return residues_.front();}
           element_type& front()       {return residues_.front();}
+    const element_type& back() const {return residues_.back();}
+          element_type& back()       {return residues_.back();}
 
     iterator begin(){return residues_.begin();}
     iterator end()  {return residues_.end();}
     const_iterator cbegin() const {return residues_.cbegin();}
     const_iterator cend()   const {return residues_.cend();}
+
+    void dump() const 
+    {
+        std::cerr << "chain " << this->chain_id() << std::endl;
+        for(auto item : residues_)
+        {
+            std::cerr << "residue " << item->residue() << std::endl;
+            item->dump();
+        }
+    }
 
   private:
 
