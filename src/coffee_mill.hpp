@@ -128,11 +128,15 @@ void CommandLine::print_help() const
 void CommandLine::print_man() const
 {
     std::cerr << "\t\t\t\t Coffee Mill" << std::endl;
+
     std::cerr << "NAME" << std::endl;
     std::cerr << "\tcoffee mill - command line tools for using cafemol" << std::endl;
+
     std::cerr << std::endl;
     std::cerr << "SYNOPSIS" << std::endl;
     std::cerr << "\tmill [-h] {pdb | dcd | ninfo | dna}" << std::endl;
+    std::cerr << std::endl;
+
     std::cerr << "DESCRIPTION" << std::endl;
     std::cerr << "\tcoffee mill is the command line tool for handling cafemol files."
               << std::endl;
