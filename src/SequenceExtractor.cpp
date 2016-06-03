@@ -1,5 +1,6 @@
 #include "PDBChain.hpp"
 #include "PDBReader.hpp"
+#include "SequenceExtractor.hpp"
 using namespace coffeemill;
 
 int main(int argc, char* argv[])
@@ -13,12 +14,12 @@ int main(int argc, char* argv[])
     PDBReader reader(argv[1]);
     reader.read();
     auto structure = reader.parse();
-    std::cout << "structure.size " << structure.size() << std::endl;
+
+    SequenceExtractor seqextr;
     for(auto chain = structure.cbegin(); chain != structure.cend(); ++chain)
     {
-        std::cout << "chain.size " << chain->size() << std::endl;
-        for(auto residue = chain->cbegin(); residue != chain->cend(); ++residue)
-            std::cout << (*residue)->residue() << std::endl;
+        std::cout << "chain " << chain->chain_id() << ": "
+                  << seqextr(*chain) << std::endl;
     }
 
     return EXIT_SUCCESS;
