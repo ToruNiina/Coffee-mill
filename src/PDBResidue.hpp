@@ -21,8 +21,9 @@ class PDBResidue
     PDBResidue(size_type size) : atoms_(size){}
     ~PDBResidue() = default;
 
-    size_type   residue_id() const {return atoms_.front()->residue_id();}
-    std::string residue()    const {return atoms_.front()->residue();}
+    size_type          residue_id() const {return atoms_.front()->residue_id();}
+    const std::string& residue()    const {return atoms_.front()->residue();}
+    const std::string& chain_id()   const {return atoms_.front()->chain_id();}
 
     bool      empty() const {return atoms_.empty();}
     size_type size()  const {return atoms_.size();}
@@ -31,6 +32,8 @@ class PDBResidue
 
     const element_type& front() const {return atoms_.front();}
           element_type& front()       {return atoms_.front();}
+    const element_type& back() const {return atoms_.back();}
+          element_type& back()       {return atoms_.back();}
     const element_type& at(index_type i) const {return atoms_.at(i);}
           element_type& at(index_type i)       {return atoms_.at(i);}
     const element_type& operator[](index_type i) const {return atoms_[i];}
@@ -40,6 +43,12 @@ class PDBResidue
     iterator end()   {return atoms_.end();}
     const_iterator cbegin() const {return atoms_.cbegin();}
     const_iterator cend()   const {return atoms_.cend();}
+
+    void dump() const 
+    {
+        std::cerr << "residue " << this->residue() << std::endl;
+        for(auto item : atoms_) std::cout << *item << std::endl;
+    }
 
   private:
     container_type atoms_;
