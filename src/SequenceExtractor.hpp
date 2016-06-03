@@ -3,7 +3,7 @@
 #include <string>
 #include <map>
 #include "PDBChain.hpp"
-#include "../includes/utility.hpp"
+#include "utility.hpp"
 
 namespace coffeemill
 {

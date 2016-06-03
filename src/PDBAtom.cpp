@@ -1,5 +1,5 @@
 #include "PDBAtom.hpp"
-#include "includes/utility.hpp"
+#include "utility.hpp"
 #include <iomanip>
 
 namespace coffeemill
