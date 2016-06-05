@@ -13,6 +13,7 @@ int main(int argc, char *argv[])
     coffeemill::CommandLine command(argc, argv);
     if(!command.parse())
     {
+        command.print_logo();
         command.print_help();
         return EXIT_FAILURE;
     }
@@ -45,17 +46,17 @@ int main(int argc, char *argv[])
           case coffeemill::CommandLine::JOB::JOIN:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::COMPLEMENTAL:
-            throw std::runtime_error("invalid command");
+            throw std::runtime_error("command not defined");
           case coffeemill::CommandLine::JOB::MUTATE:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::SHOW:
-            throw std::runtime_error("invalid command");
+            throw std::runtime_error("command not defined");
           case coffeemill::CommandLine::JOB::MAKE_CG:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::MAKE_NINFO:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::MAKE_MOVIE:
-            throw std::runtime_error("invalid command");
+            throw std::runtime_error("command not defined");
           default:                           
             throw std::logic_error("never reach here");
         }
