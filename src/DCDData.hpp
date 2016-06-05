@@ -66,6 +66,16 @@ class DCDData
     const header_type&     header() const {return header_;}
           header_type&     header()       {return header_;}
 
+    void push_header(const std::string& message)
+    {
+        if(message.size() == 80)
+            header_.push_back(message);
+        else if(message.size() > 80)
+            throw std::invalid_argument("too long message");
+        else if(message.size() < 80)
+            header_.push_back(message + std::string(80 - message.size()), '=');
+    }
+
   private:
 
     size_type       nset_;
