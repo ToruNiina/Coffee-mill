@@ -145,8 +145,7 @@ void DCDReader::read_head_block1(std::ifstream& dcdfile)
     }
     else
     {
-        std::cout << "Error  : unknown signature : " << cord << std::endl;
-        throw std::invalid_argument("Unknown File Signeture");
+        throw std::invalid_argument("Unknown File Signeture: " + cord);
     }
 
     char *cnset = new char[size_int];
@@ -327,9 +326,8 @@ void DCDReader::read_core(std::ifstream& dcdfile)
            static_cast<std::size_t>(this->data_.nparticle()) != y.size() ||
            static_cast<std::size_t>(this->data_.nparticle()) != z.size())
         {
-            std::cout << "Warning: number of values of coordinate differs"
-                      << " from nparticle" << std::endl;
-            throw std::invalid_argument("error in reading property");
+            throw std::invalid_argument(
+                    "size of coordinate block differs from header");
         }
 
         DCDData::snapshot_type temp_snapshot(this->data_.nparticle());
@@ -350,13 +348,8 @@ std::vector<double> DCDReader::read_coord(std::ifstream& dcdfile)
     int bytes(*reinterpret_cast<int*>(cbytes));
     if(bytes / size_float != this->data_.nparticle())
     {
-        std::cout << "Error  : "
-                  << "dcd file coordinate has "
-                  << bytes << " bytes but nparticle is"
-                  << this->data_.nparticle() << ", and sizeof float is "
-                  << size_float << std::endl;
         throw std::invalid_argument(
-                "dcd: coordinate block has invalid byte-information");
+                "dcd coordinate block size differs from nparticle");
     }
     delete [] cbytes;
 
@@ -374,9 +367,6 @@ std::vector<double> DCDReader::read_coord(std::ifstream& dcdfile)
     dcdfile.read(cbytes_f, size_int);
     if(bytes != *reinterpret_cast<int*>(cbytes_f))
     {
-        std::cout << "Error  : "
-                  << "dcd file coordinate header-byte-information "
-                  << "is not same as footer-byte-information" <<std::endl;
         throw std::invalid_argument(
                 "dcd coordinate block has invalid byte-information");
     }
