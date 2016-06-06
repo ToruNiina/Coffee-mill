@@ -116,12 +116,25 @@ void CommandLine::print_help() const
     std::cerr << "Coffee-Mill" << std::endl;
     std::cerr << "Usage: mill [command] [subcommand]" << std::endl;
     std::cerr << std::endl;
-    std::cerr << "command-line interface"         << std::endl;
-    std::cerr << "commands"                       << std::endl;
-    std::cerr << "  pdb   - handle pdb files"     << std::endl;
-    std::cerr << "  dna   - operate dna sequence" << std::endl;
-    std::cerr << "  dcd   - handle dcd files"     << std::endl;
-    std::cerr << "  ninfo - handle ninfo files"   << std::endl;
+    std::cerr << "command-line interface" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "list of commands" << std::endl;
+    std::cerr << "\t" << PDB_MODE   << std::endl;
+    std::cerr << "\t" << DNA_MODE   << std::endl;
+    std::cerr << "\t" << DCD_MODE   << std::endl;
+    std::cerr << "\t" << NINFO_MODE << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "subcommands"    << std::endl;
+    std::cerr << "\t" << JOB_SEQ          << std::endl;
+    std::cerr << "\t" << JOB_JOIN         << std::endl;
+    std::cerr << "\t" << JOB_SHOW         << std::endl;
+    std::cerr << "\t" << JOB_COMPLEMENTAL << std::endl;
+    std::cerr << "\t" << JOB_MUTATE       << std::endl;
+    std::cerr << "\t" << JOB_MAKE_CG      << std::endl;
+    std::cerr << "\t" << JOB_MAKE_NINFO   << std::endl;
+    std::cerr << "\t" << JOB_MAKE_MOVIE   << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "to see manual, run `mill --man`." << std::endl;
     return;
 }
 
