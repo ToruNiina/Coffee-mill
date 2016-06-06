@@ -65,8 +65,8 @@ class DCDData
     const_iterator cbegin() const {return trajectory_.cbegin();}
     const_iterator cend()   const {return trajectory_.cend();}
 
-    const header_type&     header() const {return header_;}
-          header_type&     header()       {return header_;}
+    const header_type& header() const {return header_;}
+          header_type& header()       {return header_;}
 
     void push_header(const std::string& message)
     {
