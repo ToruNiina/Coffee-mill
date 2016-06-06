@@ -30,7 +30,7 @@ void DCDJoiner::join() const
         if(this->redundancy_)
             num_steps += reader.data().nstep();
         else
-            num_steps += reader.data().nstep() - 2;
+            num_steps += reader.data().nstep() - 1;
     }
     data.nstep() = num_steps;
 
@@ -54,7 +54,7 @@ void DCDJoiner::join() const
         }
         else
         {
-            for(auto snapshot = reader.data().cbegin() + 2;
+            for(auto snapshot = reader.data().cbegin() + 1;
                     snapshot != reader.data().cend(); ++snapshot)
             {
                 writer.write_snapshot(*snapshot);
