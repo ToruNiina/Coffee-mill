@@ -34,6 +34,8 @@ class CommandLine
     JOB  job() const;
     std::string file() const;
 
+    const std::string& at(std::size_t i) const {return argv_.at(i);}
+
   public:
 
     enum class MODE
