@@ -18,9 +18,11 @@ class DCDReader
     {}
     ~DCDReader() = default;
 
-    void read_file();
-    void read_file(const std::string& fname);
-    bool validate_filesize();
+    void read();
+    void read(const std::string& fname);
+
+    void read_header();
+    void read_header(const std::string& fname);
 
     const std::string& filename() const {return filename_;}
           std::string& filename()       {return filename_;}
@@ -29,6 +31,7 @@ class DCDReader
 
   private:
 
+    bool validate_filesize();
     void read_header(std::ifstream& dcdfile);
     void read_core(std::ifstream& dcdfile);
     void read_head_block1(std::ifstream& dcdfile);

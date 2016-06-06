@@ -5,7 +5,7 @@
 namespace coffeemill
 {
 
-void DCDWriter::write_file(const std::string& filename)
+void DCDWriter::write(const std::string& filename)
 {
     if(filename_ != filename)
     {
@@ -15,11 +15,11 @@ void DCDWriter::write_file(const std::string& filename)
     }
 
     filename_ = filename;
-    write_file();
+    this->write();
     return;
 }
 
-void DCDWriter::write_file()
+void DCDWriter::write()
 {
     if(header_written)
         throw std::invalid_argument("file is partially written");

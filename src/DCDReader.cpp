@@ -5,14 +5,14 @@
 namespace coffeemill
 {
 
-void DCDReader::read_file(const std::string& fname)
+void DCDReader::read(const std::string& fname)
 {
     filename_ = fname;
-    read_file();
+    this->read();
     return;
 }
 
-void DCDReader::read_file()
+void DCDReader::read()
 {
     if(filename_.empty())
     {
@@ -70,6 +70,20 @@ void DCDReader::read_file()
               <<  ") reading completed" << std::endl;
 #endif
 
+    return;
+}
+
+void DCDReader::read_header(const std::string& filename)
+{
+    filename_ = filename;
+    return this->read_header();
+}
+
+void DCDReader::read_header()
+{
+    std::ifstream dcdfile(filename_, std::ios::binary);
+    read_header(dcdfile);
+    dcdfile.close();
     return;
 }
 

@@ -22,8 +22,8 @@ class DCDWriter
     {}
     ~DCDWriter() = default;
 
-    void write_file();
-    void write_file(const std::string& filename);
+    void write();
+    void write(const std::string& filename);
     bool header_is_written() const {return header_written;}
 
     // dcddata required
