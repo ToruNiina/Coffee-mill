@@ -113,7 +113,6 @@ void CommandLine::print_logo() const
 
 void CommandLine::print_help() const
 {
-    std::cerr << "Coffee-Mill" << std::endl;
     std::cerr << "Usage: mill [mode] [job]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "command-line interface" << std::endl;
@@ -127,6 +126,7 @@ void CommandLine::print_help() const
     std::cerr << "jobs"    << std::endl;
     std::cerr << "\t" << JOB_SEQ          << std::endl;
     std::cerr << "\t" << JOB_JOIN         << std::endl;
+    std::cerr << "\t" << JOB_SPLIT        << std::endl;
     std::cerr << "\t" << JOB_SHOW         << std::endl;
     std::cerr << "\t" << JOB_COMPLEMENTAL << std::endl;
     std::cerr << "\t" << JOB_MUTATE       << std::endl;
