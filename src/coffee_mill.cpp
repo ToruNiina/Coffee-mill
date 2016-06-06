@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
     coffeemill::CommandLine command(argc, argv);
     if(!command.parse())
     {
-        command.print_logo();
+        command.print_logo<MAJOR_VERSION, MINOR_VERSION>();
         command.print_help();
         return EXIT_FAILURE;
     }
