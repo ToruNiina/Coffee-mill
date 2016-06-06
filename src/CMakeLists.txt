@@ -2,6 +2,9 @@ set(CPP_FILES
     InputFileReader.cpp
     PDBAtom.cpp
     PDBReader.cpp
+    DCDReader.cpp
+    DCDWriter.cpp
+    DCDJoiner.cpp
     )
 
 include_directories("${CMAKE_SOURCE_DIR}/includes/")

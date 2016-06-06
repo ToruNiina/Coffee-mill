@@ -1,4 +1,6 @@
+#include "InputFileReader.hpp"
 #include "PDBReader.hpp"
+#include "DCDJoiner.hpp"
 #include "SequenceExtractor.hpp"
 #include "coffee_mill.hpp"
 #ifndef MAJOR_VERSION
@@ -28,17 +30,18 @@ int main(int argc, char *argv[])
         {
           case coffeemill::CommandLine::JOB::SEQ:
             {
-            
             coffeemill::PDBReader reader(command.file());
             reader.read();
             auto structure = reader.parse();
 
             coffeemill::SequenceExtractor seqextr;
-            for(auto chain = structure.cbegin(); chain != structure.cend(); ++chain)
+            for(auto chain = structure.cbegin();
+                    chain != structure.cend(); ++chain)
             {
                 std::cout << "chain " << chain->chain_id() << ": "
                           << seqextr(*chain) << std::endl;
             }
+
             break;
             }// job pdb::seq
           case coffeemill::CommandLine::JOB::SPLIT:
@@ -65,15 +68,50 @@ int main(int argc, char *argv[])
       case coffeemill::CommandLine::MODE::DNA:
         {
             throw std::runtime_error("not implemented yet");
-        }
+        }// mode dna
       case coffeemill::CommandLine::MODE::DCD:
         {
+        command.print_logo<MAJOR_VERSION, MINOR_VERSION>();
+
+        switch(command.job())
+        {
+          case coffeemill::CommandLine::JOB::SEQ:
+            {
+            throw std::runtime_error("command not defined");
+            }
+          case coffeemill::CommandLine::JOB::SPLIT:
+            {
             throw std::runtime_error("not implemented yet");
+            }
+          case coffeemill::CommandLine::JOB::JOIN:
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+            coffeemill::DCDJoiner joiner(input);
+            joiner.join();
+            break;
+            }
+          case coffeemill::CommandLine::JOB::COMPLEMENTAL:
+            throw std::runtime_error("command not defined");
+          case coffeemill::CommandLine::JOB::MUTATE:
+            throw std::runtime_error("not implemented yet");
+          case coffeemill::CommandLine::JOB::SHOW:
+            throw std::runtime_error("command not defined");
+          case coffeemill::CommandLine::JOB::MAKE_CG:
+            throw std::runtime_error("command not defined");
+          case coffeemill::CommandLine::JOB::MAKE_NINFO:
+            throw std::runtime_error("not implemented yet");
+          case coffeemill::CommandLine::JOB::MAKE_MOVIE:
+            throw std::runtime_error("not implemented yet");
+          default:
+            throw std::logic_error("never reach here");
         }
+        break;
+        }// mode dcd
       case coffeemill::CommandLine::MODE::NINFO:
         {
             throw std::runtime_error("not implemented yet");
-        }
+        }// mode ninfo
       case coffeemill::CommandLine::MODE::HELP:
         {
             command.print_help();
