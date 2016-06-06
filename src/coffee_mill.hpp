@@ -184,86 +184,36 @@ bool CommandLine::parse()
     if(argc_ < 3) return false;
 
     if(argv_[1] == PDB_MODE)
-    {
         mode_ = MODE::PDB;
-        if(argv_[2] == JOB_SEQ)
-        {
-            job_ = JOB::SEQ;
-            return true;
-        }
-        else if(argv_[2] == JOB_SPLIT)
-        {
-            job_ = JOB::SPLIT;
-            return true;
-        }
-        else if(argv_[2] == JOB_MAKE_CG)
-        {
-            job_ = JOB::MAKE_CG;
-            return true;
-        }
-        else if(argv_[2] == JOB_MAKE_NINFO)
-        {
-            job_ = JOB::MAKE_NINFO;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
     else if(argv_[1] == DNA_MODE)
-    {
-        if(argv_[2] == JOB_COMPLEMENTAL)
-        {
-            job_ = JOB::COMPLEMENTAL;
-            return true;
-        }
-        else if(argv_[2] == JOB_MUTATE)
-        {
-            job_ = JOB::MUTATE;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+        mode_ = MODE::DNA;
     else if(argv_[1] == NINFO_MODE)
-    {
-        if(argv_[2] == JOB_SPLIT)
-        {
-            job_ = JOB::SPLIT;
-            return true;
-        }
-        else if(argv_[2] == JOB_SHOW)
-        {
-            job_ = JOB::SHOW;
-            return true;
-        }
-        else
-            return false;   
-    }
+        mode_ = MODE::NINFO;
     else if(argv_[1] == DCD_MODE)
-    {
-        if(argv_[2] == JOB_JOIN)
-        {
-            job_ = JOB::JOIN;
-            return true;
-        }
-        else if(argv_[2] == JOB_MAKE_MOVIE)
-        {
-            job_ = JOB::MAKE_MOVIE;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+        mode_ = MODE::DCD;
     else
-    {
         return false;
-    }
+
+    if(argv_[2] == JOB_SEQ)
+        job_ = JOB::SEQ;
+    else if(argv_[2] == JOB_SPLIT)
+        job_ = JOB::SPLIT;
+    else if(argv_[2] == JOB_JOIN)
+        job_ = JOB::JOIN;
+    else if(argv_[2] == JOB_COMPLEMENTAL)
+        job_ = JOB::COMPLEMENTAL;
+    else if(argv_[2] == JOB_MUTATE)
+        job_ = JOB::MUTATE;
+    else if(argv_[2] == JOB_SHOW)
+        job_ = JOB::SHOW;
+    else if(argv_[2] == JOB_MAKE_CG)
+        job_ = JOB::MAKE_CG;
+    else if(argv_[2] == JOB_MAKE_NINFO)
+        job_ = JOB::MAKE_NINFO;
+    else
+        return false;   
+
+    return true;
 }
 
 CommandLine::MODE CommandLine::mode() const
