@@ -20,6 +20,8 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    try
+    {
     switch(command.mode())
     {
       case coffeemill::CommandLine::MODE::PDB:
@@ -92,7 +94,9 @@ int main(int argc, char *argv[])
             break;
             }
           case coffeemill::CommandLine::JOB::COMPLEMENTAL:
+            {
             throw std::runtime_error("command not defined");
+            }
           case coffeemill::CommandLine::JOB::MUTATE:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::SHOW:
@@ -124,6 +128,12 @@ int main(int argc, char *argv[])
         }// mode manual
       default:
         throw std::logic_error("never reach here");
+    }// switch
+    }// try
+    catch(std::exception& except)
+    {
+        std::cerr << "Error: " << except.what() << std::endl;
+        return EXIT_FAILURE;
     }
 
     return EXIT_SUCCESS;
