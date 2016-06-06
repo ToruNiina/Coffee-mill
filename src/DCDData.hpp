@@ -75,7 +75,7 @@ class DCDData
         else if(message.size() > 80)
             throw std::invalid_argument("too long message");
         else if(message.size() < 80)
-            header_.push_back(message + std::string(80 - message.size()), '=');
+            header_.push_back(message + std::string(80 - message.size(), '='));
     }
 
   private:
