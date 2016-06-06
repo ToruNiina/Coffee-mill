@@ -74,6 +74,8 @@ class InputFileReader
     bool is_closed(const std::string& val,
                    const char open, const char close) const;
 
+  public:
+
     template<typename T_val>
     T_val get_as(const std::string& val) const;
 
