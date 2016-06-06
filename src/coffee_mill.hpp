@@ -114,17 +114,17 @@ void CommandLine::print_logo() const
 void CommandLine::print_help() const
 {
     std::cerr << "Coffee-Mill" << std::endl;
-    std::cerr << "Usage: mill [command] [subcommand]" << std::endl;
+    std::cerr << "Usage: mill [mode] [job]" << std::endl;
     std::cerr << std::endl;
     std::cerr << "command-line interface" << std::endl;
     std::cerr << std::endl;
-    std::cerr << "list of commands" << std::endl;
+    std::cerr << "list of modes" << std::endl;
     std::cerr << "\t" << PDB_MODE   << std::endl;
     std::cerr << "\t" << DNA_MODE   << std::endl;
     std::cerr << "\t" << DCD_MODE   << std::endl;
     std::cerr << "\t" << NINFO_MODE << std::endl;
     std::cerr << std::endl;
-    std::cerr << "subcommands"    << std::endl;
+    std::cerr << "jobs"    << std::endl;
     std::cerr << "\t" << JOB_SEQ          << std::endl;
     std::cerr << "\t" << JOB_JOIN         << std::endl;
     std::cerr << "\t" << JOB_SHOW         << std::endl;
@@ -134,7 +134,8 @@ void CommandLine::print_help() const
     std::cerr << "\t" << JOB_MAKE_NINFO   << std::endl;
     std::cerr << "\t" << JOB_MAKE_MOVIE   << std::endl;
     std::cerr << std::endl;
-    std::cerr << "to see manual, run `mill --man`." << std::endl;
+    std::cerr << "some combination of mode and job is not defined." << std::endl;
+    std::cerr << "to see more information, run `mill --man`."       << std::endl;
     return;
 }
 
@@ -223,6 +224,8 @@ bool CommandLine::parse()
         job_ = JOB::MAKE_CG;
     else if(argv_[2] == JOB_MAKE_NINFO)
         job_ = JOB::MAKE_NINFO;
+    else if(argv_[2] == JOB_MAKE_MOVIE)
+        job_ = JOB::MAKE_MOVIE;
     else
         return false;   
 

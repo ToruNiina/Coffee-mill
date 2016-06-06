@@ -1,6 +1,7 @@
 #include "InputFileReader.hpp"
 #include "PDBReader.hpp"
 #include "DCDJoiner.hpp"
+#include "DCDtoMovie.hpp"
 #include "SequenceExtractor.hpp"
 #include "coffee_mill.hpp"
 #ifndef MAJOR_VERSION
@@ -106,7 +107,13 @@ int main(int argc, char *argv[])
           case coffeemill::CommandLine::JOB::MAKE_NINFO:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::MAKE_MOVIE:
-            throw std::runtime_error("not implemented yet");
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+            coffeemill::DCDtoMovie dcd2movie(input);
+            dcd2movie.convert();
+            break;
+            }
           default:
             throw std::logic_error("never reach here");
         }

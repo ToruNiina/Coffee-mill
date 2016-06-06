@@ -5,6 +5,7 @@ set(CPP_FILES
     DCDReader.cpp
     DCDWriter.cpp
     DCDJoiner.cpp
+    DCDtoMovie.cpp
     )
 
 include_directories("${CMAKE_SOURCE_DIR}/includes/")
