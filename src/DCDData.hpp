@@ -42,6 +42,8 @@ class DCDData
     size_type& nparticle()       {return nparticle_;}
     time_type  delta_t() const {return delta_t_;}
     time_type& delta_t()       {return delta_t_;}
+    const string_type& signeture() const {return signeture_;}
+          string_type& signeture()       {return signeture_;}
 
     const snapshot_type& front() const {return trajectory_.front();}
           snapshot_type& front()       {return trajectory_.front();}
@@ -86,6 +88,7 @@ class DCDData
     size_type       verCHARMM_;  // version of CHARMM (usually unused)
     size_type       nparticle_;  // total number of particle
     time_type       delta_t_;
+    string_type     signeture_ = "CORD"; //!< CORD or VELO
     header_type     header_;
     trajectory_type trajectory_;
 };
