@@ -25,6 +25,8 @@ void DCDWriter::write()
         throw std::invalid_argument("file is partially written");
 
     std::ofstream dcdfile(this->filename_, std::ios::binary);
+    if(!dcdfile.good())
+        throw std::runtime_error("file open error: " + filename_);
 
     write_header(dcdfile);
     write_core(dcdfile);
@@ -43,6 +45,9 @@ void DCDWriter::write_header()
                   << "but now you trying to re-write header" << std::endl;
 
     std::ofstream dcdfile(this->filename_, std::ios::binary);
+    if(!dcdfile.good())
+        throw std::runtime_error("file open error: " + filename_);
+
     write_header(dcdfile);
     dcdfile.close();
 
@@ -198,8 +203,8 @@ void DCDWriter::write_snapshot(const snapshot_type& snapshot)
         throw std::invalid_argument("Error: writing DCD file without header");
 
     std::ofstream dcdfile(this->filename_, std::ios::binary | std::ios::app);
-    if(dcdfile.fail())
-        throw std::invalid_argument("file open error: " + filename_);
+    if(!dcdfile.good())
+        throw std::runtime_error("file open error: " + filename_);
 
     write_snapshot(dcdfile, snapshot);
 

@@ -20,6 +20,10 @@ void DCDReader::read()
     }
 
     std::ifstream dcdfile(filename_, std::ios::binary);
+    if(!dcdfile.good())
+    {
+        throw std::runtime_error("file open error: " + filename_);
+    }
 
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : DCD file reading start" << std::endl;
@@ -82,6 +86,8 @@ void DCDReader::read_header(const std::string& filename)
 void DCDReader::read_header()
 {
     std::ifstream dcdfile(filename_, std::ios::binary);
+    if(!dcdfile.good())
+        throw std::runtime_error("file open error: " + filename_);
     read_header(dcdfile);
     dcdfile.close();
     return;
