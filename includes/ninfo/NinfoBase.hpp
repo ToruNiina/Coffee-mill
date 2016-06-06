@@ -1,166 +1,134 @@
 #ifndef COFFEE_MILL_NINFO_BASE
 #define COFFEE_MILL_NINFO_BASE
 #include <string>
+#include <array>
 #include <vector>
 #include <iostream>
-#include <fstream>
 #include <sstream>
 #include <iomanip>
-#include <stdexcept>
-#include <memory>
-#include "NinfoDef.hpp"
 
 namespace coffeemill
 {
 
-    class LineBase
+template<std::size_t N_bodies, std::size_t N_coefs>
+class NinfoData
+{
+  public:
+    using size_type    = std::size_t;
+    using index_type   = size_type;
+    using coef_type    = double;
+    using units_type   = std::array<index_type, 2>;
+    using indices_type = std::array<index_type, N_bodies>;
+    using coefs_type   = std::array<coef_type, N_coefs>;
+
+    constexpr static std::size_t num_bodies = N_bodies;
+    constexpr static std::size_t num_coefs = N_coefs;
+
+  public:
+    NinfoData(){}
+    ~NinfoData() = default;
+
+    const std::string& header() const {return header_;}
+          std::string& header()       {return header_;}
+
+    size_type  id() const {return id_;}
+    size_type& id()       {return id_;}
+
+    const indices_type& units() const {return units_;}
+          indices_type& units()       {return units_;}
+    const indices_type& global_imps() const {return global_mass_points_;}
+          indices_type& global_imps()       {return global_mass_points_;}
+    const indices_type& local_imps() const {return local_mass_points_;}
+          indices_type& local_imps()       {return local_mass_points_;}
+
+    const std::vector<std::string>& kind() const {return kind_;}
+          std::vector<std::string>& kind()       {return kind_;}
+
+  private:
+
+    std::size_t  id_;
+    std::string  header_;
+    units_type units_;
+    indices_type global_mass_points_;
+    indices_type local_mass_points_;
+    coefs_type   coefs_;
+    std::vector<std::string> kind_;
+};
+
+using NinfoBond      = NinfoData<2, 4>;
+using NinfoAngl      = NinfoData<3, 4>;
+using NinfoAicg13    = NinfoData<3, 5>;
+using NinfoDihd      = NinfoData<4, 5>;
+using NinfoAicg14    = NinfoData<4, 5>;
+using NinfoContact   = NinfoData<2, 4>;
+using NinfoBasePair  = NinfoData<2, 4>;
+using NinfoBaseStuck = NinfoData<2, 4>;
+
+template<std::size_t N_bodies, std::size_t N_coefs> 
+std::ostream operator<<(std::ostream& os,
+                        const NinfoData<N_bodies, N_coefs>& ninfo)
+{
+    os << ninfo.header();
+    os << std::setw(7) << std::right << ninfo.id();
+    for(auto iter = ninfo.units().cbegin();
+            iter != ninfo.units().cend(); ++iter)
+        os << std::setw(7) << std::right << *iter;
+    for(auto iter = ninfo.global_imps().cbegin();
+            iter != ninfo.global_imps().cend(); ++iter)
+        os << std::setw(7) << std::right << *iter;
+    for(auto iter = ninfo.local_imps().cbegin();
+            iter != ninfo.local_imps().cend(); ++iter)
+        os << std::setw(7) << std::right << *iter;
+    for(auto iter = ninfo.coefs().cbegin();
+            iter != ninfo.coefs().cend(); ++iter)
+        os << std::setw(13) << std::right << std::fixed
+           << std::setprecision(4) << *iter;
+
+    os << " ";
+    for(auto iter = ninfo.kind().cbegin();
+            iter != ninfo.kind().cend(); ++iter)
+    os << *iter << " ";
+
+    return os;
+}
+
+//! read one line using std::getline
+template<std::size_t N_bodies, std::size_t N_coefs> 
+std::istream operator>>(std::istream& is,
+                        NinfoData<N_bodies, N_coefs>& ninfo)
+{
+    std::string line;
+    std::getline(is, line);
+    std::istringstream iss(line);
+
+    iss >> ninfo.header();
+    iss >> ninfo.id();
+    for(auto iter = ninfo.units().begin();
+            iter != ninfo.units().end(); ++iter)
+        iss >> *iter;
+
+    for(auto iter = ninfo.global_imps().begin();
+            iter != ninfo.global_imps().end(); ++iter)
+        iss >> *iter;
+
+    for(auto iter = ninfo.local_imps().begin();
+            iter != ninfo.local_imps().end(); ++iter)
+        iss >> *iter;
+
+    for(auto iter = ninfo.coefs().begin();
+            iter != ninfo.coefs().end(); ++iter)
+        iss >> *iter;
+
+    while(!iss.eof())
     {
-
-    public:
-        LineBase(){}
-        virtual ~LineBase(){}
-
-        virtual LineType readline(std::ifstream& file) = 0;
-        virtual void read_stream(std::istream& is) = 0;
-        virtual void write_stream(std::ostream& os) = 0;
-
-        virtual int get_index() const = 0;
-        virtual int get_iunit1() const = 0;
-        virtual int get_iunit2() const = 0;
-        virtual std::vector<int> get_imps() const = 0;
-        virtual std::vector<int> get_impuns() const = 0;
-        virtual double get_nat() const = 0;
-        virtual double get_factor() const = 0;
-        // correct or dummy
-        virtual double get_mgo() const = 0;
-        virtual double get_coef() const = 0;
-        // wid in aicg or coef3 in dihd
-        virtual double get_wid() const;
-        virtual double get_coef3() const;
-        virtual int get_nhb_bp() const;
-        virtual std::string get_type() const = 0;
-        virtual BlockType get_BlockType() const;
-        virtual std::string get_ClassName() const;
-
-        virtual void set_index(int i) = 0;
-        virtual void set_iunit1(int i) = 0;
-        virtual void set_iunit2(int i) = 0;
-        virtual void set_imps(std::vector<int> imps) = 0;
-        virtual void set_impuns(std::vector<int> impuns) = 0;
-        virtual void set_nat(double n) = 0;
-        virtual void set_factor(double f) = 0;
-        virtual void set_mgo(double m) = 0;// correct or dummy
-        virtual void set_coef(double c) = 0;
-        virtual void set_coef3(double c3);
-        virtual void set_wid(double w);
-        virtual void set_nhb_bp(int n);
-        virtual void set_type(std::string s) = 0;
-
-    };
-
-    double LineBase::get_wid() const
-    {
-        std::cout << "Warning: this does not have wid_gauss. return 0." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return 0e0;
+        std::string kind;
+        iss >> kind;
+        ninfo.kind().push_back(kind);
     }
 
-    double LineBase::get_coef3() const
-    {
-        std::cout << "Warning: this does not have coef_3. return 0." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return 0e0;
-    }
+    return is;
+}
 
-    int LineBase::get_nhb_bp() const
-    {
-        std::cout << "Warning: this does not have nhb_bp. return 0." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return 0;
-    }
-
-    void LineBase::set_wid(double w)
-    {
-        std::cout << "Warning: this does not have wid_gauss. do nothing." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return;
-    }
-
-    void LineBase::set_coef3(double c3)
-    {
-        std::cout << "Warning: this does not have coef_3. do nothing." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return;
-    }
-
-    void LineBase::set_nhb_bp(int n)
-    {
-        std::cout << "Warning: this does not have nhb_bp. do nothing." << std::endl;
-        std::cout << "Class: " << get_ClassName() << std::endl;
-        return;
-    }
-
-    BlockType LineBase::get_BlockType() const
-    {
-        return N_BASE;
-    }
-
-    std::string LineBase::get_ClassName() const
-    {
-        return "LineBase";
-    }
-
-    typedef std::shared_ptr<LineBase> LineSptr;
-    typedef std::weak_ptr<LineBase> LineWptr;
-
-
-    class BlockBase
-    {
-    protected:
-        BlockType type;
-
-    public:
-        std::vector<LineSptr> lines;
-
-    public:
-        BlockBase(BlockType T): type(T){}
-        virtual ~BlockBase(){}
-
-        void push_back(LineSptr line);
-        BlockType get_BlockType() const { return type; }
-        int size() const { return lines.size(); }
-        std::vector<LineSptr>::iterator begin(){ return lines.begin(); }
-        std::vector<LineSptr>::iterator end(){ return lines.end(); }
-        void set_iunits(iUnits iunit);
-
-        virtual void write_block(std::ofstream& os) = 0;
-        virtual void read_block(std::ifstream& is) = 0;
-
-    };
-
-    void BlockBase::push_back(LineSptr line)
-    {
-        if( line->get_BlockType() != type )
-            throw std::invalid_argument("Block must not contain other type line");
-
-        lines.push_back(line);
-        return;
-    }
-
-    void BlockBase::set_iunits(iUnits iunit)
-    {
-        for(auto iter = lines.begin(); iter != lines.end(); ++iter)
-        {
-            (*iter)->set_iunit1(iunit.first);
-            (*iter)->set_iunit2(iunit.second);
-        }
-        return;
-    }
-
-
-    typedef std::shared_ptr<BlockBase> BlockSptr;
-    typedef std::weak_ptr<BlockBase> BlockWptr;
-    typedef std::vector<BlockSptr> NinfoData;
 
 }
 #endif //COFFEE_MILL_NINFO_BASE
