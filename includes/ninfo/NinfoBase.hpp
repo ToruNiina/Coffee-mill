@@ -44,7 +44,7 @@ class NinfoBase
 };
 
 template<std::size_t N_bodies, std::size_t N_coefs>
-class NinfoData : public NinfoBase
+class NinfoElement : public NinfoBase
 {
   public:
     using base_type    = NinfoBase;
@@ -60,8 +60,8 @@ class NinfoData : public NinfoBase
 
   public:
 
-    NinfoData(){}
-    ~NinfoData() override = default;
+    NinfoElement(){}
+    ~NinfoElement() override = default;
 
     size_type bodies() const override {return num_bodies;}
     size_type coefs()  const override {return num_coefs;}
@@ -101,18 +101,31 @@ class NinfoData : public NinfoBase
     std::vector<std::string> kind_;
 };
 
-using NinfoBond      = NinfoData<2, 4>;
-using NinfoAngl      = NinfoData<3, 4>;
-using NinfoAicg13    = NinfoData<3, 5>;
-using NinfoDihd      = NinfoData<4, 5>;
-using NinfoAicg14    = NinfoData<4, 5>;
-using NinfoContact   = NinfoData<2, 4>;
-using NinfoBasePair  = NinfoData<2, 4>;
-using NinfoBaseStuck = NinfoData<2, 4>;
+enum class NinfoKind
+{
+    Bond,
+    Angl,
+    Aicg13,
+    Dihd,
+    Aicg14,
+    Contact,
+    BasePair,
+    BaseStuck,
+    Unknown,
+};
+
+using NinfoBond      = NinfoElement<2, 4>;
+using NinfoAngl      = NinfoElement<3, 4>;
+using NinfoAicg13    = NinfoElement<3, 5>;
+using NinfoDihd      = NinfoElement<4, 5>;
+using NinfoAicg14    = NinfoElement<4, 5>;
+using NinfoContact   = NinfoElement<2, 4>;
+using NinfoBasePair  = NinfoElement<2, 4>;
+using NinfoBaseStuck = NinfoElement<2, 4>;
 
 template<std::size_t N_bodies, std::size_t N_coefs> 
 std::ostream operator<<(std::ostream& os,
-                        const NinfoData<N_bodies, N_coefs>& ninfo)
+                        const NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();
@@ -144,7 +157,7 @@ std::ostream operator<<(std::ostream& os,
 //! read one line using std::getline
 template<std::size_t N_bodies, std::size_t N_coefs> 
 std::istream operator>>(std::istream& is,
-                        NinfoData<N_bodies, N_coefs>& ninfo)
+                        NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     std::string line;
     std::getline(is, line);
