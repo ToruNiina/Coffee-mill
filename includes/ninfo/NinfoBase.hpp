@@ -10,47 +10,93 @@
 namespace coffeemill
 {
 
-template<std::size_t N_bodies, std::size_t N_coefs>
-class NinfoData
+class NinfoBase
 {
   public:
+
     using size_type    = std::size_t;
     using index_type   = size_type;
     using coef_type    = double;
+
+  public:
+
+    NinfoBase(){}
+    virtual ~NinfoBase() = default;
+
+    virtual const std::string& header() const = 0;
+    virtual       std::string& header()       = 0;
+
+    virtual size_type bodies() const = 0;
+    virtual size_type coefs()  const = 0;
+
+    virtual index_type  id() const = 0;
+    virtual index_type& id()       = 0;
+
+    virtual index_type  unit_at(index_type i)      const = 0;
+    virtual index_type& unit_at(index_type i)            = 0;
+    virtual index_type  global_imp_at(index_type i) const = 0;
+    virtual index_type& global_imp_at(index_type i)       = 0;
+    virtual index_type  local_imp_at(index_type i)  const = 0;
+    virtual index_type& local_imp_at(index_type i)        = 0;
+
+    virtual const std::vector<std::string>& kind()  const = 0;
+    virtual       std::vector<std::string>& kind()        = 0;
+};
+
+template<std::size_t N_bodies, std::size_t N_coefs>
+class NinfoData : public NinfoBase
+{
+  public:
+    using base_type    = NinfoBase;
+    using size_type    = base_type::size_type;
+    using index_type   = base_type::index_type;
+    using coef_type    = base_type::coef_type;
     using units_type   = std::array<index_type, 2>;
     using indices_type = std::array<index_type, N_bodies>;
     using coefs_type   = std::array<coef_type, N_coefs>;
 
-    constexpr static std::size_t num_bodies = N_bodies;
-    constexpr static std::size_t num_coefs = N_coefs;
+    constexpr static size_type num_bodies = N_bodies;
+    constexpr static size_type num_coefs  = N_coefs;
 
   public:
+
     NinfoData(){}
-    ~NinfoData() = default;
+    ~NinfoData() override = default;
 
-    const std::string& header() const {return header_;}
-          std::string& header()       {return header_;}
+    size_type bodies() const override {return num_bodies;}
+    size_type coefs()  const override {return num_coefs;}
 
-    size_type  id() const {return id_;}
-    size_type& id()       {return id_;}
+    const std::string& header() const override {return header_;}
+          std::string& header()       override {return header_;}
+
+    index_type  id() const override {return id_;}
+    index_type& id()       override {return id_;}
 
     const indices_type& units() const {return units_;}
           indices_type& units()       {return units_;}
-    const indices_type& global_imps() const {return global_mass_points_;}
-          indices_type& global_imps()       {return global_mass_points_;}
-    const indices_type& local_imps() const {return local_mass_points_;}
-          indices_type& local_imps()       {return local_mass_points_;}
+    index_type  unit_at(index_type i) const override {return units_.at(i);}
+    index_type& unit_at(index_type i)       override {return units_.at(i);}
 
-    const std::vector<std::string>& kind() const {return kind_;}
-          std::vector<std::string>& kind()       {return kind_;}
+    const indices_type& global_imps() const {return g_imp_;}
+          indices_type& global_imps()       {return g_imp_;}
+    index_type  global_imp_at(index_type i) const override {return g_imp_.at(i);}
+    index_type& global_imp_at(index_type i)       override {return g_imp_.at(i);}
+
+    const indices_type& local_imps() const {return l_imp_;}
+          indices_type& local_imps()       {return l_imp_;}
+    index_type  local_imp_at(index_type i) const override {return l_imp_.at(i);}
+    index_type& local_imp_at(index_type i)       override {return l_imp_.at(i);}
+
+    const std::vector<std::string>& kind() const override {return kind_;}
+          std::vector<std::string>& kind()       override {return kind_;}
 
   private:
 
-    std::size_t  id_;
+    index_type   id_;
     std::string  header_;
-    units_type units_;
-    indices_type global_mass_points_;
-    indices_type local_mass_points_;
+    units_type   units_;
+    indices_type g_imp_;
+    indices_type l_imp_;
     coefs_type   coefs_;
     std::vector<std::string> kind_;
 };
@@ -70,24 +116,27 @@ std::ostream operator<<(std::ostream& os,
 {
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();
+
     for(auto iter = ninfo.units().cbegin();
             iter != ninfo.units().cend(); ++iter)
         os << std::setw(7) << std::right << *iter;
+
     for(auto iter = ninfo.global_imps().cbegin();
             iter != ninfo.global_imps().cend(); ++iter)
         os << std::setw(7) << std::right << *iter;
+
     for(auto iter = ninfo.local_imps().cbegin();
             iter != ninfo.local_imps().cend(); ++iter)
         os << std::setw(7) << std::right << *iter;
+
     for(auto iter = ninfo.coefs().cbegin();
             iter != ninfo.coefs().cend(); ++iter)
         os << std::setw(13) << std::right << std::fixed
            << std::setprecision(4) << *iter;
 
-    os << " ";
     for(auto iter = ninfo.kind().cbegin();
             iter != ninfo.kind().cend(); ++iter)
-    os << *iter << " ";
+        os << " " << *iter;
 
     return os;
 }
