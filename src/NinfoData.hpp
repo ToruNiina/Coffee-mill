@@ -47,6 +47,18 @@ class NinfoData
   private:
 
     container_type data_;
+
+  public:
+
+    static const std::string bond;
+    static const std::string angl;
+    static const std::string dihd;
+    static const std::string aicg13;
+    static const std::string aicg14;
+    static const std::string aicg14p;
+    static const std::string contact;
+    static const std::string basepair;
+    static const std::string basestack;
 };
 
 
