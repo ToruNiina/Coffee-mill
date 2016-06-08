@@ -108,9 +108,10 @@ enum class NinfoKind
     Aicg13,
     Dihd,
     Aicg14,
+    Aicg14p,
     Contact,
     BasePair,
-    BaseStuck,
+    BaseStack,
     Unknown,
 };
 
@@ -119,9 +120,10 @@ using NinfoAngl      = NinfoElement<3, 4>;
 using NinfoAicg13    = NinfoElement<3, 5>;
 using NinfoDihd      = NinfoElement<4, 5>;
 using NinfoAicg14    = NinfoElement<4, 5>;
+using NinfoAicg14p   = NinfoElement<4, 5>;
 using NinfoContact   = NinfoElement<2, 4>;
 using NinfoBasePair  = NinfoElement<2, 4>;
-using NinfoBaseStuck = NinfoElement<2, 4>;
+using NinfoBaseStack = NinfoElement<2, 4>;
 
 template<std::size_t N_bodies, std::size_t N_coefs> 
 std::ostream operator<<(std::ostream& os,
@@ -153,14 +155,11 @@ std::ostream operator<<(std::ostream& os,
 
     return os;
 }
-
-//! read one line using std::getline
+    
 template<std::size_t N_bodies, std::size_t N_coefs> 
-std::istream operator>>(std::istream& is,
-                        NinfoElement<N_bodies, N_coefs>& ninfo)
+void operator>>(const std::string& line,
+                NinfoElement<N_bodies, N_coefs>& ninfo)
 {
-    std::string line;
-    std::getline(is, line);
     std::istringstream iss(line);
 
     iss >> ninfo.header();
@@ -187,6 +186,18 @@ std::istream operator>>(std::istream& is,
         iss >> kind;
         ninfo.kind().push_back(kind);
     }
+
+    return;
+}
+
+//! read one line using std::getline
+template<std::size_t N_bodies, std::size_t N_coefs> 
+std::istream operator>>(std::istream& is,
+                        NinfoElement<N_bodies, N_coefs>& ninfo)
+{
+    std::string line;
+    std::getline(is, line);
+    line >> ninfo;
 
     return is;
 }

@@ -44,7 +44,6 @@ class NinfoData
     const_iterator cbegin() const {return data_.cbegin();}
     const_iterator cend()   const {return data_.cend();}
 
-
   private:
 
     container_type data_;
