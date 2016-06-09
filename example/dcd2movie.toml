@@ -1,0 +1,22 @@
+# coffee mill input file for dcd-mode, make-movie job.
+# use this way
+#    $ mill dcd --make-movie dcd2movie.inp
+
+[information]
+
+# key: output 
+#      filename of output
+output   = "fromdcd.movie"
+
+# key: dcdfile
+#      file to convert
+dcdfile = "trajectory.dcd"
+
+# key: dcdfiles
+#      pdb file of reference. using this information, write atom and residue information.
+reference = "structure.pdb"
+
+# key: redundancy
+#      if true,  output pymol readable format movie file.
+#      if false, output cafemol compatible format movie file.
+pymol = true
