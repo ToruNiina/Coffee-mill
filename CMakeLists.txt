@@ -10,7 +10,7 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_TARGET "doc")
     set(DOXYGEN_PROJECT_NAME "\"Coffee-mill\"")
     set(DOXYGEN_PROJECT_BRIEF "\"command line tool for using cafemol\"")
-    set(DOXYGEN_INPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/src")
+    set(DOXYGEN_INPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/includes")
     set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/doc")
 
     configure_file(${DOXYGEN_CONF_FILE}.in ${DOXYGEN_CONF_PATH})
