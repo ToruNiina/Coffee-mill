@@ -49,7 +49,8 @@ bool is_composed_of(const T_target& target, const T_reference& ref)
 
 inline bool is_contain(const std::string& target, const std::string& ref)
 {
-    for(std::size_t i=0; i<=target.size() - ref.size(); ++i)
+    if(target.size() < ref.size()) return false;
+    for(std::size_t i=0; i <= (target.size() - ref.size()); ++i)
         if(target.substr(i, ref.size()) == ref) return true;
     return false;
 }
