@@ -57,7 +57,7 @@ class DCDtoMovie
      * if true, output movie file become pymol readable format(like NMR pdb file).
      * if false, output movie file become same as cafemol movie.
      */
-    bool        pymol_format_;
+    bool        pymol_format_; //!< whether output format is pymol readable or not
     std::string dcdfile_; //!< filename of input dcdfile
     std::string pdbfile_; //!< filename of input pdbfile
     std::string output_;  //!< filename of output movie file
