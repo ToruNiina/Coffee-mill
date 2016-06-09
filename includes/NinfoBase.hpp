@@ -1,3 +1,17 @@
+/*!
+  @file NinfoBase.hpp
+  @brief definition of a NinfoBase class and its subclass.
+
+  definition of class NinfoBase that is abstract class and its template subclass.
+  NinfoBase has pure virtual member functions that provides an access to member
+  variables. Subclass NinfoElement is a template class and contain a native
+  information.
+  
+  @author Toru Niina (niina.toru.68@gmail.com)
+  @date 2016-06-09 17:00
+  @copyright Toru Niina 2016 on MIT License
+*/
+
 #ifndef COFFEE_MILL_NINFO_BASE
 #define COFFEE_MILL_NINFO_BASE
 #include <string>
@@ -10,6 +24,11 @@
 namespace coffeemill
 {
 
+//! NinfoBase class.
+/*!
+ *  NinfoBase is an abstract class. this provides an access to native info as
+ *  pure virtual function.
+ */
 class NinfoBase
 {
   public:
@@ -20,31 +39,106 @@ class NinfoBase
 
   public:
 
+    //! ctor.
     NinfoBase(){}
+    //! dtor.
     virtual ~NinfoBase() = default;
 
+    //! header(ex, "bond", "angl", "aicg13")
     virtual const std::string& header() const = 0;
+    //! header(ex, "bond", "angl", "aicg13")
     virtual       std::string& header()       = 0;
 
+    //! number of bodies corresponds to the interaction.
+    /*!
+     *  returns how many bodies corresponds to the interaction.
+     *  for angl potential, return 3.
+     */
     virtual size_type n_bodies() const = 0;
+
+    //! number of coefficients.
     virtual size_type n_coefs()  const = 0;
 
+    //! ID of the native information.
     virtual index_type  id() const = 0;
+    //! ID of the native information.
     virtual index_type& id()       = 0;
 
+    //! unit(chain) index. 
+    /*!
+     *  index of units. represents iunit1 and iunit2.
+     *  Note that coffee-mill uses 0-based index. iunit1 = unit_at(0).
+     *  in the case of contact information, the values are different.
+     *  @param i 0 or 1. size of units is always 2.
+     */
     virtual index_type  unit_at(index_type i)       const = 0;
+    //! unit(chain) index. 
+    /*!
+     *  index of units. represents iunit1 and iunit2.
+     *  Note that coffee-mill uses 0-based index. iunit1 = unit_at(0).
+     *  in the case of contact information, the values are different.
+     *  @param i 0 or 1. size of units is always 2.
+     */
     virtual index_type& unit_at(index_type i)             = 0;
+
+    //! imps. 
+    /*!
+     *  index of mass points. corresponding to imp1, imp2, ...
+     *  Note that coffee-mill uses 0-based index. imp1 = imp_at(0).
+     *  @param i in the range [0, n_bodies)
+     */
     virtual index_type  global_imp_at(index_type i) const = 0;
+    //! imps. 
+    /*!
+     *  index of mass points. corresponding to imp1, imp2, ...
+     *  Note that coffee-mill uses 0-based index. imp1 = global_imp_at(0).
+     *  @param i in the range [0, n_bodies)
+     */
     virtual index_type& global_imp_at(index_type i)       = 0;
+
+    //! impuns. 
+    /*!
+     *  index of mass points in the unit. corresponding to impun1, impun2, ...
+     *  Note that coffee-mill uses 0-based index. impun1 = local_imp_at(0).
+     *  @param i in the range [0, n_bodies)
+     */
     virtual index_type  local_imp_at(index_type i)  const = 0;
+
+    //! impuns. 
+    /*!
+     *  index of mass points in the unit. corresponding to impun1, impun2, ...
+     *  Note that coffee-mill uses 0-based index. impun1 = local_imp_at(0).
+     *  @param i in the range [0, n_bodies)
+     */
     virtual index_type& local_imp_at(index_type i)        = 0;
+
+    //! coefficients. 
+    /*!
+     *  including all type of coefficients, for example,
+     *  native_value, coef_go, correct_mgo, etc...
+     */
     virtual coef_type  coef_at(index_type i)        const = 0;
+
+    //! coefficients. 
+    /*!
+     *  including all type of coefficients, for example,
+     *  native_value, coef_go, correct_mgo, etc...
+     */
     virtual coef_type& coef_at(index_type i)              = 0;
 
+    //! ninfo kind. like "ppp". footer.
     virtual const std::vector<std::string>& kind()  const = 0;
+    //! ninfo kind. like "ppp". footer.
     virtual       std::vector<std::string>& kind()        = 0;
 };
 
+//! NinfoElement class.
+/*!
+ *  NinfoElement is subclass of NinfoBase.
+ *  this contains the information that is written in one line in ninfo file.
+ *  @tparam N_bodies the number of bodies corresponding to the interaction.
+ *  @tparam N_coefs  the number of coefficients corresponding to the interaction.
+ */
 template<std::size_t N_bodies, std::size_t N_coefs>
 class NinfoElement : public NinfoBase
 {
@@ -62,52 +156,79 @@ class NinfoElement : public NinfoBase
 
   public:
 
+    //! ctor
     NinfoElement(){}
+    //! dtor
     ~NinfoElement() override = default;
 
+    //! return the number of bodies correspoinding to the interaction.
     size_type n_bodies() const override {return num_bodies;}
+    //! return the number of coefficients correspoinding to the interaction.
     size_type n_coefs()  const override {return num_coefs;}
 
+    //! header. like "bond"
     const std::string& header() const override {return header_;}
+    //! header. like "bond"
           std::string& header()       override {return header_;}
 
+    //! native interaction id.
     index_type  id() const override {return id_;}
+    //! native interaction id.
     index_type& id()       override {return id_;}
 
+    //! array of iunit.
     const units_type& units() const {return units_;}
+    //! array of iunit.
           units_type& units()       {return units_;}
+    //! iunit.
     index_type  unit_at(index_type i) const override {return units_.at(i);}
+    //! iunit.
     index_type& unit_at(index_type i)       override {return units_.at(i);}
 
+    //! array of imp.
     const indices_type& global_imps() const {return g_imp_;}
+    //! array of imp.
           indices_type& global_imps()       {return g_imp_;}
+    //! imp.
     index_type  global_imp_at(index_type i) const override {return g_imp_.at(i);}
+    //! imp.
     index_type& global_imp_at(index_type i)       override {return g_imp_.at(i);}
 
+    //! array of impun.
     const indices_type& local_imps() const {return l_imp_;}
+    //! array of impun.
           indices_type& local_imps()       {return l_imp_;}
+    //! impun.
     index_type  local_imp_at(index_type i) const override {return l_imp_.at(i);}
+    //! impun.
     index_type& local_imp_at(index_type i)       override {return l_imp_.at(i);}
 
+    //! array of coef
     const coefs_type& coefs() const {return coefs_;}
+    //! array of coef
           coefs_type& coefs()       {return coefs_;}
+    //! coef
     coef_type  coef_at(index_type i) const override {return coefs_.at(i);}
+    //! coef
     coef_type& coef_at(index_type i)       override {return coefs_.at(i);}
 
+    //! vector of kind.
     const std::vector<std::string>& kind() const override {return kind_;}
+    //! vector of kind.
           std::vector<std::string>& kind()       override {return kind_;}
 
   private:
 
-    index_type   id_;
-    std::string  header_;
-    units_type   units_;
-    indices_type g_imp_;
-    indices_type l_imp_;
-    coefs_type   coefs_;
-    std::vector<std::string> kind_;
+    index_type   id_;     //!< ninfo id.
+    std::string  header_; //!< header. like "bond"
+    units_type   units_;  //!< array of iunits
+    indices_type g_imp_;  //!< array of imp
+    indices_type l_imp_;  //!< array of impun
+    coefs_type   coefs_;  //!< array of coefficient
+    std::vector<std::string> kind_;  //!< footer. like "pp"
 };
 
+//! NinfoKind. Bond, Angl, ...
 enum class NinfoKind
 {
     Bond,
@@ -122,16 +243,32 @@ enum class NinfoKind
     Unknown,
 };
 
+//! alias of NinfoBond line object.
 using NinfoBond      = NinfoElement<2, 4>;
+//! alias of NinfoAngl line object.
 using NinfoAngl      = NinfoElement<3, 4>;
+//! alias of NinfoAicg13 line object.
 using NinfoAicg13    = NinfoElement<3, 5>;
+//! alias of NinfoDihd line object.
 using NinfoDihd      = NinfoElement<4, 5>;
+//! alias of NinfoAicg14 line object.
 using NinfoAicg14    = NinfoElement<4, 5>;
+//! alias of NinfoAicg14p line object.
 using NinfoAicg14p   = NinfoElement<4, 5>;
+//! alias of NinfoContact line object.
 using NinfoContact   = NinfoElement<2, 4>;
+//! alias of NinfoBasePair line object.
 using NinfoBasePair  = NinfoElement<2, 4>;
+//! alias of NinfoBaseStack line object.
 using NinfoBaseStack = NinfoElement<2, 4>;
 
+//! output NinfoElement.
+/*!
+ *  output ninfo line as ninfo format.
+ *  @tparam N_bodies template argument of NinfoElement.
+ *  @tparam N_coefs  template argument of NinfoElement.
+ *  @sa     NinfoElement
+ */
 template<std::size_t N_bodies, std::size_t N_coefs> 
 std::ostream& operator<<(std::ostream& os,
                         const NinfoElement<N_bodies, N_coefs>& ninfo)
@@ -162,7 +299,14 @@ std::ostream& operator<<(std::ostream& os,
 
     return os;
 }
-    
+
+//! read NinfoElement from string.
+/*!
+ *  read ninfo line as ninfo format.
+ *  @tparam N_bodies template argument of NinfoElement.
+ *  @tparam N_coefs  template argument of NinfoElement.
+ *  @sa     NinfoElement
+ */   
 template<std::size_t N_bodies, std::size_t N_coefs> 
 void operator>>(const std::string& line,
                 NinfoElement<N_bodies, N_coefs>& ninfo)
@@ -197,7 +341,13 @@ void operator>>(const std::string& line,
     return;
 }
 
-//! read one line using std::getline
+//! input NinfoElement.
+/*!
+ * read one line using std::getline and use string >> ninfo.
+ * @tparam N_bodies template argument of NinfoElement.
+ * @tparam N_coefs  template argument of NinfoElement.
+ * @sa     NinfoElement
+ */
 template<std::size_t N_bodies, std::size_t N_coefs> 
 std::istream& operator>>(std::istream& is,
                         NinfoElement<N_bodies, N_coefs>& ninfo)
