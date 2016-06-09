@@ -26,18 +26,20 @@ class NinfoBase
     virtual const std::string& header() const = 0;
     virtual       std::string& header()       = 0;
 
-    virtual size_type bodies() const = 0;
-    virtual size_type coefs()  const = 0;
+    virtual size_type n_bodies() const = 0;
+    virtual size_type n_coefs()  const = 0;
 
     virtual index_type  id() const = 0;
     virtual index_type& id()       = 0;
 
-    virtual index_type  unit_at(index_type i)      const = 0;
-    virtual index_type& unit_at(index_type i)            = 0;
+    virtual index_type  unit_at(index_type i)       const = 0;
+    virtual index_type& unit_at(index_type i)             = 0;
     virtual index_type  global_imp_at(index_type i) const = 0;
     virtual index_type& global_imp_at(index_type i)       = 0;
     virtual index_type  local_imp_at(index_type i)  const = 0;
     virtual index_type& local_imp_at(index_type i)        = 0;
+    virtual coef_type  coef_at(index_type i)        const = 0;
+    virtual coef_type& coef_at(index_type i)              = 0;
 
     virtual const std::vector<std::string>& kind()  const = 0;
     virtual       std::vector<std::string>& kind()        = 0;
@@ -63,8 +65,8 @@ class NinfoElement : public NinfoBase
     NinfoElement(){}
     ~NinfoElement() override = default;
 
-    size_type bodies() const override {return num_bodies;}
-    size_type coefs()  const override {return num_coefs;}
+    size_type n_bodies() const override {return num_bodies;}
+    size_type n_coefs()  const override {return num_coefs;}
 
     const std::string& header() const override {return header_;}
           std::string& header()       override {return header_;}
@@ -72,8 +74,8 @@ class NinfoElement : public NinfoBase
     index_type  id() const override {return id_;}
     index_type& id()       override {return id_;}
 
-    const indices_type& units() const {return units_;}
-          indices_type& units()       {return units_;}
+    const units_type& units() const {return units_;}
+          units_type& units()       {return units_;}
     index_type  unit_at(index_type i) const override {return units_.at(i);}
     index_type& unit_at(index_type i)       override {return units_.at(i);}
 
@@ -86,6 +88,11 @@ class NinfoElement : public NinfoBase
           indices_type& local_imps()       {return l_imp_;}
     index_type  local_imp_at(index_type i) const override {return l_imp_.at(i);}
     index_type& local_imp_at(index_type i)       override {return l_imp_.at(i);}
+
+    const coefs_type& coefs() const {return coefs_;}
+          coefs_type& coefs()       {return coefs_;}
+    coef_type  coef_at(index_type i) const override {return coefs_.at(i);}
+    coef_type& coef_at(index_type i)       override {return coefs_.at(i);}
 
     const std::vector<std::string>& kind() const override {return kind_;}
           std::vector<std::string>& kind()       override {return kind_;}
@@ -126,7 +133,7 @@ using NinfoBasePair  = NinfoElement<2, 4>;
 using NinfoBaseStack = NinfoElement<2, 4>;
 
 template<std::size_t N_bodies, std::size_t N_coefs> 
-std::ostream operator<<(std::ostream& os,
+std::ostream& operator<<(std::ostream& os,
                         const NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     os << ninfo.header();
@@ -192,7 +199,7 @@ void operator>>(const std::string& line,
 
 //! read one line using std::getline
 template<std::size_t N_bodies, std::size_t N_coefs> 
-std::istream operator>>(std::istream& is,
+std::istream& operator>>(std::istream& is,
                         NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     std::string line;
