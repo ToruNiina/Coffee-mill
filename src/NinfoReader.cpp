@@ -18,14 +18,16 @@ void NinfoReader::read()
         if(line.empty())        continue;
 
         line = remove_front<' '>(line);
+        if(line.empty()) continue;
         if(line.front() == '*') continue;
+        if(line.size() < 4) throw std::invalid_argument("invalid line: " + line);
         if(line.substr(0, 4) == "<<<<") // block start
         {
             this->read_block(ninfo, line);
             continue;
         }
 
-        throw std::invalid_argument("unknown line: " + line);
+        throw std::invalid_argument("invalid line: " + line);
     }
 
     return;
@@ -98,8 +100,10 @@ NinfoBlock NinfoReader::read_block(std::ifstream& ifs) const
         std::getline(ifs, line);
         if(line.empty())        continue;
         line = remove_front<' '>(line);
+        if(line.empty()) continue;
         if(line.front() == '*') continue;
-        if(line.substr(0,4) == ">>>>") break;
+        if(line.size() < 4) throw std::runtime_error("invalid line: " + line);
+        if(line.substr(0, 4) == ">>>>") break;
 
         T_ninfo *elem = new T_ninfo;
         line >> *(elem);
