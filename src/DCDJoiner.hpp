@@ -26,7 +26,7 @@ class DCDJoiner
     //! ctor.
     /*!
      *  ctor. set member values from input file reader.
-     *  @param input InputFileReader.
+     *  @param input InputFileReader. it is required that input already read the file.
      *  @sa    InputFileReader
      */
     explicit DCDJoiner(const InputFileReader& input)
