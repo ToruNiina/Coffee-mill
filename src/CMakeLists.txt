@@ -6,6 +6,10 @@ set(CPP_FILES
     DCDWriter.cpp
     DCDJoiner.cpp
     DCDtoMovie.cpp
+    NinfoData.cpp
+    NinfoReader.cpp
+    NinfoWriter.cpp
+    NinfoSplitter.cpp
     )
 
 include_directories("${CMAKE_SOURCE_DIR}/includes/")

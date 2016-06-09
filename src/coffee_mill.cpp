@@ -4,6 +4,7 @@
 #include "DCDtoMovie.hpp"
 #include "SequenceExtractor.hpp"
 #include "NucleicSequence.hpp"
+#include "NinfoSplitter.hpp"
 #include "coffee_mill.hpp"
 #ifndef MAJOR_VERSION
 #define MAJOR_VERSION 0
@@ -166,7 +167,65 @@ int main(int argc, char *argv[])
         }// mode dcd
       case coffeemill::CommandLine::MODE::NINFO:
         {
+        command.print_logo<MAJOR_VERSION, MINOR_VERSION>();
+
+        switch(command.job())
+        {
+          case coffeemill::CommandLine::JOB::SEQ:
+            {
+            throw std::runtime_error("command not defined");
+            }
+          case coffeemill::CommandLine::JOB::SPLIT:
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+//             std::cout << input.get_as<std::string>(
+//                     input.at("information", "filename")) << std::endl;
+            coffeemill::NinfoSplitter splitter(
+                    input.get_as<std::string>(input.at("information", "filename")));
+            auto data = splitter.split();
+            splitter.write(data);
+            if(input.get_as<bool>(input.at("information", "cafemol_input")))
+            {
+                splitter.write_cafe_inp(
+                    input.get_as<std::size_t>(input.at("information", "simN")),
+                    input.get_as<std::string>(input.at("information", "input_name")),
+                    data);
+            }
+            break;
+            }
+          case coffeemill::CommandLine::JOB::JOIN:
+            {
             throw std::runtime_error("not implemented yet");
+            }
+          case coffeemill::CommandLine::JOB::COMPLEMENTAL:
+            {
+            throw std::runtime_error("command not defined");
+            }
+          case coffeemill::CommandLine::JOB::MUTATE:
+            {
+            throw std::runtime_error("not implemented yet");
+            }
+          case coffeemill::CommandLine::JOB::SHOW:
+            {
+            throw std::runtime_error("not implemented yet");
+            }
+          case coffeemill::CommandLine::JOB::MAKE_CG:
+            {
+            throw std::runtime_error("not implemented yet");
+            }
+          case coffeemill::CommandLine::JOB::MAKE_NINFO:
+            {
+            throw std::runtime_error("command not defined");
+            }
+          case coffeemill::CommandLine::JOB::MAKE_MOVIE:
+            {
+            throw std::runtime_error("command not defined");
+            }
+          default:
+            throw std::logic_error("never reach here");
+        }
+        break;
         }// mode ninfo
       case coffeemill::CommandLine::MODE::HELP:
         {
