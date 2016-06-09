@@ -15,7 +15,9 @@ Coffee-mill has some modes and jobs.
 To run coffee-mill, you should specify the pair of mode and job.
 
 for example, to see the sequence of chains included in pdb file, run this.
+
     $ mill pdb --seq foo.pdb
+
 foo.pdb can be normal pdb file and also CG-style pdb file.
 
 To run some jobs, you should write toml-like format input file.
