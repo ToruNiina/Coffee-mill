@@ -3,3 +3,4 @@ build/*
 data/*
 doc/*
 !.gitkeep
+doxyfile
