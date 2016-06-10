@@ -15,6 +15,9 @@
 namespace coffeemill
 {
 
+/*!
+ * @brief write ninfo data into file.
+ */
 class NinfoWriter
 {
   public:
