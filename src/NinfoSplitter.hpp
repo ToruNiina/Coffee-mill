@@ -5,7 +5,7 @@
   NinfoSplitter splits an all-in-one style ninfo file into
   several one-by-one style ninfo files.
   
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 10:30
   @copyright Toru Niina 2016 on MIT License
 */

@@ -6,7 +6,7 @@
   step by step. But, when you write trajectory step by step, the consistency
   between header data and trajectory size will not be guaranteed.
   
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 15:00
   @copyright Toru Niina 2016 on MIT License
 */

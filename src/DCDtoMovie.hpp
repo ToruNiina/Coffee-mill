@@ -7,7 +7,7 @@
   included in pdb file. the pdb file should contain only one model and
   same number of particle in dcd snapshot.
   
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 15:00
   @copyright Toru Niina 2016 on MIT License
 */

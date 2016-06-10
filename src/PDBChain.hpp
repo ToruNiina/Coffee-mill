@@ -5,7 +5,7 @@
   PDBChain class contains shared pointer of PDBResidue as std::vector.
   this behaves like as std::vector and has chain_id method.
 
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 13:00
   @copyright Toru Niina 2016 on MIT License
 */

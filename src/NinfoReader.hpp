@@ -5,7 +5,7 @@
   NinfoReader reads a ninfo file and store the data as NinfoData.
 
   
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 10:00
   @copyright Toru Niina 2016 on MIT License
 */

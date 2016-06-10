@@ -7,7 +7,7 @@
   this contains one Block for each NinfoKind. normally, this has all the
   information that one ninfo file contains.
   
-  @author Toru Niina (niina.toru.68@gmail.com)
+  @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 18:00
   @copyright Toru Niina 2016 on MIT License
 */
