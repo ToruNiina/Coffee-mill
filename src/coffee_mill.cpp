@@ -6,6 +6,7 @@
 #include "NucleicSequence.hpp"
 #include "NinfoSplitter.hpp"
 #include "coffee_mill.hpp"
+#include <fstream>
 #ifndef MAJOR_VERSION
 #define MAJOR_VERSION 0
 #endif
@@ -51,8 +52,35 @@ int main(int argc, char *argv[])
             }// job pdb::seq
           case coffeemill::CommandLine::JOB::SPLIT:
             throw std::runtime_error("not implemented yet");
+
           case coffeemill::CommandLine::JOB::JOIN:
-            throw std::runtime_error("not implemented yet");
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+            std::ofstream movie(input.get_as<std::string>(input.at("information", "output")));
+            if(!movie.good()) throw std::runtime_error("output file open error");
+            auto pdbnames = input.get_as_list<std::string>(input.at("information", "pdbfiles"));
+            bool pymol = input.get_as<bool>(input.at("information", "pymol_format"));
+            std::size_t index = 0;
+            for(auto iter = pdbnames.cbegin(); iter != pdbnames.cend(); ++iter)
+            {
+                ++index;
+                coffeemill::PDBReader reader(*iter);
+                reader.read();
+                auto structure = reader.atoms();
+                if(pymol)
+                    movie << "MODEL " << std::setw(9) << std::right << index << std::endl;
+                else
+                    movie << "<<<<" << std::setw(12) << std::right << index << std::endl;
+                for(auto atom = structure.cbegin(); atom != structure.cend(); ++atom)
+                    movie << **atom << std::endl;
+                if(pymol)
+                    movie << "TER " << std::endl << "ENDMDL" << std::endl;
+                else
+                    movie << ">>>>" << std::endl << "END" << std::endl;
+            }
+            break;
+            }
           case coffeemill::CommandLine::JOB::COMPLEMENTAL:
             throw std::runtime_error("command not defined");
           case coffeemill::CommandLine::JOB::MUTATE:
