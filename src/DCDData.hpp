@@ -127,7 +127,7 @@ class DCDData
 
     //! return whether trajectory is empty or not.
     bool      empty() const {return trajectory_.empty();}
-    //! return the size of trajectory. expected to be same as nstep.
+    //! return the size of trajectory. expected to be same as nset.
     size_type size() const {return trajectory_.size();}
 
     //! iterator of the trajectory.
@@ -159,7 +159,7 @@ class DCDData
 
     size_type       nset_;       //!< number of frames.
     size_type       istart_;     //!< initial value of isteps (nomally zero)
-    size_type       nstep_save_; //!< nstep_save timesteps per one snapshot
+    size_type       nstep_save_; //!< interval of saving snapshot
     size_type       nstep_;      //!< total step number of the simulation
     size_type       nunit_;      //!< total unit(chains) number
     size_type       verCHARMM_;  //!< version of CHARMM (in the case of cafemol, 24)
