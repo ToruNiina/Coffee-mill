@@ -41,12 +41,12 @@ bool operator>>(const std::string& line, PDBAtom& atom)
 
 std::ostream& operator<<(std::ostream& os, const PDBAtom& a)
 {
-    os << std::setw(6) << a.prefix();
-    os << std::setw(5) << a.atom_id();
+    os << std::setw(6) << std::left << a.prefix();
+    os << std::setw(5) << std::right << a.atom_id();
     os << " ";
     if(remove_all<' '>(a.atom()) == "CA")
     {
-        os << " CA ";
+        os << std::setw(4) << " CA ";
     }
     else if(remove_all<' '>(a.atom()) == "DB" ||
             remove_all<' '>(a.atom()) == "DS" ||
@@ -59,21 +59,21 @@ std::ostream& operator<<(std::ostream& os, const PDBAtom& a)
         os << std::setw(4) << a.atom();
     }
     os << std::setw(1) << a.altloc();
-    os << std::setw(3) << a.residue();
+    os << std::setw(3) << std::right << a.residue();
     os << " ";
     os << std::setw(1) << a.chain_id();
-    os << std::setw(4) << a.residue_id();
+    os << std::setw(4) << std::right << a.residue_id();
     os << std::setw(1) << a.icode();
     os << "   ";
-    os << std::setw(8) << std::fixed << std::setprecision(3)
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
        << a.x();
-    os << std::setw(8) << std::fixed << std::setprecision(3)
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
        << a.y();
-    os << std::setw(8) << std::fixed << std::setprecision(3)
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
        << a.z();
-    os << std::setw(6) << std::fixed << std::setprecision(2)
+    os << std::setw(6) << std::fixed << std::setprecision(2) << std::right
        << a.occupancy();
-    os << std::setw(6) << std::fixed << std::setprecision(2)
+    os << std::setw(6) << std::fixed << std::setprecision(2) << std::right
        << a.temperature_factor();
     os << "          ";
     os << std::setw(2) << a.element();
