@@ -4,6 +4,7 @@
 #include "DCDtoMovie.hpp"
 #include "SequenceExtractor.hpp"
 #include "NucleicSequence.hpp"
+#include "DNAMutator.hpp"
 #include "NinfoSplitter.hpp"
 #include "coffee_mill.hpp"
 #include <fstream>
@@ -131,7 +132,26 @@ int main(int argc, char *argv[])
             break;
             }
           case coffeemill::CommandLine::JOB::MUTATE:
-            throw std::runtime_error("not implemented yet");
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+            coffeemill::PDBReader pdbreader(
+                    input.get_as<std::string>(input.at("information", "pdbfile")));
+            pdbreader.read();
+            auto structure = pdbreader.parse();
+            coffeemill::DNAMutator mutator;
+            coffeemill::PDBChain chain = mutator.mutate(
+                    input.get_as<std::string>(input.at("information", "sequence")),
+                    structure.at(input.get_as<std::size_t>(input.at("information", "chain_index"))));
+            std::ofstream ofs(
+                    input.get_as<std::string>(input.at("information", "output")));
+            if(!ofs.good()) throw std::runtime_error("output file open error");
+            for(auto res = chain.cbegin(); res != chain.cend(); ++res)
+                for(auto atom = (*res)->cbegin(); atom != (*res)->cend(); ++atom)
+                    ofs << **atom << std::endl;;
+ 
+            break;
+            }
           case coffeemill::CommandLine::JOB::SHOW:
             throw std::runtime_error("command not defined");
           case coffeemill::CommandLine::JOB::MAKE_CG:
