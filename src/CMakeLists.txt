@@ -13,6 +13,8 @@ set(CPP_FILES
     DCDJoiner.cpp
     DCDtoMovie.cpp
     NinfoSplitter.cpp
+    BestFitStructure.cpp
+    SuperImpose.cpp
     )
 
 include_directories("${PROJECT_SOURCE_DIR}/includes/")
