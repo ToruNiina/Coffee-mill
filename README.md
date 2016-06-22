@@ -34,6 +34,15 @@ Now, these commands are available.
 | dcd  | --make-movie |foo.inp |make movie file from dcd trajectory and pdb structure file|
 | ninfo| --split |foo.inp |split all-in-one ninfo file to one-by-one ninfo files|
 
+## Document
+
+Using doxygen, you can generate the document files of the Coffee-mill.
+
+To generate document, run following commands.
+
+    $ cd build
+    $ cmake ..
+    $ make doc
 
 ## Reference
 

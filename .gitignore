@@ -1,5 +1,7 @@
-data/
-build/*
 bin/*
 lib/*
+build/*
+data/*
+doc/*
 !.gitkeep
+doxyfile
