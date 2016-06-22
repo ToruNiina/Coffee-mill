@@ -56,6 +56,7 @@ class CommandLine
         COMPLEMENTAL,
         MUTATE,
         SHOW,
+        IMPOSE,
         MAKE_CG,
         MAKE_NINFO,
         MAKE_MOVIE,
@@ -76,8 +77,9 @@ class CommandLine
     const std::string JOB_SPLIT = "--split";
     const std::string JOB_JOIN  = "--join";
     const std::string JOB_SHOW  = "--show";
-    const std::string JOB_COMPLEMENTAL = "--complemental";
+    const std::string JOB_IMPOSE       = "--impose";
     const std::string JOB_MUTATE       = "--mutate";
+    const std::string JOB_COMPLEMENTAL = "--complemental";
     const std::string JOB_MAKE_CG    = "--make-cg";
     const std::string JOB_MAKE_NINFO = "--make-ninfo";
     const std::string JOB_MAKE_MOVIE = "--make-movie";
@@ -130,6 +132,7 @@ void CommandLine::print_help() const
     std::cerr << "\t" << JOB_JOIN         << std::endl;
     std::cerr << "\t" << JOB_SPLIT        << std::endl;
     std::cerr << "\t" << JOB_SHOW         << std::endl;
+    std::cerr << "\t" << JOB_IMPOSE       << std::endl;
     std::cerr << "\t" << JOB_COMPLEMENTAL << std::endl;
     std::cerr << "\t" << JOB_MUTATE       << std::endl;
     std::cerr << "\t" << JOB_MAKE_CG      << std::endl;
@@ -222,6 +225,8 @@ bool CommandLine::parse()
         job_ = JOB::MUTATE;
     else if(argv_[2] == JOB_SHOW)
         job_ = JOB::SHOW;
+    else if(argv_[2] == JOB_IMPOSE)
+        job_ = JOB::IMPOSE;
     else if(argv_[2] == JOB_MAKE_CG)
         job_ = JOB::MAKE_CG;
     else if(argv_[2] == JOB_MAKE_NINFO)
