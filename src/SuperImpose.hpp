@@ -34,6 +34,7 @@ class SuperImpose
 
     Structure zeroing(const Structure& str) const;
     Structure extract(const Structure& str) const;
+    Structure rotate (const Matrix3d& R, const Structure& str) const;
 
   private:
     std::list<std::size_t> except_list_;

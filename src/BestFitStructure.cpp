@@ -22,6 +22,8 @@ BestFit::Structure BestFit::fit(const Structure& structure) const
         const Vector3d temp = R * (*iter);
         *iter = temp;
     }
+
+    std::cerr << "fitting complete" << std::endl;
     
     return rotated;
 }
@@ -67,7 +69,7 @@ BestFit::Matrix4d
 BestFit::score_matrix(const std::vector<Vector3d>& a,
                       const std::vector<Vector3d>& b) const
 {
-    assert(a.size() != b.size());
+    assert(a.size() == b.size());
 
     Matrix4d retval(0e0);
     for(std::size_t i(0); i<a.size(); ++i)

@@ -24,7 +24,7 @@ class BestFit
             sum += *iter;
         const Vector3d CoM = sum / static_cast<double>(reference.size());
 
-        this->reference_.resize(reference.size());
+        this->reference_.reserve(reference.size());
         for(auto iter = reference.cbegin(); iter != reference.cend(); ++iter)
             this->reference_.push_back(*iter - CoM);
     }
