@@ -1,4 +1,4 @@
-#include "SuperImposer.hpp"
+#include "SuperImpose.hpp"
 
 namespace coffeemill
 {
