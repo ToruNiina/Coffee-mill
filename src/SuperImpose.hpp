@@ -32,7 +32,9 @@ class SuperImpose
 
   private:
 
+    Vector3d  center (const Structure& str) const;
     Structure zeroing(const Structure& str) const;
+    Structure zeroing(const Structure& str, const Vector3d& center) const;
     Structure extract(const Structure& str) const;
     Structure rotate (const Matrix3d& R, const Structure& str) const;
 
