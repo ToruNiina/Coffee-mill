@@ -207,19 +207,24 @@ int main(int argc, char *argv[])
             reader.read();
             auto data = reader.data();
             std::list<std::size_t> except_list;
-            try{
+            try
+            {
                 auto list_list = input.split_list(input.at("information", "except"));
                 for(auto item : list_list)
                 {
                     auto fragment = input.get_as_list<std::size_t>(item);
-                    for(auto pid : fragment)
+
+                    for(std::size_t pid = fragment.front(); pid <= fragment.back(); ++pid)
                     {
                         except_list.push_back(pid - 1);
                     }
                 }
             }
             catch(std::out_of_range& except){}
-            coffeemill::SuperImpose impose(except_list);
+            coffeemill::SuperImpose impose;
+            if(!except_list.empty())
+                impose.except_list() = except_list;
+
             data.traj() = impose(data.traj());
 
             const std::string outfname = input.get_as<std::string>(
