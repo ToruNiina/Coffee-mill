@@ -19,6 +19,7 @@ EXTRACT_STATIC  = YES
 
 #specified by CMakeLists.txt
 INPUT = @DOXYGEN_INPUT_DIRECTORY@
+FILE_PATTERNS = DCDData.hpp DCDReader.hpp DCDWriter.hpp NinfoBase.hpp NinfoData.hpp NinfoReader.hpp NinfoWriter.hpp PDBAtom.hpp PDBResidue.hpp PDBChain.hpp PDBReader.hpp
 RECURSIVE = NO
 
 GENERATE_LATEX = NO
