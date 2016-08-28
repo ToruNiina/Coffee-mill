@@ -45,6 +45,7 @@ class NinfoData
     bool        empty() const {return data_.empty();}
     std::size_t size()  const {return data_.size();}
     void        clear()       {return data_.clear();}
+    std::size_t count(const key_type key){return data_.count(key);}
     void        emplace(const key_type key, const value_type& value)
     {data_.emplace(key, value);}
 
@@ -76,7 +77,7 @@ class NinfoData
     constexpr static const char* const dihd      = "native dihedral angles";
     constexpr static const char* const aicg13    = "1-3 contacts with L_AICG2 or L_AICG2_PLUS";
     constexpr static const char* const aicg14    = "1-4 contacts with L_AICG2";
-    constexpr static const char* const aicg14p   = "1-4 contacts with L_AICG2_PLUS";
+    constexpr static const char* const aicgdih   = "1-4 contacts with L_AICG2_PLUS";
     constexpr static const char* const contact   = "native contact";
     constexpr static const char* const basepair  = "native basepair";
     constexpr static const char* const basestack = "native basestack";
