@@ -21,63 +21,48 @@
 namespace coffeemill
 {
 
-//! definition of shared ptr of NinfoBase. this represents a line in ninfo file.
-using NinfoSptr  = std::shared_ptr<NinfoBase>;
-//! definition of Block. array of NinfoSptr represents a block in ninfo file.
-using NinfoBlock = std::vector<NinfoSptr>;
-
 //! Ninfo data class.
 /*!
  *  NinfoData is a map of NinfoKind and NinfoBlock. normally, this can contain
  *  all the information of one ninfo file.
  */
+template<typename T = DefaultTraits>
 class NinfoData
 {
   public:
+    using traits_type    = T;
+    using ninfobase_type = NinfoBase<traits_type>;
     using key_type       = NinfoKind;
-    using value_type     = NinfoBlock;
+    using value_type     = std::vector<std::shared_ptr<ninfobase_type>>;
     using container_type = std::map<key_type, value_type>;
-    using iterator       = container_type::iterator;
-    using const_iterator = container_type::const_iterator;
+    using iterator       = typename container_type::iterator;
+    using const_iterator = typename container_type::const_iterator;
 
   public:
-    //! ctor.
     NinfoData(){}
-    //! dtor.
     ~NinfoData() = default;
 
-    //! whether the map is empty or not.
     bool        empty() const {return data_.empty();}
-    //! the size of map.
     std::size_t size()  const {return data_.size();}
-    //! clear all the data.
     void        clear()       {return data_.clear();}
-    //! create new block.
     void        emplace(const key_type key, const value_type& value)
     {data_.emplace(key, value);}
 
     //! access to block
-    value_type& operator[](const key_type key) {return data_[key];}
-    //! access to block
-    const value_type& at(const key_type key) {return data_.at(key);}
+    value_type&       operator[](const key_type key) {return data_[key];}
+    value_type const& at(const key_type key) const   {return data_.at(key);}
 
     //! find the block. if not found, return this->end().
           iterator find(const key_type key)       {return data_.find(key);}
-    //! find the block. if not found, return this->cend().
     const_iterator find(const key_type key) const {return data_.find(key);}
    
     //! access to whole data.
           container_type& data()       {return data_;}
-    //! access to whole data.
     const container_type& data() const {return data_;}
 
-    //! iterator begin of a map<NinfoKind, NinfoBlock>..
     iterator begin() {return data_.begin();}
-    //! iterator end of a map<NinfoKind, NinfoBlock>..
     iterator end()   {return data_.end();}
-    //! const_iterator cbegin of a map<NinfoKind, NinfoBlock>.
     const_iterator cbegin() const {return data_.cbegin();}
-    //! const_iterator cend of a map<NinfoKind, NinfoBlock>..
     const_iterator cend()   const {return data_.cend();}
 
   private:
@@ -86,19 +71,17 @@ class NinfoData
 
   public:
 
-    static const std::string bond;     //!< <<<< "block name" of bond block.
-    static const std::string angl;     //!< <<<< "block name" of angl block.
-    static const std::string dihd;     //!< <<<< "block name" of dihd block.
-    static const std::string aicg13;   //!< <<<< "block name" of aicg13 block.
-    static const std::string aicg14;   //!< <<<< "block name" of aicg14 block.
-    static const std::string aicg14p;  //!< <<<< "block name" of aicg14p block.
-    static const std::string contact;  //!< <<<< "block name" of contact block.
-    static const std::string basepair; //!< <<<< "block name" of basepair block.
-    static const std::string basestack;//!< <<<< "block name" of basestack block.
+    constexpr static const char* const bond      = "native bond length";
+    constexpr static const char* const angl      = "native bond angles";
+    constexpr static const char* const dihd      = "native dihedral angles";
+    constexpr static const char* const aicg13    = "1-3 contacts with L_AICG2 or L_AICG2_PLUS";
+    constexpr static const char* const aicg14    = "1-4 contacts with L_AICG2";
+    constexpr static const char* const aicg14p   = "1-4 contacts with L_AICG2_PLUS";
+    constexpr static const char* const contact   = "native contact";
+    constexpr static const char* const basepair  = "native basepair";
+    constexpr static const char* const basestack = "native basestack";
 };
 
-
-
-}
+}//coffeemill
 
 #endif /* COFFEE_MILL_NINFO_DATA */
