@@ -37,7 +37,7 @@ class NinfoBase
 
   public:
 
-    NinfoBase(){}
+    NinfoBase() = default;
     virtual ~NinfoBase() = default;
 
     //! header(ex, "bond", "angl", "aicg13")
@@ -116,9 +116,7 @@ class NinfoElement : public NinfoBase<DefaultTraits>
 
   public:
 
-    //! ctor
-    NinfoElement(){}
-    //! dtor
+    NinfoElement() = default;
     ~NinfoElement() override = default;
 
     //! return the number of bodies correspoinding to the interaction.
@@ -188,7 +186,7 @@ enum class NinfoKind
     Aicg13,
     Dihd,
     Aicg14,
-    Aicg14p,
+    Aicgdih,
     Contact,
     BasePair,
     BaseStack,
@@ -200,7 +198,7 @@ using NinfoAngl      = NinfoElement<3, 4>;
 using NinfoAicg13    = NinfoElement<3, 5>;
 using NinfoDihd      = NinfoElement<4, 5>;
 using NinfoAicg14    = NinfoElement<4, 5>;
-using NinfoAicg14p   = NinfoElement<4, 5>;
+using NinfoAicgdih   = NinfoElement<4, 5>;
 using NinfoContact   = NinfoElement<2, 4>;
 using NinfoBasePair  = NinfoElement<2, 4>;
 using NinfoBaseStack = NinfoElement<2, 4>;
