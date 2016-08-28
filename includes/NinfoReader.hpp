@@ -17,62 +17,142 @@
 namespace coffeemill
 {
 
+template<typename T = DefaultTraits>
 class NinfoReader
 {
   public:
-
-    using data_type = NinfoData;
+    using char_type = typename T::char_type;
+    using data_type = NinfoData<T>;
 
   public:
 
-    //! ctor
-    NinfoReader(){}
-    //! ctor
-    /*!
-     * ctor.
-     * @param filename file to read.
-     */
-    NinfoReader(const std::string& filename)
-        : filename_(filename)
-    {}
-
-    //! dtor
+    NinfoReader() = default;
     ~NinfoReader() = default;
 
-    //! read file.
-    /*!
-     * read file. If this class already read a file and store ninfo data,
-     * the data will be discarded.
-     */
-    void read();
-    //! read file specified by argument.
-    /*!
-     * read file. If this class already read a file and store ninfo data,
-     * the data will be discarded.
-     * @param filename name of a file to read.
-     */
-    void read(const std::string& filename){filename_ = filename; return this->read();}
-
-    //! ninfo filename
-          std::string& filename()       {return filename_;}
-    //! ninfo filename
-    const std::string& filename() const {return filename_;}
-    //! ninfo data
-          data_type& data()       {return data_;}
-    //! ninfo data
-    const data_type& data() const {return data_;}
+    data_type read(const std::basic_string<char_type>& filename);
+    data_type read(std::basic_istream<char_type>& is);
 
   private:
-    void       read_block(std::ifstream& ifs, const std::string& line);
-    template<typename T_ninfo>
-    NinfoBlock read_block(std::ifstream& ifs) const;
-    NinfoKind  judge_block(const std::string& line) const;
-  
-  private:
-    std::string filename_; //!< filename to read
-    data_type   data_;     //!< ninfo data
-
+    void read_line(data_type& data, const std::basic_string<char_type>& line);
 };
+
+template<typename T_traits>
+NinfoData<T_Traits>
+NinfoReader<T_traits>::read(std::basic_string<char_type>& filename)
+{
+    std::basic_ifstream<char_type> filestream(filename);
+    if(!filestream.good()) throw std::runtime_error("file open error");
+    return this->read(filestream);
+}
+
+template<typename T_traits>
+NinfoData<T_traits>
+NinfoReader<T_traits>::read(std::basic_istream<char_type>& is)
+{
+    NinfoData<T_traits> data;
+    std::size_t lineindex = 0;
+    while(!is.eof())
+    {
+        std::basic_string<char_type> line;
+        std::getline(is, line); ++lineindex;
+        if(line.empty()) continue;
+        line = remove_indent(line);
+
+        try{
+             if(line.empty()) continue;
+        else if(line.front() == '*') continue;
+        else if(line.substr(0, 4) == "<<<<") continue;
+        else if(line.substr(0, 4) == ">>>>") continue;
+        else read_line(data, line);
+        }
+        catch(std::exception& except)
+        {
+            throw std::runtime_error( "invalid ninfo line found at line #" +
+                    std::to_string(lineindex));
+        }
+    }
+
+    return data;
+}
+
+template<typename T_traits>
+void NinfoReader<T_traits>::read_line(
+        data_type& data, const std::basic_string<char_type>& line)
+{
+    std::basic_istringstream<char_type> iss(line);
+    std::basic_string<char_type> prefix;
+
+    const auto line_head = iss.tellg();
+    iss >> prefix;
+    iss.seekg(line_head);
+
+    NinfoKind kind;
+    std::shared_ptr<NinfoBase<T_traits>> ninfo;
+// switch with prefix: set kind and ninfo {{{
+    if(prefix == "bond")
+    {
+        kind = NinfoKind::Bond;
+        ninfo = std::make_shared<NinfoBond>();
+    }
+    else if(prefix == "angl")
+    {
+        kind = NinfoKind::Angl;
+        ninfo = std::make_shared<NinfoAngl>();
+    }
+    else if(prefix == "aicg13")
+    {
+        kind = NinfoKind::Aicg13;
+        ninfo = std::make_shared<NinfoAicg13>();
+    }
+    else if(prefix == "dihd")
+    {
+        kind = NinfoKind::Dihd;
+        ninfo = std::make_shared<NinfoDihd>();
+    }
+    else if(prefix == "aicg14")
+    {
+        kind = NinfoKind::Aicg14;
+        ninfo = std::make_shared<NinfoAicg14>();
+    }
+    else if(prefix == "aicgdih")
+    {
+        kind = NinfoKind::Aicgdih;
+        ninfo = std::make_shared<NinfoAicgdih>();
+    }
+    else if(prefix == "contact")
+    {
+        kind = NinfoKind::Contact;
+        ninfo = std::make_shared<NinfoContact>();
+    }
+    else if(prefix == "basepair")
+    {
+        kind = NinfoKind::BasePair;
+        ninfo = std::make_shared<NinfoBasePair>();
+    }
+    else if(prefix == "basestack")
+    {
+        kind = NinfoKind::BaseStack;
+        ninfo = std::make_shared<NinfoBaseStack>();
+    }
+    else
+    {
+        throw std::logic_error("invalid line");
+    }
+//}}}
+
+    iss >> (*ninfo);
+    if(data.count(kind) == 0)
+    {
+        std::vector<std::shared_ptr<NinfoBase<T_Traits>>> block{ninfo};
+        data.emplace(kind, block);
+    }
+    else
+    {
+        data[kind].push_back(ninfo);
+    }
+
+    return;
+}
 
 }
 #endif //COFFEE_MILL_NINFO_READER
