@@ -36,7 +36,7 @@ SuperImpose::operator()(const Structure_pair& strs) const
 
     BestFit bestfit;
     bestfit.reference() = ref;
-    const Structure sub = bestfit.fit(this->extract(strs.second));
+    const Structure sub = bestfit.fit(this->zeroing(this->extract(strs.second)));
     return std::make_pair(ref, sub);
 }
 
