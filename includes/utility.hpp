@@ -5,6 +5,24 @@
 namespace coffeemill
 {
 
+template<typename charT>
+inline bool is_whitespace(charT c)
+{
+    return (c == ' ') || (c == '\t');
+}
+
+template<typename charT>
+inline std::basic_string<charT>
+remove_indent(std::basic_string<charT> const& str)
+{
+    auto iter = str.cbegin();
+    while(is_whitespace(*iter) && (iter != str.cend())){++iter;}
+    return std::basic_string<charT>(iter, str.cend());
+}
+
+
+// legacy
+
 template<char del>
 std::string remove_all(const std::string& str)
 {
