@@ -6,14 +6,14 @@ namespace coffeemill
 void DCDJoiner::join() const
 {
     std::size_t num_particle;
-    std::size_t num_steps;
+    std::size_t num_set;
     DCDData data;
 
     {
     DCDReader reader(this->filenames_.front());
     reader.read();
     num_particle = reader.data().nparticle();
-    num_steps    = reader.data().nstep();
+    num_set    = reader.data().nset();
     data = reader.data();
     }
 
@@ -28,11 +28,11 @@ void DCDJoiner::join() const
                     "dcdfiles contain different number of atoms");
         }
         if(this->redundancy_)
-            num_steps += reader.data().nstep();
+            num_set += reader.data().nset();
         else
-            num_steps += reader.data().nstep() - 1;
+            num_set += reader.data().nset() - 1;
     }
-    data.nstep() = num_steps;
+    data.nset() = num_set;
 
     DCDWriter writer(this->output_);
     writer.data() = data;
