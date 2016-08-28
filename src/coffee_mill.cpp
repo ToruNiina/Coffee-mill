@@ -84,11 +84,123 @@ int main(int argc, char *argv[])
             break;
             }
           case coffeemill::CommandLine::JOB::COMPLEMENTAL:
-            throw std::runtime_error("command not defined");
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+            std::ofstream output(input.get_as<std::string>(input.at("information", "output")));
+            if(!output.good()) throw std::runtime_error("file open error");
+
+            coffeemill::PDBReader ref(input.get_as<std::string>(input.at("information", "structure")));
+            ref.read();
+            auto pdbdata = ref.atoms();
+
+            ax::Matrix3 R(0e0);
+            {
+            auto data = input.split_list(input.at("information", "R"));
+            std::vector<std::vector<double>> mat;
+            for(auto iter = data.cbegin(); iter != data.cend(); ++iter)
+                mat.push_back(input.get_as_list<double>(*iter));
+            for(auto iter = mat.cbegin(); iter != mat.cend(); ++iter)
+                assert(iter->size() == 3);
+            assert(mat.size() == 3);
+
+            for(std::size_t i=0; i<3; ++i)
+                for(std::size_t j=0; j<3; ++j)
+                    R(i,j) = mat.at(i).at(j);
+            }
+            std::cerr << R << std::endl;
+
+            const auto mean_vec = input.get_as_list<double>(input.at("information", "centroid"));
+            const ax::Vector3d mean(mean_vec[0], mean_vec[1], mean_vec[2]);
+
+            for(auto iter = pdbdata.begin(); iter != pdbdata.end(); ++iter)
+            {
+                const ax::Vector3d tmp = R * ((*iter)->pos() - mean);
+                (*iter)->pos() = tmp + mean;
+                output << **iter << std::endl;
+            }
+
+            break;
+            }
           case coffeemill::CommandLine::JOB::MUTATE:
             throw std::runtime_error("not implemented yet");
           case coffeemill::CommandLine::JOB::IMPOSE:
-            throw std::runtime_error("not implemented yet");
+            {
+            coffeemill::InputFileReader input(command.file());
+            input.read();
+
+            std::list<std::size_t> except_list;
+            try
+            {
+                auto list_list = input.split_list(input.at("information", "except"));
+                for(auto item : list_list)
+                {
+                    auto fragment = input.get_as_list<std::size_t>(item);
+
+                    for(std::size_t pid = fragment.front(); pid <= fragment.back(); ++pid)
+                    {
+                        except_list.push_back(pid - 1);
+                    }
+                }
+            }
+            catch(std::out_of_range& except){}
+
+            std::ofstream imposed(input.get_as<std::string>(input.at("information", "output")));
+            if(!imposed.good()) throw std::runtime_error("file open error");
+
+            std::vector<ax::Vector3d> ref_structure;
+            {
+            coffeemill::PDBReader ref(input.get_as<std::string>(input.at("information", "reference")));
+            ref.read();
+            auto data_ref = ref.atoms();
+            ref_structure.reserve(data_ref.size());
+            for(auto iter = data_ref.cbegin(); iter != data_ref.cend(); ++iter)
+                ref_structure.push_back((*iter)->pos());
+            }
+
+            coffeemill::PDBReader tgt(input.get_as<std::string>(input.at("information", "target")));
+            tgt.read();
+            auto data_tgt = tgt.atoms();
+            std::vector<ax::Vector3d> tgt_structure;
+            {
+            tgt_structure.reserve(data_tgt.size());
+            for(auto iter = data_tgt.cbegin(); iter != data_tgt.cend(); ++iter)
+                tgt_structure.push_back((*iter)->pos());
+            ax::Vector3d tgt_sum(0e0);
+            for(auto iter = tgt_structure.cbegin(); iter != tgt_structure.cend(); ++iter)
+                tgt_sum += *iter;
+            std::cerr << (tgt_sum / static_cast<double>(tgt_structure.size())) << std::endl;
+            }
+
+            if(ref_structure.size() != tgt_structure.size())
+            {
+                std::cerr << ref_structure.size() << std::endl;
+                std::cerr << tgt_structure.size() << std::endl;
+                throw std::invalid_argument("size diff");
+            }
+
+            ax::Vector3d sum(0e0);
+            for(auto iter = ref_structure.cbegin(); iter != ref_structure.cend(); ++iter)
+                sum += *iter;
+            const ax::Vector3d ref_mean = sum / static_cast<double>(ref_structure.size());
+//             std::cout << "center of ref : " << ref_mean << std::endl;
+
+            coffeemill::SuperImpose impose;
+            if(!except_list.empty())
+                impose.except_list() = except_list;
+
+            auto imposed_str = impose(std::make_pair(ref_structure, tgt_structure));
+            for(auto iter = imposed_str.second.begin(); iter != imposed_str.second.end(); ++iter)
+                *iter += ref_mean;
+
+            for(std::size_t i=0; i<data_tgt.size(); ++i)
+            {
+                data_tgt.at(i)->pos() = imposed_str.second.at(i);
+                imposed << *(data_tgt.at(i)) << std::endl;
+            }
+            imposed.close();
+            break;
+            }
           case coffeemill::CommandLine::JOB::SHOW:
             throw std::runtime_error("command not defined");
           case coffeemill::CommandLine::JOB::MAKE_CG:
@@ -181,7 +293,18 @@ int main(int argc, char *argv[])
             }
           case coffeemill::CommandLine::JOB::SPLIT:
             {
-            throw std::runtime_error("not implemented yet");
+            const std::string dcdfname = command.file();
+            const std::size_t frames   = std::stoi(command.at(4));
+            coffeemill::DCDReader reader(dcdfname);
+            reader.read();
+            coffeemill::DCDData data = reader.data();
+            data.traj().erase(data.traj().begin() + frames, data.traj().end());
+            data.nset() = frames;
+            coffeemill::DCDWriter writer(
+                    dcdfname.substr(0, dcdfname.size()-4) + "_splitted.dcd");
+            writer.data() = data;
+            writer.write();
+            break;
             }
           case coffeemill::CommandLine::JOB::JOIN:
             {
