@@ -42,7 +42,9 @@ NinfoReader<T_traits>::read(std::basic_string<char_type>& filename)
 {
     std::basic_ifstream<char_type> filestream(filename);
     if(!filestream.good()) throw std::runtime_error("file open error");
-    return this->read(filestream);
+    const auto retval = this->read(filestream);
+    filestream.close();
+    return retval;
 }
 
 template<typename T_traits>
