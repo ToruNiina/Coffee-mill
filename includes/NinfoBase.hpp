@@ -14,6 +14,7 @@
 
 #ifndef COFFEE_MILL_NINFO_BASE
 #define COFFEE_MILL_NINFO_BASE
+#include "DefaultTraits.hpp"
 #include <string>
 #include <array>
 #include <vector>
@@ -24,44 +25,30 @@
 namespace coffeemill
 {
 
-//! NinfoBase class.
-/*!
- *  NinfoBase is an abstract class. this provides an access to native info as
- *  pure virtual function.
- */
+template<typename T = DefaultTraits>
 class NinfoBase
 {
   public:
 
-    using size_type    = std::size_t;
-    using index_type   = size_type;
-    using coef_type    = double;
+    using traits_type  = T;
+    using size_type    = typename traits_type::size_type;
+    using index_type   = typename traits_type::index_type;
+    using coef_type    = typename traits_type::real_type;
 
   public:
 
-    //! ctor.
     NinfoBase(){}
-    //! dtor.
     virtual ~NinfoBase() = default;
 
     //! header(ex, "bond", "angl", "aicg13")
     virtual const std::string& header() const = 0;
-    //! header(ex, "bond", "angl", "aicg13")
     virtual       std::string& header()       = 0;
 
-    //! number of bodies corresponds to the interaction.
-    /*!
-     *  returns how many bodies corresponds to the interaction.
-     *  for angl potential, return 3.
-     */
-    virtual size_type n_bodies() const = 0;
-
-    //! number of coefficients.
-    virtual size_type n_coefs()  const = 0;
+    virtual size_type num_bodies() const = 0;
+    virtual size_type num_coefs()  const = 0;
 
     //! ID of the native information.
     virtual index_type  id() const = 0;
-    //! ID of the native information.
     virtual index_type& id()       = 0;
 
     //! unit(chain) index. 
@@ -72,13 +59,6 @@ class NinfoBase
      *  @param i 0 or 1. size of units is always 2.
      */
     virtual index_type  unit_at(index_type i)       const = 0;
-    //! unit(chain) index. 
-    /*!
-     *  index of units. represents iunit1 and iunit2.
-     *  Note that coffee-mill uses 0-based index. iunit1 = unit_at(0).
-     *  in the case of contact information, the values are different.
-     *  @param i 0 or 1. size of units is always 2.
-     */
     virtual index_type& unit_at(index_type i)             = 0;
 
     //! imps. 
@@ -88,12 +68,6 @@ class NinfoBase
      *  @param i in the range [0, n_bodies)
      */
     virtual index_type  global_imp_at(index_type i) const = 0;
-    //! imps. 
-    /*!
-     *  index of mass points. corresponding to imp1, imp2, ...
-     *  Note that coffee-mill uses 0-based index. imp1 = global_imp_at(0).
-     *  @param i in the range [0, n_bodies)
-     */
     virtual index_type& global_imp_at(index_type i)       = 0;
 
     //! impuns. 
@@ -103,13 +77,6 @@ class NinfoBase
      *  @param i in the range [0, n_bodies)
      */
     virtual index_type  local_imp_at(index_type i)  const = 0;
-
-    //! impuns. 
-    /*!
-     *  index of mass points in the unit. corresponding to impun1, impun2, ...
-     *  Note that coffee-mill uses 0-based index. impun1 = local_imp_at(0).
-     *  @param i in the range [0, n_bodies)
-     */
     virtual index_type& local_imp_at(index_type i)        = 0;
 
     //! coefficients. 
@@ -118,17 +85,10 @@ class NinfoBase
      *  native_value, coef_go, correct_mgo, etc...
      */
     virtual coef_type  coef_at(index_type i)        const = 0;
-
-    //! coefficients. 
-    /*!
-     *  including all type of coefficients, for example,
-     *  native_value, coef_go, correct_mgo, etc...
-     */
     virtual coef_type& coef_at(index_type i)              = 0;
 
-    //! ninfo kind. like "ppp". footer.
+    //! ninfo kind. like "ppp".
     virtual const std::vector<std::string>& kind()  const = 0;
-    //! ninfo kind. like "ppp". footer.
     virtual       std::vector<std::string>& kind()        = 0;
 };
 
@@ -139,8 +99,8 @@ class NinfoBase
  *  @tparam N_bodies the number of bodies corresponding to the interaction.
  *  @tparam N_coefs  the number of coefficients corresponding to the interaction.
  */
-template<std::size_t N_bodies, std::size_t N_coefs>
-class NinfoElement : public NinfoBase
+template<std::size_t N_bodies, std::size_t N_coefs, typename T = DefaultTraits>
+class NinfoElement : public NinfoBase<DefaultTraits>
 {
   public:
     using base_type    = NinfoBase;
@@ -163,59 +123,51 @@ class NinfoElement : public NinfoBase
 
     //! return the number of bodies correspoinding to the interaction.
     size_type n_bodies() const override {return num_bodies;}
-    //! return the number of coefficients correspoinding to the interaction.
     size_type n_coefs()  const override {return num_coefs;}
 
     //! header. like "bond"
-    const std::string& header() const override {return header_;}
-    //! header. like "bond"
-          std::string& header()       override {return header_;}
+    std::string const& header() const override {return header_;}
+    std::string&       header()       override {return header_;}
 
     //! native interaction id.
     index_type  id() const override {return id_;}
-    //! native interaction id.
     index_type& id()       override {return id_;}
 
     //! array of iunit.
-    const units_type& units() const {return units_;}
-    //! array of iunit.
-          units_type& units()       {return units_;}
+    units_type const& units() const {return units_;}
+    units_type&       units()       {return units_;}
+
     //! iunit.
     index_type  unit_at(index_type i) const override {return units_.at(i);}
-    //! iunit.
     index_type& unit_at(index_type i)       override {return units_.at(i);}
 
     //! array of imp.
-    const indices_type& global_imps() const {return g_imp_;}
-    //! array of imp.
-          indices_type& global_imps()       {return g_imp_;}
+    indices_type const& global_imps() const {return g_imp_;}
+    indices_type&       global_imps()       {return g_imp_;}
+
     //! imp.
     index_type  global_imp_at(index_type i) const override {return g_imp_.at(i);}
-    //! imp.
     index_type& global_imp_at(index_type i)       override {return g_imp_.at(i);}
 
     //! array of impun.
-    const indices_type& local_imps() const {return l_imp_;}
-    //! array of impun.
-          indices_type& local_imps()       {return l_imp_;}
+    indices_type const& local_imps() const {return l_imp_;}
+    indices_type&       local_imps()       {return l_imp_;}
+
     //! impun.
     index_type  local_imp_at(index_type i) const override {return l_imp_.at(i);}
-    //! impun.
     index_type& local_imp_at(index_type i)       override {return l_imp_.at(i);}
 
     //! array of coef
-    const coefs_type& coefs() const {return coefs_;}
-    //! array of coef
-          coefs_type& coefs()       {return coefs_;}
+    coefs_type const& coefs() const {return coefs_;}
+    coefs_type&       coefs()       {return coefs_;}
+
     //! coef
     coef_type  coef_at(index_type i) const override {return coefs_.at(i);}
-    //! coef
     coef_type& coef_at(index_type i)       override {return coefs_.at(i);}
 
     //! vector of kind.
-    const std::vector<std::string>& kind() const override {return kind_;}
-    //! vector of kind.
-          std::vector<std::string>& kind()       override {return kind_;}
+    std::vector<std::string> const& kind() const override {return kind_;}
+    std::vector<std::string>&       kind()       override {return kind_;}
 
   private:
 
@@ -243,23 +195,14 @@ enum class NinfoKind
     Unknown,
 };
 
-//! alias of NinfoBond line object.
 using NinfoBond      = NinfoElement<2, 4>;
-//! alias of NinfoAngl line object.
 using NinfoAngl      = NinfoElement<3, 4>;
-//! alias of NinfoAicg13 line object.
 using NinfoAicg13    = NinfoElement<3, 5>;
-//! alias of NinfoDihd line object.
 using NinfoDihd      = NinfoElement<4, 5>;
-//! alias of NinfoAicg14 line object.
 using NinfoAicg14    = NinfoElement<4, 5>;
-//! alias of NinfoAicg14p line object.
 using NinfoAicg14p   = NinfoElement<4, 5>;
-//! alias of NinfoContact line object.
 using NinfoContact   = NinfoElement<2, 4>;
-//! alias of NinfoBasePair line object.
 using NinfoBasePair  = NinfoElement<2, 4>;
-//! alias of NinfoBaseStack line object.
 using NinfoBaseStack = NinfoElement<2, 4>;
 
 //! output NinfoElement.
@@ -269,9 +212,11 @@ using NinfoBaseStack = NinfoElement<2, 4>;
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
  */
-template<std::size_t N_bodies, std::size_t N_coefs> 
-std::ostream& operator<<(std::ostream& os,
-                        const NinfoElement<N_bodies, N_coefs>& ninfo)
+template<std::size_t N_bodies, std::size_t N_coefs,
+         typename traits_type> 
+std::basic_ostream<typename traits_type::char_type>&
+operator<<(std::basic_ostream<typename traits_type::char_type>& os,
+           NinfoElement<N_bodies, N_coefs, traits_type> const& ninfo)
 {
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();
@@ -307,11 +252,14 @@ std::ostream& operator<<(std::ostream& os,
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
  */   
-template<std::size_t N_bodies, std::size_t N_coefs> 
-void operator>>(const std::string& line,
-                NinfoElement<N_bodies, N_coefs>& ninfo)
+template<std::size_t N_bodies, std::size_t N_coefs, typename traits_type>
+std::basic_istream<typename traits_type::char_type>&
+operator>>(const std::basic_istream<typename traits_type::char_type>& is,
+                NinfoElement<N_bodies, N_coefs, traits_type>& ninfo)
 {
-    std::istringstream iss(line);
+    std::basic_string<typename traits_type::char_type> line;
+    std::getline(is, line);
+    std::basic_istringstream<typename traits_type::char_type> iss(line);
 
     iss >> ninfo.header();
     iss >> ninfo.id();
@@ -338,27 +286,8 @@ void operator>>(const std::string& line,
         ninfo.kind().push_back(kind);
     }
 
-    return;
-}
-
-//! input NinfoElement.
-/*!
- * read one line using std::getline and use string >> ninfo.
- * @tparam N_bodies template argument of NinfoElement.
- * @tparam N_coefs  template argument of NinfoElement.
- * @sa     NinfoElement
- */
-template<std::size_t N_bodies, std::size_t N_coefs> 
-std::istream& operator>>(std::istream& is,
-                        NinfoElement<N_bodies, N_coefs>& ninfo)
-{
-    std::string line;
-    std::getline(is, line);
-    line >> ninfo;
-
     return is;
 }
 
-
-}
+}//coffeemill
 #endif //COFFEE_MILL_NINFO_BASE
