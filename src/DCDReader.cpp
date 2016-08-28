@@ -62,7 +62,12 @@ void DCDReader::read()
         }
         else
         {
-            throw std::invalid_argument("invalid dcd file size");
+//             throw std::invalid_argument("invalid dcdfile size: incomplete snapshot");
+            this->data_.nset() =
+                (file_size - header1_size - header2_size - header3_size)
+                / snapshot_size;
+            std::cerr << "       : guess snapshot size as "
+                      << this->data_.nset() << std::endl;
         }
     }
 
