@@ -12,7 +12,6 @@ struct DefaultTraits
     typedef string_type    std::stirng;
     typedef int_type       int;
     typedef size_type      std::size_t;
-    typedef index_type     size_type;
     typedef real_type      double;
     typedef position_type  ax::Vector<real_type, 3>;
     typedef direction_type ax::Vector<real_type, 3>;

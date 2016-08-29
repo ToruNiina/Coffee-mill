@@ -32,7 +32,7 @@ class NinfoBase
 
     using traits_type  = T;
     using size_type    = typename traits_type::size_type;
-    using index_type   = typename traits_type::index_type;
+    using index_type   = size_type;
     using coef_type    = typename traits_type::real_type;
 
   public:
