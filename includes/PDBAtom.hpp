@@ -43,130 +43,75 @@ namespace coffeemill
  *  |55-60    | occupancy           | 1.00    |
  *  |61-66    | temperature_factor  | 15.93   |
  *  |77-78    | element             | N       |
- *  |79-80    | charge              | 15.93   |
- *
+ *  |79-80    | charge              |         |
  */
 
-/*
- * ATOM      1  N_  MET A   1_     12.969  18.506  30.954  1.00 15.93           N  _
- *    ^      ^  ^^    ^ ^   ^^          ^       ^       ^     ^     ^           ^  ^
- *    +------+--++----+-+---++----------+-------+-------+-----+-----+-----------+--+--prefix
- *           +--++----+-+---++----------+-------+-------+-----+-----+-----------+--+--atom_id
- *              ++----+-+---++----------+-------+-------+-----+-----+-----------+--+--atom
- *               +----+-+---++----------+-------+-------+-----+-----+-----------+--+--altloc
- *                    +-+---++----------+-------+-------+-----+-----+-----------+--+--residue
- *                      +---++----------+-------+-------+-----+-----+-----------+--+--chain_id
- *                          ++----------+-------+-------+-----+-----+-----------+--+--residue_id
- *                           +----------+-------+-------+-----+-----+-----------+--+--iCode
- *                                      +-------+-------+-----+-----+-----------+--+--x
- *                                              +-------+-----+-----+-----------+--+--y
- *                                                      +-----+-----+-----------+--+--z
- *                                                            +-----+-----------+--+--occupancy
- *                                                                  +-----------+--+--T_factor
- *                                                                              +--+--element
- *                                                                                 +--charge
- */
-class PDBAtom
+template<typename T = DefaultTraits>
+struct PDBAtom
 {
-  public:
-    //! ctor.
-    PDBAtom(){}
-    //! dtor.
-    ~PDBAtom(){}
+    typedef T traits_type;
+    typedef typename traits_type::char_type char_type;
+    typedef typename traits_type::string_type string_type;
+    typedef typename traits_type::int_type int_type;
+    typedef typename traits_type::size_type size_type;
+    typedef typename traits_type::real_type real_type;
+    typedef typename traits_type::position_type position_type;
 
-    //! atom id.
-    std::size_t& atom_id()       {return atom_id_;}
-    //! atom id.
-    std::size_t  atom_id() const {return atom_id_;}
-    //! residue id.
-    std::size_t& residue_id()       {return residue_id_;}
-    //! residue id.
-    std::size_t  residue_id() const {return residue_id_;}
-    //! chain id.
-          std::string& chain_id()       {return chain_id_;}
-    //! chain id.
-    const std::string& chain_id() const {return chain_id_;}
-
-    //! coordinate x
-    double  x() const {return position_[0];}
-    //! coordinate x
-    double& x()       {return position_[0];}
-    //! coordinate y
-    double  y() const {return position_[1];}
-    //! coordinate y
-    double& y()       {return position_[1];}
-    //! coordinate z
-    double  z() const {return position_[2];}
-    //! coordinate z
-    double& z()       {return position_[2];}
-    //! 3D coordinate as ax::Vector3d
-          ax::Vector3d& pos()       {return position_;}
-    const ax::Vector3d& pos() const {return position_;}
-
-    //! temperature_factor
-    double& temperature_factor()       {return temperature_factor_;}
-    //! temperature_factor
-    double  temperature_factor() const {return temperature_factor_;}
-    //! occupancy
-    double& occupancy()       {return occupancy_;}
-    //! occupancy
-    double  occupancy() const {return occupancy_;}
-    //! name of atom
-          std::string& atom()       {return atom_name_;}
-    //! name of atom
-    const std::string& atom() const {return atom_name_;}
-    //! name of residue
-          std::string& residue()       {return residue_name_;}
-    //! name of residue
-    const std::string& residue() const {return residue_name_;}
-    //! prefix (ATOM)
-          std::string& prefix()       {return prefix_;}
-    //! prefix (ATOM)
-    const std::string& prefix() const {return prefix_;}
-    //! code for insertion
-          std::string& icode()       {return icode_;}
-    //! code for insertion
-    const std::string& icode() const {return icode_;}
-    //! element symbol
-          std::string& element()       {return element_;}
-    //! element symbol
-    const std::string& element() const {return element_;}
-    //! charge on the atom
-          std::string& charge()       {return charge_;}
-    //! charge on the atom
-    const std::string& charge() const {return charge_;}
-    //! altanative location indicator
-    char& altloc()       {return altloc_;}
-    //! altanative location indicator
-    char  altloc() const {return altloc_;}
-
-  private:
-
-    char         altloc_;
-    std::size_t  atom_id_;
-    std::size_t  residue_id_;
-    double       occupancy_;
-    double       temperature_factor_;
-    std::string  atom_name_;
-    std::string  residue_name_;
-    std::string  chain_id_;
-    std::string  prefix_;
-    std::string  icode_;
-    std::string  element_;
-    std::string  charge_;
-    ax::Vector3d position_;
+    char_type     altloc;
+    char_type     icode;
+    int_type      atom_id;
+    int_type      residue_id;
+    real_type     occupancy;
+    real_type     temperature_factor;
+    string_type   prefix;
+    string_type   atom_name;
+    string_type   residue_name;
+    string_type   chain_id;
+    string_type   element;
+    string_type   charge;
+    position_type position;
 };
 
-/*!
- * @brief read PDBAtom from string that include only one line.
- * @param line corresponds to ATOM line. read data from this.
- * @param atom PDBAtom to store the data. normally be modified.
- * @return the string is ATOM line or not. if not, atom will not be modified.
- */
-bool operator>>(const std::string& line, PDBAtom& atom);
-
 //! output stream operator. output PDB Atom line as pdb atom format.
-std::ostream& operator<<(std::ostream& os, const PDBAtom& a);
+template<typename traits>
+std::basic_ostream<typename traits::char_type>&
+operator<<(std::basic_ostream<typename traits::char_type>& os,
+           const PDBAtom<traits>& a)
+{
+    os << std::setw(6) << std::left << a.prefix;
+    os << std::setw(5) << std::right << a.atom_id;
+    os << " ";
+    std::basic_string<typename traits::char_type> atom_name =
+        remove_all(' ', a.atom_name);
+    if(atom_name == "CA")
+        os << std::setw(4) << " CA ";
+    else if(atom_name == "DB" || atom_name == "DS" || atom_name == "DP")
+        os << std::setw(4) << std::left << atom_name;
+    else
+        os << std::setw(4) << a.atom_name;
+
+    os << std::setw(1) << a.altloc;
+    os << std::setw(3) << std::right << a.residue_name;
+    os << " ";
+    os << std::setw(1) << a.chain_id;
+    os << std::setw(4) << std::right << a.residue_id;
+    os << std::setw(1) << a.icode;
+    os << "   ";
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
+       << a.position[0];
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
+       << a.position[1];
+    os << std::setw(8) << std::fixed << std::setprecision(3) << std::right
+       << a.position[2];
+    os << std::setw(6) << std::fixed << std::setprecision(2) << std::right
+       << a.occupancy;
+    os << std::setw(6) << std::fixed << std::setprecision(2) << std::right
+       << a.temperature_factor;
+    os << "          ";
+    os << std::setw(2) << a.element;
+    os << std::setw(2) << a.charge;
+    return os;
+}
 
 /*!
  * @brief input stream operator.
@@ -175,7 +120,61 @@ std::ostream& operator<<(std::ostream& os, const PDBAtom& a);
  * @param is input stream
  * @param atom PDBatom to store the data
  */
-std::istream& operator>>(std::istream& is, PDBAtom& atom);
-
+template<typename traits>
+std::basic_istream<typename traits::char_type>&
+operator>>(std::basic_istream<typename traits::char_type>& is,
+           PDBAtom<traits>& atom)
+{
+    while(!is.eof())
+    {
+        std::basic_string<charT> line;
+        std::getline(is, line);
+        if(line >> atom) return is;
+        else continue;
+    }
+    return is;
 }
+
+/*!
+ * @brief read PDBAtom from string that include only one line.
+ * @param line corresponds to ATOM line. read data from this.
+ * @param atom PDBAtom to store the data. normally be modified.
+ * @return the string is ATOM line or not. if not, atom will not be modified.
+ */
+template<typename traits>
+bool operator>>(const std::basic_string<typename traits::char_type>& line,
+                PDBAtom<traits>& atom)
+{
+    const std::basic_string<typename traits::char_type> pref = line.substr(0,6);
+    if(pref != "ATOM  " && pref != "HETATM") return false;
+    atom.prefix       = pref;
+    atom.atom_id      = std::stoi(line.substr(6, 5));
+    atom.atom_name    = line.substr(12, 4);
+    atom.altloc       = line[16];
+    atom.residue_name = line.substr(17,3);
+    atom.chain_id     = line[21];
+    atom.residue_id   = stoi(line.substr(22, 4));
+    atom.icode        = line[26];
+    typename traits::real_type x, y, z;
+    x = stod(line.substr(30, 8));
+    y = stod(line.substr(38, 8));
+    z = stod(line.substr(46, 8));
+    atom.pos = traits::position_type(x,y,z);
+
+    try{atom.occupancy = stod(line.substr(54, 6));}
+    catch(std::exception& excpt){atom.occupancy = 0e0;}
+
+    try{atom.temperature_factor = stod(line.substr(60, 6));}
+    catch(std::exception& excpt){atom.temperature_factor = 0e0;}
+
+    try{atom.element = line.substr(76,2);}
+    catch(std::exception& excpt){atom.element = "";}
+
+    try{atom.charge = line.substr(78,2);}
+    catch(std::exception& excpt){atom.charge = "";}
+
+    return true;
+}
+
+}//coffeemill
 #endif // COFFEE_MILL_PDB_ATOM
