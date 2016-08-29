@@ -1,0 +1,14 @@
+# coffee mill input file for ninfo split.
+# use this way
+#    $ mill ninfo --split ninfo_split.inp
+# copyright (c) 2016 Toru Niina
+
+[information]
+
+filename = "all_in_one.ninfo"
+
+# if true, write cafemol input file <<<< native_info_simN block.
+cafemol_input = true
+simN = 1
+# note: this file will be over-written
+input_name = "native_info_sim1.inp"

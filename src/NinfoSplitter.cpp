@@ -1,60 +1,88 @@
-/*****************************************
- *  Ninfo Splitter                       *
- *  written by Toru Niina in Oct. 4 2015 *
- *****************************************/
 #include "NinfoSplitter.hpp"
-using namespace coffeemill;
+#include "NinfoReader.hpp"
+#include "NinfoWriter.hpp"
 
-// @brief> split all-in-one ninfo file into one-by-one.
-int main(int argc, char *argv[])
+namespace coffeemill
 {
-    if(!(argc == 2 || argc == 4) )
-    {
-        std::cout << "Ninfo Splitter" << std::endl;
-        std::cout << "Usage: $./split [filename].ninfo [OPTIONS]" << std::endl;
-        std::cout << "Outputs: [filename]_[iunit1]_[iunit2].ninfo & "
-                  << "native_info_simN.inp" << std::endl;
-        std::cout << "Option: " << std::endl;
-        std::cout << "-sim [integer]: "
-                  << "define the number of native_info_sim in output"
-                  << std::endl;
-        std::cout << "                inp file. (default: 1)"
-                  << std::endl;
-        return EXIT_FAILURE;
-    }
 
-    std::string filename(argv[1]);
-    if(filename.substr(filename.size()-6, 6) != "\x2eninfo" )
-    {
-        std::cout << "input filename : " << argv[1]
-                  << "may not be ninfo file." << std::endl;
-        return EXIT_FAILURE;
-    }
+std::map<NinfoSplitter::unit_pair_type, NinfoData> NinfoSplitter::split() const
+{
+    std::map<unit_pair_type, NinfoData> splitted;
 
-    int N(1);
-    if(argc == 4)
+    NinfoReader reader(this->filename_);
+    reader.read();
+    auto all_in_one = reader.data();
+
+    for(auto block = all_in_one.cbegin(); block != all_in_one.cend(); ++block)
     {
-        const std::string option(argv[2]);
-        if(option != "--sim" && option != "-sim")
+        NinfoKind kind = block->first;
+        for(auto line = block->second.cbegin();
+                line != block->second.cend(); ++line)
         {
-            std::cout << "invalid option: " << option << std::endl;
-            return EXIT_FAILURE;
+            unit_pair_type units =
+                std::make_pair((*line)->unit_at(0), (*line)->unit_at(1));
+            if(splitted.find(units) == splitted.cend())
+            {
+                splitted.emplace(units, NinfoData());
+            }
+            if(splitted.at(units).find(kind) == splitted.at(units).cend())
+            {
+                splitted.at(units).emplace(kind, NinfoBlock());
+            }
+            splitted[units][kind].push_back(*line);
         }
-        N = std::stoi(std::string(argv[3]));
     }
-    
-    NinfoReader reader(filename);
 
-    NinfoData data(reader.read_file());
-
-    NinfoSplitter splitter(filename, data, N);
-
-    std::vector<WriterSptr> writers(splitter.split());
-
-    for(auto iter = writers.begin(); iter != writers.end(); ++iter)
-    {
-        (*iter)->write();
-    }
-    return EXIT_SUCCESS;
+    return splitted;
 }
 
+void NinfoSplitter::write(const std::map<unit_pair_type, NinfoData>& data) const
+{
+    for(auto iter = data.cbegin(); iter != data.cend(); ++iter)
+    {
+        (NinfoWriter(this->make_1by1_fname(iter->first))).write(iter->second);
+    }
+    return;
+}
+
+std::string NinfoSplitter::make_1by1_fname(const unit_pair_type& units) const
+{
+    std::cout << "make_1by1_fname" << std::endl;
+    std::cout << this->filename_ << std::endl;
+    std::cout << this->filename_.size() << std::endl;
+    std::string retval = this->filename_.substr(0, this->filename_.size() - 6) + 
+           "_" + std::to_string(units.first) +
+           "_" + std::to_string(units.second) + ".ninfo";
+    std::cout << retval << std::endl;
+    return retval;
+}
+
+void NinfoSplitter::write_cafe_inp(index_type simN, const std::string& inpname,
+                    const std::map<unit_pair_type, NinfoData>& splitted) const
+{
+    std::ofstream inp(inpname);
+    if(!inp.good())
+        throw std::runtime_error("file open error: " + inpname);
+
+    inp << "<<<< native_info_sim" << simN << std::endl;
+
+    unsigned index = 1;
+    for(auto iter = splitted.cbegin(); iter != splitted.cend(); ++iter)
+    {
+        inp << "NINFO(" << iter->first.first << "/" << iter->first.second << ") "
+            << index << std::endl;
+        ++index;
+    }
+
+    index = 1;
+    for(auto iter = splitted.cbegin(); iter != splitted.cend(); ++iter)
+    {
+        inp << index << " = " << this->make_1by1_fname(iter->first) << std::endl;
+        ++index;
+    }
+
+    inp << ">>>>" << std::endl;
+    return;
+}
+
+}
