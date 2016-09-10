@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_UTILITY
 #define COFFEE_MILL_UTILITY
 #include <string>
+#include <algorithm>
 
 namespace coffeemill
 {
@@ -20,17 +21,18 @@ remove_indent(std::basic_string<charT> const& str)
     return std::basic_string<charT>(iter, str.cend());
 }
 
-
-// legacy
-
-template<char del>
-std::string remove_all(const std::string& str)
+template<typename charT>
+inline std::basic_string<charT>
+remove_all(const charT c, const std::basic_string<charT>& str)
 {
-    std::string retval;
+    std::basic_string<charT> retval;
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
-        if(*iter != del) retval += *iter;
+        if(*iter != c) retval += *iter;
     return retval;
 }
+
+
+// legacy
 
 template<char del>
 std::string remove_front(const std::string& str)
