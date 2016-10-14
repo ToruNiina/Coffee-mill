@@ -21,7 +21,7 @@ namespace coffeemill
 {
 
 template<typename T = DefaultTraits>
-class DCDData
+class DCDHeader
 {
   public:
 
@@ -35,14 +35,11 @@ class DCDData
     using iterator        = trajectory_type::iterator;
     using const_iterator  = trajectory_type::const_iterator;
     using string_type     = typename traits_type::string_type;
-    using header_type     = std::vector<string_type>;
+    using comment_type    = std::vector<string_type>;
 
   public:
-
-    DCDData(){}
-    explicit DCDData(size_type size) : trajectory_(size){}
-
-    ~DCDData() = default;
+    DCDHeader() = default;
+    ~DCDHeader() = default;
 
     //! number of frames.
     size_type  nset() const {return nset_;}
@@ -80,6 +77,95 @@ class DCDData
     string_type const& signeture() const {return signeture_;}
     string_type      & signeture()       {return signeture_;}
 
+    const comment_type& comment() const {return comment_;}
+          comment_type& comment()       {return comment_;}
+
+    //! add comment to header. make the comment length 80 with char '='.
+    void push_comment(const std::string& message)
+    {
+        if(message.size() == 80)
+            header_.push_back(message);
+        else if(message.size() > 80)
+            throw std::invalid_argument("too long message");
+        else if(message.size() < 80)
+            header_.push_back(message + std::string(80 - message.size(), '='));
+    }
+
+  private:
+
+    size_type       nset_;               //!< number of frames.
+    size_type       istart_;             //!< initial step of traj. nomally zero
+    size_type       nstep_save_;         //!< interval of saving snapshot
+    size_type       nstep_;              //!< total step number of the traj
+    size_type       nunit_;              //!< total unit(chains) number
+    size_type       verCHARMM_;          //!< version of CHARMM. in cafemol, 24
+    size_type       nparticle_;          //!< total number of particle
+    time_type       delta_t_;            //!< delta t.
+    string_type     signeture_ = "CORD"; //!< CORD or VELO
+    comment_type    comment_;             //!< header comment. vector of string.
+};
+
+template<typename T = DefaultTraits>
+class DCDData
+{
+  public:
+
+    using traits_type     = T;
+    using size_type       = typename traits_type::size_type;
+    using index_type      = size_type;
+    using time_type       = typename traits_type::real_type;
+    using position_type   = typename traits_type::position_type;
+    using snapshot_type   = std::vector<position_type>;
+    using trajectory_type = std::vector<snapshot_type>;
+    using iterator        = trajectory_type::iterator;
+    using const_iterator  = trajectory_type::const_iterator;
+    using string_type     = typename traits_type::string_type;
+    using header_type     = DCDHeader<traits_type>;
+    using comment_type    = typename header_type::
+
+  public:
+
+    DCDData(){}
+    explicit DCDData(size_type size) : trajectory_(size){}
+
+    ~DCDData() = default;
+
+    //! number of frames.
+    size_type  nset() const {return header_.nset();}
+    size_type& nset()       {return header_.nset();}
+
+    //! initial step. normally 0.
+    size_type  istart() const {return header_.istart();}
+    size_type& istart()       {return header_.istart();}
+
+    //! output interval.
+    size_type  nstep_save() const {return header_.nstep_save();}
+    size_type& nstep_save()       {return header_.nstep_save();}
+
+    //! total step.
+    size_type  nstep() const {return header_.nstep();}
+    size_type& nstep()       {return header_.nstep();}
+
+    //! number of units.
+    size_type  nunit() const {return header_.nunit();}
+    size_type& nunit()       {return header_.nunit();}
+
+    //! version of CHARMM. in cafemol, normally, 24.
+    size_type  verCHARMM() const {return header_.verCHARMM();}
+    size_type& verCHARMM()       {return header_.verCHARMM();}
+
+    //! number of particles in snapshot.
+    size_type  nparticle() const {return header_.nparticle();}
+    size_type& nparticle()       {return header_.nparticle();}
+
+    //! delta t.
+    time_type  delta_t() const {return header_.delta_t();}
+    time_type& delta_t()       {return header_.delta_t();}
+
+    //! file signeture. normally, CORD or VELO.
+    string_type const& signeture() const {return header_.signeture();}
+    string_type      & signeture()       {return header_.signeture();}
+
     //! front snapshot of trajectory.
     snapshot_type const& front() const {return trajectory_.front();}
     snapshot_type      & front()       {return trajectory_.front();}
@@ -109,32 +195,17 @@ class DCDData
     const_iterator cend()   const {return trajectory_.cend();}
 
     //! header comment.
-    const header_type& header() const {return header_;}
-          header_type& header()       {return header_;}
+    const comment_type& comment() const {return header_.comment();}
+          comment_type& comment()       {return header_.comment();}
 
     //! add comment to header. make the comment length 80 with char '='.
-    void push_header(const std::string& message)
+    void push_comment(const std::string& message)
     {
-        if(message.size() == 80)
-            header_.push_back(message);
-        else if(message.size() > 80)
-            throw std::invalid_argument("too long message");
-        else if(message.size() < 80)
-            header_.push_back(message + std::string(80 - message.size(), '='));
+        header_.push_comment(message);
     }
 
   private:
-
-    size_type       nset_;       //!< number of frames.
-    size_type       istart_;     //!< initial value of isteps (nomally zero)
-    size_type       nstep_save_; //!< interval of saving snapshot
-    size_type       nstep_;      //!< total step number of the simulation
-    size_type       nunit_;      //!< total unit(chains) number
-    size_type       verCHARMM_;  //!< version of CHARMM (in the case of cafemol, 24)
-    size_type       nparticle_;  //!< total number of particle
-    time_type       delta_t_;    //!< delta t.
-    string_type     signeture_ = "CORD"; //!< CORD or VELO
-    header_type     header_;     //!< header comment. vector of string.
+    header_type     header_;
     trajectory_type trajectory_; //!< trajectory data.
 };
 
