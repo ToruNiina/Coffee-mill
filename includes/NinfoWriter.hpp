@@ -24,7 +24,7 @@ class NinfoWriter
     using data_type = NinfoData<real_type>;
 
   public:
-    NinfoWriter() = default;
+    NinfoWriter(){}
     ~NinfoWriter() = default;
 
     void write(const data_type& data, const std::string& filename) const;
@@ -32,8 +32,8 @@ class NinfoWriter
 
   private:
     template<typename T_ninfo>
-    void write_block(const typename data_type::value_type& block,
-            std::basic_ostream<char>& stream) const;
+    void write_block(std::basic_ostream<char>& stream,
+                     const typename data_type::value_type& block) const;
 };
 
 template<typename realT>
@@ -117,8 +117,8 @@ void NinfoWriter<realT>::write(
 
 template<typename realT>
 template<typename ninfoT>
-void NinfoWriter<realT>::write_block(const typename data_type::value_type& block,
-        std::basic_ostream<char>& stream) const
+void NinfoWriter<realT>::write_block(std::basic_ostream<char>& stream,
+        const typename data_type::value_type& block) const
 {
     for(auto iter = block.cbegin(); iter != block.cend(); ++iter)
         stream << *(std::dynamic_pointer_cast<ninfoT>(*iter)) << std::endl;
