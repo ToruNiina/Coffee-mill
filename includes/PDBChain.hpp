@@ -52,11 +52,12 @@ class PDBChain
      *       included is the same chain.
      * @return the chain id of first atom line included in container.
      */
-    const std::string& chain_id() const {return this->front()->front()->chain_id();}
+    const std::string& chain_id() const {return this->front().front().chain_id();}
 
     bool empty() const {return residues_.empty();}
     std::size_t size() const {return residues_.size();}
-    void push_back(const residue_type& elem) {return residues_.push_back(elem);}
+    void push_back(const residue_type& res);
+    void emplace_back(residue_type&& res);
     void clear(){return residues_.clear();}
 
     residue_type const& at(index_type i) const {return residues_.at(i);}
@@ -79,5 +80,23 @@ class PDBChain
     container_type residues_;//!< array of shared pointer of residues
 };
 
+template<typename vectorT>
+void PDBChain<vectorT>::push_back(const residue_type& res)
+{
+    if(not this->empty() && (res.chain_id() != this->chain_id()))
+        throw std::invalid_argument("emplace invalid residue into chain");
+    this->residues_.push_back(res);
+    return;
 }
+
+template<typename vectorT>
+void PDBChain<vectorT>::emplace_back(residue_type&& res)
+{
+    if(not this->empty() && (res.chain_id() != this->chain_id()))
+        throw std::invalid_argument("emplace invalid residue into chain");
+    this->residues_.emplace_back(std::forward(res));
+    return;
+}
+
+}//mill
 #endif //COFFEE_MILL_PDB_CHAIN
