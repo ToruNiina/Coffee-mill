@@ -13,6 +13,7 @@
 #ifndef COFFEE_MILL_NINFO_READER
 #define COFFEE_MILL_NINFO_READER
 #include "NinfoData.hpp"
+#include "utility.hpp"
 #include <fstream>
 
 namespace mill
@@ -35,7 +36,6 @@ class NinfoReader
 
   private:
     void read_line(data_type& data, const std::string& line) const;
-    std::string remove_indent(const std::string& line) const;
 };
 
 template<typename realT>
@@ -60,7 +60,7 @@ NinfoReader<realT>::read(std::basic_istream<char>& is) const
         std::string line;
         std::getline(is, line); ++lineindex;
         if(line.empty()) continue;
-        line = this->remove_indent(line);
+        line = remove_indent(line);
 
         try{
              if(line.empty()) continue;
@@ -172,17 +172,6 @@ NinfoReader<realT>::read_line(data_type& data, const std::string& line) const
         data[kind].push_back(ninfo);
     }
     return;
-}
-
-template<typename realT>
-std::string
-NinfoReader<realT>::remove_indent(const std::string& line) const
-{
-    auto is_indents = [](const char c){return c == ' ' || c == '\t';};
-    auto iter = line.cbegin();
-    while(is_indents(*iter)){++iter;}
-    const std::string removed(iter, line.cend());
-    return removed;
 }
 
 }//mill
