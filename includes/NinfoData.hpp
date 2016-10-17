@@ -18,7 +18,7 @@
 #include <memory>
 #include <map>
 
-namespace coffeemill
+namespace mill
 {
 
 //! Ninfo data class.
@@ -26,12 +26,12 @@ namespace coffeemill
  *  NinfoData is a map of NinfoKind and NinfoBlock. normally, this can contain
  *  all the information of one ninfo file.
  */
-template<typename T = DefaultTraits>
+template<typename realT>
 class NinfoData
 {
   public:
-    using traits_type    = T;
-    using ninfobase_type = NinfoBase<traits_type>;
+    using real_type      = realT;
+    using ninfobase_type = NinfoBase<real_type>;
     using key_type       = NinfoKind;
     using value_type     = std::vector<std::shared_ptr<ninfobase_type>>;
     using container_type = std::map<key_type, value_type>;
@@ -58,8 +58,8 @@ class NinfoData
     const_iterator find(const key_type key) const {return data_.find(key);}
    
     //! access to whole data.
-          container_type& data()       {return data_;}
-    const container_type& data() const {return data_;}
+    container_type      & data()       {return data_;}
+    container_type const& data() const {return data_;}
 
     iterator begin() {return data_.begin();}
     iterator end()   {return data_.end();}
@@ -83,6 +83,6 @@ class NinfoData
     constexpr static const char* const basestack = "native basestack";
 };
 
-}//coffeemill
+}//mill
 
 #endif /* COFFEE_MILL_NINFO_DATA */
