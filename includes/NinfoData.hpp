@@ -23,8 +23,8 @@ namespace mill
 
 //! Ninfo data class.
 /*!
- *  NinfoData is a map of NinfoKind and NinfoBlock. normally, this can contain
- *  all the information of one ninfo file.
+ *  NinfoData is a map of NinfoKind and std::vector<NinfoElement>.
+ *  normally, this class can contain all the information of one ninfo file.
  */
 template<typename realT>
 class NinfoData
