@@ -109,8 +109,8 @@ class NinfoElement : public NinfoBase<realT>
     using indices_type = std::array<index_type, N_bodies>;
     using coefs_type   = std::array<real_type, N_coefs>;
 
-    constexpr static size_type num_bodies = N_bodies;
-    constexpr static size_type num_coefs  = N_coefs;
+    constexpr static size_type number_of_bodies = N_bodies;
+    constexpr static size_type number_of_coefs  = N_coefs;
 
   public:
 
@@ -118,8 +118,8 @@ class NinfoElement : public NinfoBase<realT>
     ~NinfoElement() override = default;
 
     //! return the number of bodies correspoinding to the interaction.
-    size_type n_bodies() const override {return num_bodies;}
-    size_type n_coefs()  const override {return num_coefs;}
+    size_type num_bodies() const override {return number_of_bodies;}
+    size_type num_coefs()  const override {return number_of_coefs;}
 
     //! header. like "bond"
     std::string const& header() const override {return header_;}
