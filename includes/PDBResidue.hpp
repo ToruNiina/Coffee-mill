@@ -16,7 +16,7 @@
 #define COFFEE_MILL_PDB_RESIDUE
 #include "PDBAtom.hpp"
 #include <vector>
-#include <memory>
+#include <stdexcept>
 
 namespace mill
 {
@@ -45,12 +45,9 @@ class PDBResidue
     PDBResidue& operator=(PDBResidue const&) = default;
     PDBResidue& operator=(PDBResidue&&) = default;
 
-    int  residue_id() const {return residue_id_;}
-    int& residue_id()       {return residue_id_;}
-    std::string const& residue_name() const {return residue_name_;}
-    std::string&       residue_name()       {return residue_name_;}
-    std::string const& chain_id() const {return chain_id_;}
-    std::string &      chain_id()       {return chain_id_;}
+    int  residue_id() const {return atoms_.front().residue_id;}
+    std::string const& residue_name() const {return atoms_.front().residue_name;}
+    std::string const& chain_id() const {return atoms_.front().chain_id;}
 
     std::size_t size() const {return atoms_.size();}
     bool       empty() const {return atoms_.empty();}
@@ -58,24 +55,47 @@ class PDBResidue
     void resize(const std::size_t s){atoms_.reserve(s);}
     void reserve(const std::size_t s){atoms_.reserve(s);}
 
-    void push_back(const atom_type& atom){atoms_.push_back(atom);}
-    void emplace_back(atom_type&& atom){atoms_.emplace_back(std::forward(atom));}
+    void push_back(const atom_type& atom);
+    void emplace_back(atom_type&& atom);
 
     atom_type &      at(const std::size_t i)       {return atoms_.at(i);}
     atom_type const& at(const std::size_t i) const {return atoms_.at(i);}
     atom_type &      operator[](const std::size_t i)       {return atoms_[i];}
     atom_type const& operator[](const std::size_t i) const {return atoms_[i];}
+    atom_type &      front()       {return atoms_.front();}
+    atom_type const& front() const {return atoms_.front();}
+    atom_type &      back()       {return atoms_.back();}
+    atom_type const& back() const {return atoms_.back();}
     iterator begin() {return atoms_.begin();}
     iterator end()   {return atoms_.end();}
     const_iterator cbegin() const {return atoms_.cbegin();}
     const_iterator cend()   const {return atoms_.cend();}
 
   private:
-    int residue_id_;
-    std::string residue_name_;
-    std::string chain_id_;
     container_type atoms_;
 };
+
+template<typename vectorT>
+void PDBResidue<vectorT>::push_back(const atom_type& atom)
+{
+    if(not atoms_.empty() && (this->residue_id() != atom.residue_id ||
+                              this->residue_name() != atom.residue_name ||
+                              this->chain_id() != atom.chain_id))
+        throw std::invalid_argument("emplace invalid atom to residue");
+    atoms_.push_back(atom);
+    return;
+}
+
+template<typename vectorT>
+void PDBResidue<vectorT>::emplace_back(atom_type&& atom)
+{
+    if(not atoms_.empty() && (this->residue_id() != atom.residue_id ||
+                              this->residue_name() != atom.residue_name ||
+                              this->chain_id() != atom.chain_id))
+        throw std::invalid_argument("emplace invalid atom to residue");
+    atoms_.emplace_back(std::forward(atom));
+    return;
+}
 
 } // mill
 #endif /* COFFEE_MILL_PDB_RESIDUE */
