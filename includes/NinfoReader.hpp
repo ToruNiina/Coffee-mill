@@ -34,8 +34,8 @@ class NinfoReader
     data_type read(std::basic_istream<char>& is) const;
 
   private:
-    void read_line(data_type& data, const std::string& line);
-    void remove_indent(std::string& line);
+    void read_line(data_type& data, const std::string& line) const;
+    std::string remove_indent(const std::string& line) const;
 };
 
 template<typename realT>
@@ -80,7 +80,8 @@ NinfoReader<realT>::read(std::basic_istream<char>& is) const
 }
 
 template<typename realT>
-void NinfoReader<realT>::read_line(data_type& data, const std::string& line)
+void
+NinfoReader<realT>::read_line(data_type& data, const std::string& line) const
 {
     std::istringstream iss(line);
     std::string prefix;
@@ -95,47 +96,65 @@ void NinfoReader<realT>::read_line(data_type& data, const std::string& line)
     if(prefix == "bond")
     {
         kind = NinfoKind::Bond;
-        ninfo = std::make_shared<NinfoBond>();
+        auto tmp = std::make_shared<NinfoBond>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "angl")
     {
         kind = NinfoKind::Angl;
-        ninfo = std::make_shared<NinfoAngl>();
+        auto tmp = std::make_shared<NinfoAngl>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "aicg13")
     {
         kind = NinfoKind::Aicg13;
-        ninfo = std::make_shared<NinfoAicg13>();
+        auto tmp = std::make_shared<NinfoAicg13>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "dihd")
     {
         kind = NinfoKind::Dihd;
-        ninfo = std::make_shared<NinfoDihd>();
+        auto tmp = std::make_shared<NinfoDihd>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "aicg14")
     {
         kind = NinfoKind::Aicg14;
-        ninfo = std::make_shared<NinfoAicg14>();
+        auto tmp = std::make_shared<NinfoAicg14>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "aicgdih")
     {
         kind = NinfoKind::Aicgdih;
-        ninfo = std::make_shared<NinfoAicgdih>();
+        auto tmp = std::make_shared<NinfoAicgdih>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "contact")
     {
         kind = NinfoKind::Contact;
-        ninfo = std::make_shared<NinfoContact>();
+        auto tmp = std::make_shared<NinfoContact>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "basepair")
     {
         kind = NinfoKind::BasePair;
-        ninfo = std::make_shared<NinfoBasePair>();
+        auto tmp = std::make_shared<NinfoBasePair>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else if(prefix == "basestack")
     {
         kind = NinfoKind::BaseStack;
-        ninfo = std::make_shared<NinfoBaseStack>();
+        auto tmp = std::make_shared<NinfoBaseStack>();
+        iss >> (*tmp);
+        ninfo = tmp;
     }
     else
     {
@@ -143,7 +162,6 @@ void NinfoReader<realT>::read_line(data_type& data, const std::string& line)
     }
 //}}}
 
-    iss >> (*ninfo);
     if(data.count(kind) == 0) // if data do not have this kind of ninfo yet
     {
         std::vector<std::shared_ptr<NinfoBase<realT>>> block{ninfo};
@@ -156,5 +174,16 @@ void NinfoReader<realT>::read_line(data_type& data, const std::string& line)
     return;
 }
 
+template<typename realT>
+std::string
+NinfoReader<realT>::remove_indent(const std::string& line) const
+{
+    auto is_indents = [](const char c){return c == ' ' || c == '\t';};
+    auto iter = line.cbegin();
+    while(is_indents(*iter)){++iter;}
+    const std::string removed(iter, line.cend());
+    return removed;
 }
+
+}//mill
 #endif //COFFEE_MILL_NINFO_READER
