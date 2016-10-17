@@ -13,59 +13,61 @@
 #ifndef COFFEE_MILL_NINFO_READER
 #define COFFEE_MILL_NINFO_READER
 #include "NinfoData.hpp"
+#include <fstream>
 
-namespace coffeemill
+namespace mill
 {
 
-template<typename T = DefaultTraits>
+template<typename realT>
 class NinfoReader
 {
   public:
-    using char_type = typename T::char_type;
-    using data_type = NinfoData<T>;
+    using real_type = realT;
+    using data_type = NinfoData<real_type>;
 
   public:
 
     NinfoReader() = default;
     ~NinfoReader() = default;
 
-    data_type read(const std::basic_string<char_type>& filename);
-    data_type read(std::basic_istream<char_type>& is);
+    data_type read(const std::string& filename) const;
+    data_type read(std::basic_istream<char>& is) const;
 
   private:
-    void read_line(data_type& data, const std::basic_string<char_type>& line);
+    void read_line(data_type& data, const std::string& line);
+    void remove_indent(std::string& line);
 };
 
-template<typename T_traits>
-NinfoData<T_Traits>
-NinfoReader<T_traits>::read(std::basic_string<char_type>& filename)
+template<typename realT>
+NinfoData<realT>
+NinfoReader<realT>::read(const std::string& filename) const
 {
-    std::basic_ifstream<char_type> filestream(filename);
-    if(!filestream.good()) throw std::runtime_error("file open error");
+    std::ifstream filestream(filename);
+    if(not filestream.good()) throw std::runtime_error("file open error");
     const auto retval = this->read(filestream);
     filestream.close();
     return retval;
 }
 
-template<typename T_traits>
-NinfoData<T_traits>
-NinfoReader<T_traits>::read(std::basic_istream<char_type>& is)
+template<typename realT>
+NinfoData<realT>
+NinfoReader<realT>::read(std::basic_istream<char>& is) const
 {
-    NinfoData<T_traits> data;
+    NinfoData<realT> data;
     std::size_t lineindex = 0;
-    while(!is.eof())
+    while(not is.eof())
     {
-        std::basic_string<char_type> line;
+        std::string line;
         std::getline(is, line); ++lineindex;
         if(line.empty()) continue;
-        line = remove_indent(line);
+        line = this->remove_indent(line);
 
         try{
              if(line.empty()) continue;
         else if(line.front() == '*') continue;
         else if(line.substr(0, 4) == "<<<<") continue;
         else if(line.substr(0, 4) == ">>>>") continue;
-        else read_line(data, line);
+        else this->read_line(data, line);
         }
         catch(std::exception& except)
         {
@@ -77,19 +79,18 @@ NinfoReader<T_traits>::read(std::basic_istream<char_type>& is)
     return data;
 }
 
-template<typename T_traits>
-void NinfoReader<T_traits>::read_line(
-        data_type& data, const std::basic_string<char_type>& line)
+template<typename realT>
+void NinfoReader<realT>::read_line(data_type& data, const std::string& line)
 {
-    std::basic_istringstream<char_type> iss(line);
-    std::basic_string<char_type> prefix;
+    std::istringstream iss(line);
+    std::string prefix;
 
     const auto line_head = iss.tellg();
     iss >> prefix;
     iss.seekg(line_head);
 
     NinfoKind kind;
-    std::shared_ptr<NinfoBase<T_traits>> ninfo;
+    std::shared_ptr<NinfoBase<realT>> ninfo;
 // switch with prefix: set kind and ninfo {{{
     if(prefix == "bond")
     {
@@ -138,21 +139,20 @@ void NinfoReader<T_traits>::read_line(
     }
     else
     {
-        throw std::logic_error("invalid line");
+        throw std::logic_error("invalid line: " + prefix);
     }
 //}}}
 
     iss >> (*ninfo);
-    if(data.count(kind) == 0)
+    if(data.count(kind) == 0) // if data do not have this kind of ninfo yet
     {
-        std::vector<std::shared_ptr<NinfoBase<T_Traits>>> block{ninfo};
+        std::vector<std::shared_ptr<NinfoBase<realT>>> block{ninfo};
         data.emplace(kind, block);
     }
     else
     {
         data[kind].push_back(ninfo);
     }
-
     return;
 }
 
