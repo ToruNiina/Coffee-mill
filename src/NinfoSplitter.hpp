@@ -95,7 +95,8 @@ NinfoSplitter<realT>::split(const std::string& filename) const
             // search this kind of native information is already found or not.
             if(splitted.at(units).find(kind) == splitted.at(units).cend())
             {
-                splitted.at(units).emplace(kind, data_type::value_type());
+                splitted.at(units).emplace(kind,
+                        std::vector<std::shared_ptr<NinfoBase<realT>>>{});
             }
 
             // insert data to return value.
