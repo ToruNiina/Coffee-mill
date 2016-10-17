@@ -12,11 +12,13 @@
 
 #ifndef COFFEE_MILL_PDB_ATOM
 #define COFFEE_MILL_PDB_ATOM
-#include "math/LinearAlgebra.hpp"
+#include "detail/scalar_type_extractor.hpp"
+#include "utility.hpp"
 #include <iostream>
+#include <iomanip>
 #include <string>
 
-namespace coffeemill
+namespace mill
 {
 
 //! PDBAtom class.
@@ -46,43 +48,37 @@ namespace coffeemill
  *  |79-80    | charge              |         |
  */
 
-template<typename T = DefaultTraits>
+template<typename vectorT>
 struct PDBAtom
 {
-    typedef T traits_type;
-    typedef typename traits_type::char_type char_type;
-    typedef typename traits_type::string_type string_type;
-    typedef typename traits_type::int_type int_type;
-    typedef typename traits_type::size_type size_type;
-    typedef typename traits_type::real_type real_type;
-    typedef typename traits_type::position_type position_type;
+    using vector_type = vectorT;
+    using real_type   = typename scalar_type_extractor<vector_type>::type;
+    using position_type = vector_type;
 
-    char_type     altloc;
-    char_type     icode;
-    int_type      atom_id;
-    int_type      residue_id;
+    char          altloc;
+    char          icode;
+    int           atom_id;
+    int           residue_id;
     real_type     occupancy;
     real_type     temperature_factor;
-    string_type   prefix;
-    string_type   atom_name;
-    string_type   residue_name;
-    string_type   chain_id;
-    string_type   element;
-    string_type   charge;
+    std::string   prefix;
+    std::string   atom_name;
+    std::string   residue_name;
+    std::string   chain_id;
+    std::string   element;
+    std::string   charge;
     position_type position;
 };
 
 //! output stream operator. output PDB Atom line as pdb atom format.
-template<typename traits>
-std::basic_ostream<typename traits::char_type>&
-operator<<(std::basic_ostream<typename traits::char_type>& os,
-           const PDBAtom<traits>& a)
+template<typename vector_type>
+std::basic_ostream<char>&
+operator<<(std::basic_ostream<char>& os, const PDBAtom<vector_type>& a)
 {
     os << std::setw(6) << std::left << a.prefix;
     os << std::setw(5) << std::right << a.atom_id;
     os << " ";
-    std::basic_string<typename traits::char_type> atom_name =
-        remove_all(' ', a.atom_name);
+    std::string atom_name = remove_all(' ', a.atom_name);
     if(atom_name == "CA")
         os << std::setw(4) << " CA ";
     else if(atom_name == "DB" || atom_name == "DS" || atom_name == "DP")
@@ -120,14 +116,13 @@ operator<<(std::basic_ostream<typename traits::char_type>& os,
  * @param is input stream
  * @param atom PDBatom to store the data
  */
-template<typename traits>
-std::basic_istream<typename traits::char_type>&
-operator>>(std::basic_istream<typename traits::char_type>& is,
-           PDBAtom<traits>& atom)
+template<typename vector_type>
+std::basic_istream<char>&
+operator>>(std::basic_istream<char>& is, PDBAtom<vector_type>& atom)
 {
     while(!is.eof())
     {
-        std::basic_string<charT> line;
+        std::string line;
         std::getline(is, line);
         if(line >> atom) return is;
         else continue;
@@ -141,11 +136,10 @@ operator>>(std::basic_istream<typename traits::char_type>& is,
  * @param atom PDBAtom to store the data. normally be modified.
  * @return the string is ATOM line or not. if not, atom will not be modified.
  */
-template<typename traits>
-bool operator>>(const std::basic_string<typename traits::char_type>& line,
-                PDBAtom<traits>& atom)
+template<typename vector_type>
+bool operator>>(const std::string& line, PDBAtom<vector_type>& atom)
 {
-    const std::basic_string<typename traits::char_type> pref = line.substr(0,6);
+    const std::string pref = line.substr(0,6);
     if(pref != "ATOM  " && pref != "HETATM") return false;
     atom.prefix       = pref;
     atom.atom_id      = std::stoi(line.substr(6, 5));
@@ -155,11 +149,12 @@ bool operator>>(const std::basic_string<typename traits::char_type>& line,
     atom.chain_id     = line[21];
     atom.residue_id   = stoi(line.substr(22, 4));
     atom.icode        = line[26];
-    typename traits::real_type x, y, z;
+    typename PDBAtom<vector_type>::real_type x, y, z;
     x = stod(line.substr(30, 8));
     y = stod(line.substr(38, 8));
     z = stod(line.substr(46, 8));
-    atom.pos = traits::position_type(x,y,z);
+    const typename PDBAtom<vector_type>::position_type pos(x, y, z);
+    atom.pos = pos;
 
     try{atom.occupancy = stod(line.substr(54, 6));}
     catch(std::exception& excpt){atom.occupancy = 0e0;}
