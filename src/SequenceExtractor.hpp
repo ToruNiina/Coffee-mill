@@ -1,47 +1,25 @@
 #ifndef COFFEE_MILL_SEQUENCE_EXTRACTOR
 #define COFFEE_MILL_SEQUENCE_EXTRACTOR
-#include <string>
-#include <map>
 #include "PDBChain.hpp"
 #include "utility.hpp"
+#include <string>
+#include <map>
 
-namespace coffeemill
+namespace mill
 {
 
+template<typename vectorT>
 class SequenceExtractor
 {
+  public:
+    using vector_type = vectorT;
+    using chain_type = PDBChain<vector_type>;
+
   public:
     SequenceExtractor(){}
     ~SequenceExtractor() = default;
 
-    std::string operator()(const PDBChain& chain) const
-    {
-        std::string sequence;
-        for(auto residue = chain.cbegin(); residue != chain.cend(); ++residue)
-        {
-            std::string res = (*residue)->residue();
-            res = remove_all<' '>(res);
-            if(res[0] == 'D')
-            {
-                sequence += res[1];
-            }
-            else if(res.size() == 1)
-            {
-                sequence += res;
-            }
-            else 
-            {
-                try{sequence += amino_acid.at(res);}
-                catch(std::out_of_range& except)
-                {
-                    std::cerr << "Exception caught: residue " << res << std::endl; 
-                    std::cerr << "what: " << except.what() << std::endl;
-                    throw;
-                }
-            }
-        }
-        return sequence;
-    }
+    std::string extract(const chain_type& chain) const;
 
   private:
 
@@ -73,6 +51,37 @@ class SequenceExtractor
     };
 };
 
+template<typename vectorT>
+std::string SequenceExtractor<vectorT>::extract(const chain_type& chain) const
+{
+    std::string sequence;
+    for(auto residue = chain.cbegin(); residue != chain.cend(); ++residue)
+    {
+        std::string res = residue->residue_name();
+        res = remove_all(' ', res);
+        if(res[0] == 'D')
+        {
+            sequence += res[1];
+        }
+        else if(res.size() == 1)
+        {
+            sequence += res;
+        }
+        else 
+        {
+            try{sequence += amino_acid.at(res);}
+            catch(std::out_of_range& except)
+            {
+                std::cerr << "Exception caught: residue " << res << std::endl; 
+                std::cerr << "what: " << except.what() << std::endl;
+                throw;
+            }
+        }
+    }
+    return sequence;
 }
+
+
+} // mill
 
 #endif /* COFFEE_MILL_SEQUENCE_EXTRACTOR */
