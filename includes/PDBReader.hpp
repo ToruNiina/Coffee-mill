@@ -1,8 +1,8 @@
 /*!
   @file PDBReader.hpp
-  @brief definition of a class that reads pdb atom.
+  @brief pdb reader.
 
-  read pdb file and store the information as std::vector of shared_ptr of PDBAtom
+  read pdb atoms from input stream and parse atoms as chains.
   
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 13:00
@@ -40,17 +40,17 @@ class PDBReader
     PDBReader() = default;
     ~PDBReader() = default;
 
-    std::vector<chain_type> parse(const std::vector<atom_type>& atoms);
+    std::vector<chain_type> parse(const std::vector<atom_type>& atoms) const;
 
-    std::vector<atom_type> read(const std::string& fname);
-    std::vector<atom_type> read(const std::string& fname, const std::size_t model_idx);
-    std::vector<atom_type> read(std::basic_istream<char>& fname);
-    std::vector<atom_type> read(std::basic_istream<char>& fname, const std::size_t model_idx);
+    std::vector<atom_type> read(const std::string& fname) const;
+    std::vector<atom_type> read(const std::string& fname, const std::size_t model_idx) const;
+    std::vector<atom_type> read(std::basic_istream<char>& fname) const;
+    std::vector<atom_type> read(std::basic_istream<char>& fname, const std::size_t model_idx) const;
 };
 
 template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
-PDBReader<vectorT>::read(const std::string& fname)
+PDBReader<vectorT>::read(const std::string& fname) const
 {
     std::ifstream ifs(fname);
     if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
@@ -61,7 +61,7 @@ PDBReader<vectorT>::read(const std::string& fname)
 
 template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
-PDBReader<vectorT>::read(const std::string& fname, const std::size_t model_idx)
+PDBReader<vectorT>::read(const std::string& fname, const std::size_t model_idx) const
 {
     std::ifstream ifs(fname);
     if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
@@ -72,7 +72,7 @@ PDBReader<vectorT>::read(const std::string& fname, const std::size_t model_idx)
 
 template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
-PDBReader<vectorT>::read(std::basic_istream<char>& ifs, const std::size_t model_idx)
+PDBReader<vectorT>::read(std::basic_istream<char>& ifs, const std::size_t model_idx) const
 {
     while(not ifs.eof())
     {
@@ -95,7 +95,7 @@ PDBReader<vectorT>::read(std::basic_istream<char>& ifs, const std::size_t model_
 
 template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
-PDBReader<vectorT>::read(std::basic_istream<char>& ifs)
+PDBReader<vectorT>::read(std::basic_istream<char>& ifs) const
 {
     std::vector<atom_type> atoms;
     while(not ifs.eof())
@@ -113,7 +113,7 @@ PDBReader<vectorT>::read(std::basic_istream<char>& ifs)
 
 template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::chain_type>
-PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms)
+PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
 {
     std::vector<residue_type> residues;
     residue_type tmp_residue;
