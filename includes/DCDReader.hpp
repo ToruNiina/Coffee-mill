@@ -31,42 +31,23 @@ class DCDReader
   public:
     //! ctor.
     DCDReader(){}
-    //! ctor. specify the filename to read.
     explicit DCDReader(const std::string& filename)
     : filename_(filename)
     {}
-    //! dtor.
     ~DCDReader() = default;
 
-    //! read the file specified by this->filename_.
     void read();
-    //! read the file specified by argument.
-    /*!
-     *  read the file specified by argument. if you already read a dcdfile, 
-     *  the data will be discarded.
-     *  @param fname filename you want to read.
-     */
     void read(const std::string& fname);
 
-    //! read only a header.
     void read_header();
-    //! read only a header of the file specified by argument.
-    /*!
-     *  read only a header of the file specified by argument.
-     *  if you already read a dcdfile, the data, including a trajectory, will be
-     *  discarded.
-     *  @param fname filename you want to read header.
-     */
     void read_header(const std::string& fname);
 
     //! access filename.
     const std::string& filename() const {return filename_;}
-    //! access filename.
           std::string& filename()       {return filename_;}
 
     //! access DCDData.
     const data_type& data() const {return data_;}
-    //! access DCDData.
           data_type& data()       {return data_;}
 
   private:
