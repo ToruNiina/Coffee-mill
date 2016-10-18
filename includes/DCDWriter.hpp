@@ -14,7 +14,7 @@
 #ifndef COFFEE_MILL_DCD_WRITER
 #define COFFEE_MILL_DCD_WRITER
 #include <cstring>
-#include "DCDReader.hpp"
+#include "DCDData.hpp"
 
 namespace coffeemill
 {
@@ -23,53 +23,35 @@ namespace coffeemill
 /*!
  *  DCDWriter writes not only entire DCDData but also many Snapshots into dcd file.
  */
+template <typename T = DefaultTraits>
 class DCDWriter
 {
   public:
-    using data_type       = DCDData;
-    using trajectory_type = typename data_type::trajectory_type;
-    using snapshot_type   = typename data_type::snapshot_type;
-    using position_type   = typename data_type::position_type;
+    using traits_type   = T;
+    using data_type     = DCDData<traits_type>;
+    using char_type     = traits_type::char_type;
+    using size_type     = data_type::size_type;
+    using string_type   = data_type::string_type;
+    using header_type   = data_type::header_type;
+    using snapshot_type = data_type::snapshot_type;
 
   public:
 
-    //! ctor
     DCDWriter(){}
-    //! ctor. specify the filename to write
-    DCDWriter(const std::string& filename)
-        :filename_(filename)
-    {}
-    //! dtor
+    DCDWriter(const std::string& filename): filename_(filename){}
     ~DCDWriter() = default;
 
-    //! write the data.
-    void write();
-    //! write the data into the file specified by argument.
-    /*!
-     *  write the data into the file specified by argument.
-     *  @param filename output filename
-     */
-    void write(const std::string& filename);
-    //! return whether the header is written. use in the case of step-by-step writing.
-    bool header_is_written() const {return header_written;}
+    void write(std::basic_ostream<char_type>& os, const data_type& filename);
+    void write_header(std::basic_ostream<char_type>& os, const header_type& header);
 
-    //! write only header.
-    void write_header();
-    //!write only one snapshot.
-    /*!
-     * write only one snapshot.
-     * @param snapshot snapshot (a.k.a. vector<ax::Vector3d>.)
-     */
     void write_snapshot(const snapshot_type& snapshot);
 
-    //! filename 
-    const std::string& filename() const {return filename_;}
-    //! filename 
-          std::string& filename()       {return filename_;}
-    //! data to write
-    const data_type& data() const {return data_;}
-    //! data to write
-          data_type& data()       {return data_;}
+    bool header_written() const {return header_written_;}
+
+    std::string const& filename() const {return filename_;}
+    std::string      & filename()       {return filename_;}
+    data_type const& data() const {return data_;}
+    data_type      & data()       {return data_;}
 
   private:
 
@@ -85,7 +67,7 @@ class DCDWriter
 
     std::string filename_; //!< filename
     data_type   data_;     //!< DCD data to write
-    bool header_written = false;//! written header or not
+    bool header_written_ = false;//! written header or not
 
   private:
 
