@@ -154,7 +154,7 @@ bool operator>>(const std::string& line, PDBAtom<vector_type>& atom)
     y = stod(line.substr(38, 8));
     z = stod(line.substr(46, 8));
     const typename PDBAtom<vector_type>::position_type pos(x, y, z);
-    atom.pos = pos;
+    atom.position = pos;
 
     try{atom.occupancy = stod(line.substr(54, 6));}
     catch(std::exception& excpt){atom.occupancy = 0e0;}
