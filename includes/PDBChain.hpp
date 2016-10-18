@@ -52,7 +52,7 @@ class PDBChain
      *       included is the same chain.
      * @return the chain id of first atom line included in container.
      */
-    const std::string& chain_id() const {return this->front().front().chain_id();}
+    const std::string& chain_id() const {return this->front().front().chain_id;}
 
     bool empty() const {return residues_.empty();}
     std::size_t size() const {return residues_.size();}
