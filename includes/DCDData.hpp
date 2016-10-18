@@ -92,20 +92,20 @@ class DCDData
 
     ~DCDData() = default;
 
-    size_type  nset() const {return header_.nset;}
-    size_type& nset()       {return header_.nset;}
-    size_type  istart() const {return header_.istart;}
-    size_type& istart()       {return header_.istart;}
-    size_type  nstep_save() const {return header_.nstep_save;}
-    size_type& nstep_save()       {return header_.nstep_save;}
-    size_type  nstep() const {return header_.nstep;}
-    size_type& nstep()       {return header_.nstep;}
-    size_type  nunit() const {return header_.nunit;}
-    size_type& nunit()       {return header_.nunit;}
-    size_type  verCHARMM() const {return header_.verCHARMM;}
-    size_type& verCHARMM()       {return header_.verCHARMM;}
-    size_type  nparticle() const {return header_.nparticle;}
-    size_type& nparticle()       {return header_.nparticle;}
+    int  nset() const {return header_.nset;}
+    int& nset()       {return header_.nset;}
+    int  istart() const {return header_.istart;}
+    int& istart()       {return header_.istart;}
+    int  nstep_save() const {return header_.nstep_save;}
+    int& nstep_save()       {return header_.nstep_save;}
+    int  nstep() const {return header_.nstep;}
+    int& nstep()       {return header_.nstep;}
+    int  nunit() const {return header_.nunit;}
+    int& nunit()       {return header_.nunit;}
+    int  verCHARMM() const {return header_.verCHARMM;}
+    int& verCHARMM()       {return header_.verCHARMM;}
+    int  nparticle() const {return header_.nparticle;}
+    int& nparticle()       {return header_.nparticle;}
     time_type  delta_t() const {return header_.delta_t;}
     time_type& delta_t()       {return header_.delta_t;}
     std::string const& signeture() const {return header_.signeture;}
