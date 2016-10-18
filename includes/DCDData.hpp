@@ -112,6 +112,8 @@ class DCDData
     std::string      & signeture()       {return header_.signeture;}
     comment_type const& comment() const {return header_.comment;}
     comment_type      & comment()       {return header_.comment;}
+    header_type const& header() const {return header_;}
+    header_type      & header()       {return header_;}
 
     snapshot_type const& front() const {return trajectory_.front();}
     snapshot_type      & front()       {return trajectory_.front();}
