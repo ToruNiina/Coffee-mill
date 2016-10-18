@@ -9,6 +9,10 @@ namespace mill
 template<typename realT>
 int mode_ninfo(int argument_c, char** argument_v)
 {
+    if(argument_c < 2)
+    {
+        throw std::invalid_argument("too few commands");
+    }
     const std::string command(argument_v[1]);
 
     if(command == "split")
