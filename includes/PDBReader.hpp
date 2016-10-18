@@ -124,7 +124,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
         {
             if(not tmp_residue.empty())
                 residues.push_back(tmp_residue);
-            tmp_residue->clear();
+            tmp_residue.clear();
             current_residue_id = iter->residue_id;
         }
         tmp_residue.push_back(*iter);
@@ -136,7 +136,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
     std::string current_chain_id = "";
     for(auto iter = residues.begin(); iter != residues.end(); ++iter)
     {
-        if(iter->chain_id != current_chain_id)
+        if(iter->chain_id() != current_chain_id)
         {
             if(not tmp_chain.empty()) chains.push_back(tmp_chain);
             tmp_chain.clear();
