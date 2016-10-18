@@ -2,6 +2,8 @@
 #define COFFEE_MILL_VECTOR
 #include "Matrix.hpp"
 #include "detail/scalar_type_extractor.hpp"
+#include <boost/math/quaternion.hpp>
+#include <cmath>
 
 namespace mill
 {
