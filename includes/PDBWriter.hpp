@@ -41,15 +41,12 @@ class PDBWriter
     void write(const std::string& filename,
                const std::vector<atom_type>& atoms) const;
 
-    void write(std::basic_ostream<char>& os,
-               const std::vector<atom_type>& atoms) const;
+    void write(std::ostream& os, const std::vector<atom_type>& atoms) const;
 
-    void write(const std::string& filename,
-               const std::vector<chain_type>& model,
+    void write(const std::string& fname, const std::vector<chain_type>& model,
                const style sty = style::normal) const;
 
-    void write(std::basic_ostream<char>& os,
-               const std::vector<chain_type>& model,
+    void write(std::ostream& os, const std::vector<chain_type>& model,
                const style sty = style::normal) const;
 };
 
@@ -77,8 +74,8 @@ void PDBWriter<vectorT>::write(
 }
 
 template<typename vectorT>
-void PDBWriter<vectorT>::write(
-        std::ostream& os, const std::vector<atom_type>& atoms) const
+void PDBWriter<vectorT>::write(std::ostream& os,
+        const std::vector<atom_type>& atoms) const
 {
     for(auto iter = atoms.cbegin(); iter != atoms.cend(); ++iter)
         os << *iter << std::endl;
@@ -96,8 +93,9 @@ void PDBWriter<vectorT>::write(
         if(sty == style::cafemol)
             os << "<< protein " << index << std::endl;
 
-        for(auto iter = chain->cbegin(); iter != chain->cend(); ++iter)
-            os << *iter << std::endl;
+        for(auto resi = chain->cbegin(); resi != chain->cend(); ++resi)
+            for(auto iter = resi->cbegin(); iter != resi->cend(); ++iter)
+                os << *iter << std::endl;
 
         if(sty == style::cafemol)     os << ">>" << std::endl;
         else if(sty == style::normal) os << "TER" << std::endl;
