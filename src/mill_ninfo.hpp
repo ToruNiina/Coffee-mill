@@ -1,13 +1,16 @@
 #ifndef COFFEE_MILL_NINFO_MODE
 #define COFFEE_MILL_NINFO_MODE
+#include "detail/scalar_type_extractor.hpp"
 #include "NinfoSplitter.hpp"
 
 namespace mill
 {
 
-template<typename realT>
+template<typename vectorT>
 int mode_ninfo(int argument_c, char** argument_v)
 {
+    using realT = typename scalar_type_extractor<vectorT>::type;
+
     if(argument_c < 2)
     {
         throw std::invalid_argument("too few commands");
