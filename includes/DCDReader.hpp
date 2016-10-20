@@ -116,7 +116,7 @@ DCDReader<T>::read(std::istream& is)
                   << (header1_size + header2_size + header3_size +
                      snapshot_size * data.nset()) << " bytes." << std::endl;
 
-        if((this->file_size - header1_size - header2_size - header3_size)
+        if((file_size - header1_size - header2_size - header3_size)
                 % snapshot_size != 0)
             std::cerr << "       : probably the last snapshot is imcomplete." << std::endl;
 
@@ -323,7 +323,7 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 #ifdef COFFEE_MILL_DEBUG
         std::cerr << line << std::endl;
 #endif
-        data.header().push_back(std::string(line));
+        data.comment().push_back(std::string(line));
         delete [] line;
     }
 
@@ -391,7 +391,8 @@ void DCDReader<T>::read_trajectory(
         snapshot_type temp_snapshot(data.nparticle());
         for(std::size_t c(0); c < data.nparticle(); ++c)
         {
-            temp_snapshot[c] = data_type::position_type(x[c], y[c], z[c]);
+            const typename data_type::position_type pos(x[c], y[c], z[c]);
+            temp_snapshot[c] = pos;
         }
         data.traj().push_back(temp_snapshot);
     }
