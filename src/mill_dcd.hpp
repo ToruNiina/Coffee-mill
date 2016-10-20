@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_PDB_MODE
-#define COFFEE_MILL_PDB_MODE
+#ifndef COFFEE_MILL_DCD_MODE
+#define COFFEE_MILL_DCD_MODE
 #include "DCDtoMovie.hpp"
 
 namespace mill
