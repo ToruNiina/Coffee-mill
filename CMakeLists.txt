@@ -1,5 +1,6 @@
 project(Coffee-mill)
 cmake_minimum_required(VERSION 2.8)
+enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/lib")
@@ -25,4 +26,7 @@ else(DOXYGEN_FOUND)
     message(WARNING "doxygen binary could not be found.")
 endif(DOXYGEN_FOUND)
 
+set(CMAKE_CXX_COMPILER clang++-3.6)
+
 add_subdirectory(src)
+add_subdirectory(tests)
