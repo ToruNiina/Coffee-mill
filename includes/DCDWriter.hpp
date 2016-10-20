@@ -116,53 +116,53 @@ void DCDWriter<vectorT>::write_head_block1(
 {
     int wrote(0);
     const int bytes(84);
-    os.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<const char*>(&bytes), size_int);
 
     const char* signeture = data.signeture.c_str();
     os.write(signeture, size_char*4);
     wrote += size_char*4;
 
-    os.write(reinterpret_cast<char*>(&(data.nset)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.nset)), size_int);
     wrote += size_int;
 
-    os.write(reinterpret_cast<char*>(&(data.istart)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.istart)), size_int);
     wrote += size_int;
 
-    os.write(reinterpret_cast<char*>(&(data.nstep_save)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.nstep_save)), size_int);
     wrote += size_int;
 
-    os.write(reinterpret_cast<char*>(&(data.nstep)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.nstep)), size_int);
     wrote += size_int;
 
-    os.write(reinterpret_cast<char*>(&(data.nunit)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.nunit)), size_int);
     wrote += size_int;
 
     // null data
     const int fill_zero(0);
     for(int i(0); i<4; ++i)
     {
-        os.write(reinterpret_cast<char*>(&fill_zero), size_int);
+        os.write(reinterpret_cast<const char*>(&fill_zero), size_int);
         wrote += size_int;
     }
 
     const float dt = static_cast<float>(data.delta_t);
-    os.write(reinterpret_cast<char*>(&dt), size_float);
+    os.write(reinterpret_cast<const char*>(&dt), size_float);
     wrote += size_float;
 
     // null data
     for(int i(0); i<9; ++i)
     {
-        os.write(reinterpret_cast<char*>(&fill_zero), size_int);
+        os.write(reinterpret_cast<const char*>(&fill_zero), size_int);
         wrote += size_int;
     }
 
-    os.write(reinterpret_cast<char*>(&(data.verCHARMM)), size_int);
+    os.write(reinterpret_cast<const char*>(&(data.verCHARMM)), size_int);
     wrote += size_int;
 
     if(wrote != bytes)
         throw std::invalid_argument("byte information error");
 
-    os.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<const char*>(&bytes), size_int);
     return;
 }
 
@@ -177,14 +177,14 @@ void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& 
         const char* default_comment =
             "==================== This file is modified using Coffee-mill ===================";
 
-        os.write(reinterpret_cast<char*>(&bytes), size_int);
-        os.write(reinterpret_cast<char*>(&lines), size_int);
+        os.write(reinterpret_cast<const char*>(&bytes), size_int);
+        os.write(reinterpret_cast<const char*>(&lines), size_int);
         wrote += size_int;
         os << default_comment;
         wrote += 80;
         if(wrote != bytes)
             throw std::logic_error("internal byte information error");
-        os.write(reinterpret_cast<char*>(&bytes), size_int);
+        os.write(reinterpret_cast<const char*>(&bytes), size_int);
     }
     else
     {
@@ -192,9 +192,9 @@ void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& 
         const int bytes(4 + 80*lines);
         int wrote(0);
 
-        os.write(reinterpret_cast<char*>(&bytes), size_int);
+        os.write(reinterpret_cast<const char*>(&bytes), size_int);
 
-        os.write(reinterpret_cast<char*>(&lines), size_int);
+        os.write(reinterpret_cast<const char*>(&lines), size_int);
         wrote += size_int;
 
         for(auto iter = data.comment.cbegin(); iter != data.comment.cend(); ++iter)
@@ -206,7 +206,7 @@ void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& 
         if(wrote != bytes)
             throw std::logic_error("internal byte information error");
 
-        os.write(reinterpret_cast<char*>(&bytes), size_int);
+        os.write(reinterpret_cast<const char*>(&bytes), size_int);
     }
     return;
 }
@@ -216,9 +216,9 @@ void DCDWriter<vectorT>::write_head_block3(
         std::ostream& dcdfile, const header_type& data)
 {
     int bytes(size_int);
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
-    dcdfile.write(reinterpret_cast<char*>(&(data.nparticle)), size_int);
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+    dcdfile.write(reinterpret_cast<const char*>(&bytes), size_int);
+    dcdfile.write(reinterpret_cast<const char*>(&(data.nparticle)), size_int);
+    dcdfile.write(reinterpret_cast<const char*>(&bytes), size_int);
     return;
 }
 
@@ -282,15 +282,15 @@ void DCDWriter<vectorT>::write_coord(
 {
     int size(coord.size());
     int bytes(size * size_float);
-    os.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<const char*>(&bytes), size_int);
 
     for(auto iter = coord.cbegin(); iter != coord.cend(); ++iter)
     {
         const float tmp = *iter;
-        os.write(reinterpret_cast<char*>(&(tmp)), size_float);
+        os.write(reinterpret_cast<const char*>(&(tmp)), size_float);
     }
 
-    os.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<const char*>(&bytes), size_int);
     return;
 }
 
