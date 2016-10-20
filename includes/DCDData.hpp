@@ -55,13 +55,13 @@ struct DCDHeader
         return;
     }
 
-    std::size_t  nset;       //!< number of frames.
-    std::size_t  istart;     //!< initial step of traj. nomally zero
-    std::size_t  nstep_save; //!< interval of saving snapshot
-    std::size_t  nstep;      //!< total step number of the traj
-    std::size_t  nunit;      //!< total unit(chains) number
-    std::size_t  verCHARMM;  //!< version of CHARMM. in cafemol, 24
-    std::size_t  nparticle;  //!< total number of particle
+    int nset;       //!< number of frames.
+    int istart;     //!< initial step of traj. nomally zero
+    int nstep_save; //!< interval of saving snapshot
+    int nstep;      //!< total step number of the traj
+    int nunit;      //!< total unit(chains) number
+    int verCHARMM;  //!< version of CHARMM. in cafemol, 24
+    int nparticle;  //!< total number of particle
     real_type    delta_t;    //!< delta t.
     std::string  signeture;  //!< CORD or VELO
     comment_type comment;    //!< header comment. vector of string.
