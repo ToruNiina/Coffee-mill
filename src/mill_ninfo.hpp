@@ -1,7 +1,6 @@
 #ifndef COFFEE_MILL_NINFO_MODE
 #define COFFEE_MILL_NINFO_MODE
 #include "NinfoSplitter.hpp"
-// #include "toml.hpp"
 
 namespace mill
 {
