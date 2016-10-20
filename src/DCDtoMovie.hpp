@@ -14,55 +14,97 @@
 
 #ifndef COFFEE_MILL_DCD_TO_MOVIE
 #define COFFEE_MILL_DCD_TO_MOVIE
-#include <string>
-#include "InputFileReader.hpp"
+#include "/home/niina/Tools/toml/toml.hpp"
+#include "DCDReader.hpp"
+#include "DCDWriter.hpp"
+#include "PDBReader.hpp"
+#include "PDBWriter.hpp"
 
-namespace coffeemill
+namespace mill
 {
 
-//! DCDtoMovie class.
-/*!
- *  write movie file using particle information included in pdb file and 
- *  trajectory data in dcd file.
- */
-class DCDtoMovie
+// TODO: support huge dcd file(convert stepwise)
+template<typename vectorT>
+int dcd_to_movie(const std::string& fname)
 {
-  public:
+    if(fname.substr(fname.size() - 3, 3) == "dcd")
+    {// no input file. make all beads Ca.
+        const std::string outname = fname + ".movie";
+        std::ofstream ofs(outname);
+        if(not ofs.good())
+            throw std::runtime_error("file open error: " + outname);
 
-    //! ctor
-    /*!
-     *  ctor. set member values from input file reader.
-     *  @param input InputFileReader. it is required that input already read the file.
-     *  @sa    InputFileReader
-     */
-    explicit DCDtoMovie(const InputFileReader& input)
-        : pymol_format_(input.get_as<bool>(
-                      input.at("information", "pymol"))),
-          dcdfile_(input.get_as<std::string>(
-                      input.at("information", "dcdfile"))),
-          pdbfile_(input.get_as<std::string>(
-                      input.at("information", "reference"))),
-          output_(input.get_as<std::string>(
-                      input.at("information", "output")))
-    {}
-    //! dtor
-    ~DCDtoMovie() = default;
+        DCDReader<vectorT> reader;
+        PDBWriter<vectorT> writer;
+        auto dcddata = reader.read(fname);
+        std::vector<PDBAtom<vectorT>> atoms(dcddata.front().size());
 
-    //! converts dcd file to movie file.
-    void convert() const;
+        for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
+        {
+            int id = 0;
+            for(auto iter = snap->cbegin(); iter != snap->cend(); ++iter)
+            {
+                atoms.at(id) = make_default_atom(id+1, *iter);
+                ++id;
+            }
+            writer.write(ofs, atoms);
+            ofs << "TER" << std::endl;
+        }
+        ofs.close();
+        return 0;
+    }
+    else if(fname.substr(fname.size() - 4, 4) == "toml")
+    {// toml file exists. read reference pdb.
+        std::ifstream ifs(fname);
+        if(not ifs.good())
+            throw std::invalid_argument("file open error: " + fname);
 
-  private:
+        const toml::Data input = toml::parse(ifs);
+        const std::string dcdname = toml::get<toml::String>(input.at("dcdfile"));
+        const std::string pdbname = toml::get<toml::String>(input.at("pdbfile"));
+        const std::string outname = toml::get<toml::String>(input.at("output"));
+        bool pymol_style = false;
+        try{pymol_style = toml::get<toml::Boolean>(input.at("pymol_style"));}
+        catch(std::exception& excpt){/*do nothing*/}
 
-    /*!
-     * if true, output movie file become pymol readable format(like NMR pdb file).
-     * if false, output movie file become same as cafemol movie.
-     */
-    bool        pymol_format_; //!< whether output format is pymol readable or not
-    std::string dcdfile_; //!< filename of input dcdfile
-    std::string pdbfile_; //!< filename of input pdbfile
-    std::string output_;  //!< filename of output movie file
-};
+        PDBReader<vectorT> pdb_reader;
+        auto atoms = pdb_reader.read(pdbname);
+        DCDReader<vectorT> dcd_reader;
+        auto dcddata = dcd_reader.read(dcdname);
+        if(atoms.size() != dcddata.front().size())
+            throw std::invalid_argument("dcd and pdb structures are not same");
+        std::ofstream ofs(outname);
+        if(not ofs.good())
+            throw std::runtime_error("file open error: " + outname);
+        const typename PDBWriter<vectorT>::style sty = pymol_style ?
+            PDBWriter<vectorT>::style::normal : PDBWriter<vectorT>::style::cafemol;
 
+        PDBWriter<vectorT> pdb_writer;
+        for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
+        {
+            if(not pymol_style)
+                ofs << "<<<<" << std::endl;
+
+            for(std::size_t i = 0; i < atoms.size(); ++i)
+                atoms.at(i).position = snap->at(i);
+            auto chains = pdb_reader.parse(atoms);
+            pdb_writer.write(ofs, chains, sty);
+
+            if(pymol_style)
+                ofs << "TER" << std::endl;
+            else
+                ofs << ">>>>" << std::endl;
+        }
+        ifs.close();
+        ofs.close();
+        return 0;
+    }
+    else
+    {
+        throw std::invalid_argument("unknown file in argument: " + fname);
+    }
 }
+
+} // mill
 
 #endif /* COFFEE_MILL_DCD_TO_MOVIE */
