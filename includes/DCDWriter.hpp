@@ -30,10 +30,11 @@ template <typename vectorT>
 class DCDWriter
 {
   public:
-    using vector_type   = vectorT;
-    using data_type     = DCDData<vector_type>;
-    using header_type   = typename data_type::header_type;
-    using snapshot_type = typename data_type::snapshot_type;
+    using vector_type     = vectorT;
+    using data_type       = DCDData<vector_type>;
+    using header_type     = typename data_type::header_type;
+    using snapshot_type   = typename data_type::snapshot_type;
+    using trajectory_type = typename data_type::trajectory_type;
 
   public:
 
@@ -41,20 +42,19 @@ class DCDWriter
     ~DCDWriter() = default;
 
     void write(const std::string& fname, const data_type& dcd);
-    void write(std::ostream& os, const data_type& dcd);
-    void write_header(const std::string& fname, const header_type& dcd);
-    void write_header(std::ostream& os, const header_type& dcd);
-    void write_snapshot(const std::string& fname, const snapshot_type& snapshot);
-    void write_snapshot(std::ostream& os, const snapshot_type& snapshot);
+    void write(std::ostream& os,         const data_type& dcd);
+    void write_header    (const std::string& fname, const header_type& dcd);
+    void write_header    (std::ostream& os,         const header_type& dcd);
+    void write_trajectory(const std::string& fname, const trajectory_type& traj);
+    void write_trajectory(std::ostream& dcdfile,    const trajectory_type& traj);
+    void write_snapshot  (const std::string& fname, const snapshot_type& snapshot);
+    void write_snapshot  (std::ostream& os,         const snapshot_type& snapshot);
 
   private:
 
-    void write_header     (std::ostream& dcdfile);
-    void write_head_block1(std::ostream& dcdfile);
-    void write_head_block2(std::ostream& dcdfile);
-    void write_head_block3(std::ostream& dcdfile);
-    void write_trajectory (std::ostream& dcdfile);
-    void write_snapshot   (std::ostream& dcdfile, const snapshot_type& snapshot);
+    void write_head_block1(std::ostream& dcdfile, const header_type& header);
+    void write_head_block2(std::ostream& dcdfile, const header_type& header);
+    void write_head_block3(std::ostream& dcdfile, const header_type& header);
     void write_coord      (std::ostream& dcdfile, const std::vector<float>& coord);
 
   private:
@@ -68,16 +68,17 @@ template <typename vectorT>
 void DCDWriter<vectorT>::write(const std::string& filename, const data_type& dcd)
 {
     std::ifstream ifs(filename);
-    if(not ifs.good()) throw std::rumtime_error("file open error: " + filename);
+    if(not ifs.good()) throw std::runtime_error("file open error: " + filename);
     this->write(ifs, dcd);
     ifs.close();
     return;
 }
 
-void DCDWriter::write(std::ostream& os, const data_type& dcd)
+template <typename vectorT>
+void DCDWriter<vectorT>::write(std::ostream& os, const data_type& dcd)
 {
-    write_header(os, dcd.header());
-    write_core(dcdfile);
+    this->write_header(os, dcd.header());
+    this->write_trajectory(os, dcd.traj());
 
 #ifdef COFFEE_MILL_DEBUG
     std::cout << "Info   : write_file completed" << std::endl;
@@ -86,190 +87,210 @@ void DCDWriter::write(std::ostream& os, const data_type& dcd)
     return;
 }
 
-void DCDWriter::write_header(const std::string& fname, const header_type& dcd)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_header(
+        const std::string& fname, const header_type& dcd)
 {
-    std::ofstream dcdfile(this->filename_, std::ios::binary);
+    std::ofstream dcdfile(fname, std::ios::binary);
     if(!dcdfile.good())
-        throw std::runtime_error("file open error: " + filename_);
+        throw std::runtime_error("file open error: " + fname);
 
-    write_header(dcdfile);
+    write_header(dcdfile, dcd);
     dcdfile.close();
 
     return;
 }
 
-void DCDWriter::write_header(std::ofstream& dcdfile)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_header(std::ostream& os, const header_type& dcd)
 {
-    write_head_block1(dcdfile);
-    write_head_block2(dcdfile);
-    write_head_block3(dcdfile);
-    header_written = true;
+    write_head_block1(os, dcd);
+    write_head_block2(os, dcd);
+    write_head_block3(os, dcd);
     return;
 }
 
-void DCDWriter::write_head_block1(std::ofstream& dcdfile)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_head_block1(
+        std::ostream& os, const header_type& data)
 {
     int wrote(0);
-    int bytes(84);
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+    const int bytes(84);
+    os.write(reinterpret_cast<char*>(&bytes), size_int);
 
-    const char* signeture = this->data_.signeture().c_str();
-    dcdfile.write(signeture, size_char*4);
+    const char* signeture = data.signeture.c_str();
+    os.write(signeture, size_char*4);
     wrote += size_char*4;
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.nset())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.nset)), size_int);
     wrote += size_int;
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.istart())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.istart)), size_int);
     wrote += size_int;
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.nstep_save())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.nstep_save)), size_int);
     wrote += size_int;
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.nstep())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.nstep)), size_int);
     wrote += size_int;
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.nunit())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.nunit)), size_int);
     wrote += size_int;
 
     // null data
-    int fill_zero(0);
+    const int fill_zero(0);
     for(int i(0); i<4; ++i)
     {
-        dcdfile.write(reinterpret_cast<char*>(&fill_zero), size_int);
+        os.write(reinterpret_cast<char*>(&fill_zero), size_int);
         wrote += size_int;
     }
 
-    float dt = static_cast<float>(this->data_.delta_t());
-    dcdfile.write(reinterpret_cast<char*>(&dt), size_float);
+    const float dt = static_cast<float>(data.delta_t);
+    os.write(reinterpret_cast<char*>(&dt), size_float);
     wrote += size_float;
 
     // null data
     for(int i(0); i<9; ++i)
     {
-        dcdfile.write(reinterpret_cast<char*>(&fill_zero), size_int);
+        os.write(reinterpret_cast<char*>(&fill_zero), size_int);
         wrote += size_int;
     }
 
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.verCHARMM())), size_int);
+    os.write(reinterpret_cast<char*>(&(data.verCHARMM)), size_int);
     wrote += size_int;
 
     if(wrote != bytes)
-    {
         throw std::invalid_argument("byte information error");
-    }
 
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<char*>(&bytes), size_int);
     return;
 }
 
-void DCDWriter::write_head_block2(std::ofstream& dcdfile)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& data)
 {
-    if(this->data_.header().empty())
+    if(data.comment.empty())
     {
-        this->data_.push_header(
-            "==================== Molecular Dynamics Code : CafeMol ver.  2.02 ==============");
-        this->data_.push_header(
-            "==================== Developed by Kyoto University =============================");
-        this->data_.push_header(
-            "==================== This file is modified using coffee-mill ===================");
+        const int lines(1);
+        const int bytes(84);
+        int wrote(0);
+        const char* default_comment =
+            "==================== This file is modified using Coffee-mill ===================";
+
+        os.write(reinterpret_cast<char*>(&bytes), size_int);
+        os.write(reinterpret_cast<char*>(&lines), size_int);
+        wrote += size_int;
+        os << default_comment;
+        wrote += 80;
+        if(wrote != bytes)
+            throw std::logic_error("internal byte information error");
+        os.write(reinterpret_cast<char*>(&bytes), size_int);
     }
-
-    int lines(this->data_.header().size());
-    int bytes(4 + 80*lines);
-    int wrote(0);
-
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
-
-    dcdfile.write(reinterpret_cast<char*>(&lines), size_int);
-    wrote += size_int;
-
-    for(auto iter = this->data_.header().cbegin();
-            iter != this->data_.header().cend(); ++iter)
+    else
     {
-        dcdfile << *iter;
-        wrote += size_char*80;
+        const int lines(data.comment.size());
+        const int bytes(4 + 80*lines);
+        int wrote(0);
+
+        os.write(reinterpret_cast<char*>(&bytes), size_int);
+
+        os.write(reinterpret_cast<char*>(&lines), size_int);
+        wrote += size_int;
+
+        for(auto iter = data.comment.cbegin(); iter != data.comment.cend(); ++iter)
+        {
+            os << iter->c_str();
+            wrote += size_char*80;
+        }
+
+        if(wrote != bytes)
+            throw std::logic_error("internal byte information error");
+
+        os.write(reinterpret_cast<char*>(&bytes), size_int);
     }
-
-    if(wrote != bytes)
-        throw std::invalid_argument("internal byte information error");
-
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
     return;
 }
 
-void DCDWriter::write_head_block3(std::ofstream& dcdfile)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_head_block3(
+        std::ostream& dcdfile, const header_type& data)
 {
     int bytes(size_int);
     dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
-    dcdfile.write(reinterpret_cast<char*>(&(this->data_.nparticle())), size_int);
+    dcdfile.write(reinterpret_cast<char*>(&(data.nparticle)), size_int);
     dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
     return;
 }
 
-void DCDWriter::write_core(std::ofstream& dcdfile)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_trajectory(
+        const std::string& fname, const trajectory_type& traj)
 {
-    for(auto iter = this->data_.cbegin(); iter != this->data_.cend(); ++iter)
-    {
-        write_snapshot(dcdfile, *iter);
-    }
+    std::ifstream ifs(fname);
+    if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
+    this->write_trajectory(ifs, traj);
+    ifs.close();
+    return ;
+}
+
+template <typename vectorT>
+void DCDWriter<vectorT>::write_trajectory(
+        std::ostream& os, const trajectory_type& traj)
+{
+    for(auto iter = traj.cbegin(); iter != traj.cend(); ++iter)
+        this->write_snapshot(os, *iter);
     return;
 }
 
-void DCDWriter::write_snapshot(std::ofstream& dcdfile, const snapshot_type& snapshot)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_snapshot(
+        const std::string& fname, const snapshot_type& snapshot)
 {
-    std::vector<double> x(snapshot.size());
-    std::vector<double> y(snapshot.size());
-    std::vector<double> z(snapshot.size());
+    std::ifstream ifs(fname);
+    if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
+    this->write_snapshot(ifs, snapshot);
+    ifs.close();
+    return ;
+}
+
+template <typename vectorT>
+void DCDWriter<vectorT>::write_snapshot(
+        std::ostream& os, const snapshot_type& snapshot)
+{
+    std::vector<float> x(snapshot.size());
+    std::vector<float> y(snapshot.size());
+    std::vector<float> z(snapshot.size());
     std::size_t counter(0);
     for(auto iter = snapshot.cbegin(); iter != snapshot.cend(); ++iter)
     {
-        x[counter] = (*iter)[0];
-        y[counter] = (*iter)[1];
-        z[counter] = (*iter)[2];
+        x[counter] = static_cast<float>((*iter)[0]);
+        y[counter] = static_cast<float>((*iter)[1]);
+        z[counter] = static_cast<float>((*iter)[2]);
         ++counter;
     }
 
-    write_coord(dcdfile, x);
-    write_coord(dcdfile, y);
-    write_coord(dcdfile, z);
+    this->write_coord(os, x);
+    this->write_coord(os, y);
+    this->write_coord(os, z);
 
     return;
 }
 
-
-void DCDWriter::write_snapshot(const snapshot_type& snapshot)
-{
-    if(this->filename_.empty())
-        throw std::invalid_argument("Error: filename is not specified!");
-
-    if(!header_written)
-        throw std::invalid_argument("Error: writing DCD file without header");
-
-    std::ofstream dcdfile(this->filename_, std::ios::binary | std::ios::app);
-    if(!dcdfile.good())
-        throw std::runtime_error("file open error: " + filename_);
-
-    write_snapshot(dcdfile, snapshot);
-
-    dcdfile.close();
-
-    return;
-}
-
-void DCDWriter::write_coord(std::ofstream& dcdfile, const std::vector<double>& coord)
+template <typename vectorT>
+void DCDWriter<vectorT>::write_coord(
+        std::ostream& os, const std::vector<float>& coord)
 {
     int size(coord.size());
     int bytes(size * size_float);
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<char*>(&bytes), size_int);
 
     for(auto iter = coord.cbegin(); iter != coord.cend(); ++iter)
     {
-        float temp(static_cast<float>(*iter));
-        dcdfile.write(reinterpret_cast<char*>(&temp), size_float);
+        const float tmp = *iter;
+        os.write(reinterpret_cast<char*>(&(tmp)), size_float);
     }
 
-    dcdfile.write(reinterpret_cast<char*>(&bytes), size_int);
+    os.write(reinterpret_cast<char*>(&bytes), size_int);
     return;
 }
 
