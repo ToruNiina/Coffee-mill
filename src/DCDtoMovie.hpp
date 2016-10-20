@@ -14,7 +14,7 @@
 
 #ifndef COFFEE_MILL_DCD_TO_MOVIE
 #define COFFEE_MILL_DCD_TO_MOVIE
-#include "/home/niina/Tools/toml/toml.hpp"
+#include "toml/toml.hpp"
 #include "DCDReader.hpp"
 #include "DCDWriter.hpp"
 #include "PDBReader.hpp"
