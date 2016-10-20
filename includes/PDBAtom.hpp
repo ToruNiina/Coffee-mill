@@ -70,6 +70,26 @@ struct PDBAtom
     position_type position;
 };
 
+template<typename vectorT>
+PDBAtom<vectorT> make_default_atom(const int id, const vectorT& pos)
+{
+    PDBAtom<vectorT> atom;
+    atom.altloc = ' ';
+    atom.icode = ' ';
+    atom.atom_id = id;
+    atom.residue_id = id;
+    atom.occupancy = 0.0;
+    atom.temperature_factor = 0.0;
+    atom.prefix = "ATOM";
+    atom.atom_name = "CA";
+    atom.residue_name = "XXX";
+    atom.chain_id = "A";
+    atom.element = "C";
+    atom.charge = "";
+    atom.position = pos;
+    return atom;
+}
+
 //! output stream operator. output PDB Atom line as pdb atom format.
 template<typename vector_type>
 std::basic_ostream<char>&
