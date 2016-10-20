@@ -41,6 +41,7 @@ int dcd_to_movie(const std::string& fname)
 
         for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
         {
+            ofs << "MODEL" << std::endl;
             int id = 0;
             for(auto iter = snap->cbegin(); iter != snap->cend(); ++iter)
             {
@@ -48,7 +49,7 @@ int dcd_to_movie(const std::string& fname)
                 ++id;
             }
             writer.write(ofs, atoms);
-            ofs << "TER" << std::endl;
+            ofs << "ENDMDL" << std::endl;
         }
         ofs.close();
         return 0;
@@ -82,6 +83,7 @@ int dcd_to_movie(const std::string& fname)
         PDBWriter<vectorT> pdb_writer;
         for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
         {
+            ofs << "MODEL" << std::endl;
             if(not pymol_style)
                 ofs << "<<<<" << std::endl;
 
@@ -90,10 +92,9 @@ int dcd_to_movie(const std::string& fname)
             auto chains = pdb_reader.parse(atoms);
             pdb_writer.write(ofs, chains, sty);
 
-            if(pymol_style)
-                ofs << "TER" << std::endl;
-            else
+            if(not pymol_style)
                 ofs << ">>>>" << std::endl;
+            ofs << "ENDMDL" << std::endl;
         }
         ifs.close();
         ofs.close();
