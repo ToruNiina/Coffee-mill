@@ -5,8 +5,8 @@
 namespace mill
 {
 
-template<typename sclT, template<typename sclT, std::size_t D> class vectorT,
-         template<typename sclT, std::size_t R, std::size_t C> class matrixT>
+template<typename sclT, template<typename sclT1, std::size_t D> class vectorT,
+         template<typename sclT2, std::size_t R, std::size_t C> class matrixT>
 class BestFit
 {
   public:
@@ -16,7 +16,7 @@ class BestFit
     using vector4_type  = vectorT<sclT, 4>;
     using matrix33_type = matrixT<sclT, 3, 3>;
     using matrix44_type = matrixT<sclT, 4, 4>;
-    using structure_type = std::vector<vector_3_type>;
+    using structure_type = std::vector<vector3_type>;
 
   public:
     BestFit() = default;
@@ -39,12 +39,15 @@ class BestFit
 
   private:
 
-    Matrix33_type make_rotation_matrix(const structure_type& snapshot,
-                                       const structure_type& reference) const;
-    Matrix33_type make_rotation_matrix(const Vector4d& quaternion) const;
+    structure_type move_to_center(const structure_type& str) const;
+    void move_to_center(structure_type& str) const;
 
-    Matrix44_type score_matrix(const std::vector<Vector3d>& a,
-                               const std::vector<Vector3d>& b) const;
+    matrix33_type make_rotation_matrix(const structure_type& snapshot,
+                                       const structure_type& reference) const;
+    matrix33_type make_rotation_matrix(const vector4_type& quaternion) const;
+
+    matrix44_type score_matrix(const std::vector<vector3_type>& a,
+                               const std::vector<vector3_type>& b) const;
 
 
   private:
@@ -54,7 +57,7 @@ class BestFit
 
 template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
          template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, vectorT, matrixT>::Structure
+typename BestFit<sclT, vectorT, matrixT>::structure_type
 BestFit<sclT, vectorT, matrixT>::fit(
         const structure_type& str, const structure_type& ref) const
 {
@@ -68,7 +71,7 @@ BestFit<sclT, vectorT, matrixT>::fit(
         sum_str / static_cast<scalar_type>(str.size());
 
     structure_type rotated_str;
-    rotated.reserve(str.size());
+    rotated_str.reserve(str.size());
     for(auto iter = str.begin(); iter != str.end(); ++iter)
         rotated_str.push_back(*iter - centroid_str);
 
@@ -93,52 +96,62 @@ BestFit<sclT, vectorT, matrixT>::fit(
     return rotated_str;
 }
 
-BestFit::Matrix3d BestFit::RotationMatrix(const Structure& structure) const 
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, vectorT, matrixT>::matrix33_type
+BestFit<sclT, vectorT, matrixT>::rotational_matrix(
+        const structure_type& structure) const
 {
     assert(structure.size() == this->reference_.size());
 
-    Vector3d sum(0e0);
+    vector3_type sum(0e0);
     for(auto iter = structure.cbegin(); iter != structure.cend(); ++iter)
         sum += *iter;
-    const Vector3d CoM = sum / static_cast<double>(structure.size());
+    const vector3_type centroid = sum / static_cast<sclT>(structure.size());
 
-    Structure zeroed;
+    structure_type zeroed;
     zeroed.reserve(structure.size());
     for(auto iter = structure.cbegin(); iter != structure.cend(); ++iter)
-        zeroed.push_back(*iter - CoM);
+        zeroed.push_back(*iter - centroid);
 
     return RotationMatrix(zeroed, true);
 }
 
-BestFit::Matrix3d BestFit::RotationMatrix(const Structure& structure, bool zeroed) const 
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, vectorT, matrixT>::matrix33_type
+BestFit<sclT, vectorT, matrixT>::make_rotation_matrix(
+        const structure_type& structure, const structure_type& reference) const 
 {
-    assert(zeroed);
-    std::vector<Vector3d> rA(structure.size());
-    std::vector<Vector3d> rB(structure.size());
+    if(structure.size() != reference.size())
+        throw std::invalid_argument("different size structures");
+    std::vector<vector3_type> rA(structure.size());
+    std::vector<vector3_type> rB(structure.size());
 
     for(std::size_t i=0; i < structure.size(); ++i)
     {
-        rA.at(i) = reference_[i] + structure[i];
-        rB.at(i) = reference_[i] - structure[i];
+        rA[i] = reference[i] + structure[i];
+        rB[i] = reference[i] - structure[i];
     }
 
     auto score = score_matrix(rA, rB);
-    ax::JacobiSolver<4> solver(score);
-    std::pair<double, Vector4d> min_pair = solver.get_mineigenpair();
-    const Vector4d q = min_pair.second;
+//     ax::JacobiSolver<4> solver(score);
+//     std::pair<double, Vector4d> min_pair = solver.get_mineigenpair();
+//     const Vector4d q = min_pair.second;
 
-    return rotation_matrix(q);
+//     return rotation_matrix(q);
 }
 
-template<typename vector3T,  typename vector4T,
-         typename matrix33T, typename matrix44T>
-BestFit::Matrix4d
-BestFit::score_matrix(const std::vector<Vector3d>& a,
-                      const std::vector<Vector3d>& b) const
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, vectorT, matrixT>::matrix44_type
+BestFit<sclT, vectorT, matrixT>::score_matrix(
+        const std::vector<vector3_type>& a, const std::vector<vector3_type>& b) const
 {
-    assert(a.size() == b.size());
+    if(a.size() != b.size())
+        throw std::invalid_argument("different size structures");
 
-    Matrix4d retval(0e0);
+    matrix44_type retval;
     for(std::size_t i(0); i<a.size(); ++i)
     {
         retval(0,0) += (b[i][0]*b[i][0]) + (b[i][1]*b[i][1]) + (b[i][2]*b[i][2]);
@@ -153,18 +166,18 @@ BestFit::score_matrix(const std::vector<Vector3d>& a,
         retval(3,3) += (a[i][0]*a[i][0]) + (a[i][1]*a[i][1]) + (b[i][2]*b[i][2]);
     }
 
-    const double N = static_cast<double>(a.size());
+    const sclT inv_N = 1. / static_cast<sclT>(a.size());
 
-    retval(0,0) = retval(0,0) / N;
-    retval(0,1) = retval(0,1) / N;
-    retval(0,2) = retval(0,2) / N;
-    retval(0,3) = retval(0,3) / N;
-    retval(1,1) = retval(1,1) / N;
-    retval(1,2) = retval(1,2) / N;
-    retval(1,3) = retval(1,3) / N;
-    retval(2,2) = retval(2,2) / N;
-    retval(2,3) = retval(2,3) / N;
-    retval(3,3) = retval(3,3) / N;
+    retval(0,0) = retval(0,0) * inv_N;
+    retval(0,1) = retval(0,1) * inv_N;
+    retval(0,2) = retval(0,2) * inv_N;
+    retval(0,3) = retval(0,3) * inv_N;
+    retval(1,1) = retval(1,1) * inv_N;
+    retval(1,2) = retval(1,2) * inv_N;
+    retval(1,3) = retval(1,3) * inv_N;
+    retval(2,2) = retval(2,2) * inv_N;
+    retval(2,3) = retval(2,3) * inv_N;
+    retval(3,3) = retval(3,3) * inv_N;
 
     //symmetric matrix
     retval(1,0) = retval(0,1);
@@ -177,9 +190,12 @@ BestFit::score_matrix(const std::vector<Vector3d>& a,
     return retval;
 }
 
-BestFit::Matrix3d BestFit::rotation_matrix(const Vector4d& q) const
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, vectorT, matrixT>::matrix33_type
+BestFit<sclT, vectorT, matrixT>::make_rotation_matrix(const vector4_type& q) const
 {
-    Matrix3d R(0e0);
+    matrix33_type R;
     R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;
     R(0,1) = 2e0*q[1]*q[2] - 2e0*q[0]*q[3];
     R(0,2) = 2e0*q[1]*q[3] + 2e0*q[0]*q[2];
@@ -192,6 +208,40 @@ BestFit::Matrix3d BestFit::rotation_matrix(const Vector4d& q) const
     return R;
 }
 
+
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, vectorT, matrixT>::structure_type
+BestFit<sclT, vectorT, matrixT>::move_to_center(const structure_type& str) const
+{
+    vector3_type sum(0., 0., 0.);
+    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+        sum += *iter;
+    const sclT invN = 1. / static_cast<double>(str.size());
+    const vector3_type centroid = sum * invN;
+
+    structure_type retval(str.size());
+    for(std::size_t i = 0; i<str.size(); ++i)
+        retval[i] = str[i] - centroid;
+
+    return retval;
+}
+
+template<typename sclT, template<typename sT1, std::size_t D> class vectorT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+void BestFit<sclT, vectorT, matrixT>::move_to_center(structure_type& str) const
+{
+    vector3_type sum(0., 0., 0.);
+    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+        sum += *iter;
+    const sclT invN = 1. / static_cast<double>(str.size());
+    const vector3_type centroid = sum * invN;
+
+    for(auto iter = str.begin(); iter != str.end(); ++iter)
+        *iter -= centroid;
+
+    return ;
+}
 
 }// mill
 
