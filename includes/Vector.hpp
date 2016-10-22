@@ -9,7 +9,7 @@ namespace mill
 {
 
 template<typename realT, std::size_t N>
-using Vector = Matrix<realT, 1, N>;
+using Vector = Matrix<realT, N, 1>;
 
 // for vector 3d
 template<typename coordT>
