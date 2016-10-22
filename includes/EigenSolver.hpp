@@ -3,7 +3,6 @@
 #include <array>
 #include <utility>
 #include <cmath>
-#include <iostream>
 
 namespace mill
 {
@@ -104,7 +103,6 @@ JacobiEigenSolver::solve(const matrixT<scalarT, N, N>& mat) const
         tmp = Ps * P;
         Ps = tmp;
     }
-    std::cerr << "loop " << loop << "times" << std::endl;
     if(loop == max_loop)
         throw std::logic_error("cannot solve with the tolerance");
 
