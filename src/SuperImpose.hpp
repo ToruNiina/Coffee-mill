@@ -1,49 +1,47 @@
 #ifndef COFFEE_MILL_SUPER_IMPOSE
 #define COFFEE_MILL_SUPER_IMPOSE
 #include "BestFitStructure.hpp"
+#include "DCDReader.hpp"
+#include "DCDWriter.hpp"
+#include "PDBReader.hpp"
+#include "PDBWriter.hpp"
 #include <list>
 
-namespace coffeemill
+namespace mill
 {
 
-class SuperImpose
+template<typename vectorT>
+int superimpose(const std::string& fname)
 {
-  public:
+    if(fname.substr(fname.size() - 4, 4) == ".dcd")
+    {// no input file. use all particles.
+        const std::string outname =
+            fname.substr(0, fname.size() - 4) + "_imposed.dcd";
 
-    using Vector3d       = ax::Vector3d;
-    using Matrix3d       = ax::Matrix3;
-    using Structure      = std::vector<Vector3d>;
-    using Structure_pair = std::pair<Structure, Structure>;
-    using Trajectory     = std::vector<Structure>;
+        std::ofstream ofs(outname);
+        if(not ofs.good())
+            throw std::runtime_error("file open error: " + outname);
 
-  public:
+        DCDReader<vectorT> reader;
+        DCDWriter<vectorT> writer;
+        auto dcddata = reader.read(fname);
+        writer.write_header(ofs, dcddata.header());
 
-    SuperImpose()  = default;
-    explicit SuperImpose(const std::list<std::size_t> except_list)
-        :except_list_(except_list)
-    {}
-    ~SuperImpose() = default;
+        BestFit<typename scalar_type_extractor<vectorT>::type, Matrix> bestfit;
+        bestfit.set_reference(dcddata.traj().front());
+        for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
+        {
+            writer.write_snapshot(ofs, bestfit.fit(*snap));
+        }
+        ofs.close();
+        return 0;
+    }
+    else
+    {
+        throw std::invalid_argument("unknown file in argument: " + fname);
+    }
+}
 
-    Trajectory     operator()(const Trajectory& traj) const;
-    Structure_pair operator()(const Structure_pair& strs) const;
-
-          std::list<std::size_t>& except_list()       {return except_list_;}
-    const std::list<std::size_t>& except_list() const {return except_list_;}
-
-  private:
-
-    Vector3d  center (const Structure& str) const;
-    Structure zeroing(const Structure& str) const;
-    Structure zeroing(const Structure& str, const Vector3d& center) const;
-    Structure extract(const Structure& str) const;
-    Structure rotate (const Matrix3d& R, const Structure& str) const;
-
-  private:
-    std::list<std::size_t> except_list_;
-};
-
-
-
-}// coffeemill
+}// mill
 
 #endif//COFFEE_MILL_SUPER_IMPOSE
