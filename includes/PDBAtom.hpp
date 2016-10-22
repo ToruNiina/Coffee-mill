@@ -160,7 +160,7 @@ template<typename vector_type>
 bool operator>>(const std::string& line, PDBAtom<vector_type>& atom)
 {
     const std::string pref = line.substr(0,6);
-    if(pref != "ATOM  " && pref != "HETATM") return false;
+    if(pref != "ATOM  ") return false;
     atom.prefix       = pref;
     atom.atom_id      = std::stoi(line.substr(6, 5));
     atom.atom_name    = line.substr(12, 4);
