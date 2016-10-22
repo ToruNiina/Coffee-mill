@@ -182,5 +182,15 @@ Matrix<realT, R, C>::operator()(const std::size_t i, const std::size_t j)
     return this->values_[i * C + j];
 }
 
+template<typename realT, std::size_t R, std::size_t C>
+Matrix<realT, C, R> transpose(const Matrix<realT, R, C>& mat)
+{
+    Matrix<realT, C, R> retval;
+    for(std::size_t i=0; i<R; ++i)
+        for(std::size_t j=0; j<C; ++j)
+            retval(j, i) = mat(i, j);
+    return retval;
+}
+
 } // mill
 #endif /* COFFEE_MILL_MATRIX */
