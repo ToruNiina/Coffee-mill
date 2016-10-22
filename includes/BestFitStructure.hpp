@@ -36,6 +36,8 @@ class BestFit
     matrix33_type // with cash
     rotational_matrix(const structure_type& snapshot) const;
 
+    vector3_type zeroing_vector(const structure_type& snapshot) const;
+
     structure_type const& reference() const {return reference_;}
     void set_reference(const structure_type& snapshot);
 
@@ -249,7 +251,7 @@ BestFit<sclT, matrixT>::copy_to_center(const structure_type& str) const
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
         sum += *iter;
-    const sclT invN = 1. / static_cast<double>(str.size());
+    const sclT invN = 1. / static_cast<sclT>(str.size());
     const vector3_type centroid = sum * invN;
 
     structure_type retval(str.size());
@@ -266,7 +268,7 @@ void BestFit<sclT, matrixT>::move_to_center(structure_type& str) const
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
         sum += *iter;
-    const sclT invN = 1. / static_cast<double>(str.size());
+    const sclT invN = 1. / static_cast<sclT>(str.size());
     const vector3_type centroid = sum * invN;
 
     for(auto iter = str.begin(); iter != str.end(); ++iter)
@@ -282,6 +284,18 @@ void BestFit<sclT, matrixT>::set_reference(const structure_type& ref)
     this->reference_ = ref;
     this->move_to_center(this->reference_);
     return;
+}
+
+template<typename sclT,
+         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
+typename BestFit<sclT, matrixT>::vector3_type
+BestFit<sclT, matrixT>::zeroing_vector(const structure_type& str) const
+{
+    vector3_type sum(0., 0., 0.);
+    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+        sum += *iter;
+    const sclT invN = 1. / static_cast<sclT>(str.size());
+    return sum * invN;
 }
 
 }// mill
