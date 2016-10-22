@@ -18,21 +18,12 @@ $ make
 
 ## Usage
 
-You can use __Coffee-mill__ like this way.
+You can use __Coffee-mill__ as command line tool.
 
 ```sh
-$ ls
-sample.dcd sample.pdb dcd2movie.toml
-$ mill dcd make-movie sample.dcd
-$ ls
-sample.dcd sample.pdb dcd2movie.toml sample.dcd.movie
-$ cat dcd2movie.toml
-output   = "fromdcd.movie"
-dcdfile = "sample.dcd"
-pdbfile = "sample.pdb"
-pymol = true
-$ mill dcd make-movie dcd2movie.toml
-sample.dcd sample.pdb dcd2movie.toml sample.dcd.movie fromdcd.movie
+$ mill pdb seq sample.pdb        # read pdb file and extract sequence
+chain A: ATCG                    # chain A is DNA
+chain B: GAVLIFYWSTNQDEKRHMCP    # chain B is Protein
 ```
 
 The supported commands are listed below.
