@@ -1,5 +1,6 @@
 set(TEST_NAMES
-    test_matrix test_vector
+    test_matrix test_vector test_matrix_vector
+    test_eigen
     )
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
