@@ -53,7 +53,7 @@ Matrix<realT, R, C>::operator+=(const Matrix<realT, R, C>& mat)
 {
     for(std::size_t i=0; i<R; ++i)
         for(std::size_t j=0; j<C; ++j)
-            this(i, j) += mat(i, j);
+            (*this)(i, j) += mat(i, j);
     return *this;
 }
 
@@ -63,7 +63,7 @@ Matrix<realT, R, C>::operator-=(const Matrix<realT, R, C>& mat)
 {
     for(std::size_t i=0; i<R; ++i)
         for(std::size_t j=0; j<C; ++j)
-            this(i, j) -= mat(i, j);
+            (*this)(i, j) -= mat(i, j);
     return *this;
 }
 
@@ -73,7 +73,7 @@ Matrix<realT, R, C>::operator*=(const scalar_type& s)
 {
     for(std::size_t i=0; i<R; ++i)
         for(std::size_t j=0; j<C; ++j)
-            this(i, j) *= s;
+            (*this)(i, j) *= s;
     return *this;
 }
 
@@ -83,7 +83,7 @@ Matrix<realT, R, C>::operator/=(const scalar_type& s)
 {
     for(std::size_t i=0; i<R; ++i)
         for(std::size_t j=0; j<C; ++j)
-            this(i, j) /= s;
+            (*this)(i, j) /= s;
     return *this;
 }
 
