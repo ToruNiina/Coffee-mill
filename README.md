@@ -18,7 +18,7 @@ $ make
 
 ## Usage
 
-You can use this like this way.
+You can use __Coffee-mill__ like this way.
 
 ```sh
 $ ls
@@ -107,6 +107,8 @@ int main()
 
 Some methods like `BestFit` do not support other Vector class because those
 methods use not only vectors but also matrices.
+
+__Coffee-mill__ also provides readers/writers of PDB and Ninfo file.
 
 ## Document
 
