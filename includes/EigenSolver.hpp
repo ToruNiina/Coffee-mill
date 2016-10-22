@@ -1,17 +1,21 @@
 #ifndef COFFEE_MILL_EIGEN_SOLVER
 #define COFFEE_MILL_EIGEN_SOLVER
+#include <array>
+#include <utility>
+#include <cmath>
+#include <iostream>
 
 namespace mill
 {
-
+// TODO: support eigen
 class JacobiEigenSolver
 {
   public:
     constexpr static std::size_t max_loop = 10000;
 
   public:
-    JacobiMethod() = default;
-    ~JacobiMethod() = default;
+    JacobiEigenSolver() = default;
+    ~JacobiEigenSolver() = default;
 
     template<typename scalarT, std::size_t N,
              template<typename sT, std::size_t R, std::size_t C> class matrixT>
@@ -41,12 +45,12 @@ class JacobiEigenSolver
 };
 
 template<>
-double JacobiEigenSolver::relative_tolerance<double>(){return 1e-12;}
+double JacobiEigenSolver::relative_tolerance<double>(){return 1e-13;}
 template<>
 float  JacobiEigenSolver::relative_tolerance<float>(){return 1e-5;}
 
 template<>
-double JacobiEigenSolver::absolute_tolerance<double>(){return 1e-12;}
+double JacobiEigenSolver::absolute_tolerance<double>(){return 1e-13;}
 template<>
 float  JacobiEigenSolver::absolute_tolerance<float>(){return 1e-5;}
 
@@ -92,15 +96,15 @@ JacobiEigenSolver::solve(const matrixT<scalarT, N, N>& mat) const
         P(index.second, index.second) =  cos_t;
 
         Matrix tmp = transpose(P) * m * P;
+        if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>()) break;
         tmp(index.first,  index.second) = 0.;
         tmp(index.second, index.first)  = 0.;
 
-        if(max_relative_diff(m, tmp) < relative_tolerance<Real>()) break;
-
         m = tmp;
-        tmp = P * Ps;
+        tmp = Ps * P;
         Ps = tmp;
     }
+    std::cerr << "loop " << loop << "times" << std::endl;
     if(loop == max_loop)
         throw std::logic_error("cannot solve with the tolerance");
 
@@ -132,15 +136,16 @@ template<typename scalarT, std::size_t N,
 std::pair<std::size_t, std::size_t>
 JacobiEigenSolver::max_element(const matrixT<scalarT, N, N>& mat) const
 {
-    scalarT max_elem = -1. * std::numeric_limits<scalarT>::max();
-    std::pair<std::size_t, std::size_t> retval;
-    for(std::size_t i=0; i<N; ++i)
-    for(std::size_t j=i; j<N; ++j)
-        if(max_elem < mat(i, j))
-        {
-            max_elem = mat(i, j);
-            retval = std::make_pair(i, j);
-        }
+    scalarT max_elem = std::abs(mat(0, 1));
+    std::pair<std::size_t, std::size_t> retval = std::make_pair(0, 1);
+
+    for(std::size_t i=0; i<N-1; ++i)
+        for(std::size_t j=i+1; j<N; ++j)
+            if(max_elem < std::abs(mat(i, j)))
+            {
+                max_elem = std::abs(mat(i, j));
+                retval = std::make_pair(i, j);
+            }
     return retval;
 }
 
@@ -152,13 +157,11 @@ scalarT JacobiEigenSolver::max_relative_diff(const matrixT<scalarT, N, N>& lhs,
     scalarT retval = 0.0;
     for(std::size_t i=0; i<N; ++i)
     {
-        const scalar tmp = std::abs(lhs(i, i) / rhs(i, i));
+        const scalarT tmp = std::abs(lhs(i, i) / rhs(i, i));
         if(retval < tmp) retval = tmp;
     }
     return retval;
 }
-
-
 
 } // mill
 
