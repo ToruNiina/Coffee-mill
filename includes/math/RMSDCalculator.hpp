@@ -1,47 +1,25 @@
 #ifndef COFFEE_MILL_RMSD_CALCULATOR
 #define COFFEE_MILL_RMSD_CALCULATOR
-#include "SuperImposer.hpp"
+#include "Vector.hpp"
 
-namespace coffeemill
+namespace mill
 {
-    /*@brief > this calculates RMSD value. All of the imposing process   *
-     * is done by SuperImposer, so this calculates only the distance and *
-     * some of square of the distances(this is just RMSD).               */
-    class RMSDCalculator
-    {
-        public:
-            RMSDCalculator(){}
-            ~RMSDCalculator() = default;
 
-            double get_RMSD(const std::vector<Realvec>& reference,
-                            const std::vector<Realvec>& subject);
+template<typename realT, std::size_t N>
+realT rmsd(const std::vector<Vector<realT, N>>& lhs,
+           const std::vector<Vector<realT, N>>& rhs)
+{
+    const std::size_t s = lhs.size();
+    if(s != rhs.size())
+        throw std::invalid_argument("rmsd: different size");
 
-        private:
+    realT sigma = 0.;
+    for(std::size_t i=0; i<s; ++i) sigma += length_sq(lhs[i] - rhs[i]);
+    const realT invN = 1. / static_cast<realT>(s);
 
-            double calc_RMSD(const std::vector<Realvec>& rA, 
-                             const std::vector<Realvec>& rB);
-    };
-
-    double RMSDCalculator::get_RMSD(const std::vector<Realvec>& reference,
-                                    const std::vector<Realvec>& subject)
-    {
-        SuperImposer imposer(reference, subject);
-        imposer.superimpose();
-
-        return calc_RMSD(imposer.get_reference(), imposer.get_subject());
-    }
-
-    double RMSDCalculator::calc_RMSD(const std::vector<Realvec>& reference,
-                                     const std::vector<Realvec>& subject)
-    {
-        double sigma(0e0);
-        for(std::size_t i(0); i<reference.size(); ++i)
-        {
-            sigma += len_square(reference[i] - subject[i]);
-        }
-        return std::sqrt(sigma / static_cast<double>(reference.size()));
-    }
-
+    return std::sqrt(sigma * invN);
 }
+
+}// mill
 
 #endif //COFFEE_MILL_RMSD_CALCLATOR
