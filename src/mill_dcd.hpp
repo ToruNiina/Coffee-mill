@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_DCD_MODE
 #define COFFEE_MILL_DCD_MODE
 #include "DCDtoMovie.hpp"
+#include "DCDJoiner.hpp"
 #include "SuperImpose.hpp"
 
 namespace mill
@@ -27,6 +28,14 @@ int mode_dcd(int argument_c, char **argument_v)
                     "usage: ./mill dcd impose [file.dcd | file.toml]");
         std::string fname(argument_v[2]);
         return superimpose<vectorT>(fname);
+    }
+    else if(command == "join")
+    {
+        if(argument_c < 3)
+            throw std::invalid_argument(
+                    "usage: ./mill dcd join [[file.dcd ...]| file.toml]");
+        // dcd join [files...]
+        return dcdjoin<vectorT>(argument_c - 2, argument_v+2);
     }
     else
     {
