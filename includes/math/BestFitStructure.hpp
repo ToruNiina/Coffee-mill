@@ -6,17 +6,16 @@
 namespace mill
 {
 
-template<typename sclT,
-         template<typename sclT2, std::size_t R, std::size_t C> class matrixT>
+template<typename scalarT>
 class BestFit
 {
   public:
 
-    using scalar_type    = sclT;
-    using vector3_type   = matrixT<sclT, 3, 1>;
-    using vector4_type   = matrixT<sclT, 4, 1>;
-    using matrix33_type  = matrixT<sclT, 3, 3>;
-    using matrix44_type  = matrixT<sclT, 4, 4>;
+    using scalar_type    = scalarT;
+    using vector3_type   = Matrix<scalar_type, 3, 1>;
+    using vector4_type   = Matrix<scalar_type, 4, 1>;
+    using matrix33_type  = Matrix<scalar_type, 3, 3>;
+    using matrix44_type  = Matrix<scalar_type, 4, 4>;
     using structure_type = std::vector<vector3_type>;
 
   public:
@@ -59,11 +58,9 @@ class BestFit
     structure_type reference_; //!< optional;
 };
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::structure_type
-BestFit<sclT, matrixT>::fit(
-        const structure_type& str, const structure_type& ref) const
+template<typename sclT>
+typename BestFit<sclT>::structure_type
+BestFit<sclT>::fit(const structure_type& str, const structure_type& ref) const
 {
     if(str.size() != ref.size())
         throw std::invalid_argument("different structure in argument");
@@ -81,10 +78,9 @@ BestFit<sclT, matrixT>::fit(
     return target;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::structure_type
-BestFit<sclT, matrixT>::fit(const structure_type& str) const
+template<typename sclT>
+typename BestFit<sclT>::structure_type
+BestFit<sclT>::fit(const structure_type& str) const
 {
     if(str.size() != this->reference_.size())
         throw std::invalid_argument("different structure in argument");
@@ -101,10 +97,9 @@ BestFit<sclT, matrixT>::fit(const structure_type& str) const
     return target;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::matrix33_type
-BestFit<sclT, matrixT>::rotational_matrix(
+template<typename sclT>
+typename BestFit<sclT>::matrix33_type
+BestFit<sclT>::rotational_matrix(
         const structure_type& str, const structure_type& ref) const
 {
     if(str.size() != ref.size())
@@ -116,11 +111,9 @@ BestFit<sclT, matrixT>::rotational_matrix(
     return this->make_rotational_matrix(target, reference);
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::matrix33_type
-BestFit<sclT, matrixT>::rotational_matrix(
-        const structure_type& str) const
+template<typename sclT>
+typename BestFit<sclT>::matrix33_type
+BestFit<sclT>::rotational_matrix(const structure_type& str) const
 {
     if(str.size() != this->reference_.size())
         throw std::invalid_argument("different structure in argument");
@@ -130,10 +123,9 @@ BestFit<sclT, matrixT>::rotational_matrix(
     return this->make_rotational_matrix(target, this->reference_);
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::matrix33_type
-BestFit<sclT, matrixT>::make_rotational_matrix(
+template<typename sclT>
+typename BestFit<sclT>::matrix33_type
+BestFit<sclT>::make_rotational_matrix(
         const structure_type& structure, const structure_type& reference) const 
 {
     if(structure.size() != reference.size())
@@ -166,10 +158,9 @@ BestFit<sclT, matrixT>::make_rotational_matrix(
     return this->make_rotational_matrix(q);
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::matrix33_type
-BestFit<sclT, matrixT>::make_rotational_matrix(const vector4_type& q) const
+template<typename sclT>
+typename BestFit<sclT>::matrix33_type
+BestFit<sclT>::make_rotational_matrix(const vector4_type& q) const
 {
     matrix33_type R;
     R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;
@@ -184,11 +175,10 @@ BestFit<sclT, matrixT>::make_rotational_matrix(const vector4_type& q) const
     return R;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::matrix44_type
-BestFit<sclT, matrixT>::make_score_matrix(
-        const std::vector<vector3_type>& a, const std::vector<vector3_type>& b) const
+template<typename sclT>
+typename BestFit<sclT>::matrix44_type
+BestFit<sclT>::make_score_matrix(const std::vector<vector3_type>& a,
+                                 const std::vector<vector3_type>& b) const
 {
     if(a.size() != b.size())
         throw std::invalid_argument("different size structures");
@@ -243,10 +233,9 @@ BestFit<sclT, matrixT>::make_score_matrix(
     return retval;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::structure_type
-BestFit<sclT, matrixT>::copy_to_center(const structure_type& str) const
+template<typename sclT>
+typename BestFit<sclT>::structure_type
+BestFit<sclT>::copy_to_center(const structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
@@ -261,9 +250,8 @@ BestFit<sclT, matrixT>::copy_to_center(const structure_type& str) const
     return retval;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-void BestFit<sclT, matrixT>::move_to_center(structure_type& str) const
+template<typename sclT>
+void BestFit<sclT>::move_to_center(structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
@@ -277,19 +265,17 @@ void BestFit<sclT, matrixT>::move_to_center(structure_type& str) const
     return ;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-void BestFit<sclT, matrixT>::set_reference(const structure_type& ref)
+template<typename sclT>
+void BestFit<sclT>::set_reference(const structure_type& ref)
 {
     this->reference_ = ref;
     this->move_to_center(this->reference_);
     return;
 }
 
-template<typename sclT,
-         template<typename sT2, std::size_t R, std::size_t C> class matrixT>
-typename BestFit<sclT, matrixT>::vector3_type
-BestFit<sclT, matrixT>::zeroing_vector(const structure_type& str) const
+template<typename sclT>
+typename BestFit<sclT>::vector3_type
+BestFit<sclT>::zeroing_vector(const structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
