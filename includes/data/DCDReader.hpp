@@ -46,7 +46,7 @@ class DCDReader
 
     // return one snapshot from file(required having read the header).
     snapshot_type read_snapshot(const std::string& fname, const std::size_t i);
-    snapshot_type read_snapshot(std::istream& is);
+    snapshot_type read_snapshot(std::istream& is, const header_type& header);
 
   private:
 
@@ -398,6 +398,39 @@ void DCDReader<T>::read_trajectory(
     }
 
     return;
+}
+
+template <typename T>
+typename DCDReader<T>::snapshot_type
+DCDReader<T>::read_snapshot(std::istream& is, const header_type& header)
+{
+    const std::vector<float> x(read_coord(is, header.nparticle));
+    const std::vector<float> y(read_coord(is, header.nparticle));
+    const std::vector<float> z(read_coord(is, header.nparticle));
+
+    snapshot_type snap(header.nparticle);
+    for(std::size_t c(0); c < header.nparticle; ++c)
+    {
+        const typename data_type::position_type pos(x[c], y[c], z[c]);
+        snap[c] = pos;
+    }
+    return snap;
+}
+
+template <typename T>
+typename DCDReader<T>::snapshot_type
+DCDReader<T>::read_snapshot(const std::string& fname, const std::size_t i)
+{
+    std::ifstream ifs(fname, std::ios::in | std::ios::binary);
+    if(not ifs.good())
+        throw std::runtime_error("DCDReader: file open error" + fname);
+
+    const auto header = this->read_header(ifs);
+    const std::size_t npart = header.nparticle();
+    const std::size_t snapsize = (npart + 2) * 3 * size_float;
+    ifs.ignore(snapsize * (i-1));
+
+    return this->read_snapshot(ifs, header);
 }
 
 template <typename T>
