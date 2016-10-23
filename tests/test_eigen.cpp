@@ -7,9 +7,9 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "Matrix.hpp"
-#include "Vector.hpp"
-#include "EigenSolver.hpp"
+#include "math/Matrix.hpp"
+#include "math/Vector.hpp"
+#include "math/EigenSolver.hpp"
 
 #include <random>
 #include <iostream>

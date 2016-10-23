@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_PDB_MODE
 #define COFFEE_MILL_PDB_MODE
-#include "PDBReader.hpp"
-#include "PDBWriter.hpp"
+#include "data/PDBReader.hpp"
+#include "data/PDBWriter.hpp"
 #include "SequenceExtractor.hpp"
 
 namespace mill

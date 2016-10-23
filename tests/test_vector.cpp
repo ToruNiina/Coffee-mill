@@ -1,4 +1,4 @@
-#define BOOST_TEST_MODULE "test_matrix"
+#define BOOST_TEST_MODULE "test_vector"
 
 #ifdef UNITTEST_FRAMEWORK_LIBRARY_EXIST
 #include <boost/test/unit_test.hpp>
@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "Vector.hpp"
+#include "math/Vector.hpp"
 
 #include <random>
 constexpr static unsigned int seed = 32479327;

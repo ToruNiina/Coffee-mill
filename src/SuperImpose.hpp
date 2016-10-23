@@ -1,10 +1,10 @@
 #ifndef COFFEE_MILL_SUPER_IMPOSE
 #define COFFEE_MILL_SUPER_IMPOSE
-#include "BestFitStructure.hpp"
-#include "DCDReader.hpp"
-#include "DCDWriter.hpp"
-#include "PDBReader.hpp"
-#include "PDBWriter.hpp"
+#include "math/BestFitStructure.hpp"
+#include "data/DCDReader.hpp"
+#include "data/DCDWriter.hpp"
+#include "data/PDBReader.hpp"
+#include "data/PDBWriter.hpp"
 #include <list>
 
 namespace mill

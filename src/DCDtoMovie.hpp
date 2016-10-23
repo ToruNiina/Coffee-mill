@@ -15,10 +15,10 @@
 #ifndef COFFEE_MILL_DCD_TO_MOVIE
 #define COFFEE_MILL_DCD_TO_MOVIE
 #include "toml/toml.hpp"
-#include "DCDReader.hpp"
-#include "DCDWriter.hpp"
-#include "PDBReader.hpp"
-#include "PDBWriter.hpp"
+#include "data/DCDReader.hpp"
+#include "data/DCDWriter.hpp"
+#include "data/PDBReader.hpp"
+#include "data/PDBWriter.hpp"
 
 namespace mill
 {

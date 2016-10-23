@@ -13,7 +13,7 @@
 #ifndef COFFEE_MILL_PDB_ATOM
 #define COFFEE_MILL_PDB_ATOM
 #include "detail/scalar_type_extractor.hpp"
-#include "utility.hpp"
+#include "detail/utility.hpp"
 #include <iostream>
 #include <iomanip>
 #include <string>
