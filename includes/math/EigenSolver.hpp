@@ -58,12 +58,12 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     if(not this->is_symmetric(mat))
         throw std::invalid_argument("asymmetric matrix");
 
-    typedef Matrix<scalarT, N, N> Matrix;
-    typedef Matrix<scalarT, N, 1> Vector;
+    typedef Matrix<scalarT, N, N> Matrix_type;
+    typedef Matrix<scalarT, N, 1> Vector_type;
     typedef scalarT               Real;
 
-    Matrix m = mat;
-    Matrix Ps;
+    Matrix_type m = mat;
+    Matrix_type Ps;
     for(std::size_t i=0; i<N; ++i)
         for(std::size_t j=0; j<N; ++j)
             Ps(i, j) = (i == j) ? 1. : 0.;
@@ -82,16 +82,16 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
         const Real cos_t = std::sqrt(0.5 + gamma * 0.5);
         const Real sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
 
-        Matrix P;
+        Matrix_type P;
         for(std::size_t i=0; i<N; ++i)
             for(std::size_t j=0; j<N; ++j)
                 P(i, j) = (i == j) ? 1. : 0.;
-        P(index.first,  index.fist)  =  cos_t;
+        P(index.first,  index.first)  =  cos_t;
         P(index.first,  index.second) =  sin_t;
         P(index.second, index.first)  = -sin_t;
         P(index.second, index.second) =  cos_t;
 
-        Matrix tmp = transpose(P) * m * P;
+        Matrix_type tmp = transpose(P) * m * P;
         if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>()) break;
         tmp(index.first,  index.second) = 0.;
         tmp(index.second, index.first)  = 0.;
@@ -103,10 +103,10 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     if(loop == max_loop)
         throw std::logic_error("cannot solve with the tolerance");
 
-    std::array<std::pair<Real, Vector>, N> retval;
+    std::array<std::pair<Real, Vector_type>, N> retval;
     for(std::size_t i=0; i<N; ++i)
     {
-        Vector eigen;
+        Vector_type eigen;
         for(std::size_t j=0; j<N; ++j)
             eigen[j] = Ps(j, i);
         retval[i] = std::make_pair(m(i, i), eigen);
