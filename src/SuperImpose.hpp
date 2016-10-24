@@ -81,6 +81,9 @@ int superimpose(const std::string& fname)
         DCDReader<vectorT> reader;
         DCDWriter<vectorT> writer;
         std::ifstream dcdfile(dcdname);
+        if(not dcdfile.good())
+            throw std::invalid_argument("file open error: " + dcdname);
+
         auto dcddata = reader.read(dcdfile);
         writer.write_header(outfile, dcddata.header());
 
