@@ -192,5 +192,39 @@ Matrix<realT, C, R> transpose(const Matrix<realT, R, C>& mat)
     return retval;
 }
 
+// determinant and inverse is not so efficient.
+
+template<typename realT>
+inline realT determinant(const Matrix<realT, 3, 3>& mat)
+{
+    return mat(0,0) * mat(1,1) * mat(2,2) +
+           mat(1,0) * mat(2,1) * mat(0,2) +
+           mat(2,0) * mat(0,1) * mat(1,2) -
+           mat(0,0) * mat(2,1) * mat(1,2) -
+           mat(2,0) * mat(1,1) * mat(0,2) -
+           mat(1,0) * mat(0,1) * mat(2,2);
+}
+
+template<typename realT>
+Matrix<realT, 3, 3> inverse(const Matrix<realT, 3, 3>& mat)
+{
+    const auto det_inv = 1e0 / determinant(mat);
+
+    Matrix<realT, 3, 3> inv;
+    inv(0,0) = det_inv * (mat(1,1) * mat(2,2) - mat(1,2) * mat(2,1));
+    inv(1,1) = det_inv * (mat(0,0) * mat(2,2) - mat(0,2) * mat(2,0));
+    inv(2,2) = det_inv * (mat(0,0) * mat(1,1) - mat(0,1) * mat(1,0));
+
+    inv(0,1) = det_inv * (mat(0,2) * mat(2,1) - mat(0,1) * mat(2,2));
+    inv(0,2) = det_inv * (mat(0,1) * mat(1,2) - mat(0,2) * mat(1,1));
+    inv(1,2) = det_inv * (mat(0,2) * mat(1,0) - mat(0,0) * mat(1,2));
+
+    inv(1,0) = det_inv * (mat(1,2) * mat(2,0) - mat(1,0) * mat(2,2));
+    inv(2,0) = det_inv * (mat(1,0) * mat(2,1) - mat(2,0) * mat(1,1));
+    inv(2,1) = det_inv * (mat(2,0) * mat(0,1) - mat(0,0) * mat(2,1));
+    return inv;
+}
+
+
 } // mill
 #endif /* COFFEE_MILL_MATRIX */
