@@ -43,10 +43,10 @@ see `includes` directory. For example, when you want to read and/or write a dcd
 file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
 
 ```cpp
-#include "mill/includes/DCDData.hpp"
-#include "mill/includes/DCDReader.hpp"
-#include "mill/includes/DCDWriter.hpp"
-#include "mill/includes/Vector.hpp"
+#include "mill/includes/data/DCDData.hpp"
+#include "mill/includes/data/DCDReader.hpp"
+#include "mill/includes/data/DCDWriter.hpp"
+#include "mill/includes/data/Vector.hpp"
 
 int main()
 {
@@ -63,12 +63,11 @@ int main()
 for portability. You can use other vector classes like `Eigen::Vector3d` instead
 if you add the explicit instantiation of `mill::scalar_type_extractor`.
 
-The code is a bit complicated
-because the template instantiation is sensitive to the order of declaration.
-
 ```cpp
 #include <Eigen/Core>
-#include "mill/includes/detail/scalar_type_extractor.hpp"
+#include "mill/includes/data/DCDData.hpp"
+#include "mill/includes/data/DCDReader.hpp"
+#include "mill/includes/data/DCDWriter.hpp"
 
 namespace mill
 {
@@ -78,12 +77,6 @@ struct scalar_type_extractor<Eigen::Vector3d>
     typedef double type;
 };
 } // mill
-
-// do not include those files before you add declaration of
-// scalar_type_extractor<Eigen::Vector3d>.
-#include "mill/includes/DCDData.hpp"
-#include "mill/includes/DCDReader.hpp"
-#include "mill/includes/DCDWriter.hpp"
 
 int main()
 {
