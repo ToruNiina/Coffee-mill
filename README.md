@@ -1,5 +1,4 @@
-Coffee-mill
-====
+![logo](data/coffee_mill.png)
 
 command line tool for CafeMol [1] users.
 
