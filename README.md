@@ -3,12 +3,12 @@ Coffee mill
 
 command line tool for CafeMol [1] users.
 
-You can use some files as header-only library to analize the CafeMol data.
+You can use this as a header-only library to analize the CafeMol data.
 
 ## Build
 
 __Coffee-mill__ depends on the library __TOMLParser__ written by ToruNiina.
-Please clone the library and add the include-path to __TOMLParser__ first.
+Please clone the library and add an include-path to __TOMLParser__ first.
 
 ```sh
 $ cd build
@@ -39,8 +39,8 @@ There are some commands that is not stable yet. Those are not listed now.
 
 ## For Developpers
 
-see `includes` directory. For example, when you want to read and/or write a dcd
-file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
+see the `includes` directory. For example, when you want to read and/or write
+a dcd file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
 
 ```cpp
 #include "mill/includes/data/DCDData.hpp"
@@ -98,7 +98,7 @@ __Coffee-mill__ also provides readers/writers of PDB and Ninfo file.
 
 Using doxygen, you can generate the document files of the Coffee-mill.
 
-To generate document, run following commands.
+To generate a document, run following commands.
 
     $ cd build
     $ cmake ..
