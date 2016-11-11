@@ -1,15 +1,16 @@
 Coffee mill
 ====
 
-command line tool for CafeMol [1] users.
+A command line tool for CafeMol [1] users.
 
-You can use this as a header-only library to analize the CafeMol data.
+You can also use this as a header-only library to analize the CafeMol data.
 
 ## Build
 
-__Coffee-mill__ depends on the library __TOMLParser__ written by ToruNiina.
-Please clone the library and add an include-path to __TOMLParser__ first.
+`Coffee-mill` depends on the library `TOMLParser` written by ToruNiina.
+Please clone the library and add an include-path to `TOMLParser` first.
 
+then run the following.
 ```sh
 $ cd build
 $ cmake ..
@@ -18,7 +19,9 @@ $ make
 
 ## Usage
 
-You can use __Coffee-mill__ as command line tool.
+You can use this as a command line tool.
+
+For example,
 
 ```sh
 $ mill pdb seq sample.pdb        # read pdb file and extract sequence
@@ -39,7 +42,7 @@ There are some commands that is not stable yet. Those are not listed now.
 
 ## For Developpers
 
-see the `includes` directory. For example, when you want to read and/or write
+See the `includes` directory. For example, when you want to read and/or write
 a dcd file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
 
 ```cpp
@@ -58,6 +61,17 @@ int main()
     return 0;
 }
 ```
+
+`mill::DCDData` is composed of `mill::DCDHeader` and `DCDData::trajectory_type`.
+`DCDData::trajectory_type` is a typedef of `std::vector<DCDData::snapshot_type>`.
+`DCDData::snapshot_type` is a typedef of `std::vector<DCDData::position_type>`.
+And the `DCDData::position_type` is a template parameter of `mill::DCDData`.
+In the above code, `DCDData::trajectory_type` become `std::vector<std::vector<mill::Vector<double, 3>>>`.
+
+`mill::DCDHeader` has a information included in the header of DCDfile.
+It has number of frames, total step of the trajectory, delta t, and so on.
+
+====
 
 `mill::Vector<scalarT, dimension>` is a mathematical vector class provided 
 for portability. You can use other vector classes like `Eigen::Vector3d` instead
@@ -92,17 +106,58 @@ int main()
 Some methods like `BestFit` do not support other Vector class because those
 methods use not only vectors but also matrices.
 
-__Coffee-mill__ also provides readers/writers of PDB and Ninfo file.
+`Coffee-mill` also provides reader/writer of PDB and Ninfo file.
+
+```cpp
+#include "mill/includes/data/PDBReader.hpp"
+#include "mill/includes/data/PDBWriter.hpp"
+#include "mill/includes/data/Vector.hpp"
+
+int main()
+{
+    mill::PDBReader<mill::Vector<double, 3>> reader;
+    std::string fname("sample.pdb");
+    std::vector<mill::PDBAtom<mill::Vector<double, 3>>>
+        data = reader.read(fname);
+    std::vector<mill::PDBChain<mill::Vector<double, 3>>>
+        chains = reader.parse(data);
+    std::cout << "chain " << chains.front().chain_id() "has "
+              << chains.front().size() << " residues." << std::endl;
+    return 0;
+}
+```
+
+```cpp
+#include "mill/includes/data/NinfoData.hpp"
+#include "mill/includes/data/NinfoReader.hpp"
+#include "mill/includes/data/NinfoWriter.hpp"
+#include <iostream>
+
+int main()
+{
+    mill::NinfoReader<double> reader;
+    std::string fname("sample.ninfo");
+    mill::NinfoData<double> data = reader.read(fname);
+    std::cout << "there are " << data[NinfoKind::Bond].size() << "bond defined."
+              << std::endl;
+    return 0;
+}
+```
+
+For more information, see document.
 
 ## Document
 
-Using doxygen, you can generate the document files of the Coffee-mill.
+Using `doxygen`, you can generate a document files of the Coffee-mill.
 
 To generate a document, run following commands.
 
     $ cd build
-    $ cmake ..
+    $ cmake .. # if you already built, this is not needed.
     $ make doc
+
+After running it, you can see the detailed document in `doc/html`.
+For instance, open `mill/doc/html/index.html` using your favorite web-browser.
 
 ## Reference
 
