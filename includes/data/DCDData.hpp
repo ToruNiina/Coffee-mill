@@ -21,6 +21,10 @@
 namespace mill
 {
 
+//! contains Header information of DCD file.
+/*!
+ *  @tparam realT typeof real-number parameter (normally, double).
+ */
 template<typename realT>
 struct DCDHeader
 {
@@ -67,6 +71,10 @@ struct DCDHeader
     comment_type comment;    //!< header comment. vector of string.
 };
 
+//! contains whole information of DCD file.
+/*!
+ *  @tparam vectorT type of position
+ */
 template<typename vectorT>
 class DCDData
 {
@@ -144,7 +152,7 @@ class DCDData
 
   private:
 
-    header_type     header_;
+    header_type     header_; //!< header data. realT is deduced as a scalar_type of vectorT.
     trajectory_type trajectory_; //!< trajectory data.
 };
 

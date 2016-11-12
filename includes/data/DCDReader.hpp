@@ -21,6 +21,10 @@
 namespace mill
 {
 
+//! read DCDfile and return the data as a DCDData.
+/*!
+ *  @tparam vectorT type of position
+ */
 template <typename vectorT>
 class DCDReader
 {
@@ -36,16 +40,17 @@ class DCDReader
     DCDReader(){}
     ~DCDReader() = default;
 
-    // return full dcd data.
+    //! read all of the file and return full dcd data.
     data_type read(const std::string& fname);
     data_type read(std::istream& is);
 
-    // return full header information and empty trajectory.
+    //! return full header information and empty trajectory.
     data_type read_header(const std::string& fname);
     data_type read_header(std::istream& is);
 
-    // return one snapshot from file(required having read the header).
+    //! read only i-th snapshot from file.
     snapshot_type read_snapshot(const std::string& fname, const std::size_t i);
+    //! read next snapshot (required having read the header).
     snapshot_type read_snapshot(std::istream& is, const header_type& header);
 
   private:
