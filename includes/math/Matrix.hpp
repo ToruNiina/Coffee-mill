@@ -15,6 +15,7 @@ class Matrix
     constexpr static std::size_t dim_row = Row;
     constexpr static std::size_t dim_col = Col;
     constexpr static std::size_t number_of_element = Row * Col;
+    using container_type = std::array<real_type, number_of_element>;
 
   public:
     Matrix() : values_{{}}{}
@@ -44,16 +45,15 @@ class Matrix
     scalar_type& operator[](const std::size_t i)       {return values_[i];}
 
   private:
-    std::array<real_type, number_of_element> values_;
+    container_type values_;
 };
 
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator+=(const Matrix<realT, R, C>& mat)
 {
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            (*this)(i, j) += mat(i, j);
+    for(std::size_t i=0; i<number_of_element; ++i)
+        this->values_[i] += mat[i];
     return *this;
 }
 
@@ -61,9 +61,8 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator-=(const Matrix<realT, R, C>& mat)
 {
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            (*this)(i, j) -= mat(i, j);
+    for(std::size_t i=0; i<number_of_element; ++i)
+        this->values_[i] -= mat[i];
     return *this;
 }
 
@@ -71,9 +70,8 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator*=(const scalar_type& s)
 {
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            (*this)(i, j) *= s;
+    for(std::size_t i=0; i<number_of_element; ++i)
+        this->values_[i] *= s;
     return *this;
 }
 
@@ -81,9 +79,8 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator/=(const scalar_type& s)
 {
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            (*this)(i, j) /= s;
+    for(std::size_t i=0; i<number_of_element; ++i)
+        this->values_[i] /= s;
     return *this;
 }
 
@@ -92,9 +89,8 @@ Matrix<realT, R, C>
 operator+(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            retval(i, j) = lhs(i, j) + rhs(i, j);
+    for(std::size_t i=0; i<R*C; ++i)
+        retval[i] = lhs[i] + rhs[i];
     return retval;
 }
 
@@ -103,9 +99,8 @@ Matrix<realT, R, C>
 operator-(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            retval(i, j) = lhs(i, j) - rhs(i, j);
+    for(std::size_t i=0; i<R*C; ++i)
+        retval[i] = lhs[i] - rhs[i];
     return retval;
 }
 
@@ -114,9 +109,8 @@ Matrix<realT, R, C>
 operator*(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            retval(i, j) = lhs(i, j) * rhs;
+    for(std::size_t i=0; i<R*C; ++i)
+        retval[i] = lhs[i] * rhs;
     return retval;
 }
 
@@ -125,9 +119,8 @@ Matrix<realT, R, C>
 operator*(const realT lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            retval(i, j) = rhs(i, j) * lhs;
+    for(std::size_t i=0; i<R*C; ++i)
+        retval[i] = lhs * rhs[i];
     return retval;
 }
 
@@ -136,9 +129,8 @@ Matrix<realT, R, C>
 operator/(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R; ++i)
-        for(std::size_t j=0; j<C; ++j)
-            retval(i, j) = lhs(i, j) / rhs;
+    for(std::size_t i=0; i<R*C; ++i)
+        retval[i] = lhs[i] / rhs;
     return retval;
 }
 
