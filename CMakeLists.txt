@@ -25,7 +25,5 @@ else(DOXYGEN_FOUND)
     message(WARNING "doxygen binary could not be found.")
 endif(DOXYGEN_FOUND)
 
-set(CMAKE_CXX_COMPILER clang++-3.6)
-
 add_subdirectory(src)
 add_subdirectory(tests)
