@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_VECTOR
 #define COFFEE_MILL_VECTOR
 #include "Matrix.hpp"
-#include "detail/scalar_type_extractor.hpp"
+#include <mill/util/scalar_type_of.hpp>
 #include <boost/math/quaternion.hpp>
 #include <cmath>
 

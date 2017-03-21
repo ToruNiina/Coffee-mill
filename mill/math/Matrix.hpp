@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_MATRIX
 #define COFFEE_MILL_MATRIX
-#include "detail/variadic_template.hpp"
+#include <mill/util/is_all.hpp>
 #include <array>
 
 namespace mill

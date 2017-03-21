@@ -14,7 +14,7 @@
 
 #ifndef COFFEE_MILL_DCD_DATA
 #define COFFEE_MILL_DCD_DATA
-#include "detail/scalar_type_extractor.hpp"
+#include "util/scalar_type_of.hpp"
 #include <vector>
 #include <string>
 
