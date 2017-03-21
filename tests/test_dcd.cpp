@@ -51,6 +51,15 @@ BOOST_AUTO_TEST_CASE(test_read_and_write)
     mill::DCDReader<mill::Vector<float, 3>> reader;
     mill::DCDData<mill::Vector<float, 3>> readed = reader.read(fname);
 
+    BOOST_CHECK_EQUAL(readed.nset(),       data.nset());
+    BOOST_CHECK_EQUAL(readed.istart(),     data.istart());
+    BOOST_CHECK_EQUAL(readed.nstep_save(), data.nstep_save());
+    BOOST_CHECK_EQUAL(readed.nstep(),      data.nstep());
+    BOOST_CHECK_EQUAL(readed.nunit(),      data.nunit());
+    BOOST_CHECK_EQUAL(readed.verCHARMM(),  data.verCHARMM());
+    BOOST_CHECK_EQUAL(readed.delta_t(),    data.delta_t());
+    BOOST_CHECK_EQUAL(readed.signeture(),  data.signeture());
+
     for(std::size_t i=0; i<readed.front().size(); ++i)
     {
         BOOST_CHECK_EQUAL(readed.front().at(i)[0], trajectory.front().at(i)[0]);
