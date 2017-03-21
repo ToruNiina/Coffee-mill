@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+include_directories(${PROJECT_SOURCE_DIR}/mill)
 
 # to run doxygen, run `$make doc`.
 find_package(Doxygen)
@@ -14,7 +15,8 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_PROJECT_NAME "\"Coffee-mill\"")
     set(DOXYGEN_PROJECT_BRIEF "\"header-only library to analyze the data of CafeMol\"")
     set(DOXYGEN_INPUT_DIRECTORY
-        "${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/includes/data ${PROJECT_SOURCE_DIR}/includes/math ${PROJECT_SOURCE_DIR}/includes/util")
+        ${PROJECT_SOURCE_DIR}/src       ${PROJECT_SOURCE_DIR}/mill/data
+        ${PROJECT_SOURCE_DIR}/mill/math ${PROJECT_SOURCE_DIR}/mill/util)
     set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/doc")
 
     configure_file(${DOXYGEN_CONF_FILE}.in ${DOXYGEN_CONF_PATH})

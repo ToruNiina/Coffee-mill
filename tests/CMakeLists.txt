@@ -4,7 +4,6 @@ set(TEST_NAMES
     )
 
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
-include_directories("${CMAKE_SOURCE_DIR}/includes")
 
 add_definitions("-O3 -std=c++11")
 
