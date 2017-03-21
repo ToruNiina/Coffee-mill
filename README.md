@@ -42,14 +42,14 @@ There are some commands that is not stable yet. Those are not listed now.
 
 ## For Developpers
 
-See the `includes` directory. For example, when you want to read and/or write
+See the `mill` directory. For example, when you want to read and/or write
 a dcd file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
 
 ```cpp
-#include "mill/includes/data/DCDData.hpp"
-#include "mill/includes/data/DCDReader.hpp"
-#include "mill/includes/data/DCDWriter.hpp"
-#include "mill/includes/data/Vector.hpp"
+#include <mill/data/DCDData.hpp>
+#include <mill/data/DCDReader.hpp>
+#include <mill/data/DCDWriter.hpp>
+#include <mill/data/Vector.hpp>
 
 int main()
 {
@@ -79,9 +79,9 @@ if you add the explicit instantiation of `mill::scalar_type_extractor`.
 
 ```cpp
 #include <Eigen/Core>
-#include "mill/includes/data/DCDData.hpp"
-#include "mill/includes/data/DCDReader.hpp"
-#include "mill/includes/data/DCDWriter.hpp"
+#include <mill/data/DCDData.hpp>
+#include <mill/data/DCDReader.hpp>
+#include <mill/data/DCDWriter.hpp>
 
 namespace mill
 {
@@ -109,9 +109,9 @@ methods use not only vectors but also matrices.
 `Coffee-mill` also provides reader/writer of PDB and Ninfo file.
 
 ```cpp
-#include "mill/includes/data/PDBReader.hpp"
-#include "mill/includes/data/PDBWriter.hpp"
-#include "mill/includes/data/Vector.hpp"
+#include <mill/data/PDBReader.hpp>
+#include <mill/data/PDBWriter.hpp>
+#include <mill/data/Vector.hpp>
 
 int main()
 {
@@ -128,9 +128,9 @@ int main()
 ```
 
 ```cpp
-#include "mill/includes/data/NinfoData.hpp"
-#include "mill/includes/data/NinfoReader.hpp"
-#include "mill/includes/data/NinfoWriter.hpp"
+#include <mill/data/NinfoData.hpp>
+#include <mill/data/NinfoReader.hpp>
+#include <mill/data/NinfoWriter.hpp>
 #include <iostream>
 
 int main()
