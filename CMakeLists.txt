@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 enable_testing()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/mill)
 
 # to run doxygen, run `$make doc`.
