@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_NINFO_MODE
 #define COFFEE_MILL_NINFO_MODE
-#include "detail/scalar_type_extractor.hpp"
+#include <mill/util/scalar_type_of.hpp>
 #include "NinfoSplitter.hpp"
 
 namespace mill

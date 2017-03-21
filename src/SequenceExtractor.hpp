@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_SEQUENCE_EXTRACTOR
 #define COFFEE_MILL_SEQUENCE_EXTRACTOR
-#include "data/PDBChain.hpp"
-#include "detail/utility.hpp"
+#include <mill/data/PDBChain.hpp>
+#include <mill/util/string.hpp>
 #include <string>
 #include <map>
 
