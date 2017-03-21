@@ -252,9 +252,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     std::cerr << "Info   : nunit = " << data.nunit() << std::endl;
 #endif
 
-    char null_1[16];
-    dcdfile.read(null_1, 16);
-//     dcdfile.ignore(16);
+    dcdfile.ignore(16);
     
     char cdelta[size_float];
     dcdfile.read(cdelta, size_float);
@@ -264,8 +262,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     std::cerr << "Info   : delta t = " << data.delta_t() << std::endl;
 #endif
 
-    char null_2[36];
-    dcdfile.read(null_2, 36);
+    dcdfile.ignore(36);
 
     char cverCHARMM[size_int];
     dcdfile.read(cverCHARMM, size_int);
