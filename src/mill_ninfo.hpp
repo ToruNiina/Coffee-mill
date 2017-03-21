@@ -9,7 +9,7 @@ namespace mill
 template<typename vectorT>
 int mode_ninfo(int argument_c, char** argument_v)
 {
-    using realT = typename scalar_type_extractor<vectorT>::type;
+    using realT = typename scalar_type_of<vectorT>::type;
 
     if(argument_c < 2)
     {

@@ -52,7 +52,7 @@ template<typename vectorT>
 struct PDBAtom
 {
     using vector_type = vectorT;
-    using real_type   = typename scalar_type_extractor<vector_type>::type;
+    using real_type   = typename scalar_type_of<vector_type>::type;
     using position_type = vector_type;
 
     char          altloc;

@@ -81,7 +81,7 @@ class DCDData
   public:
 
     using vector_type     = vectorT;
-    using real_type       = typename scalar_type_extractor<vector_type>::type;
+    using real_type       = typename scalar_type_of<vector_type>::type;
     using position_type   = vector_type;
     using time_type       = real_type;
     using size_type       = std::size_t;

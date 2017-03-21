@@ -53,7 +53,7 @@ int superimpose(const std::string& fname)
         auto dcddata = reader.read(fname);
         writer.write_header(ofs, dcddata.header());
 
-        BestFit<typename scalar_type_extractor<vectorT>::type> bestfit;
+        BestFit<typename scalar_type_of<vectorT>::type> bestfit;
         bestfit.set_reference(dcddata.traj().front());
         for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
         {
@@ -88,7 +88,7 @@ int superimpose(const std::string& fname)
         writer.write_header(outfile, dcddata.header());
 
         auto initial = dcddata.traj().front();
-        BestFit<typename scalar_type_extractor<vectorT>::type> bestfit;
+        BestFit<typename scalar_type_of<vectorT>::type> bestfit;
         bestfit.set_reference(remove_except_elements(initial, except_particle));
         for(auto snap = dcddata.cbegin(); snap != dcddata.cend(); ++snap)
         {

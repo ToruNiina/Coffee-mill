@@ -9,6 +9,7 @@
 
 #ifndef COFFEE_MILL_XYZ_WRITER
 #define COFFEE_MILL_XYZ_WRITER
+#include <mill/util/scalar_type_of.hpp>
 #include <memory>
 #include <utility>
 #include <iostream>
@@ -30,7 +31,7 @@ class XYZWriter
   public:
     using vector_type         = vectorT;
     using position_type       = vector_type;
-    using real_type           = typename scalar_type_extractor<vector_type>::type;
+    using real_type           = typename scalar_type_of<vector_type>::type;
     using snapshot_type       = std::vector<position_type>;
     using trajectory_type     = std::vector<snapshot_type>;
     using xyz_snapshot_type   = std::vector<std::pair<std::string, position_type>>;
