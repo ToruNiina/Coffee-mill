@@ -55,7 +55,7 @@ int main()
     std::string fname("sample.dcd");
     mill::DCDData<mill::Vector<double, 3>> data = reader.read(fname);
 
-    std::vector<mill::Vector<double, 3>> trajectory = data.traj();
+    std::vector<std::vector<mill::Vector<double, 3>>> trajectory = data.traj();
     return 0;
 }
 ```
