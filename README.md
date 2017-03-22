@@ -40,16 +40,14 @@ The supported commands are listed below.
 
 There are some commands that is not stable yet. Those are not listed now.
 
-## For Developpers
+## For C++ Developpers
 
 See the `mill` directory. For example, when you want to read and/or write
 a dcd file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
 
 ```cpp
-#include <mill/data/DCDData.hpp>
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/DCDWriter.hpp>
-#include <mill/data/Vector.hpp>
+#include <mill/dcd.hpp>
+#include <mill/math/Vector.hpp>
 
 int main()
 {
@@ -71,22 +69,18 @@ In the above code, `DCDData::trajectory_type` become `std::vector<std::vector<mi
 `mill::DCDHeader` has a information included in the header of DCDfile.
 It has number of frames, total step of the trajectory, delta t, and so on.
 
-====
-
 `mill::Vector<scalarT, dimension>` is a mathematical vector class provided 
 for portability. You can use other vector classes like `Eigen::Vector3d` instead
-if you add the explicit instantiation of `mill::scalar_type_extractor`.
+if you add the explicit instantiation of `mill::scalar_type_of`.
 
 ```cpp
 #include <Eigen/Core>
-#include <mill/data/DCDData.hpp>
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/DCDWriter.hpp>
+#include <mill/dcd.hpp>
 
 namespace mill
 {
 template<>
-struct scalar_type_extractor<Eigen::Vector3d>
+struct scalar_type_of<Eigen::Vector3d>
 {
     typedef double type;
 };
@@ -109,9 +103,8 @@ methods use not only vectors but also matrices.
 `Coffee-mill` also provides reader/writer of PDB and Ninfo file.
 
 ```cpp
-#include <mill/data/PDBReader.hpp>
-#include <mill/data/PDBWriter.hpp>
-#include <mill/data/Vector.hpp>
+#include <mill/pdb.hpp>
+#include <mill/math/Vector.hpp>
 
 int main()
 {
@@ -128,9 +121,7 @@ int main()
 ```
 
 ```cpp
-#include <mill/data/NinfoData.hpp>
-#include <mill/data/NinfoReader.hpp>
-#include <mill/data/NinfoWriter.hpp>
+#include <mill/ninfo.hpp>
 #include <iostream>
 
 int main()
