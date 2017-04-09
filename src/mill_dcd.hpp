@@ -3,10 +3,12 @@
 #include "DCDtoMovie.hpp"
 #include "DCDJoiner.hpp"
 #include "SuperImpose.hpp"
+#include "mill_dcd_extract.hpp"
 
 namespace mill
 {
 
+// argv := arrayof{ "dcd", "command-name", {rests...} }
 template<typename vectorT>
 int mode_dcd(int argument_c, char **argument_v)
 {
@@ -16,30 +18,48 @@ int mode_dcd(int argument_c, char **argument_v)
     if(command == "make-movie")
     {
         if(argument_c != 3)
-            throw std::invalid_argument(
-                    "usage: ./mill dcd make-movie [file.dcd | file.toml]");
-        std::string fname(argument_v[2]);
+        {
+            std::cerr << "usage: mill dcd make-movie [file.dcd | file.toml]"
+                      << std::endl;
+            return 1;
+        }
+        const std::string fname(argument_v[2]);
         return dcd_to_movie<vectorT>(fname);
     }
     else if(command == "impose")
     {
         if(argument_c != 3)
-            throw std::invalid_argument(
-                    "usage: ./mill dcd impose [file.dcd | file.toml]");
+        {
+            std::cerr << "usage: mill dcd impose [file.dcd | file.toml]"
+                      << std::endl;
+            return 1;
+        }
         std::string fname(argument_v[2]);
         return superimpose<vectorT>(fname);
     }
     else if(command == "join")
     {
         if(argument_c < 3)
-            throw std::invalid_argument(
-                    "usage: ./mill dcd join [[file.dcd ...]| file.toml]");
-        // dcd join [files...]
+        {
+            std::cerr << "usage: mill dcd join [[file.dcd ...]| file.toml]"
+                      << std::endl;
+        }
         return dcdjoin<vectorT>(argument_c - 2, argument_v+2);
+    }
+    else if(command == "extract")
+    {
+        if(argument_c < 3)
+        {
+            std::cerr << "usage: mill dcd extract [file.dcd | file.toml]"
+                      << " [begin, end]" << std::endl;
+            return 1;
+        }
+        return mill_dcd_extract<vectorT>(argument_c - 1, argument_v+1);
     }
     else
     {
-        throw std::invalid_argument("command not found");
+        std::cerr << "error: mill command not found" << std::endl;
+        return 1;
     }
 }
 
