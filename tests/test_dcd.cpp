@@ -59,6 +59,7 @@ BOOST_AUTO_TEST_CASE(test_read_and_write)
     BOOST_CHECK_EQUAL(readed.verCHARMM(),  data.verCHARMM());
     BOOST_CHECK_EQUAL(readed.delta_t(),    data.delta_t());
     BOOST_CHECK_EQUAL(readed.signeture(),  data.signeture());
+    BOOST_CHECK_EQUAL("CORD",              data.signeture());
 
     for(std::size_t i=0; i<readed.front().size(); ++i)
     {
