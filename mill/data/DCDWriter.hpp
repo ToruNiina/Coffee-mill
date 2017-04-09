@@ -67,7 +67,7 @@ class DCDWriter
 template <typename vectorT>
 void DCDWriter<vectorT>::write(const std::string& filename, const data_type& dcd)
 {
-    std::ifstream ifs(filename);
+    std::ofstream ifs(filename);
     if(not ifs.good()) throw std::runtime_error("file open error: " + filename);
     this->write(ifs, dcd);
     ifs.close();
