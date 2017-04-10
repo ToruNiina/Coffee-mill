@@ -1,8 +1,8 @@
 #ifndef COFFEE_MILL_PDB_MODE
 #define COFFEE_MILL_PDB_MODE
-#include "data/PDBReader.hpp"
-#include "data/PDBWriter.hpp"
-#include "SequenceExtractor.hpp"
+#include <mill/data/PDBReader.hpp>
+#include <mill/data/PDBWriter.hpp>
+#include "mill_pdb_seq.hpp"
 
 namespace mill
 {
@@ -14,17 +14,7 @@ int mode_pdb(int argument_c, char **argument_v)
     const std::string command(argument_v[1]);
     if(command == "seq")
     {
-        if(argument_c < 3) throw std::invalid_argument("too few commands");
-
-        const std::string fname(argument_v[2]);
-        PDBReader<vectorT> reader;
-        const auto atoms = reader.read(fname);
-        const auto chains = reader.parse(atoms);
-        SequenceExtractor<vectorT> extr;
-        for(auto iter = chains.cbegin(); iter != chains.cend(); ++iter)
-            std::cout << "chain " << iter->chain_id() << ": "
-                      << extr.extract(*iter) << std::endl;
-        return 0;
+        return mill_pdb_seq<vectorT>(--argument_c, ++argument_v);
     }
     else
     {
