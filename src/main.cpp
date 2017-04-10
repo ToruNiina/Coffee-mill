@@ -1,4 +1,4 @@
-#include "math/Vector.hpp"
+#include <mill/math/Vector.hpp>
 #include "mill_pdb.hpp"
 #include "mill_dcd.hpp"
 #include "mill_ninfo.hpp"
