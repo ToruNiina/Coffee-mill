@@ -1,8 +1,8 @@
 #ifndef COFFEE_MILL_DCD_MODE
 #define COFFEE_MILL_DCD_MODE
 #include "DCDtoMovie.hpp"
-#include "DCDJoiner.hpp"
 #include "SuperImpose.hpp"
+#include "mill_dcd_join.hpp"
 #include "mill_dcd_extract.hpp"
 
 namespace mill
@@ -44,7 +44,7 @@ int mode_dcd(int argument_c, char **argument_v)
             std::cerr << "usage: mill dcd join [[file.dcd ...]| file.toml]"
                       << std::endl;
         }
-        return dcdjoin<vectorT>(argument_c - 2, argument_v+2);
+        return mill_dcd_join<vectorT>(argument_c - 2, argument_v+2);
     }
     else if(command == "extract")
     {

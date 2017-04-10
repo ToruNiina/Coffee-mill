@@ -1,17 +1,5 @@
-/*!
-  @file DCDJoiner.hpp
-  @brief definition of a class that joins some dcd files.
-
-  DCDJoiner joins some dcdfiles to one dcd file. This help the analysis or 
-  visualization of cafemol restarting simulation.
-  
-  @author Toru Niina (niina.toru.68u@gmail.com)
-  @date 2016-06-09 16:00
-  @copyright Toru Niina 2016 on MIT License
-*/
-
-#ifndef COFFEE_MILL_DCDJOINER
-#define COFFEE_MILL_DCDJOINER
+#ifndef COFFEE_MILL_DCD_JOIN
+#define COFFEE_MILL_DCD_JOIN
 #include "data/DCDReader.hpp"
 #include "data/DCDWriter.hpp"
 #include "toml/toml.hpp"
@@ -20,7 +8,7 @@ namespace mill
 {
 
 template<typename vectorT>
-int dcdjoin(int argument_c, char** argument_v)
+int mill_dcd_join(int argument_c, char** argument_v)
 {
     const std::string fname(argument_v[0]);
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
@@ -106,6 +94,5 @@ int dcdjoin(int argument_c, char** argument_v)
     }
 }
 
-}
-
-#endif /* COFFEE_MILL_DCDJOINER */
+}//mill
+#endif /* COFFEE_MILL_DCD_JOIN */
