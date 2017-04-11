@@ -4,6 +4,7 @@
 #include "SuperImpose.hpp"
 #include "mill_dcd_join.hpp"
 #include "mill_dcd_extract.hpp"
+#include "mill_dcd_msd.hpp"
 
 namespace mill
 {
@@ -55,6 +56,16 @@ int mode_dcd(int argument_c, char **argument_v)
             return 1;
         }
         return mill_dcd_extract<vectorT>(argument_c - 1, argument_v+1);
+    }
+    else if(command == "msd")
+    {
+        if(argument_c < 3)
+        {
+            std::cerr << "usage: mill dcd msd [file.dcd, ... | file.toml]"
+                      << std::endl;
+            return 1;
+        }
+        return mill_dcd_msd<vectorT>(argument_c - 1, argument_v+1);
     }
     else
     {
