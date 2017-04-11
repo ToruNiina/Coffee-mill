@@ -2,8 +2,7 @@
 #define COFFEE_MILL_PDB_SEQ
 #include <mill/data/PDBChain.hpp>
 #include <mill/util/string.hpp>
-#include <string>
-#include <map>
+#include <mill/util/amino_acid_code.hpp>
 
 namespace mill
 {
@@ -81,44 +80,6 @@ inline bool operator>=(residue_name_iterator<Iterator> const& lhs,
 {
     return !(lhs < rhs);
 }
-
-struct amino_acid_code
-{
-    char operator()(std::string const& s) const {return codes.at(s);}
-    std::string const& operator()(char s) const
-    {
-        return std::find_if(codes.cbegin(), codes.cend(),
-            [=](const std::pair<std::string, char>& p){return p.second==s;}
-            )->first;
-    }
-
-    std::map<std::string, char> codes = {
-        {"ALA", 'A'},
-        {"ASX", 'B'},
-        {"CYS", 'C'},
-        {"ASP", 'D'},
-        {"GLU", 'E'},
-        {"PHE", 'F'},
-        {"GLY", 'G'},
-        {"HIS", 'H'},
-        {"ILE", 'I'},
-        {"LYS", 'K'},
-        {"LEU", 'L'},
-        {"MET", 'M'},
-        {"ASN", 'N'},
-        {"PRO", 'P'},
-        {"GLN", 'Q'},
-        {"ARG", 'R'},
-        {"SER", 'S'},
-        {"THR", 'T'},
-        {"SEC", 'U'},
-        {"VAL", 'V'},
-        {"TRP", 'W'},
-        {"XAA", 'X'},
-        {"TYR", 'Y'},
-        {"GLX", 'Z'}
-    };
-};
 
 struct generate_sequence
 {
