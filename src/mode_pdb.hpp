@@ -26,10 +26,10 @@ int mode_pdb(int argument_c, char **argument_v)
     {
         return mode_pdb_seq<vectorT>(--argument_c, ++argument_v);
     }
-    else if(command == "mutate")
-    {
-        return mode_pdb_mutate<vectorT>(--argument_c, ++argument_v);
-    }
+//     else if(command == "mutate")
+//     {
+//         return mode_pdb_mutate<vectorT>(--argument_c, ++argument_v);
+//     }
     else
     {
         throw std::invalid_argument("command not found");
