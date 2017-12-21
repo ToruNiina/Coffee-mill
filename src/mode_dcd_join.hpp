@@ -98,7 +98,7 @@ int mode_dcd_join(int argument_c, const char** argument_v)
 
         return 0;
     }
-    else if(fname.substr(fname.size() - 5, 5) == "toml")
+    else if(fname.substr(fname.size() - 5, 5) == ".toml")
     {
         const auto tomldata = toml::parse(fname);
         const auto inputs =
