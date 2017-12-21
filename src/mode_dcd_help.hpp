@@ -16,15 +16,15 @@ inline const char* mode_dcd_help_usage() noexcept
     return "usage: mill dcd [command] [parameters...]\n\n"
            "    avaiable commands\n"
            "    - impose\n"
-           "      : superimpose snapshots by minimizing RMSD\n"
+           "      : superimpose all the snapshots by minimizing RMSD\n"
            "    - join\n"
            "      : concatenate several .dcd files\n"
            "    - split\n"
-           "      : split .dcd files into several files\n"
+           "      : split a .dcd files into several files\n"
            "    - extract\n"
-           "      : extract one snapshot from dcd file\n"
+           "      : extract some of the snapshots from a dcd file\n"
            "    - convert\n"
-           "      : convert dcd file into another format\n"
+           "      : convert a dcd file into another format\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -46,6 +46,11 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
         const char *cmds[2] = {"join", "help"};
         return mode_dcd_join<mill::Vector<double, 3>>(2, cmds);
     }
+    else if(command == "extract")
+    {
+        const char *cmds[2] = {"extract", "help"};
+        return mode_dcd_extract(2, cmds);
+    }
 //     else if(command == "impose")
 //     {
 //         const char *cmds[2] = {"impose", "help"};
@@ -55,11 +60,6 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
 //     {
 //         const char *cmds[2] = {"split", "help"};
 //         return mode_dcd_split(2, cmds);
-//     }
-//     else if(command == "extract")
-//     {
-//         const char *cmds[2] = {"extract", "help"};
-//         return mode_dcd_extract(2, cmds);
 //     }
 //     else if(command == "convert")
 //     {
