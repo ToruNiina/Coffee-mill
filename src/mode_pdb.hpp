@@ -4,7 +4,7 @@
 #include <mill/data/PDBWriter.hpp>
 #include <src/mode_pdb_help.hpp>
 #include <src/mode_pdb_seq.hpp>
-#include <src/mode_pdb_mutate.hpp>
+// #include <src/mode_pdb_mutate.hpp>
 #include <iostream>
 
 namespace mill
@@ -12,12 +12,12 @@ namespace mill
 
 // argv := arrayof{ "pdb", "command-name", {rests...} }
 template<typename vectorT>
-int mode_pdb(int argument_c, char **argument_v)
+int mode_pdb(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << "error: mill dcd-mode: too few arguments\n";
-        mode_dcd_help(--argument_c, ++argument_v); // {}
+        std::cerr << "error: mill pdb: too few arguments\n";
+        mode_pdb_help(--argument_c, ++argument_v); // {}
         return 1;
     }
 
@@ -32,7 +32,9 @@ int mode_pdb(int argument_c, char **argument_v)
 //     }
     else
     {
-        throw std::invalid_argument("command not found");
+        std::cerr << "error: mill pdb: unknown command: " << command << "\n";
+        mode_pdb_help_usage();
+        return 1;
     }
 }
 

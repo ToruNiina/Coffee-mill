@@ -3,7 +3,7 @@
 #include <iostream>
 #include <mill/math/Vector.hpp>
 #include <src/mode_pdb_seq.hpp>
-#include <src/mode_pdb_mutate.hpp>
+// #include <src/mode_pdb_mutate.hpp>
 
 namespace mill
 {
@@ -37,11 +37,11 @@ inline int mode_pdb_help(int argument_c, const char **argument_v)
         const char *cmds[2] = {"seq", "help"};
         return mode_pdb_seq<mill::Vector<double, 3>>(2, cmds);
     }
-    else if(command == "mutate")
-    {
-        const char *cmds[2] = {"mutate", "help"};
-        return mode_pdb_mutate<mill::Vector<double, 3>>(2, cmds);
-    }
+//     else if(command == "mutate")
+//     {
+//         const char *cmds[2] = {"mutate", "help"};
+//         return mode_pdb_mutate<mill::Vector<double, 3>>(2, cmds);
+//     }
     else
     {
         std::cerr << "error: mill pdb help: unknown command : "
