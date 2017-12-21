@@ -2,7 +2,7 @@
 #define COFFEE_MILL_DCD_MODE
 // #include "DCDtoMovie.hpp"
 // #include "SuperImpose.hpp"
-#include <src/mill_dcd_join.hpp>
+#include <src/mode_dcd_join.hpp>
 // #include "mill_dcd_extract.hpp"
 // #include "mill_dcd_msd.hpp"
 // #include "mode_dcd_help.hpp"
@@ -26,7 +26,7 @@ int mode_dcd(int argument_c, const char **argument_v)
     if(command == "join")
     {
         // {"join", {"args"...}}
-        return mill_dcd_join<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_join<vectorT>(--argument_c, ++argument_v);
     }
 //     else if(command == "make-movie")
 //     {
