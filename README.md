@@ -39,7 +39,7 @@ $ mill <mode> <command> help
 ### PDB
 
 1. print the sequences of chains in pdb file.
-   - now in progress...
+   - `mill pdb seq model.pdb`
 2. rename the residues
    - now in progress...
 
