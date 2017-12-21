@@ -24,7 +24,7 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
     if(argument_c == 1)
     {
         std::cerr << "error: mill dcd-mode: too few arguments\n";
-        std::cerr << dcd_join_usage() << std::endl;
+        std::cerr << dcd_extract_usage() << std::endl;
         return 1;
     }
 

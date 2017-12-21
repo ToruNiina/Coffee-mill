@@ -2,9 +2,9 @@
 #define COFFEE_MILL_DCD_HELP_MODE
 #include <iostream>
 #include <mill/math/Vector.hpp>
-#include "mode_dcd_join.hpp"
+#include <src/mode_dcd_join.hpp>
+#include <src/mode_dcd_extract.hpp>
 // #include "mode_dcd_split.hpp"
-// #include "mode_dcd_extract.hpp"
 // #include "mode_dcd_convert.hpp"
 // #include "mode_dcd_impose.hpp"
 
@@ -49,7 +49,7 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     else if(command == "extract")
     {
         const char *cmds[2] = {"extract", "help"};
-        return mode_dcd_extract(2, cmds);
+        return mode_dcd_extract<mill::Vector<double, 3>>(2, cmds);
     }
 //     else if(command == "impose")
 //     {
