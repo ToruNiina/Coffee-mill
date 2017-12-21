@@ -85,7 +85,7 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
         }
 
         DCDReader<vectorT> reader;
-        auto dcddata = reader.read_header(dcdname);
+        auto dcddata = reader.read_header(ifs);
         dcddata.nset() = num;
         dcddata.traj().resize(num);
         for(std::size_t i=0; i<beg; ++i)
