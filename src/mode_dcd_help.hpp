@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_DCD_HELP_MODE
 #define COFFEE_MILL_DCD_HELP_MODE
 #include <iostream>
+#include <mill/math/Vector.hpp>
 #include "mode_dcd_join.hpp"
 // #include "mode_dcd_split.hpp"
 // #include "mode_dcd_extract.hpp"
@@ -13,19 +14,19 @@ namespace mill
 inline const char* mode_dcd_help_usage() noexcept
 {
     return "usage: mill dcd [command] [parameters...]\n\n"
-           "\tavaiable commands\n"
-           "\t- impose\n"
-           "\t\t: superimpose snapshots by minimizing RMSD\n"
-           "\t- join\n"
-           "\t\t: concatenate several .dcd files\n"
-           "\t- split\n"
-           "\t\t: split .dcd files into several files\n"
-           "\t- extract\n"
-           "\t\t: extract one snapshot from dcd file\n"
-           "\t- convert\n"
-           "\t\t: convert dcd file into another format\n"
-           "\t- help\n"
-           "\t\t: print detailed explanation of each command\n";
+           "    avaiable commands\n"
+           "    - impose\n"
+           "      : superimpose snapshots by minimizing RMSD\n"
+           "    - join\n"
+           "      : concatenate several .dcd files\n"
+           "    - split\n"
+           "      : split .dcd files into several files\n"
+           "    - extract\n"
+           "      : extract one snapshot from dcd file\n"
+           "    - convert\n"
+           "      : convert dcd file into another format\n"
+           "    - help\n"
+           "      : print detailed explanation of each command\n";
 }
 
 //! this function forwards the arguments to different modes.
@@ -43,7 +44,7 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     if(command == "join")
     {
         const char *cmds[2] = {"join", "help"};
-        return mode_dcd_join(2, cmds);
+        return mode_dcd_join<mill::Vector<double, 3>>(2, cmds);
     }
 //     else if(command == "impose")
 //     {
