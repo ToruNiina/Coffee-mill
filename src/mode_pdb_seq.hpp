@@ -33,7 +33,7 @@ struct amino_acid_code
             );
         if(found != codes.cend())
         {
-            return codes.at(s);
+            return found->first;
         }
         else
         {
@@ -167,7 +167,7 @@ struct generate_sequence
 
 // argv := {"seq", "file.pdb"}
 template<typename vectorT>
-int mode_pdb_seq(int argument_c, char **argument_v)
+int mode_pdb_seq(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
