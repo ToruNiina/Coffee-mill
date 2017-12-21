@@ -2,8 +2,8 @@
 #define COFFEE_MILL_DCD_EXTRACT
 #include <mill/data/DCDWriter.hpp>
 #include <mill/data/DCDReader.hpp>
-#include <limits>
 #include <toml/toml.hpp>
+#include <limits>
 
 namespace mill
 {
