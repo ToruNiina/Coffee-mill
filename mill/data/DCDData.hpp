@@ -103,47 +103,49 @@ class DCDData
     DCDData& operator=(DCDData&&)      = default;
     explicit DCDData(size_type size) : trajectory_(size){}
 
-    int  nset() const noexcept {return header_.nset;}
-    int& nset()       noexcept {return header_.nset;}
-    int  istart() const noexcept {return header_.istart;}
-    int& istart()       noexcept {return header_.istart;}
-    int  nstep_save() const noexcept {return header_.nstep_save;}
-    int& nstep_save()       noexcept {return header_.nstep_save;}
-    int  nstep() const noexcept {return header_.nstep;}
-    int& nstep()       noexcept {return header_.nstep;}
-    int  nunit() const noexcept {return header_.nunit;}
-    int& nunit()       noexcept {return header_.nunit;}
-    int  verCHARMM() const noexcept {return header_.verCHARMM;}
-    int& verCHARMM()       noexcept {return header_.verCHARMM;}
-    int  nparticle() const noexcept {return header_.nparticle;}
-    int& nparticle()       noexcept {return header_.nparticle;}
-    time_type  delta_t() const noexcept {return header_.delta_t;}
-    time_type& delta_t()       noexcept {return header_.delta_t;}
-    std::string const& signeture() const noexcept {return header_.signeture;}
-    std::string      & signeture()       noexcept {return header_.signeture;}
-    comment_type const& comment() const noexcept {return header_.comment;}
-    comment_type      & comment()       noexcept {return header_.comment;}
-    header_type const& header() const noexcept {return header_;}
-    header_type      & header()       noexcept {return header_;}
+    int                 nset()       const noexcept {return header_.nset;}
+    int&                nset()             noexcept {return header_.nset;}
+    int                 istart()     const noexcept {return header_.istart;}
+    int&                istart()           noexcept {return header_.istart;}
+    int                 nstep_save() const noexcept {return header_.nstep_save;}
+    int&                nstep_save()       noexcept {return header_.nstep_save;}
+    int                 nstep()      const noexcept {return header_.nstep;}
+    int&                nstep()            noexcept {return header_.nstep;}
+    int                 nunit()      const noexcept {return header_.nunit;}
+    int&                nunit()            noexcept {return header_.nunit;}
+    int                 verCHARMM()  const noexcept {return header_.verCHARMM;}
+    int&                verCHARMM()        noexcept {return header_.verCHARMM;}
+    int                 nparticle()  const noexcept {return header_.nparticle;}
+    int&                nparticle()        noexcept {return header_.nparticle;}
+    time_type           delta_t()    const noexcept {return header_.delta_t;}
+    time_type&          delta_t()          noexcept {return header_.delta_t;}
+    std::string const&  signeture()  const noexcept {return header_.signeture;}
+    std::string&        signeture()        noexcept {return header_.signeture;}
+    comment_type const& comment()    const noexcept {return header_.comment;}
+    comment_type&       comment()          noexcept {return header_.comment;}
+    header_type const&  header()     const noexcept {return header_;}
+    header_type&        header()           noexcept {return header_;}
 
     snapshot_type const& front() const noexcept {return trajectory_.front();}
-    snapshot_type      & front()       noexcept {return trajectory_.front();}
-    snapshot_type const& back() const noexcept {return trajectory_.back();}
-    snapshot_type      & back()       noexcept {return trajectory_.back();}
+    snapshot_type&       front()       noexcept {return trajectory_.front();}
+    snapshot_type const& back()  const noexcept {return trajectory_.back();}
+    snapshot_type&       back()        noexcept {return trajectory_.back();}
 
     snapshot_type const& operator[](index_type i) const noexcept {return trajectory_[i];}
-    snapshot_type      & operator[](index_type i)       noexcept {return trajectory_[i];}
+    snapshot_type&       operator[](index_type i)       noexcept {return trajectory_[i];}
     snapshot_type const& at(index_type i) const {return trajectory_.at(i);}
-    snapshot_type      & at(index_type i)       {return trajectory_.at(i);}
+    snapshot_type&       at(index_type i)       {return trajectory_.at(i);}
 
     trajectory_type const& traj() const noexcept {return trajectory_;}
-    trajectory_type      & traj()       noexcept {return trajectory_;}
+    trajectory_type&       traj()       noexcept {return trajectory_;}
 
     bool      empty() const noexcept {return trajectory_.empty();}
     size_type size()  const noexcept {return trajectory_.size();}
 
-    iterator begin() noexcept {return trajectory_.begin();}
-    iterator end()   noexcept {return trajectory_.end();}
+    iterator       begin()        noexcept {return trajectory_.begin();}
+    iterator       end()          noexcept {return trajectory_.end();}
+    const_iterator begin()  const noexcept {return trajectory_.begin();}
+    const_iterator end()    const noexcept {return trajectory_.end();}
     const_iterator cbegin() const noexcept {return trajectory_.cbegin();}
     const_iterator cend()   const noexcept {return trajectory_.cend();}
 
