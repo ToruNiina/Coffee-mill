@@ -7,6 +7,9 @@ include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/extlib)
 include_directories(${PROJECT_SOURCE_DIR}/mill)
 
+find_package(Boost)
+include_directories(${Boost_INCLUDE_DIR})
+
 # to run doxygen, run `$make doc`.
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
