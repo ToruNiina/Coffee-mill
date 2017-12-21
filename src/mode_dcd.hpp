@@ -1,12 +1,13 @@
 #ifndef COFFEE_MILL_DCD_MODE
 #define COFFEE_MILL_DCD_MODE
-// #include "DCDtoMovie.hpp"
+#include <src/mode_dcd_help.hpp>
 #include <src/mode_dcd_join.hpp>
 #include <src/mode_dcd_split.hpp>
 #include <src/mode_dcd_extract.hpp>
 #include <src/mode_dcd_impose.hpp>
 // #include "mill_dcd_msd.hpp"
-// #include "mode_dcd_help.hpp"
+// #include "DCDtoMovie.hpp"
+#include <iostream>
 
 namespace mill
 {
