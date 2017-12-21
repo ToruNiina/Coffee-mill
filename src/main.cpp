@@ -1,13 +1,12 @@
 #include <mill/math/Vector.hpp>
-#include <mill/pdb.hpp>
-#include <mill/dcd.hpp>
-#include <mill/ninfo.hpp>
 #include <iostream>
-#include "help.hpp"
+#include <mill/src/mode_pdb.hpp>
+#include <mill/src/mode_dcd.hpp>
+#include <mill/src/mode_ninfo.hpp>
+#include <mill/src/mode_help.hpp>
 
 template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo();
-void print_main_help();
 
 int main(int argc, char **argv)
 {
@@ -28,7 +27,7 @@ int main(int argc, char **argv)
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "exception thrown: " << excpt.what() << std::endl;
+            std::cerr << "error: " << excpt.what() << std::endl;
             return 1;
         }
     }
@@ -40,7 +39,7 @@ int main(int argc, char **argv)
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "exception thrown: " << excpt.what() << std::endl;
+            std::cerr << "error: " << excpt.what() << std::endl;
             return 1;
         }
     }
@@ -52,14 +51,13 @@ int main(int argc, char **argv)
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "exception thrown: " << excpt.what() << std::endl;
+            std::cerr << "error: " << excpt.what() << std::endl;
             return 1;
         }
     }
     else if(mode == "help")
     {
-        print_help(argc-1, ++argv);
-        return 1;
+        return mill::mode_help(argc-1, ++argv);
     }
     else
     {
@@ -79,17 +77,5 @@ void print_logo()
     std::cerr << " \\___|\\___/|_| |_|  \\___|\\___|  |_|  |_||_||_||_| \n";
     std::cerr << "                         Copyright 2016- Toru Niina \n";
     std::cerr << std::endl;
-    return;
-}
-
-void print_main_help()
-{
-    std::cerr << "Usage: mill [mode] [parameters...]\n\n";
-    std::cerr << "list of modes\n";
-    std::cerr << "\tpdb\n";
-    std::cerr << "\tdcd\n";
-    std::cerr << "\tninfo\n";
-    std::cerr << "\thelp\n";
-    std::cerr << std::flush;
     return;
 }
