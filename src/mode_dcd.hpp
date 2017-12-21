@@ -5,15 +5,23 @@
 #include "mill_dcd_join.hpp"
 #include "mill_dcd_extract.hpp"
 #include "mill_dcd_msd.hpp"
+#include "mode_dcd_help.hpp"
 
 namespace mill
 {
 
 // argv := arrayof{ "dcd", "command-name", {rests...} }
 template<typename vectorT>
-int mode_dcd(int argument_c, char **argument_v)
+int mode_dcd(int argument_c, const char **argument_v)
 {
-    if(argument_c < 2) throw std::invalid_argument("too few commands");
+    if(argument_c < 2)
+    {
+        // no commands provided: {"dcd"}
+        std::cerr << "error: mill dcd-mode: too few arguments\n";
+        mode_dcd_help(--argument_c, ++argument_v); // {}, invalid pointer!
+        return 1;
+    }
+
     const std::string command(argument_v[1]);
 
     if(command == "make-movie")
@@ -67,9 +75,14 @@ int mode_dcd(int argument_c, char **argument_v)
         }
         return mill_dcd_msd<vectorT>(argument_c - 1, argument_v+1);
     }
+    else if(command == "help")
+    {
+        // {"dcd", "help", {args...}} -> {"help", {args...}}
+        return mode_dcd_help<vectorT>(--argument_c, ++argument_v);
+    }
     else
     {
-        std::cerr << "error: mill command not found" << std::endl;
+        std::cerr << "error: mill dcd-mode: unknown command : " << command << '\n';
         return 1;
     }
 }
