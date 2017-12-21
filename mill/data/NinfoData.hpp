@@ -42,8 +42,8 @@ class NinfoData
     NinfoData(){}
     ~NinfoData() = default;
 
-    bool        empty() noexcept const {return data_.empty();}
-    std::size_t size()  noexcept const {return data_.size();}
+    bool        empty() const noexcept {return data_.empty();}
+    std::size_t size()  const noexcept {return data_.size();}
     void        clear()       {return data_.clear();}
     std::size_t count(const key_type key){return data_.count(key);}
     void        emplace(const key_type key, const value_type& value)
@@ -58,15 +58,15 @@ class NinfoData
     const_iterator find(const key_type key) const {return data_.find(key);}
    
     //! access to whole data.
-    container_type      & data() noexcept       {return data_;}
-    container_type const& data() noexcept const {return data_;}
+    container_type      & data()       noexcept {return data_;}
+    container_type const& data() const noexcept {return data_;}
 
     iterator begin() noexcept {return data_.begin();}
     iterator end()   noexcept {return data_.end();}
-    const_iterator begin()  noexcept const {return data_.begin();}
-    const_iterator end()    noexcept const {return data_.end();}
-    const_iterator cbegin() noexcept const {return data_.cbegin();}
-    const_iterator cend()   noexcept const {return data_.cend();}
+    const_iterator begin()  const noexcept {return data_.begin();}
+    const_iterator end()    const noexcept {return data_.end();}
+    const_iterator cbegin() const noexcept {return data_.cbegin();}
+    const_iterator cend()   const noexcept {return data_.cend();}
 
   private:
 

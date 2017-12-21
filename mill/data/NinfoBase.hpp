@@ -6,7 +6,7 @@
   NinfoBase has pure virtual member functions that provides an access to member
   variables. Subclass NinfoElement is a template class and contain a native
   information.
-  
+
   @author Toru Niina (niina.toru.68@gmail.com)
   @date 2016-06-09 17:00
   @copyright Toru Niina 2016 on MIT License
@@ -39,17 +39,17 @@ class NinfoBase
     virtual ~NinfoBase() = default;
 
     //! header(ex, "bond", "angl", "aicg13")
-    virtual const std::string& header() const = 0;
-    virtual       std::string& header()       = 0;
+    virtual const std::string& header() const noexcept = 0;
+    virtual       std::string& header()       noexcept = 0;
 
-    virtual std::size_t num_bodies() const = 0;
-    virtual std::size_t num_coefs()  const = 0;
+    virtual std::size_t num_bodies() const noexcept = 0;
+    virtual std::size_t num_coefs()  const noexcept = 0;
 
     //! ID of the native information.
-    virtual std::size_t  id() const = 0;
-    virtual std::size_t& id()       = 0;
+    virtual std::size_t  id() const noexcept = 0;
+    virtual std::size_t& id()       noexcept = 0;
 
-    //! unit(chain) index. 
+    //! unit(chain) index.
     /*!
      *  index of units. represents iunit1 and iunit2.
      *  Note that coffee-mill uses 0-based index. iunit1 = unit_at(0).
@@ -59,7 +59,7 @@ class NinfoBase
     virtual std::size_t  unit_at(index_type i)       const = 0;
     virtual std::size_t& unit_at(index_type i)             = 0;
 
-    //! imps. 
+    //! imps.
     /*!
      *  index of mass points. corresponding to imp1, imp2, ...
      *  Note that coffee-mill uses 0-based index. imp1 = imp_at(0).
@@ -68,7 +68,7 @@ class NinfoBase
     virtual std::size_t  global_imp_at(index_type i) const = 0;
     virtual std::size_t& global_imp_at(index_type i)       = 0;
 
-    //! impuns. 
+    //! impuns.
     /*!
      *  index of mass points in the unit. corresponding to impun1, impun2, ...
      *  Note that coffee-mill uses 0-based index. impun1 = local_imp_at(0).
@@ -77,7 +77,7 @@ class NinfoBase
     virtual std::size_t  local_imp_at(index_type i)  const = 0;
     virtual std::size_t& local_imp_at(index_type i)        = 0;
 
-    //! coefficients. 
+    //! coefficients.
     /*!
      *  including all type of coefficients, for example,
      *  native_value, coef_go, correct_mgo, etc...
@@ -86,8 +86,8 @@ class NinfoBase
     virtual real_type& coef_at(index_type i)              = 0;
 
     //! ninfo kind. like "ppp".
-    virtual std::vector<std::string> const& kind()  const = 0;
-    virtual std::vector<std::string>      & kind()        = 0;
+    virtual std::vector<std::string> const& kind()  const noexcept = 0;
+    virtual std::vector<std::string>      & kind()        noexcept = 0;
 };
 
 //! NinfoElement class.
@@ -118,52 +118,52 @@ class NinfoElement : public NinfoBase<realT>
     ~NinfoElement() override = default;
 
     //! return the number of bodies correspoinding to the interaction.
-    size_type num_bodies() const override {return number_of_bodies;}
-    size_type num_coefs()  const override {return number_of_coefs;}
+    size_type num_bodies() const noexcept override {return number_of_bodies;}
+    size_type num_coefs()  const noexcept override {return number_of_coefs;}
 
     //! header. like "bond"
-    std::string const& header() const override {return header_;}
-    std::string&       header()       override {return header_;}
+    std::string const& header() const noexcept override {return header_;}
+    std::string&       header()       noexcept override {return header_;}
 
     //! native interaction id.
-    index_type  id() const override {return id_;}
-    index_type& id()       override {return id_;}
+    index_type  id() const noexcept override {return id_;}
+    index_type& id()       noexcept override {return id_;}
 
     //! array of iunit.
-    units_type const& units() const {return units_;}
-    units_type&       units()       {return units_;}
+    units_type const& units() const noexcept {return units_;}
+    units_type&       units()       noexcept {return units_;}
 
     //! iunit.
     index_type  unit_at(index_type i) const override {return units_.at(i);}
     index_type& unit_at(index_type i)       override {return units_.at(i);}
 
     //! array of imp.
-    indices_type const& global_imps() const {return g_imp_;}
-    indices_type&       global_imps()       {return g_imp_;}
+    indices_type const& global_imps() const noexcept {return g_imp_;}
+    indices_type&       global_imps()       noexcept {return g_imp_;}
 
     //! imp.
     index_type  global_imp_at(index_type i) const override {return g_imp_.at(i);}
     index_type& global_imp_at(index_type i)       override {return g_imp_.at(i);}
 
     //! array of impun.
-    indices_type const& local_imps() const {return l_imp_;}
-    indices_type&       local_imps()       {return l_imp_;}
+    indices_type const& local_imps() const noexcept {return l_imp_;}
+    indices_type&       local_imps()       noexcept {return l_imp_;}
 
     //! impun.
     index_type  local_imp_at(index_type i) const override {return l_imp_.at(i);}
     index_type& local_imp_at(index_type i)       override {return l_imp_.at(i);}
 
     //! array of coef
-    coefs_type const& coefs() const {return coefs_;}
-    coefs_type&       coefs()       {return coefs_;}
+    coefs_type const& coefs() const noexcept {return coefs_;}
+    coefs_type&       coefs()       noexcept {return coefs_;}
 
     //! coef
     real_type  coef_at(index_type i) const override {return coefs_.at(i);}
     real_type& coef_at(index_type i)       override {return coefs_.at(i);}
 
     //! vector of kind.
-    std::vector<std::string> const& kind() const override {return kind_;}
-    std::vector<std::string>&       kind()       override {return kind_;}
+    std::vector<std::string> const& kind() const noexcept override {return kind_;}
+    std::vector<std::string>&       kind()       noexcept override {return kind_;}
 
   private:
 
@@ -208,7 +208,7 @@ using NinfoBaseStack = NinfoElement<2, 4, double>;
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
  */
-template<std::size_t N_bodies, std::size_t N_coefs, typename real_type> 
+template<std::size_t N_bodies, std::size_t N_coefs, typename real_type>
 std::basic_ostream<char>&
 operator<<(std::basic_ostream<char>& os,
            NinfoElement<N_bodies, N_coefs, real_type> const& ninfo)
@@ -216,26 +216,27 @@ operator<<(std::basic_ostream<char>& os,
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();
 
-    for(auto iter = ninfo.units().cbegin();
-            iter != ninfo.units().cend(); ++iter)
-        os << std::setw(7) << std::right << *iter;
-
-    for(auto iter = ninfo.global_imps().cbegin();
-            iter != ninfo.global_imps().cend(); ++iter)
-        os << std::setw(7) << std::right << *iter;
-
-    for(auto iter = ninfo.local_imps().cbegin();
-            iter != ninfo.local_imps().cend(); ++iter)
-        os << std::setw(7) << std::right << *iter;
-
-    for(auto iter = ninfo.coefs().cbegin();
-            iter != ninfo.coefs().cend(); ++iter)
+    for(auto item : ninfo.units())
+    {
+        os << std::setw(7) << std::right << item;
+    }
+    for(auto item : ninfo.global_imps())
+    {
+        os << std::setw(7) << std::right << item;
+    }
+    for(auto item : ninfo.local_imps())
+    {
+        os << std::setw(7) << std::right << item;
+    }
+    for(auto item : ninfo.coefs())
+    {
         os << std::setw(13) << std::right << std::fixed
-           << std::setprecision(4) << *iter;
-
-    for(auto iter = ninfo.kind().cbegin();
-            iter != ninfo.kind().cend(); ++iter)
-        os << " " << *iter;
+           << std::setprecision(4) << item;
+    }
+    for(auto item : ninfo.kind())
+    {
+        os << " " << item;
+    }
 
     return os;
 }
@@ -246,7 +247,7 @@ operator<<(std::basic_ostream<char>& os,
  *  @tparam N_bodies template argument of NinfoElement.
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
- */   
+ */
 template<std::size_t N_bodies, std::size_t N_coefs, typename real_type>
 std::basic_istream<char>&
 operator>>(std::basic_istream<char>& is,
@@ -258,32 +259,30 @@ operator>>(std::basic_istream<char>& is,
 
     iss >> ninfo.header();
     iss >> ninfo.id();
-    for(auto iter = ninfo.units().begin();
-            iter != ninfo.units().end(); ++iter)
-        iss >> *iter;
-
-    for(auto iter = ninfo.global_imps().begin();
-            iter != ninfo.global_imps().end(); ++iter)
-        iss >> *iter;
-
-    for(auto iter = ninfo.local_imps().begin();
-            iter != ninfo.local_imps().end(); ++iter)
-        iss >> *iter;
-
-    for(auto iter = ninfo.coefs().begin();
-            iter != ninfo.coefs().end(); ++iter)
-        iss >> *iter;
-
+    for(auto& item : ninfo.units())
+    {
+        iss >> item;
+    }
+    for(auto& item : ninfo.global_imps())
+    {
+        iss >> item;
+    }
+    for(auto& item : ninfo.local_imps())
+    {
+        iss >> item;
+    }
+    for(auto& item : ninfo.coefs())
+    {
+        iss >> item;
+    }
     while(!iss.eof())
     {
         std::string kind;
         iss >> kind;
         ninfo.kind().push_back(kind);
     }
-
     return is;
 }
 
 }//mill
-
 #endif //COFFEE_MILL_NINFO_BASE
