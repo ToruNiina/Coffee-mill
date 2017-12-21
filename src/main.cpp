@@ -14,7 +14,7 @@ int main(int argc, char **argv)
 
     if(argc < 2)
     {
-        std::cerr << main_usage() << std::endl;
+        std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
     const std::string mode(argv[1]);
@@ -23,12 +23,13 @@ int main(int argc, char **argv)
     {
         try
         {
-            return mill::mode_dcd<mill::Vector<double, 3>>(argc-1, ++argv);
+            return mill::mode_dcd<mill::Vector<double, 3>>(
+                    argc-1, const_cast<const char**>(argv+1));
         }
         catch(std::exception& excpt)
         {
             std::cerr << "error: " << excpt.what() << std::endl;
-            std::cerr << main_usage() << std::endl;
+            std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
     }
@@ -56,14 +57,15 @@ int main(int argc, char **argv)
 //             return 1;
 //         }
 //     }
-//     else if(mode == "help")
-//     {
-//         return mill::mode_help(argc-1, ++argv);
-//     }
+    else if(mode == "help")
+    {
+        return mill::mode_help(
+                    argc-1, const_cast<const char**>(argv+1));
+    }
     else
     {
         std::cerr << "unknown mode: " << mode << '\n';
-        std::cerr << main_usage() << std::endl;
+        std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
 }
