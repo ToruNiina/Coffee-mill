@@ -1,9 +1,9 @@
 #include <mill/math/Vector.hpp>
 #include <iostream>
-#include <mill/src/mode_pdb.hpp>
-#include <mill/src/mode_dcd.hpp>
-#include <mill/src/mode_ninfo.hpp>
-#include <mill/src/mode_help.hpp>
+#include <src/mode_help.hpp>
+#include <src/mode_dcd.hpp>
+// #include <src/mode_pdb.hpp>
+// #include <src/mode_ninfo.hpp>
 
 template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo();
@@ -14,36 +14,12 @@ int main(int argc, char **argv)
 
     if(argc < 2)
     {
-        print_help();
+        std::cerr << main_usage() << std::endl;
         return 1;
     }
     const std::string mode(argv[1]);
 
-    if(mode == "pdb")
-    {
-        try
-        {
-            return mill::mode_pdb<mill::Vector<double, 3>>(argc-1, ++argv);
-        }
-        catch(std::exception& excpt)
-        {
-            std::cerr << "error: " << excpt.what() << std::endl;
-            return 1;
-        }
-    }
-    else if(mode == "ninfo")
-    {
-        try
-        {
-            return mill::mode_ninfo<mill::Vector<double, 3>>(argc-1, ++argv);
-        }
-        catch(std::exception& excpt)
-        {
-            std::cerr << "error: " << excpt.what() << std::endl;
-            return 1;
-        }
-    }
-    else if(mode == "dcd")
+    if(mode == "dcd")
     {
         try
         {
@@ -52,17 +28,42 @@ int main(int argc, char **argv)
         catch(std::exception& excpt)
         {
             std::cerr << "error: " << excpt.what() << std::endl;
+            std::cerr << main_usage() << std::endl;
             return 1;
         }
     }
-    else if(mode == "help")
-    {
-        return mill::mode_help(argc-1, ++argv);
-    }
+//     else if(mode == "pdb")
+//     {
+//         try
+//         {
+//             return mill::mode_pdb<mill::Vector<double, 3>>(argc-1, ++argv);
+//         }
+//         catch(std::exception& excpt)
+//         {
+//             std::cerr << "error: " << excpt.what() << std::endl;
+//             return 1;
+//         }
+//     }
+//     else if(mode == "ninfo")
+//     {
+//         try
+//         {
+//             return mill::mode_ninfo<mill::Vector<double, 3>>(argc-1, ++argv);
+//         }
+//         catch(std::exception& excpt)
+//         {
+//             std::cerr << "error: " << excpt.what() << std::endl;
+//             return 1;
+//         }
+//     }
+//     else if(mode == "help")
+//     {
+//         return mill::mode_help(argc-1, ++argv);
+//     }
     else
     {
         std::cerr << "unknown mode: " << mode << '\n';
-        print_help();
+        std::cerr << main_usage() << std::endl;
         return 1;
     }
 }

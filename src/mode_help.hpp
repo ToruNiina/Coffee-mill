@@ -1,14 +1,14 @@
 #ifndef COFFEE_MILL_HELP_MODE
 #define COFFEE_MILL_HELP_MODE
 #include <iostream>
-#include "mill_pdb.hpp"
-#include "mill_dcd.hpp"
-#include "mill_ninfo.hpp"
+#include <src/mode_dcd_help.hpp>
+// #include <src/mode_pdb.hpp>
+// #include <src/mode_ninfo.hpp>
 
 namespace mill
 {
 
-inline const char* main_usage()
+inline const char* main_usage() noexcept
 {
     return "Usage: mill [mode] [parameters...]\n\n"
            "list of modes\n"
@@ -30,15 +30,16 @@ inline int mode_help(int argument_c, const char **argument_v)
 
     const std::string command(argument_v[1]);
 
-    if(command == "pdb")
-    {
-        return mode_pdb_help(--argument_c, ++argument_v);
-    }
-    else if(command == "ninfo")
-    {
-        return mode_ninfo_help(--argument_c, ++argument_v);
-    }
-    else if(command == "dcd")
+//     if(command == "pdb")
+//     {
+//         return mode_pdb_help(--argument_c, ++argument_v);
+//     }
+//     else if(command == "ninfo")
+//     {
+//         return mode_ninfo_help(--argument_c, ++argument_v);
+//     }
+//     else
+        if(command == "dcd")
     {
         return mode_dcd_help(--argument_c, ++argument_v);
     }
