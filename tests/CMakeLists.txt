@@ -1,9 +1,11 @@
 set(TEST_NAMES
-    test_matrix test_vector test_matrix_vector
-    test_eigen test_dcd test_dcd_extract
+    test_matrix
+    test_vector
+    test_matrix_vector
+    test_eigen
+#     test_dcd
+#     test_dcd_extract
     )
-
-set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_SOURCE_DIR}/bin/)
 
 add_definitions("-O3 -std=c++11")
 
