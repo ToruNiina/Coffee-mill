@@ -2,45 +2,71 @@ Coffee mill
 ====
 
 A command line tool for CafeMol [1] users.
-
 You can also use this as a header-only library to analize the CafeMol data.
+
+## Usage
+
+The command line tool has 3 modes.
+- `dcd` mode
+- `pdb` mode
+- `ninfo` mode
+
+And each mode has its own commands.
+
+To see the explanation of each command, run
+
+```sh
+$ mill help [mode]
+$ mill <mode> <command> help
+```
+
+### DCD
+
+1. superimpose all the snapshots by minimizing RMSD between them
+   - `mill dcd impose traj.dcd`
+   - `mill dcd impose input.toml`
+2. concatenate several dcd files into one
+   - `mill dcd join traj1.dcd traj2.dcd traj3.dcd ...`
+   - `mill dcd join input.toml`
+3. split a .dcd files into pieces; for every N snapshots
+   - `mill dcd split traj.dcd 100`
+4. extract some of the snapshots from a dcd file
+   - `mill dcd extract traj.dcd 100 200`
+   - `mill dcd extract input.toml`
+5. convert dcd file to another format
+   - now in progress...
+
+### PDB
+
+1. print the sequences of chains in pdb file.
+   - now in progress...
+2. rename the residues
+   - now in progress...
+
+### NINFO
+
+1. split ninfo file into one-by-one.
+   - now in progress...
+2. make ninfo file from pdb file
+   - now in progress...
 
 ## Build
 
-`Coffee-mill` depends on the library `TOMLParser` written by ToruNiina.
-Please clone the library and add an include-path to `TOMLParser` first.
+first, download this repo.
 
-then run the following.
+```sh
+$ git clone https://github.com/ToruNiina/Coffee-mill.git --recursive
+```
+
+Coffee-mill uses `cmake` to build.
+
 ```sh
 $ cd build
 $ cmake ..
 $ make
 ```
 
-## Usage
-
-You can use this as a command line tool.
-
-For example,
-
-```sh
-$ mill pdb seq sample.pdb        # read pdb file and extract sequence
-chain A: ATCG                    # chain A is DNA
-chain B: GAVLIFYWSTNQDEKRHMCP    # chain B is Protein
-```
-
-The supported commands are listed below.
-
-| command                        | function                                             |
-|:-------------------------------|:-----------------------------------------------------|
-| mill pdb seq [filename]        | output sequences of the chains included in the file  |
-| mill dcd make-movie [filename] | make movie file from dcd file                        |
-| mill dcd impose [filename]     | impose each snapshots in the trajectory on the initial snapshot|
-| mill ninfo split [filename]    | split all-in-one ninfo file to one-by-one ninfo file |
-
-There are some commands that is not stable yet. Those are not listed now.
-
-## For C++ Developpers
+## For Developpers
 
 See the `mill` directory. For example, when you want to read and/or write
 a dcd file, you can use `DCDData`, `DCDReader` and `DCDWriter` in this way.
