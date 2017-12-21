@@ -4,6 +4,7 @@
 // #include "SuperImpose.hpp"
 #include <src/mode_dcd_join.hpp>
 #include <src/mode_dcd_extract.hpp>
+#include <src/mode_dcd_split.hpp>
 // #include "mill_dcd_msd.hpp"
 // #include "mode_dcd_help.hpp"
 
@@ -31,6 +32,10 @@ int mode_dcd(int argument_c, const char **argument_v)
     else if(command == "extract")
     {
         return mode_dcd_extract<vectorT>(--argument_c, ++argument_v);
+    }
+    else if(command == "split")
+    {
+        return mode_dcd_split<vectorT>(--argument_c, ++argument_v);
     }
 //     else if(command == "make-movie")
 //     {
