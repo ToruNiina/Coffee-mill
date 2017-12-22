@@ -426,11 +426,15 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     int size_of_block(*reinterpret_cast<int*>(csize_of_block1));
 
     if(size_of_block / size_float != nparticle)
+    {
+        std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
+        std::cerr << ", nparticle = " << nparticle << '\n';
         throw std::invalid_argument(
                 "dcd coordinate block size differs from nparticle");
+    }
 
     std::vector<float> coordinate(nparticle);
-    for(std::size_t i(0); i<nparticle; ++i)
+    for(std::size_t i = 0; i < nparticle; ++i)
     {
         char cfloat[size_float];
         is.read(cfloat, size_float);
@@ -440,8 +444,12 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     char csize_of_block_f[size_int];
     is.read(csize_of_block_f, size_int);
     if(size_of_block != *reinterpret_cast<int*>(csize_of_block_f))
+    {
+        std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
+        std::cerr << ", nparticle = " << nparticle << '\n';
         throw std::invalid_argument(
                 "dcd coordinate block has invalid byte-information");
+    }
 
     return coordinate;
 }
