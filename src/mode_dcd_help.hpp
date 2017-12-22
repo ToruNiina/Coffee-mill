@@ -6,7 +6,7 @@
 #include <src/mode_dcd_extract.hpp>
 #include <src/mode_dcd_split.hpp>
 #include <src/mode_dcd_impose.hpp>
-// #include "mode_dcd_convert.hpp"
+#include <src/mode_dcd_convert.hpp>
 
 namespace mill
 {
@@ -61,11 +61,11 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
         const char *cmds[2] = {"split", "help"};
         return mode_dcd_split<mill::Vector<double, 3>>(2, cmds);
     }
-//     else if(command == "convert")
-//     {
-//         const char *cmds[2] = {"convert", "help"};
-//         return mode_dcd_convert(2, cmds);
-//     }
+    else if(command == "convert")
+    {
+        const char *cmds[2] = {"convert", "help"};
+        return mode_dcd_convert(2, cmds);
+    }
     else
     {
         std::cerr << "error: mill dcd help: unknown command : "

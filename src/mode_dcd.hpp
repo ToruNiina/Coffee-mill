@@ -5,8 +5,8 @@
 #include <src/mode_dcd_split.hpp>
 #include <src/mode_dcd_extract.hpp>
 #include <src/mode_dcd_impose.hpp>
+#include <src/mode_dcd_convert.hpp>
 // #include "mill_dcd_msd.hpp"
-// #include "DCDtoMovie.hpp"
 #include <iostream>
 
 namespace mill
@@ -42,11 +42,10 @@ int mode_dcd(int argument_c, const char **argument_v)
     {
         return mode_dcd_impose<vectorT>(--argument_c, ++argument_v);
     }
-//     else if(command == "make-movie")
-//     {
-//         const std::string fname(argument_v[2]);
-//         return dcd_to_movie<vectorT>(fname);
-//     }
+    else if(command == "convert")
+    {
+        return mode_dcd_convert<vectorT>(--argument_c, ++argument_v);
+    }
     else if(command == "help")
     {
         return mode_dcd_help(--argument_c, ++argument_v);
