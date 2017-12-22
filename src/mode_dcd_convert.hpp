@@ -59,7 +59,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             pdbname = std::string(argument_v[3]);
         }
 
-        const std::string outname = fname.substr(fname.size()-4, 4) +
+        const std::string outname = fname.substr(0, fname.size()-4) +
                                     "_converted.pdb";
         std::ofstream ofs(outname);
         if(not ofs.good())
@@ -74,7 +74,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
         PDBWriter<vectorT> writer;
 
         std::ifstream ifs(fname);
-        const auto dcddata = reader.read_header(fname);
+        const auto dcddata = reader.read_header(ifs);
 
         std::vector<PDBAtom<vectorT>> atoms(dcddata.nparticle());
         if(not pdbname.empty()) // reference pdb exists.
