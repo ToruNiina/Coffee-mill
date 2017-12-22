@@ -22,14 +22,14 @@ inline const char* dcd_convert_usage() noexcept
 template<typename vectorT>
 int mode_dcd_convert(int argument_c, const char **argument_v)
 {
-    if(argument_c <= 2)
+    if(argument_c < 2)
     {
         std::cerr << "error: mill dcd convert: too few arguments\n";
         std::cerr << dcd_convert_usage() << std::endl;
         return 1;
     }
 
-    const std::string format(argument_v[1])
+    const std::string format(argument_v[1]);
     if(format == "help")
     {
         std::cerr << dcd_convert_usage() << std::endl;
@@ -43,6 +43,12 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
         return 1;
     }
 
+    if(argument_c < 3)
+    {
+        std::cerr << "error: mill dcd convert: too few arguments\n";
+        std::cerr << dcd_convert_usage() << std::endl;
+        return 1;
+    }
     const std::string fname(argument_v[2]);
 
     if(fname.substr(fname.size()-4, 4) == ".dcd")

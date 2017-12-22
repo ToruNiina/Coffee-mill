@@ -64,7 +64,7 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     else if(command == "convert")
     {
         const char *cmds[2] = {"convert", "help"};
-        return mode_dcd_convert(2, cmds);
+        return mode_dcd_convert<mill::Vector<double, 3>>(2, cmds);
     }
     else
     {
