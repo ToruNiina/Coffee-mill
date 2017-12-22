@@ -34,7 +34,8 @@ $ mill <mode> <command> help
    - `mill dcd extract traj.dcd 100 200`
    - `mill dcd extract input.toml`
 5. convert dcd file to another format
-   - now in progress...
+   - `mill dcd convert pdb traj.dcd`
+   - `mill dcd convert pdb traj.dcd model.pdb`
 
 ### PDB
 
