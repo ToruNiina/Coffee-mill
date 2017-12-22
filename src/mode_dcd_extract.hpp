@@ -12,9 +12,9 @@ inline const char* dcd_extract_usage() noexcept
 {
     return "usage: mill dcd extract [parameters...]\n"
            "    $ mill dcd extract traj.dcd 100 200\n"
-           "    : write 100-th snapshot to 200-th snapshot into a file traj_100to200.dcd.\n"
-           "    : the last (here, 200-th) snapshot will be included. (not omitted)\n"
-           "    : the index starts from 0.\n";
+           "      write 100-th snapshot to 200-th snapshot into a file traj_100to200.dcd.\n"
+           "      the last (here, 200-th) snapshot will be included. (not omitted)\n"
+           "      the index starts from 0.\n";
 }
 
 // argv := arrayof{ "extract", "filename", {rests...} }
