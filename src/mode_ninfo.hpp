@@ -1,7 +1,8 @@
 #ifndef COFFEE_MILL_NINFO_MODE
 #define COFFEE_MILL_NINFO_MODE
-#include <mill/util/scalar_type_of.hpp>
-#include "NinfoSplitter.hpp"
+#include <src/mode_ninfo_help.hpp>
+#include <src/mode_ninfo_split.hpp>
+#include <iostream>
 
 namespace mill
 {
@@ -9,41 +10,24 @@ namespace mill
 template<typename vectorT>
 int mode_ninfo(int argument_c, char** argument_v)
 {
-    using realT = typename scalar_type_of<vectorT>::type;
-
     if(argument_c < 2)
     {
-        throw std::invalid_argument("too few commands");
+        std::cerr << "error: mill pdb: too few arguments\n";
+        mode_ninfo_help(--argument_c, ++argument_v);
+        return 1;
     }
-    const std::string command(argument_v[1]);
 
+    const std::string command(argument_v[1]);
     if(command == "split")
     {
-        const std::string arg2(argument_v[2]);
-        if(arg2.substr(arg2.size()-6, 6) == ".ninfo")
-        {
-            NinfoSplitter<realT> splitter;
-            auto splitted = splitter.split(arg2);
-            splitter.write(splitted, arg2.substr(0, arg2.size()-6));
-            return 0;
-        }
-        else if(arg2.substr(arg2.size()-5, 5) == ".toml")
-        {
-            // read toml file...
-        }
-        else
-        {
-            std::cerr << "usage: mill ninfo split [filename.ninfo] or" << std::endl;
-            std::cerr << "     : mill ninfo split [inputfile.toml]" << std::endl;
-            return 1;
-        }
+        return mode_ninfo_split<vectorT>(--argument_c, ++argument_v);
     }
     else
     {
-        std::cerr << "command not found: " << command << std::endl;
+        std::cerr << "error: mill ninfo: unknown command: " << command << "\n";
+        mode_ninfo_help_usage();
         return 1;
     }
-    return 0;
 }
 
 } // mill
