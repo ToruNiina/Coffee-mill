@@ -191,6 +191,27 @@ enum class NinfoKind
     Unknown,
 };
 
+template<typename charT, typename traitT>
+std::basic_ostream<charT, traitT>&
+operator<<(std::basic_ostream<charT, traitT>& os, const NinfoKind kd)
+{
+    switch(kd)
+    {
+        case NinfoKind::Bond:      os << "bond";      break;
+        case NinfoKind::Angl:      os << "angl";      break;
+        case NinfoKind::Aicg13:    os << "aicg13";    break;
+        case NinfoKind::Dihd:      os << "dihd";      break;
+        case NinfoKind::Aicg14:    os << "aicg14";    break;
+        case NinfoKind::Aicgdih:   os << "aicgdih";   break;
+        case NinfoKind::Contact:   os << "contact";   break;
+        case NinfoKind::BasePair:  os << "basepair";  break;
+        case NinfoKind::BaseStack: os << "basestack"; break;
+        case NinfoKind::Unknown:   os << "unknown";   break;
+    }
+    return os;
+}
+
+
 using NinfoBond      = NinfoElement<2, 4, double>;
 using NinfoAngl      = NinfoElement<3, 4, double>;
 using NinfoAicg13    = NinfoElement<3, 5, double>;

@@ -56,7 +56,7 @@ class NinfoData
     //! find the block. if not found, return this->end().
           iterator find(const key_type key)       {return data_.find(key);}
     const_iterator find(const key_type key) const {return data_.find(key);}
-   
+
     //! access to whole data.
     container_type      & data()       noexcept {return data_;}
     container_type const& data() const noexcept {return data_;}

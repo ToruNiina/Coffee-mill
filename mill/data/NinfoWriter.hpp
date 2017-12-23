@@ -106,7 +106,9 @@ void NinfoWriter<realT>::write(
                 break;
             }
             default:
+            {
                 throw std::logic_error("invalid NinfoKind");
+            }
         }
 
         stream << ">>>>" << std::endl;
