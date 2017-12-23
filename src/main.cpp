@@ -3,7 +3,7 @@
 #include <src/mode_help.hpp>
 #include <src/mode_dcd.hpp>
 #include <src/mode_pdb.hpp>
-// #include <src/mode_ninfo.hpp>
+#include <src/mode_ninfo.hpp>
 
 template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo();
@@ -47,18 +47,19 @@ int main(int argc, char **argv)
             return 1;
         }
     }
-//     else if(mode == "ninfo")
-//     {
-//         try
-//         {
-//             return mill::mode_ninfo<mill::Vector<double, 3>>(argc-1, ++argv);
-//         }
-//         catch(std::exception& excpt)
-//         {
-//             std::cerr << "error: " << excpt.what() << std::endl;
-//             return 1;
-//         }
-//     }
+    else if(mode == "ninfo")
+    {
+        try
+        {
+            return mill::mode_ninfo<mill::Vector<double, 3>>(
+                    argc-1, const_cast<const char**>(argv+1));
+        }
+        catch(std::exception& excpt)
+        {
+            std::cerr << "error: " << excpt.what() << std::endl;
+            return 1;
+        }
+    }
     else if(mode == "help")
     {
         return mill::mode_help(

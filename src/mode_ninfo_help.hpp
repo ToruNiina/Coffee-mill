@@ -31,7 +31,7 @@ inline int mode_ninfo_help(int argument_c, const char **argument_v)
     if(command == "split")
     {
         const char *cmds[2] = {"split", "help"};
-        return mode_ninfo_join<mill::Vector<double, 3>>(2, cmds);
+        return mode_ninfo_split<mill::Vector<double, 3>>(2, cmds);
     }
     else
     {

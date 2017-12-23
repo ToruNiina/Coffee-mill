@@ -3,7 +3,7 @@
 #include <iostream>
 #include <src/mode_dcd_help.hpp>
 #include <src/mode_pdb_help.hpp>
-// #include <src/mode_ninfo.hpp>
+#include <src/mode_ninfo_help.hpp>
 
 namespace mill
 {
@@ -34,10 +34,10 @@ inline int mode_help(int argument_c, const char **argument_v)
     {
         return mode_pdb_help(--argument_c, ++argument_v);
     }
-//     else if(command == "ninfo")
-//     {
-//         return mode_ninfo_help(--argument_c, ++argument_v);
-//     }
+    else if(command == "ninfo")
+    {
+        return mode_ninfo_help(--argument_c, ++argument_v);
+    }
     else if(command == "dcd")
     {
         return mode_dcd_help(--argument_c, ++argument_v);
