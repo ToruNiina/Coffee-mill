@@ -177,18 +177,18 @@ class NinfoElement : public NinfoBase<realT>
 };
 
 //! NinfoKind. Bond, Angl, ...
-enum class NinfoKind
+enum class NinfoKind : int
 {
-    Bond,
-    Angl,
-    Aicg13,
-    Dihd,
-    Aicg14,
-    Aicgdih,
-    Contact,
-    BasePair,
-    BaseStack,
-    Unknown,
+    Bond      = 1,
+    Angl      = 2,
+    Aicg13    = 3,
+    Dihd      = 4,
+    Aicg14    = 5,
+    Aicgdih   = 6,
+    Contact   = 7,
+    BasePair  = 8,
+    BaseStack = 9,
+    Unknown   = 0,
 };
 
 template<typename charT, typename traitT>

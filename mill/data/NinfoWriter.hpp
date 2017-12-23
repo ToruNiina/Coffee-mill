@@ -87,6 +87,12 @@ void NinfoWriter<realT>::write(
                 this->write_block<NinfoAicg14>(stream, iter->second);
                 break;
             }
+            case NinfoKind::Aicgdih:
+            {
+                stream << NinfoData<realT>::aicgdih << std::endl;
+                this->write_block<NinfoAicgdih>(stream, iter->second);
+                break;
+            }
             case NinfoKind::Contact:
             {
                 stream << NinfoData<realT>::contact << std::endl;
@@ -107,7 +113,8 @@ void NinfoWriter<realT>::write(
             }
             default:
             {
-                throw std::logic_error("invalid NinfoKind");
+                throw std::logic_error("invalid NinfoKind : " +
+                        std::to_string(static_cast<int>(iter->first)));
             }
         }
 
