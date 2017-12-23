@@ -69,8 +69,6 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                             std::vector<std::shared_ptr<NinfoBase<realT>>>{});
                 }
 
-                std::cerr << "ninfo unit " << units.first << "-" << units.second;
-                std::cerr << ", kind " << kind << '\n';
                 // insert data to return value.
                 splitted[units][kind].push_back(line);
             }
