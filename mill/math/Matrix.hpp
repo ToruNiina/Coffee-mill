@@ -21,30 +21,55 @@ class Matrix
     Matrix() : values_{{}}{}
     ~Matrix() = default;
 
+    Matrix(Matrix const& mat) = default;
+    Matrix(Matrix&&      mat) = default;
+    Matrix& operator=(Matrix const& mat) = default;
+    Matrix& operator=(Matrix&&      mat) = default;
+
     template<typename ... T_args, class = typename std::enable_if<
         (sizeof...(T_args) == number_of_element) &&
         is_all<std::is_convertible, realT, T_args...>::value>::type>
     Matrix(T_args ... args) : values_{{static_cast<real_type>(args)...}}{}
 
-    Matrix(const Matrix& mat) = default;
-    Matrix& operator=(const Matrix& mat) = default;
+    Matrix(std::initializer_list<std::initializer_list<real_type>> il)
+    {
+        assert(il.size() == dim_row);
+        std::size_t i=0;
+        for(auto&& r : il)
+        {
+            assert(r.size() == dim_col);
+            for(auto&& e : r)
+            {
+                values_[i] = e;
+                ++i;
+            }
+        }
+    }
 
     Matrix& operator+=(const Matrix& mat);
     Matrix& operator-=(const Matrix& mat);
-    Matrix& operator*=(const scalar_type& scl);
-    Matrix& operator/=(const scalar_type& scl);
+    Matrix& operator*=(const scalar_type scl);
+    Matrix& operator/=(const scalar_type scl);
 
-    scalar_type  at(const std::size_t i, const std::size_t j) const;
-    scalar_type& at(const std::size_t i, const std::size_t j);
-    scalar_type  operator()(const std::size_t i, const std::size_t j) const;
-    scalar_type& operator()(const std::size_t i, const std::size_t j);
+    scalar_type  at(const std::size_t i, const std::size_t j) const
+    {return this->values_.at(i*dim_col + j);}
+    scalar_type& at(const std::size_t i, const std::size_t j)
+    {return this->values_.at(i*dim_col + j);}
+
+    scalar_type  operator()(const std::size_t i, const std::size_t j) const noexcept
+    {return this->values_[i*dim_col + j];}
+    scalar_type& operator()(const std::size_t i, const std::size_t j)       noexcept
+    {return this->values_[i*dim_col + j];}
 
     scalar_type  at(const std::size_t i) const {return values_.at(i);}
     scalar_type& at(const std::size_t i)       {return values_.at(i);}
-    scalar_type  operator[](const std::size_t i) const {return values_[i];}
-    scalar_type& operator[](const std::size_t i)       {return values_[i];}
+    scalar_type  operator[](const std::size_t i) const noexcept {return values_[i];}
+    scalar_type& operator[](const std::size_t i)       noexcept {return values_[i];}
 
   private:
+    /* {a11, a12, ..., a1C, *
+     *  a21, a22, ..., a2C, *
+     *  aR1, aR2, ..., aRC} */
     container_type values_;
 };
 
@@ -53,7 +78,9 @@ Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator+=(const Matrix<realT, R, C>& mat)
 {
     for(std::size_t i=0; i<number_of_element; ++i)
+    {
         this->values_[i] += mat[i];
+    }
     return *this;
 }
 
@@ -62,25 +89,31 @@ Matrix<realT, R, C>&
 Matrix<realT, R, C>::operator-=(const Matrix<realT, R, C>& mat)
 {
     for(std::size_t i=0; i<number_of_element; ++i)
+    {
         this->values_[i] -= mat[i];
+    }
     return *this;
 }
 
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator*=(const scalar_type& s)
+Matrix<realT, R, C>::operator*=(const scalar_type s)
 {
     for(std::size_t i=0; i<number_of_element; ++i)
+    {
         this->values_[i] *= s;
+    }
     return *this;
 }
 
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator/=(const scalar_type& s)
+Matrix<realT, R, C>::operator/=(const scalar_type s)
 {
     for(std::size_t i=0; i<number_of_element; ++i)
+    {
         this->values_[i] /= s;
+    }
     return *this;
 }
 
@@ -90,7 +123,9 @@ operator+(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
+    {
         retval[i] = lhs[i] + rhs[i];
+    }
     return retval;
 }
 
@@ -100,7 +135,9 @@ operator-(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
+    {
         retval[i] = lhs[i] - rhs[i];
+    }
     return retval;
 }
 
@@ -110,7 +147,9 @@ operator*(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
+    {
         retval[i] = lhs[i] * rhs;
+    }
     return retval;
 }
 
@@ -120,7 +159,9 @@ operator*(const realT lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
+    {
         retval[i] = lhs * rhs[i];
+    }
     return retval;
 }
 
@@ -130,7 +171,9 @@ operator/(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
+    {
         retval[i] = lhs[i] / rhs;
+    }
     return retval;
 }
 
@@ -140,38 +183,16 @@ operator*(const Matrix<realT, L, M>& lhs, const Matrix<realT, M, N>& rhs)
 {
     Matrix<realT, L, N> retval;
     for(std::size_t i=0; i < L; ++i)
+    {
         for(std::size_t j=0; j < N; ++j)
+        {
             for(std::size_t k=0; k < M; ++k)
+            {
                 retval(i, j) += lhs(i, k) * rhs(k, j);
+            }
+        }
+    }
     return retval;
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-typename Matrix<realT, R, C>::scalar_type
-Matrix<realT, R, C>::at(const std::size_t i, const std::size_t j) const
-{
-    return this->values_.at(i * C + j);
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-typename Matrix<realT, R, C>::scalar_type&
-Matrix<realT, R, C>::at(const std::size_t i, const std::size_t j)
-{
-    return this->values_.at(i * C + j);
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-typename Matrix<realT, R, C>::scalar_type
-Matrix<realT, R, C>::operator()(const std::size_t i, const std::size_t j) const
-{
-    return this->values_[i * C + j];
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-typename Matrix<realT, R, C>::scalar_type&
-Matrix<realT, R, C>::operator()(const std::size_t i, const std::size_t j)
-{
-    return this->values_[i * C + j];
 }
 
 template<typename realT, std::size_t R, std::size_t C>
@@ -179,15 +200,19 @@ Matrix<realT, C, R> transpose(const Matrix<realT, R, C>& mat)
 {
     Matrix<realT, C, R> retval;
     for(std::size_t i=0; i<R; ++i)
+    {
         for(std::size_t j=0; j<C; ++j)
+        {
             retval(j, i) = mat(i, j);
+        }
+    }
     return retval;
 }
 
 // determinant and inverse is not so efficient.
 
 template<typename realT>
-inline realT determinant(const Matrix<realT, 3, 3>& mat)
+inline realT determinant(const Matrix<realT, 3, 3>& mat) noexcept
 {
     return mat(0,0) * mat(1,1) * mat(2,2) +
            mat(1,0) * mat(2,1) * mat(0,2) +
@@ -198,7 +223,7 @@ inline realT determinant(const Matrix<realT, 3, 3>& mat)
 }
 
 template<typename realT>
-Matrix<realT, 3, 3> inverse(const Matrix<realT, 3, 3>& mat)
+Matrix<realT, 3, 3> inverse(const Matrix<realT, 3, 3>& mat) noexcept
 {
     const auto det_inv = 1e0 / determinant(mat);
 
@@ -216,7 +241,6 @@ Matrix<realT, 3, 3> inverse(const Matrix<realT, 3, 3>& mat)
     inv(2,1) = det_inv * (mat(2,0) * mat(0,1) - mat(0,0) * mat(2,1));
     return inv;
 }
-
 
 } // mill
 #endif /* COFFEE_MILL_MATRIX */

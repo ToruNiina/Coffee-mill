@@ -13,6 +13,53 @@
 constexpr static unsigned int seed = 32479327;
 constexpr static std::size_t N = 10000;
 
+BOOST_AUTO_TEST_CASE(construct_matrix_3x3)
+{
+    {
+        mill::Matrix<double, 3, 3> mat;
+        BOOST_CHECK_EQUAL((mat(0, 0)), 0);
+        BOOST_CHECK_EQUAL((mat(0, 1)), 0);
+        BOOST_CHECK_EQUAL((mat(0, 2)), 0);
+        BOOST_CHECK_EQUAL((mat(1, 0)), 0);
+        BOOST_CHECK_EQUAL((mat(1, 1)), 0);
+        BOOST_CHECK_EQUAL((mat(1, 2)), 0);
+        BOOST_CHECK_EQUAL((mat(2, 0)), 0);
+        BOOST_CHECK_EQUAL((mat(2, 1)), 0);
+        BOOST_CHECK_EQUAL((mat(2, 2)), 0);
+    }
+
+    {
+        mill::Matrix<double, 3, 3> mat(1, 2, 3, 4, 5, 6, 7, 8, 9);
+        BOOST_CHECK_EQUAL((mat(0, 0)), 1);
+        BOOST_CHECK_EQUAL((mat(0, 1)), 2);
+        BOOST_CHECK_EQUAL((mat(0, 2)), 3);
+        BOOST_CHECK_EQUAL((mat(1, 0)), 4);
+        BOOST_CHECK_EQUAL((mat(1, 1)), 5);
+        BOOST_CHECK_EQUAL((mat(1, 2)), 6);
+        BOOST_CHECK_EQUAL((mat(2, 0)), 7);
+        BOOST_CHECK_EQUAL((mat(2, 1)), 8);
+        BOOST_CHECK_EQUAL((mat(2, 2)), 9);
+    }
+
+    {
+        mill::Matrix<double, 3, 3> mat = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+        };
+        BOOST_CHECK_EQUAL((mat(0, 0)), 1);
+        BOOST_CHECK_EQUAL((mat(0, 1)), 2);
+        BOOST_CHECK_EQUAL((mat(0, 2)), 3);
+        BOOST_CHECK_EQUAL((mat(1, 0)), 4);
+        BOOST_CHECK_EQUAL((mat(1, 1)), 5);
+        BOOST_CHECK_EQUAL((mat(1, 2)), 6);
+        BOOST_CHECK_EQUAL((mat(2, 0)), 7);
+        BOOST_CHECK_EQUAL((mat(2, 1)), 8);
+        BOOST_CHECK_EQUAL((mat(2, 2)), 9);
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(add_matrix_3x3)
 {
     std::mt19937 mt(seed);
