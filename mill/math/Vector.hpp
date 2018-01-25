@@ -32,8 +32,8 @@ template<typename coordT>
 inline typename scalar_type_of<coordT>::type
 scalar_triple_product(const coordT& lhs, const coordT& mid, const coordT& rhs)
 {
-    return (lhs[1] * mid[2] - lhs[2] * mid[1]) * rhs[0] + 
-           (lhs[2] * mid[0] - lhs[0] * mid[2]) * rhs[1] + 
+    return (lhs[1] * mid[2] - lhs[2] * mid[1]) * rhs[0] +
+           (lhs[2] * mid[0] - lhs[0] * mid[2]) * rhs[1] +
            (lhs[0] * mid[1] - lhs[1] * mid[0]) * rhs[2];
 }
 
@@ -49,6 +49,13 @@ inline typename scalar_type_of<coordT>::type
 length(const coordT& lhs)
 {
     return std::sqrt(length_sq(lhs));
+}
+
+template<typename coordT>
+inline typename scalar_type_of<coordT>::type
+regularize(const coordT& v)
+{
+    return v / length(v);
 }
 
 template<typename coordT>
