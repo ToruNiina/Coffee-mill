@@ -9,7 +9,12 @@ namespace mill
 inline const char* dcd_calc_theta_usage() noexcept
 {
     return "usage: mill dcd calc_theta [parameters...]\n"
-           "    $ mill dcd calc_theta input.toml\n";
+           "    $ mill dcd calc_theta input.toml\n"
+           "sample input file is like this.\n"
+           "input   = \"traj.dcd\"\n"
+           "output  = \"analyzed.dat\"\n"
+           "vector1 = [[1, 2], [3]] # vector from (the center of 1 and 2) to (3).\n"
+           "vector2 = [[4],    [5]] # vector from 4 to 5.\n";
 }
 
 // argv := arrayof{ "calc_theta", "filename", {rests...} }
@@ -36,8 +41,10 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
         const auto input  = toml::get<std::string>(data.at("input"));
         const auto output = toml::get<std::string>(data.at("output"));
 
-        const auto vidx1  = toml::get<std::array<std::size_t, 2>>(data.at("vector1"));
-        const auto vidx2  = toml::get<std::array<std::size_t, 2>>(data.at("vector2"));
+        const auto vidx1 =
+            toml::get<std::array<std::vector<std::size_t>, 2>>(data.at("vector1"));
+        const auto vidx2 =
+            toml::get<std::array<std::vector<std::size_t>, 2>>(data.at("vector2"));
 
         std::ofstream ofs(output);
         if(!ofs.good())
@@ -51,8 +58,37 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
         const auto dcdtraj = reader.read(input);
         for(const auto& snap : dcdtraj)
         {
-            const vectorT v1 = snap.at(vidx1[1]) - snap.at(vidx1[0]);
-            const vectorT v2 = snap.at(vidx2[1]) - snap.at(vidx2[0]);
+            vectorT v1_from(0., 0., 0.);
+            for(const auto idx : vidx1[0])
+            {
+                v1_from += snap.at(idx);
+            }
+            v1_from /= vidx1[0].size();
+
+            vectorT v1_to(0., 0., 0.);
+            for(const auto idx : vidx1[1])
+            {
+                v1_to += snap.at(idx);
+            }
+            v1_to /= vidx1[1].size();
+
+            vectorT v2_from(0., 0., 0.);
+            for(const auto idx : vidx2[0])
+            {
+                v2_from += snap.at(idx);
+            }
+            v2_from /= vidx2[0].size();
+
+            vectorT v2_to(0., 0., 0.);
+            for(const auto idx : vidx2[1])
+            {
+                v2_to += snap.at(idx);
+            }
+            v2_to /= vidx2[1].size();
+
+
+            const vectorT v1 = v1_to - v1_from;
+            const vectorT v2 = v2_to - v2_from;
 
             const vectorT v1_n = v1 / length(v1);
             const vectorT v2_n = v2 / length(v2);
