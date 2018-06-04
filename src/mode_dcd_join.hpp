@@ -11,16 +11,21 @@ namespace mill
 inline const char* dcd_join_usage() noexcept
 {
     return "usage: mill dcd join [parameters...]\n"
-           "    $ mill dcd join traj.dcd traj1.dcd traj2.dcd\n"
-           "    : concatenate traj.dcd, traj1.dcd and traj2.dcd into traj1_joined.dcd\n"
-           "    $ mill dcd join input.toml\n"
-           "    : specify path/to/dcdfile and output filename\n\n"
-           "    # example.toml:\n"
-           "    inputs = [\"data/traj1.dcd\", \"data/traj2.dcd\"]\n"
-           "    output = \"data/traj.dcd\"\n"
-           "    include_initial = true # by default, it's true\n"
-           "    # if include_initial is false, this command removes initial snapshot from successive files.\n"
-           "    # it is for the case if the last snapshot of a file and the first snapshot of the next file is same.\n";
+           "  $ mill dcd join traj.dcd traj1.dcd traj2.dcd\n"
+           "    just concatenate traj.dcd, traj1.dcd and traj2.dcd into traj1_joined.dcd\n"
+           "  $ mill dcd join input.toml\n"
+           "    specify path/to/dcdfile and output filename as an input file\n"
+           "\n"
+           "```toml\n"
+           "inputs = [\n"
+           "\"data/traj1.dcd\",\n"
+           "\"data/traj2.dcd\",\n"
+           "]\n"
+           "output = \"data/traj.dcd\"\n"
+           "include_initial = true # by default, it's true\n"
+           "# if include_initial is false, this command removes initial snapshot from successive files.\n"
+           "# it is for the case if the last snapshot of a file and the first snapshot of the next file is same.\n"
+           "```\n";
 }
 
 //! argv = {"join", {args...}}
