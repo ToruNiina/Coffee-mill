@@ -9,7 +9,7 @@
 
 #ifndef COFFEE_MILL_XYZ_READER
 #define COFFEE_MILL_XYZ_READER
-#include <mill/util/scalar_type_of.hpp>
+#include <mill/data/XYZData.hpp>
 #include <memory>
 #include <utility>
 #include <iostream>
@@ -31,155 +31,70 @@ class XYZReader
   public:
     using vector_type     = vectorT;
     using position_type   = vector_type;
-    using real_type       = typename scalar_type_of<vector_type>::type;
-    using snapshot_type       = std::vector<position_type>;
-    using trajectory_type     = std::vector<snapshot_type>;
-    using xyz_snapshot_type   = std::vector<std::pair<std::string, position_type>>;
-    using xyz_trajectory_type = std::vector<xyz_trajectory_type>;
+    using frame_type      = XYZFrame<position_type>;
+    using trajectory_type = std::vector<frame_type>;
 
   public:
 
-    DCDReader()  = default;
-    ~DCDReader() = default;
+    XYZReader(const std::string& fname): xyz_(fname)
+    {
+        if(!xyz_.good())
+        {
+            throw std::runtime_error("XYZReader: file open error: " + fname);
+        }
+    }
+    ~XYZReader() = default;
 
-    xyz_trajectory_type read(const std::string& fname);
-    xyz_trajectory_type read(std::istream& is);
+    trajectory_type read();
+    snapshot_type   read_frame();
 
-    trajectory_type read_traj(const std::string& fname);
-    trajectory_type read_traj(std::istream& is);
+    bool is_eof() const noexcept {return xyz_.eof();}
 
-//     snapshot_type read_snapshot(const std::string& fname, const std::size_t i);
-    xyz_snapshot_type read_xyz_snapshot(std::istream& is);
-    snapshot_type     read_snapshot(std::istream& is);
+  private:
+    std::ifstream xyz_;
 };
 
-template<typename vectorT>
-typename XYZReader<vectorT>::xyz_trajectory_type
-XYZReader<vectorT>::read(const std::string& fname)
-{
-    std::ifstream ifs(fname);
-    if(not ifs.good())
-        throw std::runtime_error("file open error: " + fname);
-
-    xyz_trajectory_type traj;
-    while(not ifs.eof())
-    {
-        traj.emplace_back(read_xyz_snapshot(ifs));
-    }
-
-    return traj;
-}
-
-template<typename vectorT>
-typename XYZReader<vectorT>::trajectory_type
-XYZReader<vectorT>::read(const std::string& fname)
-{
-    std::ifstream ifs(fname);
-    if(not ifs.good())
-        throw std::runtime_error("file open error: " + fname);
-
-    trajectory_type traj;
-    while(not ifs.eof())
-    {
-        traj.emplace_back(read_snapshot(ifs));
-    }
-
-    return traj;
-}
-
-template<typename vectorT>
-typename XYZReader<vectorT>::xyz_trajectory_type
-XYZReader<vectorT>::read(std::istream& is)
-{
-    xyz_trajectory_type traj;
-    while(not is.eof())
-    {
-        traj.emplace_back(read_xyz_snapshot(is));
-    }
-    return traj;
-}
-
-template<typename vectorT>
-typename XYZReader<vectorT>::trajectory_type
-XYZReader<vectorT>::read_traj(std::istream& is)
+template<typename vecT>
+typename XYZReader<vecT>::trajectory_type XYZReader<vecT>::read()
 {
     trajectory_type traj;
-    while(not is.eof())
+    while(!this->xyz_.eof())
     {
-        traj.emplace_back(read_snapshot(is));
+        traj.push_back(this->read_frame());
     }
     return traj;
 }
 
-template<typename vectorT>
-typename XYZReader<vectorT>::xyz_snapshot_type
-XYZReader<vectorT>::read_xyz_snapshot(std::istream& is)
+template<typename vecT>
+typename XYZReader<vecT>::frame_type XYZReader<vecT>::read_frame()
 {
-    std::string num, comment;
-    std::getline(is, num);
-    std::getline(is, comment);
-    std::size_t N;
+    std::string line;
+    std::getline(this->xyz_, line);
+    std::size_t N = 0;
     try
     {
-        if(num.empty) throw std::excpetion;
-        N = std::stoi(num);
+        N = std::stoull(line);
     }
-    catch(std::exception& except)
+    catch(...)
     {
-        throw std::runtime_error("invalid XYZ file format");
+        throw std::runtime_error("XYZReader::read_frame: expected number, "
+                "but get " + line);
     }
+    frame_type frame;
+    std::getline(this->xyz_, frame.comment);
+    frame.particles.reserve(N);
 
-    std::string line;
-    snapshot_type snapshot(N);
     for(std::size_t i=0; i<N; ++i)
     {
-        if(not is.good()) throw std::runtime_error("invalid xyz file");
-
-        std::getline(is, line);
+        std::getline(this->xyz_, line);
         std::istringstream iss(line);
-        std::string header;
-        real_type x, y, z;
-        iss >> header >> x >> y >> z;
-        snapshot.at(i) = std::make_pair(header, position_type(x, y, z));
+        std::string atom;
+        double x, y, z;
+        iss >> atom >> x >> y >> z;
+        frame.particles.emplace_back(atom, vector_type(x, y, z));
     }
-
-    return snapshot;
-}
-
-template<typename vectorT>
-typename XYZReader<vectorT>::snapshot_type
-XYZReader<vectorT>::read_snapshot(std::istream& is)
-{
-    std::string num, comment;
-    std::getline(is, num);
-    std::getline(is, comment);
-    std::size_t N;
-    try
-    {
-        if(num.empty) throw std::excpetion;
-        N = std::stoi(num);
-    }
-    catch(std::exception& except)
-    {
-        throw std::runtime_error("invalid XYZ file format");
-    }
-
-    std::string line;
-    snapshot_type snapshot(N);
-    for(std::size_t i=0; i<N; ++i)
-    {
-        if(not is.good()) throw std::runtime_error("invalid xyz file");
-
-        std::getline(is, line);
-        std::istringstream iss(line);
-        std::string header;
-        real_type x, y, z;
-        iss >> header >> x >> y >> z;
-        snapshot.at(i) = position_type(x, y, z);
-    }
-
-    return snapshot;
+    return frame;
 }
 
 }// mill
-#endif //COFFEE_MILL_DCD_READER
+#endif //COFFEE_MILL_XYZ_READER
