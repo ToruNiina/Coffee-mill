@@ -8,6 +8,7 @@
 #include <src/mode_dcd_convert.hpp>
 #include <src/mode_dcd_calc_dist.hpp>
 #include <src/mode_dcd_calc_theta.hpp>
+#include <src/mode_dcd_info.hpp>
 // #include "mill_dcd_msd.hpp"
 #include <iostream>
 
@@ -55,6 +56,10 @@ int mode_dcd(int argument_c, const char **argument_v)
     else if(command == "calc_dist")
     {
         return mode_dcd_calc_dist<vectorT>(--argument_c, ++argument_v);
+    }
+    else if(command == "info")
+    {
+        return mode_dcd_info<vectorT>(--argument_c, ++argument_v);
     }
     else if(command == "help")
     {

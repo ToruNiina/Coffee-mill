@@ -7,6 +7,7 @@
 #include <src/mode_dcd_split.hpp>
 #include <src/mode_dcd_impose.hpp>
 #include <src/mode_dcd_convert.hpp>
+#include <src/mode_dcd_info.hpp>
 
 namespace mill
 {
@@ -25,6 +26,8 @@ inline const char* mode_dcd_help_usage() noexcept
            "      : extract some of the snapshots from a dcd file\n"
            "    - convert\n"
            "      : convert a dcd file into another format\n"
+           "    - info\n"
+           "      : dump header information of dcd file\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -65,6 +68,11 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     {
         const char *cmds[2] = {"convert", "help"};
         return mode_dcd_convert<mill::Vector<double, 3>>(2, cmds);
+    }
+    else if(command == "info")
+    {
+        const char *cmds[2] = {"info", "help"};
+        return mode_dcd_info<mill::Vector<double, 3>>(2, cmds);
     }
     else
     {
