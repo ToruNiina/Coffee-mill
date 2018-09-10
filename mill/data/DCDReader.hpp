@@ -100,36 +100,7 @@ DCDReader<T>::read(std::istream& is)
     std::cerr << "Info   : DCD file reading start" << std::endl;
 #endif
 
-    is.seekg(0, is.end);
-    const std::size_t file_size = is.tellg();
-    is.seekg(0, is.beg);
-
     data_type data = read_header(is);
-
-    // if file size is incorrect, warn and redefine the number of snapshot
-    if(!validate_filesize(data, file_size))
-    {
-        std::cerr << "Warning: filesize is not correct! total filesize is "
-                  << file_size << " [byte]" << std::endl;
-        std::cerr << "       : but file says there are " << data.nset()
-                  << " snapshots. number of containing particles is "
-                  << data.nparticle() <<std::endl;
-        std::cerr << "       : header block 1 size : " << header1_size << std::endl;
-        std::cerr << "       : header block 2 size : " << header2_size << std::endl;
-        std::cerr << "       : header block 3 size : " << header3_size << std::endl;
-        std::cerr << "       : so this file must have "
-                  << (header1_size + header2_size + header3_size +
-                     snapshot_size * data.nset()) << " bytes." << std::endl;
-
-        if((file_size - header1_size - header2_size - header3_size)
-                % snapshot_size != 0)
-            std::cerr << "       : probably the last snapshot is imcomplete." << std::endl;
-
-        data.nset() =
-            (file_size - header1_size - header2_size - header3_size)
-            / snapshot_size;
-        std::cerr << "       : guess snapshot size as " << data.nset() << std::endl;
-    }
 
     read_trajectory(is, data);
 
@@ -154,10 +125,39 @@ template <typename T>
 typename DCDReader<T>::data_type
 DCDReader<T>::read_header(std::istream& is)
 {
+    is.seekg(0, is.end);
+    const std::size_t file_size = is.tellg();
+    is.seekg(0, is.beg);
+
     data_type dat;
     this->read_header_block1(is, dat);
     this->read_header_block2(is, dat);
     this->read_header_block3(is, dat);
+
+    // if file size is incorrect, warn and redefine the number of snapshot
+    if(!validate_filesize(dat, file_size))
+    {
+        std::cerr << "Warning: filesize is not correct! total filesize is "
+                  << file_size << " [byte]" << std::endl;
+        std::cerr << "       : but file says there are " << dat.nset()
+                  << " snapshots. number of containing particles is "
+                  << dat.nparticle() <<std::endl;
+        std::cerr << "       : header block 1 size : " << header1_size << std::endl;
+        std::cerr << "       : header block 2 size : " << header2_size << std::endl;
+        std::cerr << "       : header block 3 size : " << header3_size << std::endl;
+        std::cerr << "       : so this file must have "
+                  << (header1_size + header2_size + header3_size +
+                     snapshot_size * dat.nset()) << " bytes." << std::endl;
+
+        if((file_size - header1_size - header2_size - header3_size)
+                % snapshot_size != 0)
+            std::cerr << "       : probably the last snapshot is imcomplete." << std::endl;
+
+        dat.nset() =
+            (file_size - header1_size - header2_size - header3_size)
+            / snapshot_size;
+        std::cerr << "       : guess snapshot size as " << dat.nset() << std::endl;
+    }
     return dat;
 }
 
