@@ -32,6 +32,7 @@ class XYZReader
     using vector_type     = vectorT;
     using position_type   = vector_type;
     using frame_type      = XYZFrame<position_type>;
+    using snapshot_type   = frame_type;
     using trajectory_type = std::vector<frame_type>;
 
   public:
@@ -61,6 +62,7 @@ typename XYZReader<vecT>::trajectory_type XYZReader<vecT>::read()
     while(!this->xyz_.eof())
     {
         traj.push_back(this->read_frame());
+        this->xyz_.peek();
     }
     return traj;
 }
