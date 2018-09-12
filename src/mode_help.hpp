@@ -4,6 +4,7 @@
 #include <src/mode_dcd_help.hpp>
 #include <src/mode_pdb_help.hpp>
 #include <src/mode_ninfo_help.hpp>
+#include <src/mode_calc_help.hpp>
 
 namespace mill
 {
@@ -15,6 +16,7 @@ inline const char* main_usage() noexcept
            "\t- pdb\n"
            "\t- dcd\n"
            "\t- ninfo\n"
+           "\t- calc\n"
            "\t- help\n";
 }
 
@@ -41,6 +43,10 @@ inline int mode_help(int argument_c, const char **argument_v)
     else if(command == "dcd")
     {
         return mode_dcd_help(--argument_c, ++argument_v);
+    }
+    else if(command == "calc")
+    {
+        return mode_calc_help(--argument_c, ++argument_v);
     }
     else
     {
