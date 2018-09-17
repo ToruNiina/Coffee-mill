@@ -12,16 +12,15 @@ namespace mill
 
 inline const char* mode_calc_rmsd_usage() noexcept
 {
-    return "usage: mill calc rmsd <reference file> <target file>\n"
-           "    reference file must be pdb or xyz format.\n"
-           "    target file must be one of dcd or xyz format.\n";
+    return "usage: mill calc rmsd [files...]\n"
+           "    files can be a pdb|xyz|dcd file or a toml file.\n";
 }
 
 //! argv = {"impose", {args...}}
 template<typename vectorT>
 int mode_calc_rmsd(int argument_c, const char** argument_v)
 {
-    if(argument_c < 2)
+    if(argument_c < 3)
     {
         std::cerr << "error: mill calc rmsd: too few arguments\n";
         std::cerr << mode_calc_rmsd_usage() << std::endl;
@@ -71,16 +70,17 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         return 1;
     }
 
+    const std::string refname(argument_v[2]);
     std::vector<vectorT> ref;
 
-    if(fname.substr(fname.size() - 4, 4) == ".pdb")
+    if(refname.substr(refname.size() - 4, 4) == ".pdb")
     {
         std::cerr << "error: mill calc rmsd: sorry, pdb is now implementing!\n";
         return 1;
     }
-    else if(fname.substr(fname.size() - 4, 4) == ".xyz")
+    else if(refname.substr(refname.size() - 4, 4) == ".xyz")
     {
-        XYZReader<vectorT> reader(fname);
+        XYZReader<vectorT> reader(refname);
         const auto snapshot = reader.read_frame().particles;
 
         std::vector<vectorT> ss;
@@ -91,16 +91,20 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     else
     {
         std::cerr << "error: mill calc rmsd: invalid argument : "
-                  << fname << '\n';
+                  << refname << '\n';
         std::cerr << mode_calc_rmsd_usage() << std::endl;
         return 1;
     }
+
+    BestFit<typename scalar_type_of<vectorT>::type> bestfit;
+    bestfit.set_reference(ref);
 
     std::ofstream ofs("mill_rmsd.dat");
     ofs << "#t rmsd\n";
     for(std::size_t i=0; i<traj.size(); ++i)
     {
-        ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
+        ofs << i << ' ' << rmsd(ref, bestfit.fit(traj[i])) << '\n';
+//         ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
     }
     std::cerr << "done.\n";
 
