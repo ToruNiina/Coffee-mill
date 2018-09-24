@@ -55,6 +55,7 @@ class BestFit
 
   private:
 
+    vector3_type   center_;
     structure_type reference_; //!< optional;
 };
 
@@ -90,7 +91,7 @@ BestFit<sclT>::fit(const structure_type& str) const
     auto R = this->make_rotational_matrix(target, this->reference_);
     for(auto iter = target.begin(); iter != target.end(); ++iter)
     {
-        const vector3_type temp = R * (*iter);
+        const vector3_type temp = R * (*iter) + this->center_;
         *iter = temp;
     }
 
@@ -269,6 +270,7 @@ template<typename sclT>
 void BestFit<sclT>::set_reference(const structure_type& ref)
 {
     this->reference_ = ref;
+    this->center_    = this->zeroing_vector(ref);
     this->move_to_center(this->reference_);
     return;
 }
