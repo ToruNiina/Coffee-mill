@@ -38,13 +38,11 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
     if(fname.substr(fname.size()-5, 5) == ".toml")
     {
         const auto data   = toml::parse(fname);
-        const auto input  = toml::get<std::string>(data.at("input"));
-        const auto output = toml::get<std::string>(data.at("output"));
+        const auto input  = toml::find<std::string>(data, "input");
+        const auto output = toml::find<std::string>(data, "output");
 
-        const auto vidx1 =
-            toml::get<std::array<std::vector<std::size_t>, 2>>(data.at("vector1"));
-        const auto vidx2 =
-            toml::get<std::array<std::vector<std::size_t>, 2>>(data.at("vector2"));
+        const auto vidx1 = toml::find<std::array<std::vector<std::size_t>, 2>>(data, "vector1");
+        const auto vidx2 = toml::find<std::array<std::vector<std::size_t>, 2>>(data, "vector2");
 
         std::ofstream ofs(output);
         if(!ofs.good())

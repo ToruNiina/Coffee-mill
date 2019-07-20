@@ -104,10 +104,10 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
     {
         const auto data = toml::parse(fname);
 
-        const std::string input    = toml::get<std::string>(data.at("input"));
-        const std::string output   = toml::get<std::string>(data.at("output"));
-        const auto except_particle = toml::get<
-            std::vector<std::array<std::int64_t, 2>>>(data.at("except"));
+        const auto input    = toml::find<std::string>(data, "input");
+        const auto output   = toml::find<std::string>(data, "output");
+        const auto except_particle = toml::find<
+            std::vector<std::array<std::int64_t, 2>>>(data, "except");
 
         std::ofstream outfile(output);
         if(not outfile.good())

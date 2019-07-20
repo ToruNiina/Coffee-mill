@@ -3,7 +3,6 @@
 #include <mill/data/DCDReader.hpp>
 #include <mill/data/DCDWriter.hpp>
 #include <fstream>
-#include <toml/toml.hpp>
 
 namespace mill
 {

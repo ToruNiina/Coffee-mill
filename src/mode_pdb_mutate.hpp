@@ -33,9 +33,9 @@ int mill_pdb_mutate(int argument_c, char **argument_v)
     }
     const auto data = toml::parse(ifs);
 
-    const std::string template_fname = toml::get<toml::String>(data.at("pdbfile"));
-    const std::string output_fname   = toml::get<toml::String>(data.at("output"));
-    const toml::Table sequence_table = toml::get<toml::Table>(data.at("sequences"));
+    const std::string template_fname = toml::find<std::string>(data, "pdbfile");
+    const std::string output_fname   = toml::find<std::string>(data, "output");
+    const auto        sequence_table = toml::find(data, "sequences");
 
     PDBReader<vectorT> reader;
     auto chains = reader.parse(reader.read(template_fname));
@@ -43,8 +43,7 @@ int mill_pdb_mutate(int argument_c, char **argument_v)
     amino_acid_code aacode;
     for(auto& chain : chains)
     {
-        const std::string seq = toml::get<toml::String>(
-                sequence_table.at(chain.chain_id()));
+        const auto seq = toml::find<std::string>(sequence_table, chain.chain_id());
 
         if(seq.size() != chain.size())
         {

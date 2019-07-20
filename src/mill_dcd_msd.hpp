@@ -54,11 +54,11 @@ int mill_dcd_msd(int argument_c, char **argument_v)
                       << std::endl;
             return 1;
         }
-        toml::Data data = toml::parse(ifs);
+        auto data = toml::parse(ifs);
         try
         {
-            outname = toml::get<toml::String>(data.at("outname"));
-            dcdnames = toml::get<toml::Array<toml::String>>(data.at("dcdfiles"));
+            outname  = toml::find<std::string>(data, "outname");
+            dcdnames = toml::find<std::vector<std::string>>(data, "dcdfiles");
         }
         catch(std::exception& except)
         {

@@ -5,7 +5,6 @@
 #include <mill/data/PDBReader.hpp>
 #include <mill/data/XYZReader.hpp>
 #include <fstream>
-#include <toml/toml.hpp>
 
 namespace mill
 {
@@ -13,7 +12,7 @@ namespace mill
 inline const char* mode_calc_rmsd_usage() noexcept
 {
     return "usage: mill calc rmsd [files...]\n"
-           "    files can be a pdb|xyz|dcd file or a toml file.\n";
+           "    files can be a pdb|xyz|dcd file.\n";
 }
 
 //! argv = {"impose", {args...}}

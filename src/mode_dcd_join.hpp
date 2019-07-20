@@ -106,12 +106,9 @@ int mode_dcd_join(int argument_c, const char** argument_v)
     else if(fname.substr(fname.size() - 5, 5) == ".toml")
     {
         const auto tomldata = toml::parse(fname);
-        const auto inputs =
-            toml::get<std::vector<std::string>>(tomldata.at("inputs"));
-        const auto output =
-            toml::get<std::string>(tomldata.at("output"));
-        const bool include_initial =
-            toml::get_or(tomldata, "include_initial", true);
+        const auto inputs = toml::find<std::vector<std::string>>(tomldata, "inputs");
+        const auto output = toml::find<std::string>(tomldata, "output");
+        const bool include_initial = toml::find_or(tomldata, "include_initial", true);
 
         DCDReader<vectorT> reader;
         auto dcddata = reader.read_header(inputs.front());
