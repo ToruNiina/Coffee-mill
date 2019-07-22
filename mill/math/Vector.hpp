@@ -2,7 +2,6 @@
 #define COFFEE_MILL_VECTOR
 #include "Matrix.hpp"
 #include <mill/util/scalar_type_of.hpp>
-#include <boost/math/quaternion.hpp>
 #include <cmath>
 
 namespace mill
@@ -58,26 +57,5 @@ regularize(const coordT& v)
     return v / length(v);
 }
 
-template<typename coordT>
-coordT
-rotate(const typename scalar_type_of<coordT>::type angle,
-       const coordT& axis, const coordT& target)
-{
-    using namespace boost::math;
-    using quat = quaternion<typename scalar_type_of<coordT>::type>;
-
-    const typename scalar_type_of<coordT>::type sin_normalize = 
-        sin(angle * 0.5) / length(axis);
-
-    const quat Q(cos(angle * 0.5), axis[0] * sin_normalize, 
-                                   axis[1] * sin_normalize,
-                                   axis[2] * sin_normalize);
-    const quat P(0e0, target[0], target[1], target[2]);
-    const quat S(Q * P * conj(Q));
-
-    return coordT(S.R_component_2(), S.R_component_3(), S.R_component_4());
-}
-
 } // mill
-
 #endif /* COFFEE_MILL_VECTOR */
