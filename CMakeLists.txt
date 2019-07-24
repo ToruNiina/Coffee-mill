@@ -22,8 +22,10 @@ if(DOXYGEN_FOUND)
     set(DOXYGEN_PROJECT_NAME "\"Coffee-mill\"")
     set(DOXYGEN_PROJECT_BRIEF "\"header-only library to analyze the data of CafeMol\"")
     set(DOXYGEN_INPUT_DIRECTORY
-        ${PROJECT_SOURCE_DIR}/src       ${PROJECT_SOURCE_DIR}/mill/data
-        ${PROJECT_SOURCE_DIR}/mill/math ${PROJECT_SOURCE_DIR}/mill/util)
+        ${PROJECT_SOURCE_DIR}/src       ${PROJECT_SOURCE_DIR}/mill/dcd
+        ${PROJECT_SOURCE_DIR}/mill/pdb  ${PROJECT_SOURCE_DIR}/mill/ninfo
+        ${PROJECT_SOURCE_DIR}/mill/xyz  ${PROJECT_SOURCE_DIR}/mill/math
+        ${PROJECT_SOURCE_DIR}/mill/util)
     set(DOXYGEN_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/doc")
 
     configure_file(${DOXYGEN_CONF_FILE}.in ${DOXYGEN_CONF_PATH})
