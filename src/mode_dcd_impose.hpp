@@ -1,10 +1,10 @@
 #ifndef COFFEE_MILL_DCD_IMPOSE
 #define COFFEE_MILL_DCD_IMPOSE
 #include <mill/math/BestFitStructure.hpp>
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/DCDWriter.hpp>
-#include <mill/data/PDBReader.hpp>
-#include <mill/data/PDBWriter.hpp>
+#include <mill/dcd/DCDReader.hpp>
+#include <mill/dcd/DCDWriter.hpp>
+#include <mill/pdb/PDBReader.hpp>
+#include <mill/pdb/PDBWriter.hpp>
 #include <fstream>
 #include <toml/toml.hpp>
 

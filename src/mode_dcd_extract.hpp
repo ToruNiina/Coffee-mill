@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_DCD_EXTRACT
 #define COFFEE_MILL_DCD_EXTRACT
-#include <mill/data/DCDWriter.hpp>
-#include <mill/data/DCDReader.hpp>
+#include <mill/dcd/DCDWriter.hpp>
+#include <mill/dcd/DCDReader.hpp>
 #include <limits>
 
 namespace mill

@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_PDB_SEQ
 #define COFFEE_MILL_PDB_SEQ
-#include <mill/data/PDBChain.hpp>
+#include <mill/pdb/PDBChain.hpp>
 #include <mill/util/string.hpp>
 #include <algorithm>
 #include <map>

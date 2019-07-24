@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_DCD_MSD
 #define COFFEE_MILL_DCD_MSD
-#include <mill/data/DCDReader.hpp>
+#include <mill/dcd/DCDReader.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <toml/toml.hpp>
 #include <fstream>

@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_DCD_CALC_THETA
 #define COFFEE_MILL_DCD_CALC_THETA
-#include <mill/data/DCDReader.hpp>
+#include <mill/dcd/DCDReader.hpp>
 #include <toml/toml.hpp>
 
 namespace mill

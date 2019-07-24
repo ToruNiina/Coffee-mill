@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_PDB_MODE
 #define COFFEE_MILL_PDB_MODE
-#include <mill/data/PDBReader.hpp>
-#include <mill/data/PDBWriter.hpp>
+#include <mill/pdb/PDBReader.hpp>
+#include <mill/pdb/PDBWriter.hpp>
 #include <src/mode_pdb_help.hpp>
 #include <src/mode_pdb_seq.hpp>
 // #include <src/mode_pdb_mutate.hpp>

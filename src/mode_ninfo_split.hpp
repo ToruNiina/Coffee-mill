@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_NINFO_SPLIT
 #define COFFEE_MILL_NINFO_SPLIT
-#include <mill/data/NinfoReader.hpp>
-#include <mill/data/NinfoWriter.hpp>
+#include <mill/ninfo/NinfoReader.hpp>
+#include <mill/ninfo/NinfoWriter.hpp>
 
 namespace mill
 {

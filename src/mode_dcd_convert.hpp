@@ -1,9 +1,9 @@
 #ifndef COFFEE_MILL_DCD_CONVERT
 #define COFFEE_MILL_DCD_CONVERT
-#include <mill/data/DCDWriter.hpp>
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/PDBReader.hpp>
-#include <mill/data/PDBWriter.hpp>
+#include <mill/dcd/DCDWriter.hpp>
+#include <mill/dcd/DCDReader.hpp>
+#include <mill/pdb/PDBReader.hpp>
+#include <mill/pdb/PDBWriter.hpp>
 #include <toml/toml.hpp>
 
 namespace mill

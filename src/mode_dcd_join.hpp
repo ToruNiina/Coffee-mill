@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_DCD_JOIN
 #define COFFEE_MILL_DCD_JOIN
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/DCDWriter.hpp>
+#include <mill/dcd/DCDReader.hpp>
+#include <mill/dcd/DCDWriter.hpp>
 #include <fstream>
 #include <toml/toml.hpp>
 

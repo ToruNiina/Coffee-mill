@@ -12,9 +12,9 @@
 
 #ifndef COFFEE_MILL_NINFO_SPLITTER
 #define COFFEE_MILL_NINFO_SPLITTER
-#include "data/NinfoData.hpp"
-#include "data/NinfoReader.hpp"
-#include "data/NinfoWriter.hpp"
+#include "ninfo/NinfoData.hpp"
+#include "ninfo/NinfoReader.hpp"
+#include "ninfo/NinfoWriter.hpp"
 #include <cstdint>
 
 namespace mill

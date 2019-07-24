@@ -1,7 +1,7 @@
 #ifndef COFFEE_MILL_DCD_SPLIT
 #define COFFEE_MILL_DCD_SPLIT
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/DCDWriter.hpp>
+#include <mill/dcd/DCDReader.hpp>
+#include <mill/dcd/DCDWriter.hpp>
 #include <fstream>
 
 namespace mill

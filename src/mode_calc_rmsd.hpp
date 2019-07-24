@@ -1,9 +1,9 @@
 #ifndef COFFEE_MILL_CALC_RMSD
 #define COFFEE_MILL_CALC_RMSD
 #include <mill/math/RMSDCalculator.hpp>
-#include <mill/data/DCDReader.hpp>
-#include <mill/data/PDBReader.hpp>
-#include <mill/data/XYZReader.hpp>
+#include <mill/dcd/DCDReader.hpp>
+#include <mill/pdb/PDBReader.hpp>
+#include <mill/xyz/XYZReader.hpp>
 #include <fstream>
 
 namespace mill

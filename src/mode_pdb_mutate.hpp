@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_PDB_MUTATE
 #define COFFEE_MILL_PDB_MUTATE
-#include <mill/data/PDBChain.hpp>
+#include <mill/pdb/PDBChain.hpp>
 #include <mill/util/string.hpp>
 #include <mill/util/amino_acid_code.hpp>
 #include <toml/toml.hpp>
