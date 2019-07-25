@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_UTILITY
-#define COFFEE_MILL_UTILITY
+#ifndef COFFEE_MILL_UTIL_STRING_HPP
+#define COFFEE_MILL_UTIL_STRING_HPP
 #include <string>
 #include <algorithm>
 
@@ -37,5 +37,4 @@ remove_all(const charT c, const std::basic_string<charT, Traits, Alloc>& str)
 }
 
 } // mill
-
 #endif /* COFFEE_MILL_UTILITY */

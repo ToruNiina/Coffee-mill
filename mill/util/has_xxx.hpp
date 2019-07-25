@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_HAS_XXX
-#define COFFEE_MILL_HAS_XXX
+#ifndef COFFEE_MILL_UTIL_HAS_XXX_HPP
+#define COFFEE_MILL_UTIL_HAS_XXX_HPP
 #include <type_traits>
 
 #ifndef COFFEE_MILL_HAS_MEMBER_TYPE
