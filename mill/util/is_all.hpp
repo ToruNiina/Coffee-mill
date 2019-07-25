@@ -1,6 +1,6 @@
-#ifndef COFFEE_MILL_IS_ALL
-#define COFFEE_MILL_IS_ALL
-#include <mill/util/meta.hpp>
+#ifndef COFFEE_MILL_UTIL_IS_ALL_HPP
+#define COFFEE_MILL_UTIL_IS_ALL_HPP
+#include "meta.hpp"
 
 namespace mill
 {
@@ -10,15 +10,18 @@ struct is_all;
 
 // is_all<Unary, Xs...>
 template<template<typename> class F, typename X, typename ... Xs>
-struct is_all<F, X, Xs...> :
-conjunction<F<X>, typename is_all<F, Xs...>::type>::type {};
+struct is_all<F, X, Xs...> : meta::conjunction<
+    F<X>, typename is_all<F, Xs...>::type
+    >::type {};
+
 template<template<typename> class F, typename X>
-struct is_all<F, X> : F<X>::type{};
+struct is_all<F, X> : F<X>::type {};
 
 // is_all<Binary, ARG1, Xs...>
 template<template<typename, typename> class F, typename X, typename Y, typename ... Ys>
-struct is_all<F, X, Y, Ys...> :
-conjunction<F<X, Y>, typename is_all<F, X, Ys...>::type>::type{};
+struct is_all<F, X, Y, Ys...> : meta::conjunction<
+    F<X, Y>, typename is_all<F, X, Ys...>::type
+    >::type{};
 template<template<typename, typename> class F, typename X, typename Y>
 struct is_all<F, X, Y> : F<X, Y>::type {};
 

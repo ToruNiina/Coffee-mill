@@ -1,9 +1,11 @@
-#ifndef COFFEE_MILL_META
-#define COFFEE_MILL_META
+#ifndef COFFEE_MILL_UTIL_META_HPP
+#define COFFEE_MILL_UTIL_META_HPP
 #include <type_traits>
-#include <mill/util/has_xxx.hpp>
+#include "has_xxx.hpp"
 
 namespace mill
+{
+namespace meta
 {
 
 // and
@@ -57,5 +59,6 @@ struct disjunction<T, Ts...> : public std::conditional<bool(T::value),
 template<typename T>
 struct negation : public std::integral_constant<bool, !bool(T::value)> {};
 
-}//mill
+} // meta
+} // mill
 #endif// COFFEE_MILL_META
