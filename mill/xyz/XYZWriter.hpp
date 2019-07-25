@@ -9,7 +9,7 @@
 
 #ifndef COFFEE_MILL_XYZ_WRITER
 #define COFFEE_MILL_XYZ_WRITER
-#include <mill/data/XYZData.hpp>
+#include "XYZData.hpp"
 #include <memory>
 #include <utility>
 #include <iostream>
