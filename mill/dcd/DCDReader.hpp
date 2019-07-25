@@ -86,7 +86,9 @@ DCDReader<T>::read(const std::string& fname)
 {
     std::ifstream ifs(fname, std::ios::in | std::ios::binary);
     if(not ifs.good())
+    {
         throw std::runtime_error("DCDReader: file open error" + fname);
+    }
     auto retval = this->read(ifs);
     ifs.close();
     return retval;
@@ -117,7 +119,9 @@ DCDReader<vectorT>::read_header(const std::string& filename)
 {
     std::ifstream ifs(filename, std::ios::binary);
     if(not ifs.good())
+    {
         throw std::runtime_error("DCDReader file open error " + filename);
+    }
     return this->read_header(ifs);
 }
 
@@ -138,24 +142,25 @@ DCDReader<T>::read_header(std::istream& is)
     if(!validate_filesize(dat, file_size))
     {
         std::cerr << "Warning: filesize is not correct! total filesize is "
-                  << file_size << " [byte]" << std::endl;
+                  << file_size << " [byte]" << '\n';
         std::cerr << "       : but file says there are " << dat.nset()
                   << " snapshots. number of containing particles is "
-                  << dat.nparticle() <<std::endl;
-        std::cerr << "       : header block 1 size : " << header1_size << std::endl;
-        std::cerr << "       : header block 2 size : " << header2_size << std::endl;
-        std::cerr << "       : header block 3 size : " << header3_size << std::endl;
+                  << dat.nparticle() << '\n';
+        std::cerr << "       : header block 1 size : " << header1_size << '\n';
+        std::cerr << "       : header block 2 size : " << header2_size << '\n';
+        std::cerr << "       : header block 3 size : " << header3_size << '\n';
         std::cerr << "       : so this file must have "
                   << (header1_size + header2_size + header3_size +
-                     snapshot_size * dat.nset()) << " bytes." << std::endl;
+                     snapshot_size * dat.nset()) << " bytes." << '\n';
 
         if((file_size - header1_size - header2_size - header3_size)
                 % snapshot_size != 0)
-            std::cerr << "       : probably the last snapshot is imcomplete." << std::endl;
+        {
+            std::cerr << "       : probably the last snapshot is imcomplete.\n";
+        }
 
-        dat.nset() =
-            (file_size - header1_size - header2_size - header3_size)
-            / snapshot_size;
+        dat.nset() = (file_size - header1_size - header2_size - header3_size) /
+                     snapshot_size;
         std::cerr << "       : guess snapshot size as " << dat.nset() << std::endl;
     }
     return dat;
@@ -174,9 +179,8 @@ bool DCDReader<T>::validate_filesize(
 template <typename T>
 void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 {
-    char cbytes[size_int];
-    dcdfile.read(cbytes, size_int);
-    int byte = *reinterpret_cast<int*>(cbytes);
+    int byte;
+    dcdfile.read(reinterpret_cast<char*>(byte), size_int);
     if(byte != 84)
     {
         std::cerr << "Warning: this file may not be cafemol output."
@@ -190,92 +194,67 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     csigneture[4] = '\0';
     std::string signeture(csigneture);
 
-    if(signeture == "CORD")
-    {
-#ifdef COFFEE_MILL_DEBUG
-        std::cerr << "Info   : file signature is CORD. normal dcd file."
-                  << std::endl;
-#endif
-        ;
-    }
-    else if(signeture == "VELD")
-    {
-#ifdef COFFEE_MILL_DEBUG
-        std::cerr << "Info   : file signature is VELD. normal vdcd file."
-                  << std::endl;
-#endif
-        ;
-    }
-    else
+    if(signeture != "CORD" && signeture != "VELD")
     {
         throw std::invalid_argument("Unknown File Signeture: " + signeture);
     }
+
+#ifdef COFFEE_MILL_DEBUG
+    if(signeture == "CORD")
+    {
+        std::cerr << "Info   : file signature is CORD. normal dcd file.\n";
+    }
+    else if(signeture == "VELD")
+    {
+        std::cerr << "Info   : file signature is VELD. normal vdcd file.\n";
+    }
+#endif
+
     data.signeture() = signeture;
 
-    char cnset[size_int];
-    dcdfile.read(cnset, size_int);
-    data.nset() = *reinterpret_cast<int*>(cnset);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nset())), size_int);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nset = " << data.nset() << std::endl;
 #endif
     
-    char cistart[size_int];
-    dcdfile.read(cistart, size_int);
-    data.istart() = *reinterpret_cast<int*>(cistart);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.istart())), size_int);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : istart = " << data.istart() << std::endl;
 #endif
 
-    char cnstep_save[size_int];
-    dcdfile.read(cnstep_save, size_int);
-    data.nstep_save() = *reinterpret_cast<int*>(cnstep_save);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nstep_save())), size_int);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nstep_save = " << data.nstep_save() << std::endl;
 #endif
 
-    char cnstep[size_int];
-    dcdfile.read(cnstep, size_int);
-    data.nstep() = *reinterpret_cast<int*>(cnstep);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nstep())), size_int);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nstep = " << data.nstep() << std::endl;
 #endif
 
-    char cnunit[size_int];
-    dcdfile.read(cnunit, size_int);
-    data.nunit() = *reinterpret_cast<int*>(cnunit);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nunit())), size_int);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nunit = " << data.nunit() << std::endl;
 #endif
 
     dcdfile.ignore(16);
     
-    char cdelta[size_float];
-    dcdfile.read(cdelta, size_float);
-    data.delta_t() = *reinterpret_cast<float*>(cdelta);
-
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.delta_t())), size_float);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : delta t = " << data.delta_t() << std::endl;
 #endif
 
     dcdfile.ignore(36);
 
-    char cverCHARMM[size_int];
-    dcdfile.read(cverCHARMM, size_int);
-    data.verCHARMM() = *reinterpret_cast<int*>(cverCHARMM);
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.verCHARMM())), size_int);
 
-    char cbytes_f[size_int];
-    dcdfile.read(cbytes_f, size_int);
-    if(byte != *reinterpret_cast<int*>(cbytes_f))
+    int bytes_f;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    if(byte != bytes_f)
     {
         throw std::invalid_argument(
                 "header block1 has invalid size information");
     }
-
     this->header1_size = byte + size_int * 2;
     return;
 }
@@ -283,20 +262,15 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 template <typename T>
 void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 {
-    char cbytes[size_int];
-    dcdfile.read(cbytes, size_int);
-    int bytes = *reinterpret_cast<int*>(cbytes);
+    int bytes;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes)), size_int);
     
-    char clines[size_int];
-    dcdfile.read(clines, size_int);
-    int lines = *reinterpret_cast<int*>(clines);
-
+    int lines;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(lines)), size_int);
     if((80 * lines + 4) != bytes)
     {
-        std::cerr << "Error  : header block2 size = "
-                  << bytes << " bytes."
-                  << " But block2 has " << lines
-                  << "lines" << std::endl;
+        std::cerr << "Error  : header block2 size = " << bytes << " bytes."
+                  << " But block2 has " << lines << "lines" << std::endl;
         throw std::invalid_argument("header block2 has invalid size");
     }
 
@@ -319,14 +293,13 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
     std::cerr << "Info   : header end" << std::endl;
 #endif
 
-    char cbytes_f[size_int];
-    dcdfile.read(cbytes_f, size_int);
-    if(bytes != *reinterpret_cast<int*>(cbytes_f))
+    int bytes_f;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    if(bytes != bytes_f)
     {
         throw std::invalid_argument(
                 "header block2 has invalid size information");
     }
-
     header2_size = bytes + size_int * 2;
     return;
 }
@@ -334,22 +307,18 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 template <typename T>
 void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 {
-    char cbytes[size_int];
-    dcdfile.read(cbytes, size_int);
-    int bytes = *reinterpret_cast<int*>(cbytes);
-    
-    char cnpart[size_int];
-    dcdfile.read(cnpart, size_int);
-    data.nparticle() = *reinterpret_cast<int*>(cnpart);
+    int bytes;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes)), size_int);
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nparticle())), size_int);
 
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : there are " << data.nparticle()
               << " particles in this file" << std::endl;
 #endif
 
-    char cbytes_f[size_int];
-    dcdfile.read(cbytes_f, size_int);
-    if(bytes != *reinterpret_cast<int*>(cbytes_f))
+    int bytes_f;
+    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    if(bytes != bytes_f)
     {
         throw std::invalid_argument(
                 "header block3 has invalid size information");
@@ -360,9 +329,9 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 }
 
 template <typename T>
-void DCDReader<T>::read_trajectory(
-        std::istream& is, data_type& data)
+void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
 {
+    using position_type = typename data_type::position_type;
     data.traj().clear();
     data.traj().reserve(data.nset());
 
@@ -375,8 +344,7 @@ void DCDReader<T>::read_trajectory(
         snapshot_type temp_snapshot(data.nparticle());
         for(std::size_t c(0); c < data.nparticle(); ++c)
         {
-            const typename data_type::position_type pos(x[c], y[c], z[c]);
-            temp_snapshot[c] = pos;
+            temp_snapshot[c] = position_type(x[c], y[c], z[c]);
         }
         data.traj().push_back(temp_snapshot);
     }
@@ -388,6 +356,7 @@ template <typename T>
 typename DCDReader<T>::snapshot_type
 DCDReader<T>::read_snapshot(std::istream& is, const header_type& header)
 {
+    using position_type = typename data_type::position_type;
     const std::vector<float> x(read_coord(is, header.nparticle));
     const std::vector<float> y(read_coord(is, header.nparticle));
     const std::vector<float> z(read_coord(is, header.nparticle));
@@ -395,8 +364,7 @@ DCDReader<T>::read_snapshot(std::istream& is, const header_type& header)
     snapshot_type snap(header.nparticle);
     for(std::size_t c(0); c < header.nparticle; ++c)
     {
-        const typename data_type::position_type pos(x[c], y[c], z[c]);
-        snap[c] = pos;
+        snap[c] = position_type(x[c], y[c], z[c]);
     }
     return snap;
 }
@@ -407,7 +375,9 @@ DCDReader<T>::read_snapshot(const std::string& fname, const std::size_t i)
 {
     std::ifstream ifs(fname, std::ios::in | std::ios::binary);
     if(not ifs.good())
+    {
         throw std::runtime_error("DCDReader: file open error" + fname);
+    }
 
     const auto header = this->read_header(ifs);
     const std::size_t npart = header.nparticle();
@@ -421,10 +391,8 @@ template <typename T>
 std::vector<float>
 DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
 {
-    char csize_of_block1[size_int];
-    is.read(csize_of_block1, size_int);
-    int size_of_block(*reinterpret_cast<int*>(csize_of_block1));
-
+    int size_of_block;
+    is.read(reinterpret_cast<char*>(std::addressof(size_of_block)), size_int);
     if(size_of_block / size_float != nparticle)
     {
         std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
@@ -433,28 +401,23 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
                 "dcd coordinate block size differs from nparticle");
     }
 
-    std::vector<float> coordinate(nparticle);
-    for(std::size_t i = 0; i < nparticle; ++i)
+    std::vector<float> coordinate(nparticle, 0.0);
+    for(auto& v : coordinate)
     {
-        char cfloat[size_float];
-        is.read(cfloat, size_float);
-        coordinate[i] = *reinterpret_cast<float*>(cfloat);
+        is.read(reinterpret_cast<char*>(std::addressof(v)), size_float);
     }
 
-    char csize_of_block_f[size_int];
-    is.read(csize_of_block_f, size_int);
-    if(size_of_block != *reinterpret_cast<int*>(csize_of_block_f))
+    int size_of_block_f;
+    is.read(reinterpret_cast<char*>(std::addressof(size_of_block_f)), size_int);
+    if(size_of_block != size_of_block_f)
     {
         std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
         std::cerr << ", nparticle = " << nparticle << '\n';
         throw std::invalid_argument(
                 "dcd coordinate block has invalid byte-information");
     }
-
     return coordinate;
 }
 
-
-}// coffeemill
-
+}// mill
 #endif //COFFEE_MILL_DCD_READER
