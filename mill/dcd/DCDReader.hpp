@@ -10,13 +10,14 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_DCD_READER
-#define COFFEE_MILL_DCD_READER
+#ifndef COFFEE_MILL_DCD_READER_HPP
+#define COFFEE_MILL_DCD_READER_HPP
+#include <mill/util/read_binary_as.hpp>
+#include "DCDData.hpp"
 #include <memory>
 #include <utility>
 #include <iostream>
 #include <fstream>
-#include "DCDData.hpp"
 
 namespace mill
 {
@@ -179,8 +180,7 @@ bool DCDReader<T>::validate_filesize(
 template <typename T>
 void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 {
-    int byte;
-    dcdfile.read(reinterpret_cast<char*>(byte), size_int);
+    const int byte = read_binary_as<int>(dcdfile);
     if(byte != 84)
     {
         std::cerr << "Warning: this file may not be cafemol output."
@@ -193,7 +193,6 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     dcdfile.read(csigneture, 4);
     csigneture[4] = '\0';
     std::string signeture(csigneture);
-
     if(signeture != "CORD" && signeture != "VELD")
     {
         throw std::invalid_argument("Unknown File Signeture: " + signeture);
@@ -211,45 +210,43 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 #endif
 
     data.signeture() = signeture;
-
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nset())), size_int);
+    data.nset() = read_binary_as<int>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nset = " << data.nset() << std::endl;
 #endif
     
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.istart())), size_int);
+    data.istart() = read_binary_as<int>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : istart = " << data.istart() << std::endl;
 #endif
 
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nstep_save())), size_int);
+    data.nstep_save() = read_binary_as<int>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nstep_save = " << data.nstep_save() << std::endl;
 #endif
 
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nstep())), size_int);
+    data.nstep() = read_binary_as<int>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nstep = " << data.nstep() << std::endl;
 #endif
 
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nunit())), size_int);
+    data.nunit() = read_binary_as<int>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : nunit = " << data.nunit() << std::endl;
 #endif
 
     dcdfile.ignore(16);
     
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.delta_t())), size_float);
+    data.delta_t() = read_binary_as<float>(dcdfile);
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : delta t = " << data.delta_t() << std::endl;
 #endif
 
     dcdfile.ignore(36);
 
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.verCHARMM())), size_int);
+    data.verCHARMM() = read_binary_as<int>(dcdfile);
 
-    int bytes_f;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    const int bytes_f = read_binary_as<int>(dcdfile);
     if(byte != bytes_f)
     {
         throw std::invalid_argument(
@@ -262,11 +259,9 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 template <typename T>
 void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 {
-    int bytes;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes)), size_int);
+    const int bytes = read_binary_as<int>(dcdfile);
     
-    int lines;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(lines)), size_int);
+    const int lines = read_binary_as<int>(dcdfile);
     if((80 * lines + 4) != bytes)
     {
         std::cerr << "Error  : header block2 size = " << bytes << " bytes."
@@ -293,8 +288,7 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
     std::cerr << "Info   : header end" << std::endl;
 #endif
 
-    int bytes_f;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    const int bytes_f = read_binary_as<int>(dcdfile);
     if(bytes != bytes_f)
     {
         throw std::invalid_argument(
@@ -307,23 +301,20 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 template <typename T>
 void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 {
-    int bytes;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes)), size_int);
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(data.nparticle())), size_int);
+    const int bytes  = read_binary_as<int>(dcdfile);
+    data.nparticle() = read_binary_as<int>(dcdfile);
 
 #ifdef COFFEE_MILL_DEBUG
     std::cerr << "Info   : there are " << data.nparticle()
               << " particles in this file" << std::endl;
 #endif
 
-    int bytes_f;
-    dcdfile.read(reinterpret_cast<char*>(std::addressof(bytes_f)), size_int);
+    const int bytes_f = read_binary_as<int>(dcdfile);
     if(bytes != bytes_f)
     {
         throw std::invalid_argument(
                 "header block3 has invalid size information");
     }
-
     header3_size = bytes + size_int * 2;
     return;
 }
@@ -391,8 +382,7 @@ template <typename T>
 std::vector<float>
 DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
 {
-    int size_of_block;
-    is.read(reinterpret_cast<char*>(std::addressof(size_of_block)), size_int);
+    const int size_of_block = read_binary_as<int>(is);
     if(size_of_block / size_float != nparticle)
     {
         std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
@@ -404,11 +394,10 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     std::vector<float> coordinate(nparticle, 0.0);
     for(auto& v : coordinate)
     {
-        is.read(reinterpret_cast<char*>(std::addressof(v)), size_float);
+        v = read_binary_as<float>(is);
     }
 
-    int size_of_block_f;
-    is.read(reinterpret_cast<char*>(std::addressof(size_of_block_f)), size_int);
+    const int size_of_block_f = read_binary_as<int>(is);
     if(size_of_block != size_of_block_f)
     {
         std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
