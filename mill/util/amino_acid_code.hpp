@@ -1,6 +1,7 @@
-#ifndef COFFEE_MILL_AMINO_ACID_CODE
-#define COFFEE_MILL_AMINO_ACID_CODE
+#ifndef COFFEE_MILL_UTIL_AMINO_ACID_CODE_HPP
+#define COFFEE_MILL_UTIL_AMINO_ACID_CODE_HPP
 #include <algorithm>
+#include <stdexcept>
 #include <string>
 #include <map>
 
