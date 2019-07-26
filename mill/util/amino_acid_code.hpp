@@ -17,6 +17,22 @@ struct amino_acid_code
             )->first;
     }
 
+    char               at(const std::string& s) const {return codes.at(s);}
+    std::string const& at(const char s) const
+    {
+        const auto found = std::find_if(codes.cbegin(), codes.cend(),
+            [=](const std::pair<std::string, char>& p){return p.second==s;}
+            );
+        if(found != codes.cend())
+        {
+            return found->first;
+        }
+        else
+        {
+            throw std::out_of_range("invalid amino acid code");
+        }
+    }
+
     std::map<std::string, char> codes = {
         {"ALA", 'A'},
         {"ASX", 'B'},
