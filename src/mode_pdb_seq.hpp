@@ -2,7 +2,7 @@
 #define COFFEE_MILL_PDB_SEQ
 #include <mill/pdb/PDBChain.hpp>
 #include <mill/util/string.hpp>
-#include <mill/common/amino_acid_code.hpp>
+#include <mill/common/AminoAcidCode.hpp>
 #include <algorithm>
 #include <map>
 
@@ -109,7 +109,7 @@ struct generate_sequence
         else
             throw std::invalid_argument("unknown sequence: " + res);
     }
-    amino_acid_code amino;
+    AminoAcidCode amino;
 };
 
 // argv := {"seq", "file.pdb"}

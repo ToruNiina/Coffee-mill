@@ -8,7 +8,7 @@
 namespace mill
 {
 
-struct amino_acid_code
+struct AminoAcidCode
 {
     char operator()(std::string const& s) const {return codes.at(s);}
     std::string const& operator()(char s) const
