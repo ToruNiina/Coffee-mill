@@ -2,7 +2,7 @@
 #define COFFEE_MILL_PDB_SEQ
 #include <mill/pdb/PDBChain.hpp>
 #include <mill/util/string.hpp>
-#include <mill/util/amino_acid_code.hpp>
+#include <mill/common/amino_acid_code.hpp>
 #include <algorithm>
 #include <map>
 
