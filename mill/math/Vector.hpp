@@ -2,6 +2,7 @@
 #define COFFEE_MILL_VECTOR
 #include "Matrix.hpp"
 #include <mill/util/scalar_type_of.hpp>
+#include <mill/util/clamp.hpp>
 #include <cmath>
 
 namespace mill
@@ -55,6 +56,16 @@ inline typename scalar_type_of<coordT>::type
 regularize(const coordT& v)
 {
     return v / length(v);
+}
+
+template<typename coordT>
+inline typename scalar_type_of<coordT>::type
+angle(const coordT& lhs, const coordT& rhs)
+{
+    using real_type = typename scalar_type_of<coordT>::type;
+    const auto l_reg = regularize(lhs);
+    const auto r_reg = regularize(rhs);
+    return std::acos(clamp<real_type>(dot_product(l_reg, r_reg), -1, 1));
 }
 
 } // mill
