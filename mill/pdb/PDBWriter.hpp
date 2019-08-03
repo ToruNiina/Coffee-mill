@@ -55,7 +55,10 @@ void PDBWriter<vectorT>::write(
         const std::string& filename, const std::vector<atom_type>& atoms) const
 {
     std::ofstream ofs(filename);
-    if(not ofs.good()) throw std::runtime_error("file open error: " + filename);
+    if(not ofs.good())
+    {
+        throw std::runtime_error("file open error: " + filename);
+    }
     this->write(ofs, atoms);
     ofs.close();
     return;
@@ -67,7 +70,10 @@ void PDBWriter<vectorT>::write(
         const style sty) const
 {
     std::ofstream ofs(filename);
-    if(not ofs.good()) throw std::runtime_error("file open error: " + filename);
+    if(not ofs.good())
+    {
+        throw std::runtime_error("file open error: " + filename);
+    }
     this->write(ofs, model, sty);
     ofs.close();
     return;
@@ -78,7 +84,9 @@ void PDBWriter<vectorT>::write(std::ostream& os,
         const std::vector<atom_type>& atoms) const
 {
     for(auto iter = atoms.cbegin(); iter != atoms.cend(); ++iter)
+    {
         os << *iter << std::endl;
+    }
     return;
 }
 
@@ -91,19 +99,23 @@ void PDBWriter<vectorT>::write(
     for(auto chain = chains.cbegin(); chain != chains.cend(); ++chain)
     {
         if(sty == style::cafemol)
+        {
             os << "<< protein " << index << std::endl;
+        }
 
         for(auto resi = chain->cbegin(); resi != chain->cend(); ++resi)
+        {
             for(auto iter = resi->cbegin(); iter != resi->cend(); ++iter)
+            {
                 os << *iter << std::endl;
-
-        if(sty == style::cafemol)     os << ">>" << std::endl;
-        else if(sty == style::normal) os << "TER" << std::endl;
+            }
+        }
+        if     (sty == style::cafemol) {os << ">>" << std::endl; }
+        else if(sty == style::normal)  {os << "TER" << std::endl;}
         ++index;
     }
     return;
 }
 
 } // mill
-
 #endif /* COFFEE_MILL_PDB_WRITER */
