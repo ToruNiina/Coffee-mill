@@ -22,18 +22,24 @@ class NinfoWriter
   public:
     using real_type = realT;
     using data_type = NinfoData<real_type>;
+    using block_type = typename data_type::value_type;
 
   public:
     NinfoWriter(){}
     ~NinfoWriter() = default;
 
     void write(const data_type& data, const std::string& filename) const;
-    void write(const data_type& data, std::basic_ostream<char>& stream) const;
+    void write(const data_type& data, std::ostream& stream) const;
 
   private:
-    template<typename T_ninfo>
-    void write_block(std::basic_ostream<char>& stream,
-                     const typename data_type::value_type& block) const;
+    template<typename ninfoT>
+    void write_block(std::ostream& stream, const block_type& block) const
+    {
+        for(const auto& ptr : block)
+        {
+            stream << *(std::dynamic_pointer_cast<ninfoT>(ptr)) << std::endl;
+        }
+    }
 };
 
 template<typename realT>
@@ -42,7 +48,9 @@ void NinfoWriter<realT>::write(
 {
     std::ofstream file_stream(filename);
     if(not file_stream.good())
+    {
         throw std::runtime_error("file open error: " + filename);
+    }
     this->write(data, file_stream);
     file_stream.close();
     return;
@@ -50,7 +58,7 @@ void NinfoWriter<realT>::write(
 
 template<typename realT>
 void NinfoWriter<realT>::write(
-        const data_type& data, std::basic_ostream<char>& stream) const
+        const data_type& data, std::ostream& stream) const
 {
     for(auto iter = data.cbegin(); iter != data.cend(); ++iter)
     {
@@ -121,17 +129,6 @@ void NinfoWriter<realT>::write(
         stream << ">>>>" << std::endl;
         stream << std::endl;
     }
-    return;
-}
-
-template<typename realT>
-template<typename ninfoT>
-void NinfoWriter<realT>::write_block(std::basic_ostream<char>& stream,
-        const typename data_type::value_type& block) const
-{
-    for(auto iter = block.cbegin(); iter != block.cend(); ++iter)
-        stream << *(std::dynamic_pointer_cast<ninfoT>(*iter)) << std::endl;
-
     return;
 }
 

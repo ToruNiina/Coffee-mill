@@ -230,9 +230,8 @@ using NinfoBaseStack = NinfoElement<2, 4, double>;
  *  @sa     NinfoElement
  */
 template<std::size_t N_bodies, std::size_t N_coefs, typename real_type>
-std::basic_ostream<char>&
-operator<<(std::basic_ostream<char>& os,
-           NinfoElement<N_bodies, N_coefs, real_type> const& ninfo)
+std::ostream& operator<<(std::ostream& os,
+        NinfoElement<N_bodies, N_coefs, real_type> const& ninfo)
 {
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();

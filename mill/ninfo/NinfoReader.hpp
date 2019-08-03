@@ -32,7 +32,7 @@ class NinfoReader
     ~NinfoReader() = default;
 
     data_type read(const std::string& filename) const;
-    data_type read(std::basic_istream<char>& is) const;
+    data_type read(std::istream& is) const;
 
   private:
     void read_line(data_type& data, const std::string& line) const;
@@ -43,7 +43,7 @@ NinfoData<realT>
 NinfoReader<realT>::read(const std::string& filename) const
 {
     std::ifstream filestream(filename);
-    if(not filestream.good()) throw std::runtime_error("file open error");
+    if(not filestream.good()) {throw std::runtime_error("file open error");}
     const auto retval = this->read(filestream);
     filestream.close();
     return retval;
@@ -51,7 +51,7 @@ NinfoReader<realT>::read(const std::string& filename) const
 
 template<typename realT>
 NinfoData<realT>
-NinfoReader<realT>::read(std::basic_istream<char>& is) const
+NinfoReader<realT>::read(std::istream& is) const
 {
     NinfoData<realT> data;
     std::size_t lineindex = 0;
@@ -62,12 +62,13 @@ NinfoReader<realT>::read(std::basic_istream<char>& is) const
         if(line.empty()) continue;
         line = remove_indent(line);
 
-        try{
-             if(line.empty()) continue;
-        else if(line.front() == '*') continue;
-        else if(line.substr(0, 4) == "<<<<") continue;
-        else if(line.substr(0, 4) == ">>>>") continue;
-        else this->read_line(data, line);
+        try
+        {
+            if     (line.empty())                {continue;}
+            else if(line.front() == '*')         {continue;}
+            else if(line.substr(0, 4) == "<<<<") {continue;}
+            else if(line.substr(0, 4) == ">>>>") {continue;}
+            else {this->read_line(data, line);}
         }
         catch(std::exception& except)
         {
