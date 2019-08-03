@@ -90,12 +90,12 @@ int main(int argc, char **argv)
 template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo()
 {
-    std::cerr << "  ___        __  __             __    __ _  _  _  \n";
-    std::cerr << " / __| ___  / _|/ _| ___  ___   | \\  / |(_)| || | \n";
-    std::cerr << "| |   / _ \\| |_| |_ / _ \\/ _ \\  |  \\/  || || || | \n";
-    std::cerr << "| |__| (_) |  _|  _|  __|  __/  | |\\/| || || || | \n";
-    std::cerr << " \\___|\\___/|_| |_|  \\___|\\___|  |_|  |_||_||_||_| \n";
-    std::cerr << "                         Copyright 2016- Toru Niina \n";
-    std::cerr << std::endl;
+    std::cerr << R"(  ___        __  __             __    __ _  _  _ )""\n"
+                 R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n"
+                 R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n"
+                 R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n"
+                 R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n"
+                 R"(                   Copyright 2016-now Toru Niina))""\n"
+              << std::endl;
     return;
 }
