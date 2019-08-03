@@ -120,18 +120,18 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
     std::vector<residue_type> residues;
     residue_type tmp_residue;
     int current_residue_id = std::numeric_limits<int>::min();
-    for(auto iter = atoms.cbegin(); iter != atoms.cend(); ++iter)
+    for(const auto& atom : atoms)
     {
-        if(iter->residue_id != current_residue_id)
+        if(atom.residue_id != current_residue_id)
         {
             if(not tmp_residue.empty())
             {
                 residues.push_back(tmp_residue);
             }
             tmp_residue.clear();
-            current_residue_id = iter->residue_id;
+            current_residue_id = atom.residue_id;
         }
-        tmp_residue.push_back(*iter);
+        tmp_residue.push_back(atom);
     }
     if(not tmp_residue.empty())
     {
@@ -141,18 +141,18 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
     std::vector<chain_type> chains;
     chain_type tmp_chain;
     std::string current_chain_id = "";
-    for(auto iter = residues.begin(); iter != residues.end(); ++iter)
+    for(const auto& residue : residues)
     {
-        if(iter->chain_id() != current_chain_id)
+        if(residue.chain_id() != current_chain_id)
         {
             if(not tmp_chain.empty())
             {
                 chains.push_back(tmp_chain);
             }
             tmp_chain.clear();
-            current_chain_id = iter->chain_id();
+            current_chain_id = residue.chain_id();
         }
-        tmp_chain.push_back(*iter);
+        tmp_chain.push_back(residue);
     }
     if(not tmp_chain.empty())
     {

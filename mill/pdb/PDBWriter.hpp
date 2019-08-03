@@ -83,9 +83,9 @@ template<typename vectorT>
 void PDBWriter<vectorT>::write(std::ostream& os,
         const std::vector<atom_type>& atoms) const
 {
-    for(auto iter = atoms.cbegin(); iter != atoms.cend(); ++iter)
+    for(const auto& atom : atoms)
     {
-        os << *iter << std::endl;
+        os << atom << std::endl;
     }
     return;
 }
@@ -96,18 +96,17 @@ void PDBWriter<vectorT>::write(
         const style sty) const
 {
     std::size_t index = 1;
-    for(auto chain = chains.cbegin(); chain != chains.cend(); ++chain)
+    for(const auto& chain : chains)
     {
         if(sty == style::cafemol)
         {
             os << "<< protein " << index << std::endl;
         }
-
-        for(auto resi = chain->cbegin(); resi != chain->cend(); ++resi)
+        for(const auto& residue : chain)
         {
-            for(auto iter = resi->cbegin(); iter != resi->cend(); ++iter)
+            for(const auto& atom : residue)
             {
-                os << *iter << std::endl;
+                os << atom << std::endl;
             }
         }
         if     (sty == style::cafemol) {os << ">>" << std::endl; }
