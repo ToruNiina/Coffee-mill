@@ -84,7 +84,9 @@ template<typename vectorT>
 void PDBChain<vectorT>::push_back(const residue_type& res)
 {
     if(not this->empty() && (res.chain_id() != this->chain_id()))
+    {
         throw std::invalid_argument("emplace invalid residue into chain");
+    }
     this->residues_.push_back(res);
     return;
 }
@@ -93,7 +95,9 @@ template<typename vectorT>
 void PDBChain<vectorT>::emplace_back(residue_type&& res)
 {
     if(not this->empty() && (res.chain_id() != this->chain_id()))
+    {
         throw std::invalid_argument("emplace invalid residue into chain");
+    }
     this->residues_.emplace_back(std::forward(res));
     return;
 }

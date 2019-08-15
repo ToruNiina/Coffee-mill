@@ -81,7 +81,9 @@ void PDBResidue<vectorT>::push_back(const atom_type& atom)
     if(not atoms_.empty() && (this->residue_id() != atom.residue_id ||
                               this->residue_name() != atom.residue_name ||
                               this->chain_id() != atom.chain_id))
+    {
         throw std::invalid_argument("emplace invalid atom to residue");
+    }
     atoms_.push_back(atom);
     return;
 }
@@ -92,7 +94,9 @@ void PDBResidue<vectorT>::emplace_back(atom_type&& atom)
     if(not atoms_.empty() && (this->residue_id() != atom.residue_id ||
                               this->residue_name() != atom.residue_name ||
                               this->chain_id() != atom.chain_id))
+    {
         throw std::invalid_argument("emplace invalid atom to residue");
+    }
     atoms_.emplace_back(std::forward(atom));
     return;
 }
