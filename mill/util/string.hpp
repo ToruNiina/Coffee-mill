@@ -11,8 +11,12 @@ std::basic_string<charT, Traits, Alloc>
 remove_indent(const std::basic_string<charT, Traits, Alloc>& str)
 {
     auto iter = str.cbegin();
-    while(const char c = *iter; (c == ' ' || c == '\t') && (iter != str.cend()))
+    while(iter != str.cend())
     {
+        if(const char c = *iter; (c != ' ' && c != '\t'))
+        {
+            break;
+        }
         ++iter;
     }
     return std::basic_string<charT, Traits, Alloc>(iter, str.cend());
