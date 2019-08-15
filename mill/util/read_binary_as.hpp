@@ -3,23 +3,15 @@
 #include <type_traits>
 #include <utility>
 #include <memory>
-#include <cstring>
+#include <iosfwd>
 
 namespace mill
 {
 
 template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>
-read_binary_as(const char* src) noexcept
+T read_binary_as(std::istream& is) noexcept
 {
-    T dst;
-    std::memcpy(reinterpret_cast<char*>(std::addressof(dst)), src, sizeof(T));
-    return dst;
-}
-template<typename T>
-std::enable_if_t<std::is_arithmetic<T>::value, T>
-read_binary_as(std::istream& is) noexcept
-{
+    static_assert(std::is_arithmetic_v<T>);
     T dst;
     is.read(reinterpret_cast<char*>(std::addressof(dst)), sizeof(T));
     return dst;
