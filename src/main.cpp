@@ -6,12 +6,11 @@
 #include <src/mode_ninfo.hpp>
 #include <src/mode_calc.hpp>
 
-template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo();
 
 int main(int argc, char **argv)
 {
-    print_logo<2, 0>();
+    print_logo();
 
     if(argc < 2)
     {
@@ -87,7 +86,6 @@ int main(int argc, char **argv)
     }
 }
 
-template<std::size_t MAJOR_V, std::size_t MINOR_V>
 void print_logo()
 {
     std::cerr << R"(  ___        __  __             __    __ _  _  _ )""\n"
@@ -95,7 +93,7 @@ void print_logo()
                  R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n"
                  R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n"
                  R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n"
-                 R"(                   Copyright 2016-now Toru Niina))""\n"
+                 R"(                   Copyright 2016-now Toru Niina))"
               << std::endl;
     return;
 }
