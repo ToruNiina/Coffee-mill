@@ -11,13 +11,15 @@ namespace mill
 
 inline const char* main_usage() noexcept
 {
-    return "Usage: mill [mode] [parameters...]\n\n"
+    return "Usage: mill [mode] [parameters...]\n"
            "list of modes\n"
-           "\t- pdb\n"
-           "\t- dcd\n"
-           "\t- ninfo\n"
-           "\t- calc\n"
-           "\t- help\n";
+           "- pdb\n"
+           "- dcd\n"
+           "- ninfo\n"
+           "- calc\n"
+           "- help\n"
+           "for more information, try `mill help [mode]`.\n"
+           ;
 }
 
 //! this function forwards the arguments to different modes.
