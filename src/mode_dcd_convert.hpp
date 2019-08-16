@@ -89,7 +89,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
                 return 1;
             }
             atoms = pdbreader.read(pdbname);
-            if(atoms.size() != dcddata.nparticle())
+            if(atoms.size() != static_cast<std::size_t>(dcddata.nparticle()))
             {
                 std::cerr << "error: mill dcd convert: "
                           << "pdb file may have different structure: "
@@ -109,7 +109,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             }
         }
 
-        for(std::size_t i=0; i<dcddata.nset(); ++i)
+        for(int i=0; i<dcddata.nset(); ++i)
         {
             ofs << "MODEL     " << std::setw(4) << i << '\n';
             std::size_t idx = 0;

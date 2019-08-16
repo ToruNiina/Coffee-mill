@@ -51,7 +51,7 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
             beg = std::stoi(std::string(argument_v[2]));
             end = std::stoi(std::string(argument_v[3]));
         }
-        catch(std::exception)
+        catch(std::exception&)
         {
             std::cerr << "error: mill dcd extract: "
                          "string -> integer parsing failed\n";

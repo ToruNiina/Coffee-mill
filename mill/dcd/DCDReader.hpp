@@ -278,14 +278,14 @@ void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
     data.traj().clear();
     data.traj().reserve(data.nset());
 
-    for(std::size_t i(0); i<data.nset(); ++i)
+    for(int i=0; i<data.nset(); ++i)
     {
         const std::vector<float> x(read_coord(is, data.nparticle()));
         const std::vector<float> y(read_coord(is, data.nparticle()));
         const std::vector<float> z(read_coord(is, data.nparticle()));
 
         snapshot_type temp_snapshot(data.nparticle());
-        for(std::size_t c(0); c < data.nparticle(); ++c)
+        for(int c=0; c < data.nparticle(); ++c)
         {
             temp_snapshot[c] = position_type(x[c], y[c], z[c]);
         }
@@ -305,7 +305,7 @@ DCDReader<T>::read_snapshot(std::istream& is, const header_type& header)
     const std::vector<float> z(read_coord(is, header.nparticle));
 
     snapshot_type snap(header.nparticle);
-    for(std::size_t c(0); c < header.nparticle; ++c)
+    for(int c = 0; c < header.nparticle; ++c)
     {
         snap[c] = position_type(x[c], y[c], z[c]);
     }
