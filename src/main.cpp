@@ -7,28 +7,32 @@
 #include <src/mode_calc.hpp>
 
 void print_logo();
+std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-    print_logo();
+    using vector_type = mill::Vector<double, 3>;
 
-    if(argc < 2)
+    print_logo();
+    auto [argc_, argv_v] = setup_logger(argc, argv);
+    const char** argv_ = argv_v.data();
+
+    if(argc_ < 2)
     {
         std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
-    const std::string mode(argv[1]);
 
+    const std::string mode(argv_[1]);
     if(mode == "dcd")
     {
         try
         {
-            return mill::mode_dcd<mill::Vector<double, 3>>(
-                    argc-1, const_cast<const char**>(argv+1));
+            return mill::mode_dcd<vector_type>(argc_ - 1, argv_ + 1);
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "error: " << excpt.what() << std::endl;
+            mill::log(mill::log_level::error, excpt.what(), '\n');
             std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
@@ -37,12 +41,11 @@ int main(int argc, char **argv)
     {
         try
         {
-            return mill::mode_pdb<mill::Vector<double, 3>>(
-                    argc-1, const_cast<const char**>(argv+1));
+            return mill::mode_pdb<vector_type>(argc_ - 1, argv_ + 1);
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "error: " << excpt.what() << std::endl;
+            mill::log(mill::log_level::error, excpt.what(), '\n');
             std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
@@ -51,12 +54,12 @@ int main(int argc, char **argv)
     {
         try
         {
-            return mill::mode_ninfo<mill::Vector<double, 3>>(
-                    argc-1, const_cast<const char**>(argv+1));
+            return mill::mode_ninfo<vector_type>(argc_ - 1, argv_ + 1);
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "error: " << excpt.what() << std::endl;
+            mill::log(mill::log_level::error, excpt.what(), '\n');
+            std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
     }
@@ -64,8 +67,7 @@ int main(int argc, char **argv)
     {
         try
         {
-            return mill::mode_calc<mill::Vector<double, 3>>(
-                    argc-1, const_cast<const char**>(argv+1));
+            return mill::mode_calc<vector_type>(argc_ - 1, argv_ + 1);
         }
         catch(std::exception& excpt)
         {
@@ -75,12 +77,11 @@ int main(int argc, char **argv)
     }
     else if(mode == "help")
     {
-        return mill::mode_help(
-                    argc-1, const_cast<const char**>(argv+1));
+        return mill::mode_help(argc_ - 1, argv_ + 1);
     }
     else
     {
-        std::cerr << "unknown mode: " << mode << '\n';
+        mill::log(mill::log_level::error, "unknown mode: ", mode, '\n');
         std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
@@ -97,3 +98,33 @@ void print_logo()
               << std::endl;
     return;
 }
+
+std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv)
+{
+    // TODO simplify
+    std::vector<const char*> commands;
+    for(int i=0; i<argc; ++i)
+    {
+        const std::string opt(argv[i]);
+        if(opt == "--debug")
+        {
+            mill::logger.activate(mill::log_level::debug);
+            mill::logger.activate(mill::log_level::info);
+            mill::logger.activate(mill::log_level::warn);
+            mill::logger.activate(mill::log_level::error);
+        }
+        else if(opt == "--quiet")
+        {
+            mill::logger.deactivate(mill::log_level::debug);
+            mill::logger.deactivate(mill::log_level::info);
+            mill::logger.deactivate(mill::log_level::warn);
+            mill::logger.activate  (mill::log_level::error);
+        }
+        else
+        {
+            commands.push_back(argv[i]);
+        }
+    }
+    return std::make_pair(static_cast<int>(commands.size()), commands);
+}
+
