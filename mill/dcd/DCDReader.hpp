@@ -13,6 +13,7 @@
 #ifndef COFFEE_MILL_DCD_READER_HPP
 #define COFFEE_MILL_DCD_READER_HPP
 #include <mill/util/read_binary_as.hpp>
+#include <mill/util/logger.hpp>
 #include "DCDData.hpp"
 #include <memory>
 #include <utility>
@@ -99,18 +100,12 @@ template <typename T>
 typename DCDReader<T>::data_type
 DCDReader<T>::read(std::istream& is)
 {
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : DCD file reading start" << std::endl;
-#endif
+    log(log_level::debug, "DCD file reading start\n");
 
     data_type data = read_header(is);
-
     read_trajectory(is, data);
 
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : reading dcd file  completed" << std::endl;
-#endif
-
+    log(log_level::debug, "DCD file reading completed\n");
     return data;
 }
 
@@ -142,27 +137,26 @@ DCDReader<T>::read_header(std::istream& is)
     // if file size is incorrect, warn and redefine the number of snapshot
     if(!validate_filesize(dat, file_size))
     {
-        std::cerr << "Warning: filesize is not correct! total filesize is "
-                  << file_size << " [byte]" << '\n';
-        std::cerr << "       : but file says there are " << dat.nset()
-                  << " snapshots. number of containing particles is "
-                  << dat.nparticle() << '\n';
-        std::cerr << "       : header block 1 size : " << header1_size << '\n';
-        std::cerr << "       : header block 2 size : " << header2_size << '\n';
-        std::cerr << "       : header block 3 size : " << header3_size << '\n';
-        std::cerr << "       : so this file must have "
-                  << (header1_size + header2_size + header3_size +
-                     snapshot_size * dat.nset()) << " bytes." << '\n';
+        const auto expected_size = header1_size + header2_size + header3_size +
+                                   snapshot_size * dat.nset();
+        log(log_level::warn, "invalid filesize!\n");
+        log(log_level::warn, "actual size is ", file_size, " bytes\n");
+        log(log_level::warn, "but it contains ", dat.nset(), " snapshots.\n");
+        log(log_level::warn, "number of particles is ", dat.nparticle(), ".\n");
+        log(log_level::warn, "1st header block has ", header1_size, " bytes\n");
+        log(log_level::warn, "2nd header block has ", header2_size, " bytes\n");
+        log(log_level::warn, "3rd header block has ", header3_size, " bytes\n");
+        log(log_level::warn, "The file must have ",  expected_size, " bytes\n");
 
-        if((file_size - header1_size - header2_size - header3_size)
-                % snapshot_size != 0)
+        if((file_size - header1_size - header2_size - header3_size) % snapshot_size != 0)
         {
-            std::cerr << "       : probably the last snapshot is imcomplete.\n";
+            log(log_level::warn, "The last snapshot seems to be incomplete.\n");
         }
 
         dat.nset() = (file_size - header1_size - header2_size - header3_size) /
                      snapshot_size;
-        std::cerr << "       : guess snapshot size as " << dat.nset() << std::endl;
+        log(log_level::warn, "The actual number of snapshots seems to be ",
+                             dat.nset(), ".\n");
     }
     return dat;
 }
@@ -183,64 +177,40 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     const int byte = read_binary_as<int>(dcdfile);
     if(byte != 84)
     {
-        std::cerr << "Warning: this file may not be cafemol output."
-                  << std::endl;
-        std::cerr << "       : header block 1 : " << byte << "bytes"
-                  << std::endl;
+        log(log_level::warn, "this file may not be cafemol output\n");
     }
 
     char csigneture[5];
     dcdfile.read(csigneture, 4);
     csigneture[4] = '\0';
     std::string signeture(csigneture);
+    log(log_level::debug, "file signeture is \"", signeture, "\"\n");
+
     if(signeture != "CORD" && signeture != "VELD")
     {
-        throw std::invalid_argument("Unknown File Signeture: " + signeture);
+        throw std::runtime_error("Unknown File Signeture: " + signeture);
     }
-
-#ifdef COFFEE_MILL_DEBUG
-    if(signeture == "CORD")
-    {
-        std::cerr << "Info   : file signature is CORD. normal dcd file.\n";
-    }
-    else if(signeture == "VELD")
-    {
-        std::cerr << "Info   : file signature is VELD. normal vdcd file.\n";
-    }
-#endif
 
     data.signeture() = signeture;
     data.nset() = read_binary_as<int>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : nset = " << data.nset() << std::endl;
-#endif
+    log(log_level::debug, "nset       = ", data.nset(), "\n");
     
     data.istart() = read_binary_as<int>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : istart = " << data.istart() << std::endl;
-#endif
+    log(log_level::debug, "istart     = ", data.istart(), "\n");
 
     data.nstep_save() = read_binary_as<int>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : nstep_save = " << data.nstep_save() << std::endl;
-#endif
+    log(log_level::debug, "nstep_save = ", data.nstep_save(), "\n");
 
     data.nstep() = read_binary_as<int>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : nstep = " << data.nstep() << std::endl;
-#endif
+    log(log_level::debug, "nstep      = ", data.nstep(), "\n");
 
     data.nunit() = read_binary_as<int>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : nunit = " << data.nunit() << std::endl;
-#endif
+    log(log_level::debug, "nunit      = ", data.nunit(), "\n");
 
     dcdfile.ignore(16);
     
     data.delta_t() = read_binary_as<float>(dcdfile);
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : delta t = " << data.delta_t() << std::endl;
-#endif
+    log(log_level::debug, "delta_t    = ", data.delta_t(), "\n");
 
     dcdfile.ignore(36);
 
@@ -249,8 +219,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     const int bytes_f = read_binary_as<int>(dcdfile);
     if(byte != bytes_f)
     {
-        throw std::invalid_argument(
-                "header block1 has invalid size information");
+        throw std::runtime_error("header block1 has invalid size information");
     }
     this->header1_size = byte + size_int * 2;
     return;
@@ -269,30 +238,18 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
         throw std::invalid_argument("header block2 has invalid size");
     }
 
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : dcd file header begin" << std::endl;
-#endif
-
     for(int i(0); i<lines; ++i)
     {
         char line[81];
         dcdfile.read(line, 80);
         line[80] = '\0';
-#ifdef COFFEE_MILL_DEBUG
-        std::cerr << line << std::endl;
-#endif
+        log(log_level::debug, i, "-th comment: ", line, "\n");
         data.comment().push_back(std::string(line));
     }
-
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : header end" << std::endl;
-#endif
-
     const int bytes_f = read_binary_as<int>(dcdfile);
     if(bytes != bytes_f)
     {
-        throw std::invalid_argument(
-                "header block2 has invalid size information");
+        throw std::runtime_error("header block2 has invalid size information");
     }
     header2_size = bytes + size_int * 2;
     return;
@@ -303,17 +260,12 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 {
     const int bytes  = read_binary_as<int>(dcdfile);
     data.nparticle() = read_binary_as<int>(dcdfile);
-
-#ifdef COFFEE_MILL_DEBUG
-    std::cerr << "Info   : there are " << data.nparticle()
-              << " particles in this file" << std::endl;
-#endif
+    log(log_level::debug, "nparticle = ", data.nparticle(), "\n");
 
     const int bytes_f = read_binary_as<int>(dcdfile);
     if(bytes != bytes_f)
     {
-        throw std::invalid_argument(
-                "header block3 has invalid size information");
+        throw std::runtime_error("header block3 has invalid size information");
     }
     header3_size = bytes + size_int * 2;
     return;
@@ -385,10 +337,10 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     const int size_of_block = read_binary_as<int>(is);
     if(size_of_block / size_float != nparticle)
     {
-        std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
-        std::cerr << ", nparticle = " << nparticle << '\n';
-        throw std::invalid_argument(
-                "dcd coordinate block size differs from nparticle");
+        log(log_level::error, "invalid coordinate block!\n");
+        log(log_level::error, "size of coordinate block is ", size_of_block, "\n");
+        log(log_level::error, "but the number of particle is  ", nparticle, "\n");
+        throw std::runtime_error("dcd coordinate block size invalid");
     }
 
     std::vector<float> coordinate(nparticle, 0.0);
@@ -400,10 +352,10 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     const int size_of_block_f = read_binary_as<int>(is);
     if(size_of_block != size_of_block_f)
     {
-        std::cerr << "error: mill::DCDReader: size of block = " << size_of_block;
-        std::cerr << ", nparticle = " << nparticle << '\n';
-        throw std::invalid_argument(
-                "dcd coordinate block has invalid byte-information");
+        log(log_level::error, "invalid coordinate block delimiter\n");
+        log(log_level::error, "the size of the block is not ", size_of_block_f,
+                              " but ", size_of_block, "\n");
+        throw std::runtime_error("invalid delimiter in a coordinate block");
     }
     return coordinate;
 }
