@@ -6,6 +6,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS       OFF)
 set(CMAKE_CXX_STANDARD          17)
 
+add_definitions(-O2)
+add_definitions(-Wall)
+add_definitions(-Wextra)
+add_definitions(-Wpedantic)
+
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/extlib)
