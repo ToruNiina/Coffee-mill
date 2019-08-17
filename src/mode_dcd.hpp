@@ -21,9 +21,8 @@ int mode_dcd(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        // no commands provided: {"dcd"}
-        std::cerr << "error: mill dcd-mode: too few arguments\n";
-        mode_dcd_help(--argument_c, ++argument_v); // {}
+        log(log_level::error, "mill dcd mode: too few arguments\n");
+        mode_dcd_help(--argument_c, ++argument_v);
         return 1;
     }
 
@@ -67,11 +66,11 @@ int mode_dcd(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd-mode: unknown command : " << command << '\n';
+        log(log_level::error, "mill dcd mode: unknown command: ", command, '\n');
+        std::cerr << mode_dcd_help_usage() << std::endl;
         return 1;
     }
 }
 
 } // mill
-
 #endif /* COFFEE_MILL_PDB_MODE */
