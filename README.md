@@ -41,15 +41,11 @@ $ mill <mode> <command> help
 
 1. print the sequences of chains in pdb file.
    - `mill pdb seq model.pdb`
-2. rename the residues
-   - now in progress...
 
 ### NINFO
 
 1. split ninfo file into one-by-one.
-   - now in progress...
-2. make ninfo file from pdb file
-   - now in progress...
+   - `mill ninfo split data.ninfo`
 
 ## Build
 
