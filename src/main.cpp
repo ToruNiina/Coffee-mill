@@ -24,64 +24,38 @@ int main(int argc, char **argv)
     }
 
     const std::string mode(argv_[1]);
-    if(mode == "dcd")
+    try
     {
-        try
+        if(mode == "dcd")
         {
             return mill::mode_dcd<vector_type>(argc_ - 1, argv_ + 1);
         }
-        catch(std::exception& excpt)
-        {
-            mill::log(mill::log_level::error, excpt.what(), '\n');
-            std::cerr << mill::main_usage() << std::endl;
-            return 1;
-        }
-    }
-    else if(mode == "pdb")
-    {
-        try
+        else if(mode == "pdb")
         {
             return mill::mode_pdb<vector_type>(argc_ - 1, argv_ + 1);
         }
-        catch(std::exception& excpt)
-        {
-            mill::log(mill::log_level::error, excpt.what(), '\n');
-            std::cerr << mill::main_usage() << std::endl;
-            return 1;
-        }
-    }
-    else if(mode == "ninfo")
-    {
-        try
+        else if(mode == "ninfo")
         {
             return mill::mode_ninfo<vector_type>(argc_ - 1, argv_ + 1);
         }
-        catch(std::exception& excpt)
+        else if(mode == "calc")
         {
-            mill::log(mill::log_level::error, excpt.what(), '\n');
+            return mill::mode_calc<vector_type>(argc_ - 1, argv_ + 1);
+        }
+        else if(mode == "help")
+        {
+            return mill::mode_help(argc_ - 1, argv_ + 1);
+        }
+        else
+        {
+            mill::log(mill::log_level::error, "unknown mode: ", mode, '\n');
             std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
     }
-    else if(mode == "calc")
+    catch(std::exception& excpt)
     {
-        try
-        {
-            return mill::mode_calc<vector_type>(argc_ - 1, argv_ + 1);
-        }
-        catch(std::exception& excpt)
-        {
-            std::cerr << "error: " << excpt.what() << std::endl;
-            return 1;
-        }
-    }
-    else if(mode == "help")
-    {
-        return mill::mode_help(argc_ - 1, argv_ + 1);
-    }
-    else
-    {
-        mill::log(mill::log_level::error, "unknown mode: ", mode, '\n');
+        mill::log(mill::log_level::error, excpt.what(), '\n');
         std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
