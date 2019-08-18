@@ -1,5 +1,6 @@
 set(TEST_NAMES
     test_string
+    test_flat_map
     )
 
 add_definitions("-O3 -std=c++11")
