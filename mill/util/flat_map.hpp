@@ -9,7 +9,7 @@
 namespace mill
 {
 
-template<typename Key, typename Value, typename Comp>
+template<typename Key, typename Value, typename Comp = std::less<Key>>
 class flat_map
 {
   public:
@@ -32,21 +32,26 @@ class flat_map
 
     struct value_compare
     {
-        value_cmopare(key_cmopare kc): comp_(kc) {}
-        ~value_cmopare() = default;
+        value_compare() = default;
+        ~value_compare() = default;
+
+        value_compare(key_compare kc): comp_(kc) {}
     
         bool operator()(const value_type& lhs, const value_type& rhs) const
         {
             return comp_(lhs.first, rhs.first);
         }
-      private:
-        cmopare_type comp_;
+
+        key_compare comp_;
     };
 
     struct key_value_compare
     {
-        key_value_cmopare(key_cmopare kc): comp_(kc) {}
-        ~key_value_cmopare() = default;
+        key_value_compare() = default;
+        ~key_value_compare() = default;
+
+        key_value_compare(key_compare   kc): comp_(kc) {}
+        key_value_compare(value_compare vc): comp_(vc.comp_) {}
     
         bool operator()(const key_type& lhs, const value_type& rhs) const
         {
@@ -57,8 +62,7 @@ class flat_map
             return comp_(lhs.first, rhs);
         }
 
-      private:
-        cmopare_type comp_;
+        key_compare comp_;
     };
 
   public:
@@ -88,17 +92,17 @@ class flat_map
     flat_map& operator=(std::initializer_list<value_type> init)
     {
         this->container_ = std::move(init);
-        std::sort(container_.begin(), container_.end(), key, comp_);
+        std::sort(container_.begin(), container_.end(), comp_);
         return *this;
     }
 
     mapped_type& operator[](const key_type& key)
     {
-        const key_value_cmopare cmp(comp_);
-        const auto found = std::lower_bound(this->begin(), this->end(), k, cmp);
-        if(found != this->end() && cmp(k, *found))
+        const key_value_compare cmp(comp_);
+        const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
+        if(found != this->end() && cmp(key, *found))
         {
-            return *found;
+            return found->second;
         }
         return this->container_.emplace(found, key, mapped_type{})->second;
     }
@@ -123,7 +127,7 @@ class flat_map
 
     std::pair<iterator, bool> insert(const value_type& v)
     {
-        const key_value_cmopare cmp(comp_);
+        const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
         if(found != this->end() && cmp(v.first, *found)) // already exists.
         {
@@ -134,7 +138,7 @@ class flat_map
     }
     std::pair<iterator, bool> insert(value_type&& v)
     {
-        const key_value_cmopare cmp(comp_);
+        const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
         if(found != this->end() && cmp(v.first, *found)) // already exists.
         {
@@ -222,22 +226,24 @@ class flat_map
         return (this->find(k) != this->end());
     }
 
-    iterator find(const key_type& k)
+    iterator find(const key_type& key)
     {
-        const auto found = this->lower_bound(k);
+        const key_value_compare cmp(comp_);
+        const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
         // assuming `not (a < b) and not (b < a)` is equivalent to `a == b`.
         // lower_bound returns the first element that is not `*found < k`.
         // if `not k < *found`, k == found. otherwise, there are no element.
-        if(found != this->end() && cmp(k, *found))
+        if(found != this->end() && cmp(key, *found))
         {
             return this->end();
         }
         return found;
     }
-    const_iterator find(const key_type& k) const
+    const_iterator find(const key_type& key) const
     {
-        const auto found = this->lower_bound(k);
-        if(found != this->end() && cmp(k, *found))
+        const key_value_compare cmp(comp_);
+        const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
+        if(found != this->end() && cmp(key, *found))
         {
             return this->end();
         }
@@ -249,7 +255,7 @@ class flat_map
         return std::lower_bound(this->begin(), this->end(), k,
                                 key_value_compare(comp_));
     }
-    cosnt_iterator lower_bound(const key_type& k) const
+    const_iterator lower_bound(const key_type& k) const
     {
         return std::lower_bound(this->begin(), this->end(), k,
                                 key_value_compare(comp_));
@@ -260,7 +266,7 @@ class flat_map
         return std::upper_bound(this->begin(), this->end(), k,
                                 key_value_compare(comp_));
     }
-    cosnt_iterator upper_bound(const key_type& k) const
+    const_iterator upper_bound(const key_type& k) const
     {
         return std::upper_bound(this->begin(), this->end(), k,
                                 key_value_compare(comp_));
