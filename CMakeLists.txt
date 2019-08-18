@@ -1,15 +1,28 @@
+cmake_minimum_required(VERSION 3.8)
 project(Coffee-mill)
-cmake_minimum_required(VERSION 2.8)
 enable_testing()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS       OFF)
 set(CMAKE_CXX_STANDARD          17)
 
-add_definitions(-O2)
-add_definitions(-Wall)
-add_definitions(-Wextra)
-add_definitions(-Wpedantic)
+check_cxx_compiler_flag("-O2"        COMPILER_SUPPORTS_O2)
+check_cxx_compiler_flag("-Wall"      COMPILER_SUPPORTS_Wall)
+check_cxx_compiler_flag("-Wextra"    COMPILER_SUPPORTS_Wextra)
+check_cxx_compiler_flag("-Wpedantic" COMPILER_SUPPORTS_Wpedantic)
+
+if(COMPILER_SUPPORTS_O2)
+    add_definitions(-O2)
+endif()
+if(COMPILER_SUPPORTS_Wall)
+    add_definitions(-Wall)
+endif()
+if(COMPILER_SUPPORTS_Wextra)
+    add_definitions(-Wextra)
+endif()
+if(COMPILER_SUPPORTS_Wpedantic)
+    add_definitions(-Wpedantic)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 include_directories(${PROJECT_SOURCE_DIR})
@@ -17,7 +30,9 @@ include_directories(${PROJECT_SOURCE_DIR}/extlib)
 include_directories(${PROJECT_SOURCE_DIR}/mill)
 
 find_package(Boost)
-include_directories(${Boost_INCLUDE_DIR})
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIR})
+endif()
 
 # to run doxygen, run `$make doc`.
 find_package(Doxygen)
@@ -44,4 +59,8 @@ else(DOXYGEN_FOUND)
 endif(DOXYGEN_FOUND)
 
 add_subdirectory(src)
-add_subdirectory(tests)
+
+# test codes depend on Boost.test
+if(Boost_FOUND)
+    add_subdirectory(tests)
+endif()
