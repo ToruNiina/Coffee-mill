@@ -14,7 +14,7 @@ void write_as_binary(std::ostream& os, const T v) noexcept
     static_assert(std::is_arithmetic_v<T>);
     using Type = std::remove_reference_t<T>;
     os.write(reinterpret_cast<const char*>(std::addressof(v)), sizeof(Type));
-    return dst;
+    return ;
 }
 
 } // mill
