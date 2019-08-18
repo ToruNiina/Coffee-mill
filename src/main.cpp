@@ -13,9 +13,10 @@ int main(int argc, char **argv)
 {
     using vector_type = mill::Vector<double, 3>;
 
-    print_logo();
     auto [argc_, argv_v] = setup_logger(argc, argv);
     const char** argv_ = argv_v.data();
+
+    print_logo();
 
     if(argc_ < 2)
     {
@@ -63,13 +64,14 @@ int main(int argc, char **argv)
 
 void print_logo()
 {
-    std::cerr << R"(  ___        __  __             __    __ _  _  _ )""\n"
-                 R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n"
-                 R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n"
-                 R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n"
-                 R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n"
-                 R"(                   Copyright 2016-now Toru Niina))"
-              << std::endl;
+    using mill::log;
+    const auto lv = mill::log_level::info;
+    log(lv, R"(  ___        __  __             __    __ _  _  _ )""\n");
+    log(lv, R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n");
+    log(lv, R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n");
+    log(lv, R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n");
+    log(lv, R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n");
+    log(lv, R"(                   Copyright 2016-now Toru Niina))""\n");
     return;
 }
 
