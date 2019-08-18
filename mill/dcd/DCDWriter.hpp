@@ -68,7 +68,10 @@ template <typename vectorT>
 void DCDWriter<vectorT>::write(const std::string& filename, const data_type& dcd)
 {
     std::ofstream ifs(filename);
-    if(not ifs.good()) throw std::runtime_error("file open error: " + filename);
+    if(not ifs.good())
+    {
+        throw std::runtime_error("file open error: " + filename);
+    }
     this->write(ifs, dcd);
     ifs.close();
     return;
@@ -80,10 +83,7 @@ void DCDWriter<vectorT>::write(std::ostream& os, const data_type& dcd)
     this->write_header(os, dcd.header());
     this->write_trajectory(os, dcd.traj());
 
-#ifdef COFFEE_MILL_DEBUG
-    std::cout << "Info   : write_file completed" << std::endl;
-#endif
-
+    log(log_level::debug, "DCDWriter: file written");
     return;
 }
 
@@ -93,11 +93,12 @@ void DCDWriter<vectorT>::write_header(
 {
     std::ofstream dcdfile(fname, std::ios::binary);
     if(!dcdfile.good())
+    {
         throw std::runtime_error("file open error: " + fname);
+    }
 
     write_header(dcdfile, dcd);
     dcdfile.close();
-
     return;
 }
 
@@ -160,7 +161,9 @@ void DCDWriter<vectorT>::write_head_block1(
     wrote += size_int;
 
     if(wrote != bytes)
+    {
         throw std::invalid_argument("byte information error");
+    }
 
     os.write(reinterpret_cast<const char*>(&bytes), size_int);
     return;
@@ -183,7 +186,9 @@ void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& 
         os << default_comment;
         wrote += 80;
         if(wrote != bytes)
+        {
             throw std::logic_error("internal byte information error");
+        }
         os.write(reinterpret_cast<const char*>(&bytes), size_int);
     }
     else
@@ -204,7 +209,9 @@ void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& 
         }
 
         if(wrote != bytes)
+        {
             throw std::logic_error("internal byte information error");
+        }
 
         os.write(reinterpret_cast<const char*>(&bytes), size_int);
     }
@@ -227,7 +234,10 @@ void DCDWriter<vectorT>::write_trajectory(
         const std::string& fname, const trajectory_type& traj)
 {
     std::ifstream ifs(fname);
-    if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
+    if(not ifs.good())
+    {
+        throw std::runtime_error("file open error: " + fname);
+    }
     this->write_trajectory(ifs, traj);
     ifs.close();
     return ;
@@ -238,7 +248,9 @@ void DCDWriter<vectorT>::write_trajectory(
         std::ostream& os, const trajectory_type& traj)
 {
     for(auto iter = traj.cbegin(); iter != traj.cend(); ++iter)
+    {
         this->write_snapshot(os, *iter);
+    }
     return;
 }
 
@@ -247,7 +259,10 @@ void DCDWriter<vectorT>::write_snapshot(
         const std::string& fname, const snapshot_type& snapshot)
 {
     std::ifstream ifs(fname);
-    if(not ifs.good()) throw std::runtime_error("file open error: " + fname);
+    if(not ifs.good())
+    {
+        throw std::runtime_error("file open error: " + fname);
+    }
     this->write_snapshot(ifs, snapshot);
     ifs.close();
     return ;
@@ -294,7 +309,5 @@ void DCDWriter<vectorT>::write_coord(
     return;
 }
 
-
 }//mill
-
 #endif //COFFEE_MILL_DCD_WRITER
