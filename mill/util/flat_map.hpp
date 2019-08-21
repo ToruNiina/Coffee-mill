@@ -98,13 +98,12 @@ class flat_map
 
     mapped_type& operator[](const key_type& key)
     {
-        const key_value_compare cmp(comp_);
-        const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
-        if(found != this->end() && cmp(key, *found))
+        const auto found = this->find(key);
+        if(found == this->end())
         {
-            return found->second;
+            return this->container_.emplace(found, key, mapped_type{})->second;
         }
-        return this->container_.emplace(found, key, mapped_type{})->second;
+        return found->second;
     }
     mapped_type&       at(const key_type& key)
     {
@@ -129,23 +128,33 @@ class flat_map
     {
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
-        if(found != this->end() && cmp(v.first, *found)) // already exists.
+        if(found == this->end())
         {
-            return std::make_pair(found, false);
+            this->container_.emplace_back(v);
+            return std::make_pair(std::prev(this->container_.end()), true);
         }
-        const auto inserted = this->container_.emplace(found, v);
-        return std::make_pair(inserted, true);
+        if(cmp(v.first, *found))
+        {
+            this->container_.emplace(found, v);
+            return std::make_pair(found, true);
+        }
+        return std::make_pair(found, false);
     }
     std::pair<iterator, bool> insert(value_type&& v)
     {
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
-        if(found != this->end() && cmp(v.first, *found)) // already exists.
+        if(found == this->end())
         {
-            return std::make_pair(found, false);
+            this->container_.emplace_back(v);
+            return std::make_pair(std::prev(this->container_.end()), true);
         }
-        const auto inserted = this->container_.emplace(found, std::move(v));
-        return std::make_pair(inserted, true);
+        if(cmp(v.first, *found))
+        {
+            this->container_.emplace(found, v);
+            return std::make_pair(found, true);
+        }
+        return std::make_pair(found, false);
     }
     template<typename InputIterator>
     void insert(InputIterator first, InputIterator last)
@@ -228,6 +237,7 @@ class flat_map
 
     iterator find(const key_type& key)
     {
+        assert(std::is_sorted(this->begin(), this->end(), comp_));
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
         // assuming `not (a < b) and not (b < a)` is equivalent to `a == b`.
@@ -241,6 +251,7 @@ class flat_map
     }
     const_iterator find(const key_type& key) const
     {
+        assert(std::is_sorted(this->begin(), this->end(), comp_));
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
         if(found != this->end() && cmp(key, *found))
