@@ -36,7 +36,7 @@ class flat_map
         ~value_compare() = default;
 
         value_compare(key_compare kc): comp_(kc) {}
-    
+
         bool operator()(const value_type& lhs, const value_type& rhs) const
         {
             return comp_(lhs.first, rhs.first);
@@ -52,7 +52,7 @@ class flat_map
 
         key_value_compare(key_compare   kc): comp_(kc) {}
         key_value_compare(value_compare vc): comp_(vc.comp_) {}
-    
+
         bool operator()(const key_type& lhs, const value_type& rhs) const
         {
             return comp_(lhs, rhs.first);
@@ -122,7 +122,7 @@ class flat_map
         {
             throw std::out_of_range("mill::flat_map::at: key not found");
         }
-        return found->second;   
+        return found->second;
     }
 
     std::pair<iterator, bool> insert(const value_type& v)
