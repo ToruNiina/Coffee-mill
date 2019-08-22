@@ -126,14 +126,13 @@ class flat_map
 
     std::pair<iterator, bool> insert(const value_type& v)
     {
-        const key_value_compare cmp(comp_);
-        const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
+        const auto found = std::lower_bound(this->begin(), this->end(), v, comp_);
         if(found == this->end())
         {
             this->container_.emplace_back(v);
             return std::make_pair(std::prev(this->container_.end()), true);
         }
-        if(cmp(v.first, *found))
+        if(comp_(v, *found))
         {
             this->container_.emplace(found, v);
             return std::make_pair(found, true);
@@ -142,14 +141,13 @@ class flat_map
     }
     std::pair<iterator, bool> insert(value_type&& v)
     {
-        const key_value_compare cmp(comp_);
-        const auto found = std::lower_bound(this->begin(), this->end(), v.first, cmp);
+        const auto found = std::lower_bound(this->begin(), this->end(), v, comp_);
         if(found == this->end())
         {
             this->container_.emplace_back(v);
             return std::make_pair(std::prev(this->container_.end()), true);
         }
-        if(cmp(v.first, *found))
+        if(comp_(v, *found))
         {
             this->container_.emplace(found, v);
             return std::make_pair(found, true);
@@ -237,7 +235,6 @@ class flat_map
 
     iterator find(const key_type& key)
     {
-        assert(std::is_sorted(this->begin(), this->end(), comp_));
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
         // assuming `not (a < b) and not (b < a)` is equivalent to `a == b`.
@@ -251,7 +248,6 @@ class flat_map
     }
     const_iterator find(const key_type& key) const
     {
-        assert(std::is_sorted(this->begin(), this->end(), comp_));
         const key_value_compare cmp(comp_);
         const auto found = std::lower_bound(this->begin(), this->end(), key, cmp);
         if(found != this->end() && cmp(key, *found))
@@ -281,6 +277,11 @@ class flat_map
     {
         return std::upper_bound(this->begin(), this->end(), k,
                                 key_value_compare(comp_));
+    }
+
+    bool diagnosis() const
+    {
+        return std::is_sorted(this->begin(), this->end(), comp_);
     }
 
   private:
