@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.8)
 project(Coffee-mill)
 enable_testing()
 
+if (POLICY CMP0074)
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS       OFF)
 set(CMAKE_CXX_STANDARD          17)
@@ -25,14 +29,14 @@ if(COMPILER_SUPPORTS_Wpedantic)
     add_definitions(-Wpedantic)
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/extlib)
 include_directories(${PROJECT_SOURCE_DIR}/mill)
 
 find_package(Boost)
 if(Boost_FOUND)
-    include_directories(${Boost_INCLUDE_DIR})
+    message(STATUS "Boost ${Boost_VERSION} found at ${Boost_INCLUDE_DIRS}")
+    include_directories(${Boost_INCLUDE_DIRS})
 endif()
 
 # to run doxygen, run `$make doc`.
