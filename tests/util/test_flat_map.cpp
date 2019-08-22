@@ -72,9 +72,29 @@ BOOST_AUTO_TEST_CASE(insertion)
         fm.insert(std::make_pair("baz", 69));
 
         BOOST_TEST(not fm.empty());
+        BOOST_TEST(fm.diagnosis());
         BOOST_TEST(fm.size() == 3u);
+
         BOOST_TEST(fm.at("foo") == 42);
         BOOST_TEST(fm.at("bar") == 54);
         BOOST_TEST(fm.at("baz") == 69);
     }
+    {
+        mill::flat_map<std::string, int> fm;
+        BOOST_TEST(fm.empty());
+        BOOST_TEST(fm.size() == 0u);
+
+        const std::vector<std::pair<std::string, int>> list = {{"foo", 42}, {"bar", 54}, {"baz", 69}};
+
+        fm.insert(list.begin(), list.end());
+
+        BOOST_TEST(not fm.empty());
+        BOOST_TEST(fm.diagnosis());
+        BOOST_TEST(fm.size() == 3u);
+
+        BOOST_TEST(fm.at("foo") == 42);
+        BOOST_TEST(fm.at("bar") == 54);
+        BOOST_TEST(fm.at("baz") == 69);
+    }
+
 }
