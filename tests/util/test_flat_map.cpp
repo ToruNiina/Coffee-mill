@@ -98,3 +98,28 @@ BOOST_AUTO_TEST_CASE(insertion)
     }
 
 }
+BOOST_AUTO_TEST_CASE(find)
+{
+    const mill::flat_map<std::string, int> fm{{"foo", 42}, {"bar", 54}, {"baz", 69}};
+    BOOST_TEST(fm.contains("foo"));
+    BOOST_TEST(fm.contains("bar"));
+    BOOST_TEST(fm.contains("baz"));
+
+    BOOST_TEST(fm.find("foo")->first == "foo");
+    BOOST_TEST(fm.find("bar")->first == "bar");
+    BOOST_TEST(fm.find("baz")->first == "baz");
+    BOOST_CHECK(fm.find("qux") == fm.end());
+
+    BOOST_TEST(fm.lower_bound("foo")->first == "foo");
+    BOOST_TEST(fm.lower_bound("bar")->first == "bar");
+    BOOST_TEST(fm.lower_bound("baz")->first == "baz");
+
+    BOOST_TEST(fm.lower_bound("baq")->first == "bar");
+    BOOST_TEST(fm.lower_bound("bas")->first == "baz");
+    BOOST_TEST(fm.lower_bound("bbb")->first == "foo");
+
+    BOOST_TEST(fm.upper_bound("bar")->first == "baz");
+    BOOST_TEST(fm.upper_bound("baz")->first == "foo");
+    BOOST_CHECK(fm.upper_bound("foo") == fm.end());
+}
+
