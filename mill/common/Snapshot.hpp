@@ -11,13 +11,12 @@ template<typename vectorT>
 class Snapshot
 {
   public:
-
     using vector_type    = vectorT;
     using real_type      = scalar_type_of_t<vector_type>;
     using attribute_type = Attribute<vector_type>;
     using attribute_container_type = std::map<std::string, attribute_type>;
     // {position, {name:attributes, ...}}
-    using value_type     = std::pair<value_type, attribute_container_type>;
+    using value_type     = std::pair<vector_type, attribute_container_type>;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename const_iterator::const_iterator;
