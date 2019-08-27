@@ -34,6 +34,16 @@ struct AminoAcidCode
         }
     }
 
+    bool contains(const std::string& s) const
+    {
+        return codes.count(s) == 1;
+    }
+    bool contains(const char c) const
+    {
+        return codes.cend() != std::find_if(codes.cbegin(), codes.cend(),
+            [=](const std::pair<std::string, char>& p){return p.second==c;});
+    }
+
     std::map<std::string, char> codes = {
         {"ALA", 'A'},
         {"ASX", 'B'},
