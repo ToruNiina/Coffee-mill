@@ -98,16 +98,18 @@ struct generate_sequence
         {
             return res.front();
         }
-        else if(res[0] == 'D' && res.size() == 2)
+        else if(res.size() == 2 && res.at(0) == 'D')
         {
-            return res[1];
+            return res.at(1);
         }
-        else if(res.size() == 3)
+        else if(res.size() == 3 && amino.contains(res))
         {
             return amino.at(res);
         }
         else
+        {
             throw std::invalid_argument("unknown sequence: " + res);
+        }
     }
     AminoAcidCode amino;
 };
@@ -116,7 +118,7 @@ struct generate_sequence
 template<typename vectorT>
 int mode_pdb_seq(int argument_c, const char **argument_v)
 {
-    if(argument_c < 2)
+    if(argument_c != 2)
     {
         std::cerr << "error: mill pdb seq: too few arguments\n";
         std::cerr << pdb_seq_usage() << std::endl;
