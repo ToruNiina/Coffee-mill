@@ -10,8 +10,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_PDB_ATOM
-#define COFFEE_MILL_PDB_ATOM
+#ifndef COFFEE_MILL_PDB_ATOM_HPP
+#define COFFEE_MILL_PDB_ATOM_HPP
 #include <mill/util/scalar_type_of.hpp>
 #include <mill/util/string.hpp>
 #include <iostream>

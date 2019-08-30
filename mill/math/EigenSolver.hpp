@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_EIGEN_SOLVER
-#define COFFEE_MILL_EIGEN_SOLVER
+#ifndef COFFEE_MILL_MATH_EIGEN_SOLVER_HPP
+#define COFFEE_MILL_MATH_EIGEN_SOLVER_HPP
 #include "Matrix.hpp"
 #include "Vector.hpp"
 #include <array>

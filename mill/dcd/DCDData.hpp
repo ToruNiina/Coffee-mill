@@ -12,8 +12,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_DCD_DATA
-#define COFFEE_MILL_DCD_DATA
+#ifndef COFFEE_MILL_DCD_DATA_HPP
+#define COFFEE_MILL_DCD_DATA_HPP
 #include "util/scalar_type_of.hpp"
 #include <vector>
 #include <string>

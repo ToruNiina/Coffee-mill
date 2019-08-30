@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_VECTOR
-#define COFFEE_MILL_VECTOR
+#ifndef COFFEE_MILL_MATH_VECTOR_HPP
+#define COFFEE_MILL_MATH_VECTOR_HPP
 #include "Matrix.hpp"
 #include <mill/util/scalar_type_of.hpp>
 #include <algorithm>

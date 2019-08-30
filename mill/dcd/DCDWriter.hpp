@@ -11,8 +11,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_DCD_WRITER
-#define COFFEE_MILL_DCD_WRITER
+#ifndef COFFEE_MILL_DCD_WRITER_HPP
+#define COFFEE_MILL_DCD_WRITER_HPP
 #include "DCDData.hpp"
 #include "mill/util/write_as_binary.hpp"
 #include <iostream>

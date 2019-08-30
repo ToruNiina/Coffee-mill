@@ -12,8 +12,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_PDB_RESIDUE
-#define COFFEE_MILL_PDB_RESIDUE
+#ifndef COFFEE_MILL_PDB_RESIDUE_HPP
+#define COFFEE_MILL_PDB_RESIDUE_HPP
 #include "PDBAtom.hpp"
 #include <vector>
 #include <stdexcept>

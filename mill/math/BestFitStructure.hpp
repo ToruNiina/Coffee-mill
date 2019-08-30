@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_BEST_FIT
-#define COFFEE_MILL_BEST_FIT
+#ifndef COFFEE_MILL_MATH_BEST_FIT_STRUCTURE_HPP
+#define COFFEE_MILL_MATH_BEST_FIT_STRUCTURE_HPP
 #include "EigenSolver.hpp"
 #include <vector>
 

@@ -1,5 +1,5 @@
-#ifndef COFFEE_MILL_MATRIX
-#define COFFEE_MILL_MATRIX
+#ifndef COFFEE_MILL_MATH_MATRIX_HPP
+#define COFFEE_MILL_MATH_MATRIX_HPP
 #include <mill/util/is_all.hpp>
 #include <array>
 

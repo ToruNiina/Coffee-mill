@@ -8,8 +8,8 @@
   @date 2016-10-18 10:00
   @copyright Toru Niina 2016 on MIT License
 */
-#ifndef COFFEE_MILL_PDB_WRITER
-#define COFFEE_MILL_PDB_WRITER
+#ifndef COFFEE_MILL_PDB_WRITER_HPP
+#define COFFEE_MILL_PDB_WRITER_HPP
 #include "PDBChain.hpp"
 #include <fstream>
 #include <sstream>

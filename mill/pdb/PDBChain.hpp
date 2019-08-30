@@ -10,8 +10,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_PDB_CHAIN
-#define COFFEE_MILL_PDB_CHAIN
+#ifndef COFFEE_MILL_PDB_CHAIN_HPP
+#define COFFEE_MILL_PDB_CHAIN_HPP
 #include "PDBResidue.hpp"
 
 namespace mill

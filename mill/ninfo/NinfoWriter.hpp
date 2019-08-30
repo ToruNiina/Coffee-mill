@@ -8,8 +8,8 @@
   @date 2016-06-10 10:00
   @copyright Toru Niina 2016 on MIT License
 */
-#ifndef COFFEE_MILL_NINFO_WRITER
-#define COFFEE_MILL_NINFO_WRITER
+#ifndef COFFEE_MILL_NINFO_WRITER_HPP
+#define COFFEE_MILL_NINFO_WRITER_HPP
 #include "NinfoData.hpp"
 #include <fstream>
 

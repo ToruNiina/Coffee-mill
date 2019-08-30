@@ -7,8 +7,8 @@
   @copyright Toru Niina 2017 on MIT License
 */
 
-#ifndef COFFEE_MILL_XYZ_DATA
-#define COFFEE_MILL_XYZ_DATA
+#ifndef COFFEE_MILL_XYZ_DATA_HPP
+#define COFFEE_MILL_XYZ_DATA_HPP
 #include <utility>
 #include <vector>
 #include <string>

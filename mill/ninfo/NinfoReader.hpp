@@ -10,8 +10,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_NINFO_READER
-#define COFFEE_MILL_NINFO_READER
+#ifndef COFFEE_MILL_NINFO_READER_HPP
+#define COFFEE_MILL_NINFO_READER_HPP
 #include "NinfoData.hpp"
 #include "util/string.hpp"
 #include <fstream>

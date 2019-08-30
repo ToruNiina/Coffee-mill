@@ -12,8 +12,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_NINFO_DATA
-#define COFFEE_MILL_NINFO_DATA
+#ifndef COFFEE_MILL_NINFO_DATA_HPP
+#define COFFEE_MILL_NINFO_DATA_HPP
 #include "NinfoBase.hpp"
 #include <memory>
 #include <map>

@@ -7,8 +7,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_XYZ_WRITER
-#define COFFEE_MILL_XYZ_WRITER
+#ifndef COFFEE_MILL_XYZ_WRITER_HPP
+#define COFFEE_MILL_XYZ_WRITER_HPP
 #include "XYZData.hpp"
 #include <memory>
 #include <utility>

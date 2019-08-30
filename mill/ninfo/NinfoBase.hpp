@@ -12,8 +12,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_NINFO_BASE
-#define COFFEE_MILL_NINFO_BASE
+#ifndef COFFEE_MILL_NINFO_BASE_HPP
+#define COFFEE_MILL_NINFO_BASE_HPP
 #include <string>
 #include <array>
 #include <vector>

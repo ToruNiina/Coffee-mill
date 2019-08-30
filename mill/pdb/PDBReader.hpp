@@ -9,8 +9,8 @@
   @copyright Toru Niina 2016 on MIT License
 */
 
-#ifndef COFFEE_MILL_PDB_READER
-#define COFFEE_MILL_PDB_READER
+#ifndef COFFEE_MILL_PDB_READER_HPP
+#define COFFEE_MILL_PDB_READER_HPP
 #include "PDBChain.hpp"
 #include <fstream>
 #include <sstream>
