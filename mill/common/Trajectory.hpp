@@ -54,10 +54,28 @@ class Trajectory
     value_type&       at(std::size_t i)       {return snapshots_.at(i);}
     value_type const& at(std::size_t i) const {return snapshots_.at(i);}
 
+    std::optional<value_type> try_at(const std::size_t i) const noexcept
+    {
+        if(this->snapshots_.size() <= i)
+        {
+            return this->snapshots_.at(i);
+        }
+        return std::nullopt;
+    }
+
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
     attribute_type&       at(const std::string& name) {return attributes_.at(name);}
     attribute_type const& at(const std::string& name) {return attributes_.at(name);}
+
+    std::optional<attribute_type> try_at(const std::string& name) const noexcept
+    {
+        if(this->attributes_.count(name) != 0)
+        {
+            return this->attributes_.at(name);
+        }
+        return std::nullopt;
+    }
 
     iterator        begin()       noexcept {return snapshots_.begin();}
     iterator        end()         noexcept {return snapshots_.end();}
