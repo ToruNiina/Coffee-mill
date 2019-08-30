@@ -210,6 +210,22 @@ class Attribute
         return static_cast<AttributeKind>(storage_.index());
     }
 
+    template<typename T>
+    T get() const {return std::get<T>(storage_);}
+
+    template<typename T>
+    std::optional<T> try_get() const noexcept
+    {
+        try
+        {
+            return std::get<T>(storage_);
+        }
+        catch(const std::exception&)
+        {
+            return std::nullopt;
+        }
+    }
+
     storage_type&       storage() &       {return storage_;}
     storage_type const& storage()  const& {return storage_;}
     storage_type&&      storage() &&      {return std::move(storage_);}
