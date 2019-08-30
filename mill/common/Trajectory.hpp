@@ -28,6 +28,7 @@ class Trajectory
     Trajectory& operator=(Trajectory const&) = default;
     Trajectory& operator=(Trajectory &&)     = default;
 
+    Trajectory(std::size_t N): snapshots_(N) {}
     Trajectory(attribute_type attr): attributes_(std::move(attr)) {}
     Trajectory(container_type ps)  : snapshots_(std::move(ps))    {}
     Trajectory(const std::vector<snapshot_type>& ss): snapshots_(ss.size())

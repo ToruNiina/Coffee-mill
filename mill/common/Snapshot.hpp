@@ -17,6 +17,7 @@ class Snapshot
     using attribute_container_type = std::map<std::string, attribute_type>;
     // {position, {name:attributes, ...}}
     using value_type     = std::pair<vector_type, attribute_container_type>;
+    using particle_type  = value_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename const_iterator::const_iterator;
@@ -29,6 +30,8 @@ class Snapshot
     Snapshot(Snapshot &&)     = default;
     Snapshot& operator=(Snapshot const&) = default;
     Snapshot& operator=(Snapshot &&)     = default;
+
+    Snapshot(std::size_t N): particles_(N) {}
 
     Snapshot(attribute_type attr): attributes_(std::move(attr)) {}
     Snapshot(container_type ps)  : particles_(std::move(ps))    {}
