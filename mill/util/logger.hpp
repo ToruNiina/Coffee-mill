@@ -40,7 +40,7 @@ struct Logger
     void warn(Ts&& ... args) const
     {
         if(not this->is_activated(log_level::warn)) {return;}
-        std::cerr << "\x1b[33mWarn:\x1b[0m ";
+        std::cerr << "\x1b[33mWarn :\x1b[0m ";
         (std::cerr << ... << args);
         std::cerr << std::flush;
         return;
@@ -49,7 +49,7 @@ struct Logger
     void info(Ts&& ... args) const
     {
         if(not this->is_activated(log_level::info)) {return;}
-        std::cerr << "\x1b[32mInfo:\x1b[0m ";
+        std::cerr << "\x1b[32mInfo :\x1b[0m ";
         (std::cerr << ... << args);
         std::cerr << std::flush;
         return;
