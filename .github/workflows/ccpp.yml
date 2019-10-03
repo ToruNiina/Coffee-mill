@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: cmake
-      run: mkdir build; cd build; cmake ..
+      run: cd build; cmake ..
     - name: make
       run: make
     - name: make test
