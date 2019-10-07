@@ -1,7 +1,7 @@
 /*!
   @file XYZReader.hpp
   @brief definition of a class that reads xyz file.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2017-01-05 17:00
   @copyright Toru Niina 2016 on MIT License
