@@ -23,7 +23,7 @@ class JacobiEigenSolver
     solve(const Matrix<scalarT, N, N>& mat) const;
 
   private:
-    
+
     template<typename scalarT, std::size_t N>
     bool is_symmetric(const Matrix<scalarT, N, N>& mat) const;
 

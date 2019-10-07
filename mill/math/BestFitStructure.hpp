@@ -127,7 +127,7 @@ BestFit<sclT>::rotational_matrix(const structure_type& str) const
 template<typename sclT>
 typename BestFit<sclT>::matrix33_type
 BestFit<sclT>::make_rotational_matrix(
-        const structure_type& structure, const structure_type& reference) const 
+        const structure_type& structure, const structure_type& reference) const
 {
     if(structure.size() != reference.size())
         throw std::invalid_argument("different size structures");
