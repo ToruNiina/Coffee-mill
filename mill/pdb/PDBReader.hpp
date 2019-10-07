@@ -3,7 +3,7 @@
   @brief pdb reader.
 
   read pdb atoms from input stream and parse atoms as chains.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 13:00
   @copyright Toru Niina 2016 on MIT License
