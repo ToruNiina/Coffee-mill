@@ -4,7 +4,7 @@
 
   DCDReader reads dcd file and store the information included in the file.
   the data is stored as DCDData. Reader can read only a header region.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 15:00
   @copyright Toru Niina 2016 on MIT License
@@ -194,7 +194,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     data.signeture() = signeture;
     data.nset() = read_binary_as<int>(dcdfile);
     log(log_level::debug, "nset       = ", data.nset(), "\n");
-    
+
     data.istart() = read_binary_as<int>(dcdfile);
     log(log_level::debug, "istart     = ", data.istart(), "\n");
 
@@ -208,7 +208,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     log(log_level::debug, "nunit      = ", data.nunit(), "\n");
 
     dcdfile.ignore(16);
-    
+
     data.delta_t() = read_binary_as<float>(dcdfile);
     log(log_level::debug, "delta_t    = ", data.delta_t(), "\n");
 
@@ -229,7 +229,7 @@ template <typename T>
 void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
 {
     const int bytes = read_binary_as<int>(dcdfile);
-    
+
     const int lines = read_binary_as<int>(dcdfile);
     if((80 * lines + 4) != bytes)
     {

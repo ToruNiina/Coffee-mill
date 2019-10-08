@@ -19,7 +19,7 @@ namespace mill
 
 //! PDBChain class.
 /*!
- * PDBChain contains shared pointer of PDBResidue as vector. 
+ * PDBChain contains shared pointer of PDBResidue as vector.
  * this behaves like std::vector.
  */
 template<typename vectorT>

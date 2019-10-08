@@ -1,7 +1,7 @@
 /*!
   @file XYZWriter.hpp
   @brief definition of a class that reads xyz file.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2017-01-05 17:30
   @copyright Toru Niina 2016 on MIT License
@@ -96,7 +96,7 @@ void XYZWriter<vectorT>::write(std::ostream& os, const frame_type& frame) const
         os << particle.first     << ' ' << particle.second[0] << ' '
               particle.second[1] << ' ' << particle.second[2] << '\n';
     }
-    return;   
+    return;
 }
 
 }// mill

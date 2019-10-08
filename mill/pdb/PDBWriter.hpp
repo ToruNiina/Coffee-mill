@@ -3,7 +3,7 @@
   @brief pdb writer.
 
   write pdb atoms or chains into output stream.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-10-18 10:00
   @copyright Toru Niina 2016 on MIT License

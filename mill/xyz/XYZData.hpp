@@ -1,7 +1,7 @@
 /*!
   @file XYZData.hpp
   @brief definition of a data struct for xyz file.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2017-03-23 01:00
   @copyright Toru Niina 2017 on MIT License

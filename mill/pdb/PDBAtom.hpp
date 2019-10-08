@@ -4,7 +4,7 @@
 
   PDBAtom class contains information of atom line of pdb file.
   This file contains a definition of io stream operator<< and >>.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 13:00
   @copyright Toru Niina 2016 on MIT License

@@ -3,10 +3,10 @@
   @brief definition of a class that is a set of data dcd file contains.
 
   definition of class DCDData that is a set of data dcd file contains.
-  The data is composed of header information(timestep, delta_t, etc...) 
+  The data is composed of header information(timestep, delta_t, etc...)
   and trajectory(array of array of Vector3d). This behaves like
   std::vector<std::vector<Vector3d>> with iterator, front()/back(), at/[].
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 15:00
   @copyright Toru Niina 2016 on MIT License

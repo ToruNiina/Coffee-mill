@@ -23,7 +23,7 @@ namespace mill
 
 //! PDBResidue class.
 /*!
- * PDBResidue contains shared pointer of PDBAtom as vector. 
+ * PDBResidue contains shared pointer of PDBAtom as vector.
  * this behaves like std::vector.
  */
 template<typename vectorT>
