@@ -1,5 +1,6 @@
 #ifndef COFFEE_MILL_TRR_DATA_HPP
 #define COFFEE_MILL_TRR_DATA_HPP
+#include <mill/util/scalar_type_of.hpp>
 #include <array>
 #include <vector>
 #include <optional>
@@ -30,10 +31,14 @@ struct TRRHeader
     float        lambda;
 };
 
-template<typename coordT>
+template<typename vectorT>
 struct TRRSnapshot
 {
-    TRRHeader                            header;
+    using vector_type = vectorT;
+    using real_type   = typename scalar_type_of<vector_type>::type;
+    using header_type = TRRHeader;
+
+    header_type                          header;
     std::optional<std::array<coordT, 3>> box;
     std::optional<std::array<coordT, 3>> virial;
     std::optional<std::array<coordT, 3>> pressure;
