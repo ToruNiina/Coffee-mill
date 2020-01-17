@@ -75,8 +75,8 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 splitted[units][kind].push_back(line);
             }
         }
-        log(log_level::debug, "mill ninfo split: blocks are splitted."
-                              " writing one-by-one...\n");
+        log(log_level::debug, "mill ninfo split: blocks are splitted into ",
+                splitted.size(), " ninfoes. writing one-by-one...\n");
         NinfoWriter<real_type> writer;
         const std::string file_prefix = fname.substr(0, fname.size() - 6);
         for(const auto& one_by_one : splitted)
