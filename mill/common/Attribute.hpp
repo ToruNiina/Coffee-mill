@@ -225,6 +225,18 @@ class Attribute
             return std::nullopt;
         }
     }
+    template<typename T>
+    T const& get_or(const T& v) const noexcept
+    {
+        try
+        {
+            return std::get<T>(storage_);
+        }
+        catch(const std::exception&)
+        {
+            return v;
+        }
+    }
 
     storage_type&       storage() &       {return storage_;}
     storage_type const& storage()  const& {return storage_;}
