@@ -73,13 +73,6 @@ class DCDReader
     std::size_t header2_size;
     std::size_t header3_size;
     std::size_t snapshot_size;
-
-    //XXX: size_value depends on the environment that the simulation
-    //     runs, not on the environment where you analysis the dcd file.
-    //     so these size value perhaps differ from the true value.
-    constexpr static std::size_t size_int   = sizeof(int);
-    constexpr static std::size_t size_float = sizeof(float);
-    constexpr static std::size_t size_char  = sizeof(char);
 };
 
 template <typename T>
@@ -221,7 +214,7 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     {
         throw std::runtime_error("header block1 has invalid size information");
     }
-    this->header1_size = byte + size_int * 2;
+    this->header1_size = byte + sizeof(int) * 2;
     return;
 }
 
@@ -251,7 +244,7 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
     {
         throw std::runtime_error("header block2 has invalid size information");
     }
-    header2_size = bytes + size_int * 2;
+    header2_size = bytes + sizeof(int) * 2;
     return;
 }
 
@@ -267,7 +260,7 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
     {
         throw std::runtime_error("header block3 has invalid size information");
     }
-    header3_size = bytes + size_int * 2;
+    header3_size = bytes + sizeof(int) * 2;
     return;
 }
 
@@ -324,7 +317,7 @@ DCDReader<T>::read_snapshot(const std::string& fname, const std::size_t i)
 
     const auto header = this->read_header(ifs);
     const std::size_t npart = header.nparticle();
-    const std::size_t snapsize = (npart + 2) * 3 * size_float;
+    const std::size_t snapsize = (npart + 2) * 3 * sizeof(float);
     ifs.ignore(snapsize * (i-1));
 
     return this->read_snapshot(ifs, header);
@@ -335,7 +328,7 @@ std::vector<float>
 DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
 {
     const int size_of_block = read_binary_as<int>(is);
-    if(size_of_block / size_float != nparticle)
+    if(size_of_block / sizeof(float) != nparticle)
     {
         log(log_level::error, "invalid coordinate block!\n");
         log(log_level::error, "size of coordinate block is ", size_of_block, "\n");
