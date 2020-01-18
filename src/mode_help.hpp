@@ -52,7 +52,7 @@ inline int mode_help(int argument_c, const char **argument_v)
     }
     else
     {
-        log(log_level::error, "mill help mode: unknown command", command, '\n');
+        log::error("mill help mode: unknown command", command, '\n');
         std::cerr << main_usage() << std::endl;
         return 1;
     }

@@ -16,7 +16,7 @@ int mode_pdb(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        log(log_level::error, "mill pdb mode: too few arguments\n");
+        log::error("mill pdb mode: too few arguments\n");
         mode_pdb_help(--argument_c, ++argument_v); // {}
         return 1;
     }
@@ -32,7 +32,7 @@ int mode_pdb(int argument_c, const char **argument_v)
 //     }
     else
     {
-        log(log_level::error, "mill pdb mode: unknown command: ", command, '\n');
+        log::error("mill pdb mode: unknown command: ", command, '\n');
         std::cerr << mode_pdb_help_usage() << std::endl;
         return 1;
     }

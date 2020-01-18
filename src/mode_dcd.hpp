@@ -21,7 +21,7 @@ int mode_dcd(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        log(log_level::error, "mill dcd mode: too few arguments\n");
+        log::error("mill dcd mode: too few arguments\n");
         mode_dcd_help(--argument_c, ++argument_v);
         return 1;
     }
@@ -66,7 +66,7 @@ int mode_dcd(int argument_c, const char **argument_v)
     }
     else
     {
-        log(log_level::error, "mill dcd mode: unknown command: ", command, '\n');
+        log::error("mill dcd mode: unknown command: ", command, '\n');
         std::cerr << mode_dcd_help_usage() << std::endl;
         return 1;
     }

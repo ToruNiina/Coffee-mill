@@ -49,14 +49,14 @@ int main(int argc, char **argv)
         }
         else
         {
-            mill::log(mill::log_level::error, "unknown mode: ", mode, '\n');
+            mill::log::error("unknown mode: ", mode, '\n');
             std::cerr << mill::main_usage() << std::endl;
             return 1;
         }
     }
     catch(std::exception& excpt)
     {
-        mill::log(mill::log_level::error, excpt.what(), '\n');
+        mill::log::error(excpt.what(), '\n');
         std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
@@ -64,14 +64,12 @@ int main(int argc, char **argv)
 
 void print_logo()
 {
-    using mill::log;
-    const auto lv = mill::log_level::info;
-    log(lv, R"(  ___        __  __             __    __ _  _  _ )""\n");
-    log(lv, R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n");
-    log(lv, R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n");
-    log(lv, R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n");
-    log(lv, R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n");
-    log(lv, R"(                   Copyright 2016-now Toru Niina))""\n");
+    mill::log::info(R"(  ___        __  __             __    __ _  _  _ )""\n");
+    mill::log::info(R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n");
+    mill::log::info(R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n");
+    mill::log::info(R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n");
+    mill::log::info(R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n");
+    mill::log::info(R"(                   Copyright 2016-now Toru Niina))""\n");
     return;
 }
 
@@ -84,17 +82,17 @@ std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv)
         const std::string opt(argv[i]);
         if(opt == "--debug")
         {
-            mill::logger.activate(mill::log_level::debug);
-            mill::logger.activate(mill::log_level::info);
-            mill::logger.activate(mill::log_level::warn);
-            mill::logger.activate(mill::log_level::error);
+            mill::log::logger.activate(mill::log::level::debug);
+            mill::log::logger.activate(mill::log::level::info);
+            mill::log::logger.activate(mill::log::level::warn);
+            mill::log::logger.activate(mill::log::level::error);
         }
         else if(opt == "--quiet")
         {
-            mill::logger.deactivate(mill::log_level::debug);
-            mill::logger.deactivate(mill::log_level::info);
-            mill::logger.deactivate(mill::log_level::warn);
-            mill::logger.activate  (mill::log_level::error);
+            mill::log::logger.deactivate(mill::log::level::debug);
+            mill::log::logger.deactivate(mill::log::level::info);
+            mill::log::logger.deactivate(mill::log::level::warn);
+            mill::log::logger.activate  (mill::log::level::error);
         }
         else
         {

@@ -12,7 +12,7 @@ int mode_ninfo(int argument_c, const char** argument_v)
 {
     if(argument_c < 2)
     {
-        log(log_level::error, "mill ninfo mode: too few arguments\n");
+        log::error("mill ninfo mode: too few arguments\n");
         mode_ninfo_help(--argument_c, ++argument_v);
         return 1;
     }
@@ -24,7 +24,7 @@ int mode_ninfo(int argument_c, const char** argument_v)
     }
     else
     {
-        log(log_level::error, "mill ninfo mode: unknown command", command, '\n');
+        log::error("mill ninfo mode: unknown command", command, '\n');
         std::cerr << mode_ninfo_help_usage() << std::endl;
         return 1;
     }

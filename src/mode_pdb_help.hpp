@@ -44,7 +44,7 @@ inline int mode_pdb_help(int argument_c, const char **argument_v)
 //     }
     else
     {
-        log(log_level::error, "mill pdb help: unknown command : ", command, '\n');
+        log::error("mill pdb help: unknown command : ", command, '\n');
         std::cerr << mode_pdb_help_usage() << std::endl;
         return 1;
     }

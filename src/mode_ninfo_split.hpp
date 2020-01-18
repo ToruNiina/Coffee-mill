@@ -20,7 +20,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
 
     if(argument_c == 1)
     {
-        log(log_level::error, "mill ninfo split: too few arguments\n");
+        log::error("mill ninfo split: too few arguments\n");
         std::cerr << ninfo_split_usage() << std::endl;
         return 1;
     }
@@ -34,7 +34,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
 
     if(fname.size() < 6)
     {
-        log(log_level::error, "mill ninfo split: invalid filename: ", fname, '\n');
+        log::error("mill ninfo split: invalid filename: ", fname, '\n');
         std::cerr << ninfo_split_usage() << std::endl;
         return 1;
     }
@@ -56,7 +56,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 // search this pair of units is already found or not.
                 if(splitted.count(units) == 0)
                 {
-                    log(log_level::debug, "mill ninfo split: found ninfo block "
+                    log::debug("mill ninfo split: found ninfo block "
                             "between ", units.first, " and ", units.second, '\n');
                     splitted.emplace(units, NinfoData<real_type>());
                 }
@@ -64,7 +64,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 // search this kind of native information is already found or not.
                 if(splitted.at(units).count(kind) == 0)
                 {
-                    log(log_level::debug, "mill ninfo split: found ninfo ", kind,
+                    log::debug("mill ninfo split: found ninfo ", kind,
                             " between ", units.first, " and ", units.second, '\n');
 
                     splitted.at(units).emplace(kind,
@@ -75,7 +75,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 splitted[units][kind].push_back(line);
             }
         }
-        log(log_level::debug, "mill ninfo split: blocks are splitted into ",
+        log::debug("mill ninfo split: blocks are splitted into ",
                 splitted.size(), " ninfoes. writing one-by-one...\n");
         NinfoWriter<real_type> writer;
         const std::string file_prefix = fname.substr(0, fname.size() - 6);
@@ -86,7 +86,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 std::to_string(units.first)  + std::string("-") +
                 std::to_string(units.second) + std::string(".ninfo");
 
-            log(log_level::debug, "mill ninfo split: writing ninfo between ",
+            log::debug("mill ninfo split: writing ninfo between ",
                     units.first, " and ", units.second, " into ", outname, '\n');
             writer.write(one_by_one.second, outname);
         }
@@ -94,7 +94,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
     }
     else
     {
-        log(log_level::error, "mill ninfo split: invalid argument: ", fname, '\n');
+        log::error("mill ninfo split: invalid argument: ", fname, '\n');
         std::cerr << ninfo_split_usage() << std::endl;
         return 1;
     }
