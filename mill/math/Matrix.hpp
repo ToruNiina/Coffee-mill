@@ -1,6 +1,5 @@
 #ifndef COFFEE_MILL_MATH_MATRIX_HPP
 #define COFFEE_MILL_MATH_MATRIX_HPP
-#include <mill/util/is_all.hpp>
 #include <array>
 
 namespace mill
@@ -26,10 +25,12 @@ class Matrix
     Matrix& operator=(Matrix const& mat) = default;
     Matrix& operator=(Matrix&&      mat) = default;
 
-    template<typename ... T_args, class = typename std::enable_if<
-        (sizeof...(T_args) == number_of_element) &&
-        is_all<std::is_convertible, realT, T_args...>::value>::type>
-    Matrix(T_args ... args) : values_{{static_cast<real_type>(args)...}}{}
+    template<typename ... Ts>
+    Matrix(Ts ... args) : values_{{static_cast<real_type>(args)...}}
+    {
+        static_assert(sizeof...(Ts) == number_of_element);
+        static_assert(std::conjunction_v<std::is_convertible<Ts, realT>...>);
+    }
 
     Matrix(std::initializer_list<std::initializer_list<real_type>> il)
     {
