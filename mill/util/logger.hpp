@@ -18,52 +18,52 @@ enum class level : std::uint8_t
 
 struct Logger
 {
-    Logger(): filter_{{log_level::debug, false}, {log_level::info,  true},
-                      {log_level::warn,  true},  {log_level::error, true}}
+    Logger(): filter_{{level::debug, false}, {level::info,  true},
+                      {level::warn,  true},  {level::error, true}}
     {}
     ~Logger() = default;
 
-    bool is_activated(const log_level lv) const {return filter_.at(lv);}
+    bool is_activated(const level lv) const {return filter_.at(lv);}
 
-    void activate  (const log_level lv) {filter_[lv] = true;}
-    void deactivate(const log_level lv) {filter_[lv] = false;}
+    void activate  (const level lv) {filter_[lv] = true;}
+    void deactivate(const level lv) {filter_[lv] = false;}
 
   private:
-    std::map<log_level, bool> filter_;
+    std::map<level, bool> filter_;
 };
 inline Logger logger;
 
 template<typename ... Ts>
-void error(Ts&& ... args) const
+void error(Ts&& ... args)
 {
-    if(not this->is_activated(log_level::error)) {return;}
+    if(not logger.is_activated(level::error)) {return;}
     std::cerr << "\x1b[31mError:\x1b[0m ";
     (std::cerr << ... << args);
     std::cerr << std::flush;
     return;
 }
 template<typename ... Ts>
-void warn(Ts&& ... args) const
+void warn(Ts&& ... args)
 {
-    if(not this->is_activated(log_level::warn)) {return;}
+    if(not logger.is_activated(level::warn)) {return;}
     std::cerr << "\x1b[33mWarn :\x1b[0m ";
     (std::cerr << ... << args);
     std::cerr << std::flush;
     return;
 }
 template<typename ... Ts>
-void info(Ts&& ... args) const
+void info(Ts&& ... args)
 {
-    if(not this->is_activated(log_level::info)) {return;}
+    if(not logger.is_activated(level::info)) {return;}
     std::cerr << "\x1b[32mInfo :\x1b[0m ";
     (std::cerr << ... << args);
     std::cerr << std::flush;
     return;
 }
 template<typename ... Ts>
-void debug(Ts&& ... args) const
+void debug(Ts&& ... args)
 {
-    if(not this->is_activated(log_level::debug)) {return;}
+    if(not logger.is_activated(level::debug)) {return;}
     std::cerr << "\x1b[34mDebug:\x1b[0m ";
     (std::cerr << ... << args);
     std::cerr << std::flush;

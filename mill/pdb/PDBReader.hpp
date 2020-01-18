@@ -52,7 +52,7 @@ template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
 PDBReader<vectorT>::read(const std::string& fname) const
 {
-    log(log_level::debug, "reading PDB file ", fname, '\n');
+    log::debug("reading PDB file ", fname, '\n');
     std::ifstream ifs(fname);
     if(not ifs.good()) {throw std::runtime_error("file open error: " + fname);}
     const auto data = this->read(ifs);
@@ -63,7 +63,7 @@ template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::atom_type>
 PDBReader<vectorT>::read(const std::string& fname, const std::size_t model_idx) const
 {
-    log(log_level::debug, "reading PDB file ", fname, " model ", model_idx, "\n");
+    log::debug("reading PDB file ", fname, " model ", model_idx, "\n");
     std::ifstream ifs(fname);
     if(not ifs.good()) {throw std::runtime_error("file open error: " + fname);}
     const auto data = this->read(ifs, model_idx);
@@ -85,7 +85,7 @@ PDBReader<vectorT>::read(std::istream& ifs, const std::size_t model_idx) const
             std::istringstream iss(line);
             std::string model;
             iss >> model >> index;
-            log(log_level::debug, "PDB model ", index, " found\n");
+            log::debug("PDB model ", index, " found\n");
             if(index == model_idx) {break;}
         }
     }
@@ -111,7 +111,7 @@ PDBReader<vectorT>::read(std::istream& ifs) const
         atom_type atom;
         if(line >> atom)
         {
-            log(log_level::debug, "PDB reading `", line, "`\n");
+            log::debug("PDB reading `", line, "`\n");
             atoms.emplace_back(std::move(atom));
         }
     }
@@ -122,7 +122,7 @@ template<typename vectorT>
 std::vector<typename PDBReader<vectorT>::chain_type>
 PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
 {
-    log(log_level::debug, "PDB parsing atoms ...\n");
+    log::debug("PDB parsing atoms ...\n");
     std::vector<residue_type> residues;
     residue_type tmp_residue;
     int current_residue_id = std::numeric_limits<int>::min();
@@ -136,7 +136,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
             }
             tmp_residue.clear();
             current_residue_id = atom.residue_id;
-            log(log_level::debug, "residue ", current_residue_id, " found.\n");
+            log::debug("residue ", current_residue_id, " found.\n");
         }
         tmp_residue.push_back(atom);
     }
@@ -144,7 +144,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
     {
         residues.push_back(tmp_residue);
     }
-    log(log_level::debug, residues.size(), " residues found.\n");
+    log::debug(residues.size(), " residues found.\n");
 
     std::vector<chain_type> chains;
     chain_type tmp_chain;
@@ -159,7 +159,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
             }
             tmp_chain.clear();
             current_chain_id = residue.chain_id();
-            log(log_level::debug, "chain ", current_chain_id, " found.\n");
+            log::debug("chain ", current_chain_id, " found.\n");
         }
         tmp_chain.push_back(residue);
     }
@@ -167,7 +167,7 @@ PDBReader<vectorT>::parse(const std::vector<atom_type>& atoms) const
     {
         chains.push_back(tmp_chain);
     }
-    log(log_level::debug, chains.size(), " chains found.\n");
+    log::debug(chains.size(), " chains found.\n");
     return chains;
 }
 

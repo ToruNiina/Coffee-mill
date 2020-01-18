@@ -78,7 +78,7 @@ void DCDWriter<vectorT>::write(std::ostream& os, const data_type& dcd)
     this->write_header(os, dcd.header());
     this->write_trajectory(os, dcd.traj());
 
-    log(log_level::debug, "DCDWriter: file written");
+    log::debug("DCDWriter: file written");
     return;
 }
 

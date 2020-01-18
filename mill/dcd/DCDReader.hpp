@@ -93,12 +93,12 @@ template <typename T>
 typename DCDReader<T>::data_type
 DCDReader<T>::read(std::istream& is)
 {
-    log(log_level::debug, "DCD file reading start\n");
+    log::debug("DCD file reading start\n");
 
     data_type data = read_header(is);
     read_trajectory(is, data);
 
-    log(log_level::debug, "DCD file reading completed\n");
+    log::debug("DCD file reading completed\n");
     return data;
 }
 
@@ -132,23 +132,23 @@ DCDReader<T>::read_header(std::istream& is)
     {
         const auto expected_size = header1_size + header2_size + header3_size +
                                    snapshot_size * dat.nset();
-        log(log_level::warn, "invalid filesize!\n");
-        log(log_level::warn, "actual size is ", file_size, " bytes\n");
-        log(log_level::warn, "but it contains ", dat.nset(), " snapshots.\n");
-        log(log_level::warn, "number of particles is ", dat.nparticle(), ".\n");
-        log(log_level::warn, "1st header block has ", header1_size, " bytes\n");
-        log(log_level::warn, "2nd header block has ", header2_size, " bytes\n");
-        log(log_level::warn, "3rd header block has ", header3_size, " bytes\n");
-        log(log_level::warn, "The file must have ",  expected_size, " bytes\n");
+        log::warn("invalid filesize!\n");
+        log::warn("actual size is ", file_size, " bytes\n");
+        log::warn("but it contains ", dat.nset(), " snapshots.\n");
+        log::warn("number of particles is ", dat.nparticle(), ".\n");
+        log::warn("1st header block has ", header1_size, " bytes\n");
+        log::warn("2nd header block has ", header2_size, " bytes\n");
+        log::warn("3rd header block has ", header3_size, " bytes\n");
+        log::warn("The file must have ",  expected_size, " bytes\n");
 
         if((file_size - header1_size - header2_size - header3_size) % snapshot_size != 0)
         {
-            log(log_level::warn, "The last snapshot seems to be incomplete.\n");
+            log::warn("The last snapshot seems to be incomplete.\n");
         }
 
         dat.nset() = (file_size - header1_size - header2_size - header3_size) /
                      snapshot_size;
-        log(log_level::warn, "The actual number of snapshots seems to be ",
+        log::warn("The actual number of snapshots seems to be ",
                              dat.nset(), ".\n");
     }
     return dat;
@@ -170,14 +170,14 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     const int byte = read_binary_as<int>(dcdfile);
     if(byte != 84)
     {
-        log(log_level::warn, "this file may not be cafemol output\n");
+        log::warn("this file may not be cafemol output\n");
     }
 
     char csigneture[5];
     dcdfile.read(csigneture, 4);
     csigneture[4] = '\0';
     std::string signeture(csigneture);
-    log(log_level::debug, "file signeture is \"", signeture, "\"\n");
+    log::debug("file signeture is \"", signeture, "\"\n");
 
     if(signeture != "CORD" && signeture != "VELD")
     {
@@ -186,24 +186,24 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
 
     data.signeture() = signeture;
     data.nset() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "nset       = ", data.nset(), "\n");
+    log::debug("nset       = ", data.nset(), "\n");
 
     data.istart() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "istart     = ", data.istart(), "\n");
+    log::debug("istart     = ", data.istart(), "\n");
 
     data.nstep_save() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "nstep_save = ", data.nstep_save(), "\n");
+    log::debug("nstep_save = ", data.nstep_save(), "\n");
 
     data.nstep() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "nstep      = ", data.nstep(), "\n");
+    log::debug("nstep      = ", data.nstep(), "\n");
 
     data.nunit() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "nunit      = ", data.nunit(), "\n");
+    log::debug("nunit      = ", data.nunit(), "\n");
 
     dcdfile.ignore(16);
 
     data.delta_t() = read_binary_as<float>(dcdfile);
-    log(log_level::debug, "delta_t    = ", data.delta_t(), "\n");
+    log::debug("delta_t    = ", data.delta_t(), "\n");
 
     dcdfile.ignore(36);
 
@@ -236,7 +236,7 @@ void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
         char line[81];
         dcdfile.read(line, 80);
         line[80] = '\0';
-        log(log_level::debug, i, "-th comment: ", line, "\n");
+        log::debug(i, "-th comment: ", line, "\n");
         data.comment().push_back(std::string(line));
     }
     const int bytes_f = read_binary_as<int>(dcdfile);
@@ -253,7 +253,7 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 {
     const int bytes  = read_binary_as<int>(dcdfile);
     data.nparticle() = read_binary_as<int>(dcdfile);
-    log(log_level::debug, "nparticle = ", data.nparticle(), "\n");
+    log::debug("nparticle = ", data.nparticle(), "\n");
 
     const int bytes_f = read_binary_as<int>(dcdfile);
     if(bytes != bytes_f)
@@ -330,9 +330,9 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     const int size_of_block = read_binary_as<int>(is);
     if(size_of_block / sizeof(float) != nparticle)
     {
-        log(log_level::error, "invalid coordinate block!\n");
-        log(log_level::error, "size of coordinate block is ", size_of_block, "\n");
-        log(log_level::error, "but the number of particle is  ", nparticle, "\n");
+        log::error("invalid coordinate block!\n");
+        log::error("size of coordinate block is ", size_of_block, "\n");
+        log::error("but the number of particle is  ", nparticle, "\n");
         throw std::runtime_error("dcd coordinate block size invalid");
     }
 
@@ -345,8 +345,8 @@ DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
     const int size_of_block_f = read_binary_as<int>(is);
     if(size_of_block != size_of_block_f)
     {
-        log(log_level::error, "invalid coordinate block delimiter\n");
-        log(log_level::error, "the size of the block is not ", size_of_block_f,
+        log::error("invalid coordinate block delimiter\n");
+        log::error("the size of the block is not ", size_of_block_f,
                               " but ", size_of_block, "\n");
         throw std::runtime_error("invalid delimiter in a coordinate block");
     }
