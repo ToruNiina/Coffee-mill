@@ -65,15 +65,22 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     Matrix_type m = mat;
     Matrix_type Ps;
     for(std::size_t i=0; i<N; ++i)
+    {
         for(std::size_t j=0; j<N; ++j)
-            Ps(i, j) = (i == j) ? 1. : 0.;
+        {
+            Ps(i, j) = 0.0;
+        }
+        Ps(i, i) = 1.0;
+    }
 
     std::size_t loop=0;
     for(; loop < max_loop; ++loop)
     {
         const auto index = this->max_element(m);
         if(std::abs(m(index.first, index.second)) < absolute_tolerance<Real>())
+        {
             break;
+        }
 
         const Real alpha = (m(index.first, index.first) -
                             m(index.second, index.second)) * 0.5;
@@ -84,15 +91,22 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
 
         Matrix_type P;
         for(std::size_t i=0; i<N; ++i)
+        {
             for(std::size_t j=0; j<N; ++j)
+            {
                 P(i, j) = (i == j) ? 1. : 0.;
+            }
+        }
         P(index.first,  index.first)  =  cos_t;
         P(index.first,  index.second) =  sin_t;
         P(index.second, index.first)  = -sin_t;
         P(index.second, index.second) =  cos_t;
 
         Matrix_type tmp = transpose(P) * m * P;
-        if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>()) break;
+        if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>())
+        {
+            break;
+        }
         tmp(index.first,  index.second) = 0.;
         tmp(index.second, index.first)  = 0.;
 
@@ -108,7 +122,9 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     {
         Vector_type eigen;
         for(std::size_t j=0; j<N; ++j)
+        {
             eigen[j] = Ps(j, i);
+        }
         retval[i] = std::make_pair(m(i, i), eigen);
     }
     return retval;
@@ -119,9 +135,15 @@ template<typename scalarT, std::size_t N>
 bool JacobiEigenSolver::is_symmetric(const Matrix<scalarT, N, N>& mat) const
 {
     for(std::size_t i=0; i<N-1; ++i)
-    for(std::size_t j=i+1; j<N; ++j)
-        if(std::abs(mat(i, j)/mat(j, i) - 1.) > relative_tolerance<scalarT>())
-            return false;
+    {
+        for(std::size_t j=i+1; j<N; ++j)
+        {
+            if(std::abs(mat(i, j)/mat(j, i) - 1.) > relative_tolerance<scalarT>())
+            {
+                return false;
+            }
+        }
+    }
     return true;
 }
 
@@ -133,12 +155,16 @@ JacobiEigenSolver::max_element(const Matrix<scalarT, N, N>& mat) const
     std::pair<std::size_t, std::size_t> retval = std::make_pair(0, 1);
 
     for(std::size_t i=0; i<N-1; ++i)
+    {
         for(std::size_t j=i+1; j<N; ++j)
+        {
             if(max_elem < std::abs(mat(i, j)))
             {
                 max_elem = std::abs(mat(i, j));
                 retval = std::make_pair(i, j);
             }
+        }
+    }
     return retval;
 }
 
@@ -150,7 +176,10 @@ scalarT JacobiEigenSolver::max_relative_diff(const Matrix<scalarT, N, N>& lhs,
     for(std::size_t i=0; i<N; ++i)
     {
         const scalarT tmp = std::abs(lhs(i, i) / rhs(i, i));
-        if(retval < tmp) retval = tmp;
+        if(retval < tmp)
+        {
+            retval = tmp;
+        }
     }
     return retval;
 }
