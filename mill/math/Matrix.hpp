@@ -16,8 +16,13 @@ class Matrix
     constexpr static std::size_t number_of_element = Row * Col;
     using container_type = std::array<real_type, number_of_element>;
 
+    static Matrix zero() noexcept
+    {
+        return Matrix<realT, Row, Col>();;
+    }
+
   public:
-    Matrix() : values_{{}}{}
+    Matrix(){values_.fill(0);}
     ~Matrix() = default;
 
     Matrix(Matrix const& mat) = default;
@@ -53,14 +58,22 @@ class Matrix
     Matrix& operator/=(const scalar_type scl);
 
     scalar_type  at(const std::size_t i, const std::size_t j) const
-    {return this->values_.at(i*dim_col + j);}
+    {
+        return this->values_.at(i*dim_col + j);
+    }
     scalar_type& at(const std::size_t i, const std::size_t j)
-    {return this->values_.at(i*dim_col + j);}
+    {
+        return this->values_.at(i*dim_col + j);
+    }
 
     scalar_type  operator()(const std::size_t i, const std::size_t j) const noexcept
-    {return this->values_[i*dim_col + j];}
+    {
+        return this->values_[i*dim_col + j];
+    }
     scalar_type& operator()(const std::size_t i, const std::size_t j)       noexcept
-    {return this->values_[i*dim_col + j];}
+    {
+        return this->values_[i*dim_col + j];
+    }
 
     scalar_type  at(const std::size_t i) const {return values_.at(i);}
     scalar_type& at(const std::size_t i)       {return values_.at(i);}
@@ -73,6 +86,13 @@ class Matrix
      *  aR1, aR2, ..., aRC} */
     container_type values_;
 };
+
+template<typename realT, std::size_t Row, std::size_t Col>
+constexpr std::size_t Matrix<realT, Row, Col>::dim_row;
+template<typename realT, std::size_t Row, std::size_t Col>
+constexpr std::size_t Matrix<realT, Row, Col>::dim_col;
+template<typename realT, std::size_t Row, std::size_t Col>
+constexpr std::size_t Matrix<realT, Row, Col>::number_of_element;
 
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
