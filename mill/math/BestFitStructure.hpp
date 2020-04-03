@@ -64,7 +64,9 @@ typename BestFit<sclT>::structure_type
 BestFit<sclT>::fit(const structure_type& str, const structure_type& ref) const
 {
     if(str.size() != ref.size())
+    {
         throw std::invalid_argument("different structure in argument");
+    }
 
     structure_type target = this->copy_to_center(str);
     const structure_type reference = this->copy_to_center(ref);
@@ -84,7 +86,9 @@ typename BestFit<sclT>::structure_type
 BestFit<sclT>::fit(const structure_type& str) const
 {
     if(str.size() != this->reference_.size())
+    {
         throw std::invalid_argument("different structure in argument");
+    }
 
     structure_type target = this->copy_to_center(str);
 
@@ -104,7 +108,9 @@ BestFit<sclT>::rotational_matrix(
         const structure_type& str, const structure_type& ref) const
 {
     if(str.size() != ref.size())
+    {
         throw std::invalid_argument("different structure in argument");
+    }
 
     const structure_type target = this->copy_to_center(str);
     const structure_type reference = this->copy_to_center(ref);
@@ -117,7 +123,9 @@ typename BestFit<sclT>::matrix33_type
 BestFit<sclT>::rotational_matrix(const structure_type& str) const
 {
     if(str.size() != this->reference_.size())
+    {
         throw std::invalid_argument("different structure in argument");
+    }
 
     const structure_type target = this->copy_to_center(str);
 
@@ -130,7 +138,9 @@ BestFit<sclT>::make_rotational_matrix(
         const structure_type& structure, const structure_type& reference) const
 {
     if(structure.size() != reference.size())
+    {
         throw std::invalid_argument("different size structures");
+    }
 
     std::vector<vector3_type> rA(structure.size());
     std::vector<vector3_type> rB(structure.size());
@@ -240,13 +250,17 @@ BestFit<sclT>::copy_to_center(const structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+    {
         sum += *iter;
+    }
     const sclT invN = 1. / static_cast<sclT>(str.size());
     const vector3_type centroid = sum * invN;
 
     structure_type retval(str.size());
     for(std::size_t i = 0; i<str.size(); ++i)
+    {
         retval[i] = str[i] - centroid;
+    }
 
     return retval;
 }
@@ -256,13 +270,16 @@ void BestFit<sclT>::move_to_center(structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+    {
         sum += *iter;
+    }
     const sclT invN = 1. / static_cast<sclT>(str.size());
     const vector3_type centroid = sum * invN;
 
     for(auto iter = str.begin(); iter != str.end(); ++iter)
+    {
         *iter -= centroid;
-
+    }
     return ;
 }
 
@@ -281,7 +298,9 @@ BestFit<sclT>::zeroing_vector(const structure_type& str) const
 {
     vector3_type sum(0., 0., 0.);
     for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+    {
         sum += *iter;
+    }
     const sclT invN = 1. / static_cast<sclT>(str.size());
     return sum * invN;
 }
