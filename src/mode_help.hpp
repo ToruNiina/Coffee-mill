@@ -11,13 +11,16 @@ namespace mill
 
 inline const char* main_usage() noexcept
 {
-    return "Usage: mill [mode] [parameters...]\n"
-           "list of modes\n"
-           "- pdb\n"
-           "- dcd\n"
-           "- ninfo\n"
-           "- calc\n"
-           "- help\n"
+    return "Usage: mill [--debug|--quiet] [mode] [parameters...]\n"
+           "# Log options\n"
+           " - `--debug` shows debug informations.\n"
+           " - `--quiet` disables all the status logs.\n"
+           "# List of modes\n"
+           " - pdb\n"
+           " - dcd\n"
+           " - ninfo\n"
+           " - calc\n"
+           " - help\n"
            "for more information, try `mill help [mode]`.\n"
            ;
 }
