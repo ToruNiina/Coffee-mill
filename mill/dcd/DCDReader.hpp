@@ -73,6 +73,7 @@ class DCDReader
     std::size_t header2_size;
     std::size_t header3_size;
     std::size_t snapshot_size;
+    std::int32_t has_unitcell_;
 };
 
 template <typename T>
@@ -159,7 +160,10 @@ bool DCDReader<T>::validate_filesize(
         const data_type& data, std::size_t file_size)
 {
     this->snapshot_size = 12 * (data.nparticle() + 2);
-
+    if(this->has_unitcell_)
+    {
+        this->snapshot_size += 56;
+    }
     return file_size == (header1_size + header2_size + header3_size +
                         snapshot_size * data.nset());
 }
@@ -200,12 +204,14 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     data.nunit() = read_binary_as<int>(dcdfile);
     log::debug("nunit      = ", data.nunit(), "\n");
 
-    dcdfile.ignore(16);
+    dcdfile.ignore(16); // skip 4x int
 
     data.delta_t() = read_binary_as<float>(dcdfile);
     log::debug("delta_t    = ", data.delta_t(), "\n");
 
-    dcdfile.ignore(36);
+    this->has_unitcell_ = read_binary_as<std::int32_t>(dcdfile);
+
+    dcdfile.ignore(32);
 
     data.verCHARMM() = read_binary_as<int>(dcdfile);
 
@@ -273,6 +279,27 @@ void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
 
     for(int i=0; i<data.nset(); ++i)
     {
+        if(this->has_unitcell_)
+        {
+            std::pair<vector_type, vector_type> cell;
+
+            const auto block_begin = read_binary_as<std::int32_t>(is); // 4
+            cell.first[0] = read_binary_as<double>(is);                // 8
+            cell.first[1] = read_binary_as<double>(is);
+            cell.first[2] = read_binary_as<double>(is);
+
+            cell.second[0] = read_binary_as<double>(is);
+            cell.second[1] = read_binary_as<double>(is);
+            cell.second[2] = read_binary_as<double>(is);
+            const auto block_end = read_binary_as<std::int32_t>(is);
+
+            data.cell_traj().push_back(cell);
+            if(block_begin != block_end)
+            {
+                throw std::runtime_error("invalid block size in unitcell");
+            }
+        }
+
         const std::vector<float> x(read_coord(is, data.nparticle()));
         const std::vector<float> y(read_coord(is, data.nparticle()));
         const std::vector<float> z(read_coord(is, data.nparticle()));

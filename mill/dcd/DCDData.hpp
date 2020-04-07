@@ -88,6 +88,7 @@ class DCDData
     using index_type      = size_type;
     using snapshot_type   = std::vector<position_type>;
     using trajectory_type = std::vector<snapshot_type>;
+    using box_type        = std::pair<vector_type, vector_type>;
     using iterator        = typename trajectory_type::iterator;
     using const_iterator  = typename trajectory_type::const_iterator;
     using header_type     = DCDHeader<real_type>;
@@ -155,10 +156,14 @@ class DCDData
         header_.append_comment(message);
     }
 
+    std::vector<box_type> const& cell_traj() const noexcept {return cell_traj_;}
+    std::vector<box_type>&       cell_traj()       noexcept {return cell_traj_;}
+
   private:
 
     header_type     header_; //!< header data. realT is deduced as a scalar_type of vectorT.
     trajectory_type trajectory_; //!< trajectory data.
+    std::vector<box_type> cell_traj_;
 };
 
 }
