@@ -1,27 +1,27 @@
-#ifndef MJOLNIR_CORE_BOUNDARY_CONDITION_HPP
-#define MJOLNIR_CORE_BOUNDARY_CONDITION_HPP
+#ifndef COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP
+#define COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP
 #include <mill/math/Vector.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <limits>
 
-namespace mjolnir
+namespace mill
 {
 
 template<typename vectorT>
 struct BoundaryCondition
 {
   public:
-    using vector_type = coordT;
+    using vector_type = vectorT;
     using real_type   = typename scalar_type_of<vector_type>::type;
 
   public:
 
     virtual ~BoundaryCondition() = default;
 
-    vector_type adjust_direction(vector_type dr) const noexcept = 0;
-    vector_type adjust_position (vector_type r ) const noexcept = 0;
+    virtual vector_type adjust_direction(vector_type dr) const noexcept = 0;
+    virtual vector_type adjust_position (vector_type r ) const noexcept = 0;
 
-    real_type volume() const noexcept = 0;
+    virtual real_type volume() const noexcept = 0;
 };
 
 template<typename vectorT>
@@ -42,7 +42,7 @@ struct UnlimitedBoundary final : BoundaryCondition<vectorT>
     real_type volume() const noexcept override {return std::numeric_limits<real_type>::infinity();}
 };
 
-template<vectorT>
+template<typename vectorT>
 struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
 {
   public:
@@ -57,11 +57,11 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
     {}
 
     CuboidalPeriodicBoundary(const vector_type& lw, const vector_type& up) noexcept
-        : lower_(lw), upper_(up), width_(up - lw), halfw_((up - lw) / 2)
+        : lower_(lw), upper_(up), width_(up - lw), halfw_((up - lw) * 0.5)
     {}
     ~CuboidalPeriodicBoundary() override = default;
 
-    vector_type adjust_direction(vector_type dr) const noexcept
+    vector_type adjust_direction(vector_type dr) const noexcept override
     {
         if     (dr[0] < -halfw_[0]) {dr[0] += width_[0];}
         else if(dr[0] >= halfw_[0]) {dr[0] -= width_[0];}
@@ -72,7 +72,7 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
         return dr;
     }
 
-    vector_type adjust_position(vector_type pos) const noexcept
+    vector_type adjust_position(vector_type pos) const noexcept override
     {
         if     (pos[0] <  lower_[0]) {pos[0] += width_[0];}
         else if(pos[0] >= upper_[0]) {pos[0] -= width_[0];}
@@ -81,6 +81,11 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
         if     (pos[2] <  lower_[2]) {pos[2] += width_[2];}
         else if(pos[2] >= upper_[2]) {pos[2] -= width_[2];}
         return pos;
+    }
+
+    real_type volume() const noexcept override
+    {
+        return width_[0] * width_[1] * width_[2];
     }
 
     vector_type const& lower() const noexcept {return lower_;}
@@ -104,5 +109,5 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
     vector_type halfw_;
 };
 
-}//mjolnir
-#endif /* MJOLNIR_BOUNDARY_CONDITION */
+}// mill
+#endif /* COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP */
