@@ -14,7 +14,8 @@
 
 #ifndef COFFEE_MILL_DCD_DATA_HPP
 #define COFFEE_MILL_DCD_DATA_HPP
-#include "util/scalar_type_of.hpp"
+#include <mill/common/BoundaryCondition.hpp>
+#include <mill/util/scalar_type_of.hpp>
 #include <vector>
 #include <string>
 
@@ -92,6 +93,8 @@ class DCDData
     using const_iterator  = typename trajectory_type::const_iterator;
     using header_type     = DCDHeader<real_type>;
     using comment_type    = typename header_type::comment_type;
+    using boundary_type   = BoundaryCondition<vector_type>;
+    using boundary_trajectory_type = std::vector<std::unique_ptr<boundary_type>>;
 
   public:
 
@@ -155,12 +158,15 @@ class DCDData
         header_.append_comment(message);
     }
 
+    boundary_trajectory_type const& boundary() const noexcept {return boundary_trajectory_;}
+    boundary_trajectory_type&       boundary()       noexcept {return boundary_trajectory_;}
+
   private:
 
     header_type     header_; //!< header data. realT is deduced as a scalar_type of vectorT.
     trajectory_type trajectory_; //!< trajectory data.
+    std::vector<std::unique_ptr<boundary_type>> boundary_trajectory_;
 };
 
-}
-
+} // dcd
 #endif /* COFFEE_MILL_DCD_DATA */

@@ -36,6 +36,7 @@ class DCDReader
     using real_type     = typename data_type::real_type;
     using header_type   = typename data_type::header_type;
     using snapshot_type = typename data_type::snapshot_type;
+    using boundary_type = typename data_type::boundary_type;
 
   public:
 
@@ -66,6 +67,8 @@ class DCDReader
     void read_header_block2(std::istream& dcdfile, data_type& data);
     void read_header_block3(std::istream& dcdfile, data_type& data);
 
+    std::unique_ptr<boundary_type> read_unit_cell(std::istream& dcdfile) const;
+
   private:
 
     // for filesize validation
@@ -73,6 +76,7 @@ class DCDReader
     std::size_t header2_size;
     std::size_t header3_size;
     std::size_t snapshot_size;
+    std::int32_t has_unitcell_;
 };
 
 template <typename T>
@@ -159,7 +163,10 @@ bool DCDReader<T>::validate_filesize(
         const data_type& data, std::size_t file_size)
 {
     this->snapshot_size = 12 * (data.nparticle() + 2);
-
+    if(this->has_unitcell_)
+    {
+        this->snapshot_size += sizeof(std::int32_t) * 2 + sizeof(double) * 6;
+    }
     return file_size == (header1_size + header2_size + header3_size +
                         snapshot_size * data.nset());
 }
@@ -205,7 +212,9 @@ void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
     data.delta_t() = read_binary_as<float>(dcdfile);
     log::debug("delta_t    = ", data.delta_t(), "\n");
 
-    dcdfile.ignore(36);
+    this->has_unitcell_ = read_binary_as<std::int32_t>(dcdfile);
+
+    dcdfile.ignore(32);
 
     data.verCHARMM() = read_binary_as<int>(dcdfile);
 
@@ -265,6 +274,55 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 }
 
 template <typename T>
+std::unique_ptr<typename DCDReader<T>::boundary_type>
+DCDReader<T>::read_unit_cell(std::istream& is) const
+{
+    if(not this->has_unitcell_)
+    {
+        return nullptr;
+    }
+    using position_type = typename data_type::position_type;
+
+    const auto block_begin = read_binary_as<std::int32_t>(is);
+    const auto A           = read_binary_as<double      >(is);
+    const auto gamma       = read_binary_as<double      >(is);
+    const auto B           = read_binary_as<double      >(is);
+    const auto beta        = read_binary_as<double      >(is);
+    const auto alpha       = read_binary_as<double      >(is);
+    const auto C           = read_binary_as<double      >(is);
+    const auto block_end   = read_binary_as<std::int32_t>(is);
+
+    if(block_begin != block_end)
+    {
+        log::error("DCD file has invalid unit cell information.\n");
+        log::error("block_begin = ", block_begin, ", block_end = ", block_end, "\n");
+        log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C,      "\n");
+        log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma,  "\n");
+        return nullptr;
+    }
+
+    const auto differs = [](const double lhs, const double rhs) noexcept -> bool {
+        constexpr double rel_tol = 1e-8;
+        constexpr double abs_tol = 1e-10;
+        return abs_tol                     < std::abs(lhs - rhs) ||
+               rel_tol * 0.5 * (lhs + rhs) < std::abs(lhs - rhs);
+    };
+    constexpr double half_pi = 1.57079632679;
+
+    if((differs(alpha, 90.0) && differs(alpha, std::cos(half_pi))) ||
+       (differs(beta,  90.0) && differs(beta,  std::cos(half_pi))) ||
+       (differs(gamma, 90.0) && differs(gamma, std::cos(half_pi))))
+    {
+        log::error("The unit cell is not a rectangle\n");
+        log::error("angle alpha = ", alpha, '\n');
+        log::error("angle beta  = ", beta , '\n');
+        log::error("angle gamma = ", gamma, '\n');
+    }
+    return std::make_unique<CuboidalPeriodicBoundary<position_type>>(
+            position_type(0, 0, 0), position_type(A, B, C));
+}
+
+template <typename T>
 void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
 {
     using position_type = typename data_type::position_type;
@@ -273,6 +331,10 @@ void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
 
     for(int i=0; i<data.nset(); ++i)
     {
+        // read unit cell
+        data.boundary().push_back(this->read_unit_cell(is));
+
+        // read coordinates
         const std::vector<float> x(read_coord(is, data.nparticle()));
         const std::vector<float> y(read_coord(is, data.nparticle()));
         const std::vector<float> z(read_coord(is, data.nparticle()));
