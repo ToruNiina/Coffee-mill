@@ -1,8 +1,10 @@
 #ifndef COFFEE_MILL_COMMON_SNAPSHOT_HPP
 #define COFFEE_MILL_COMMON_SNAPSHOT_HPP
 #include <mill/common/Attribute.hpp>
+#include <mill/common/BoundaryCondition.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <vector>
+#include <memory>
 
 namespace mill
 {
@@ -21,6 +23,7 @@ class Snapshot
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename const_iterator::const_iterator;
+    using boundary_type  = std::unique_ptr<BoundaryCondition<vector_type>>;
 
   public:
 
@@ -74,10 +77,13 @@ class Snapshot
     attribute_container_type const& attributes() const noexcept {return attributes_;}
     container_type &      particles()       noexcept {return particles_;}
     container_type const& particles() const noexcept {return particles_;}
+    boundary_type &      boundary()       noexcept {return boundary_;}
+    boundary_type const& boundary() const noexcept {return boundary_;}
 
   private:
     attribute_container_type attributes_;
     container_type           particles_;
+    boundary_type            boundary_;
 };
 
 } // mill
