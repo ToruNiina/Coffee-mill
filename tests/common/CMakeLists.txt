@@ -1,5 +1,6 @@
 set(TEST_NAMES
     test_attribute
+    test_boundary_condition
     )
 
 add_definitions("-O3 -std=c++11")
