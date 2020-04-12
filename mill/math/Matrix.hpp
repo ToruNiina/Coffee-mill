@@ -18,7 +18,7 @@ class Matrix
 
     static Matrix zero() noexcept
     {
-        return Matrix<realT, Row, Col>();;
+        return Matrix<realT, Row, Col>();
     }
 
   public:

@@ -56,7 +56,9 @@ std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
 JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
 {
     if(not this->is_symmetric(mat))
+    {
         throw std::invalid_argument("asymmetric matrix");
+    }
 
     typedef Matrix<scalarT, N, N> Matrix_type;
     typedef Matrix<scalarT, N, 1> Vector_type;
