@@ -257,6 +257,6 @@ R visit(F&& f, Variants&& ... vs)
 {
     return std::visit(std::forward<F>(f), std::forward<Variants>(vs).storage() ...);
 }
-    
+
 } // mill
 #endif // COFFEE_MILL_COMMON_ATTRIBUTES_HPP
