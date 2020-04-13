@@ -14,7 +14,7 @@ class Trajectory
     using attribute_type = Attribute<vector_type>;
     using attribute_container_type = std::map<std::string, attribute_type>;
     using snapshot_type  = Snapshot<vector_type>;
-    using value_type     = std::pair<snapshot_type, attribute_container_type>;
+    using value_type     = snapshot_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename container_type::const_iterator;
@@ -49,12 +49,12 @@ class Trajectory
         return snapshots_.size();
     }
 
-    value_type&       operator[](std::size_t i)       noexcept {return snapshots_[i];}
-    value_type const& operator[](std::size_t i) const noexcept {return snapshots_[i];}
-    value_type&       at(std::size_t i)       {return snapshots_.at(i);}
-    value_type const& at(std::size_t i) const {return snapshots_.at(i);}
+    snapshot_type&       operator[](std::size_t i)       noexcept {return snapshots_[i];}
+    snapshot_type const& operator[](std::size_t i) const noexcept {return snapshots_[i];}
+    snapshot_type&       at(std::size_t i)       {return snapshots_.at(i);}
+    snapshot_type const& at(std::size_t i) const {return snapshots_.at(i);}
 
-    std::optional<value_type> try_at(const std::size_t i) const noexcept
+    std::optional<snapshot_type> try_at(const std::size_t i) const noexcept
     {
         if(this->snapshots_.size() <= i)
         {
