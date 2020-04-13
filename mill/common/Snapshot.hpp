@@ -22,7 +22,7 @@ class Snapshot
     using particle_type  = value_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
-    using const_iterator = typename const_iterator::const_iterator;
+    using const_iterator = typename container_type::const_iterator;
     using boundary_type  = std::unique_ptr<BoundaryCondition<vector_type>>;
 
   public:
@@ -63,8 +63,8 @@ class Snapshot
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
-    attribute_type&       at(const std::string& name) {return attributes_.at(name);}
-    attribute_type const& at(const std::string& name) {return attributes_.at(name);}
+    attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
+    attribute_type const& at(const std::string& name) const {return attributes_.at(name);}
 
     iterator        begin()       noexcept {return particles_.begin();}
     iterator        end()         noexcept {return particles_.end();}

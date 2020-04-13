@@ -17,7 +17,7 @@ class Trajectory
     using value_type     = std::pair<snapshot_type, attribute_container_type>;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
-    using const_iterator = typename const_iterator::const_iterator;
+    using const_iterator = typename container_type::const_iterator;
 
   public:
 
@@ -33,7 +33,7 @@ class Trajectory
     Trajectory(container_type ps)  : snapshots_(std::move(ps))    {}
     Trajectory(const std::vector<snapshot_type>& ss): snapshots_(ss.size())
     {
-        std::transform(ps.begin(), ps.end(), snapshots_.begin(),
+        std::transform(ss.begin(), ss.end(), snapshots_.begin(),
                 [](const vector_type& v){
                     return std::make_pair(v, attribute_container_type{});
                 });
@@ -65,8 +65,8 @@ class Trajectory
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
-    attribute_type&       at(const std::string& name) {return attributes_.at(name);}
-    attribute_type const& at(const std::string& name) {return attributes_.at(name);}
+    attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
+    attribute_type const& at(const std::string& name) const {return attributes_.at(name);}
 
     std::optional<attribute_type> try_at(const std::string& name) const noexcept
     {
