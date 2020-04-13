@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_COMMON_SNAPSHOT_HPP
 #define COFFEE_MILL_COMMON_SNAPSHOT_HPP
-#include <mill/common/Attribute.hpp>
+#include <mill/common/Particle.hpp>
 #include <mill/common/BoundaryCondition.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <vector>
@@ -18,8 +18,8 @@ class Snapshot
     using attribute_type = Attribute<vector_type>;
     using attribute_container_type = std::map<std::string, attribute_type>;
     // {position, {name:attributes, ...}}
-    using value_type     = std::pair<vector_type, attribute_container_type>;
-    using particle_type  = value_type;
+    using particle_type  = Particle<vector_type>;
+    using value_type     = particle_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename container_type::const_iterator;
@@ -56,10 +56,10 @@ class Snapshot
         return particles_.size();
     }
 
-    value_type&       operator[](std::size_t i)       noexcept {return particles_[i];}
-    value_type const& operator[](std::size_t i) const noexcept {return particles_[i];}
-    value_type&       at(std::size_t i)       {return particles_.at(i);}
-    value_type const& at(std::size_t i) const {return particles_.at(i);}
+    particle_type&       operator[](std::size_t i)       noexcept {return particles_[i];}
+    particle_type const& operator[](std::size_t i) const noexcept {return particles_[i];}
+    particle_type&       at(std::size_t i)       {return particles_.at(i);}
+    particle_type const& at(std::size_t i) const {return particles_.at(i);}
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
