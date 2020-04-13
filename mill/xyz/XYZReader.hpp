@@ -9,7 +9,7 @@
 
 #ifndef COFFEE_MILL_XYZ_READER_HPP
 #define COFFEE_MILL_XYZ_READER_HPP
-#include "XYZData.hpp"
+#include <mill/common/Trajectory.hpp>
 #include <memory>
 #include <utility>
 #include <iostream>
@@ -30,13 +30,11 @@ class XYZReader
 {
   public:
     using vector_type     = vectorT;
-    using position_type   = vector_type;
-    using frame_type      = XYZFrame<position_type>;
-    using snapshot_type   = frame_type;
-    using trajectory_type = std::vector<frame_type>;
+    using trajectory_type = Trajectory<vector_type>;
+    using snapshot_type   = typename trajectory_type::snapshot_type;
+    using particle_type   = typename snapshot_type::particle_type;
 
   public:
-
     XYZReader(const std::string& fname): xyz_(fname)
     {
         if(!xyz_.good())
@@ -61,14 +59,14 @@ typename XYZReader<vecT>::trajectory_type XYZReader<vecT>::read()
     trajectory_type traj;
     while(!this->xyz_.eof())
     {
-        traj.push_back(this->read_frame());
+        traj.snapshots().push_back(this->read_frame());
         this->xyz_.peek();
     }
     return traj;
 }
 
 template<typename vecT>
-typename XYZReader<vecT>::frame_type XYZReader<vecT>::read_frame()
+typename XYZReader<vecT>::snapshot_type XYZReader<vecT>::read_frame()
 {
     std::string line;
     std::getline(this->xyz_, line);
@@ -80,11 +78,12 @@ typename XYZReader<vecT>::frame_type XYZReader<vecT>::read_frame()
     catch(...)
     {
         throw std::runtime_error("XYZReader::read_frame: expected number, "
-                "but get " + line);
+                "but got " + line);
     }
-    frame_type frame;
-    std::getline(this->xyz_, frame.comment);
-    frame.particles.reserve(N);
+    snapshot_type frame(N);
+
+    std::getline(this->xyz_, line);
+    frame.at("comment") = line;
 
     for(std::size_t i=0; i<N; ++i)
     {
@@ -93,7 +92,9 @@ typename XYZReader<vecT>::frame_type XYZReader<vecT>::read_frame()
         std::string atom;
         double x, y, z;
         iss >> atom >> x >> y >> z;
-        frame.particles.emplace_back(atom, vector_type(x, y, z));
+
+        particle_type p(vector_type(x, y, z), {{"name", atom}});
+        frame.particles().push_back(std::move(p));
     }
     return frame;
 }

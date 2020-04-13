@@ -56,8 +56,10 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         for(const auto& snapshot : xyz_traj)
         {
             std::vector<vectorT> ss;
-            std::transform(snapshot.particles.begin(), snapshot.particles.end(),
-                std::back_inserter(ss), [](const auto& np) {return np.second;});
+            for(const auto& particle : snapshot.particles())
+            {
+                ss.push_back(particle.position());
+            }
             traj.push_back(std::move(ss));
         }
     }
@@ -80,11 +82,11 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     else if(refname.substr(refname.size() - 4, 4) == ".xyz")
     {
         XYZReader<vectorT> reader(refname);
-        const auto snapshot = reader.read_frame().particles;
-
         std::vector<vectorT> ss;
-        std::transform(snapshot.begin(), snapshot.end(), std::back_inserter(ss),
-            [](const auto& np) {return np.second;});
+        for(const auto& particle : reader.read_frame().particles())
+        {
+            ss.push_back(particle.position());
+        }
         ref = std::move(ss);
     }
     else
