@@ -58,9 +58,9 @@ class Trajectory
     {
         if(this->snapshots_.size() <= i)
         {
-            return this->snapshots_.at(i);
+            return std::nullopt;
         }
-        return std::nullopt;
+        return this->snapshots_.at(i);
     }
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
