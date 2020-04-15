@@ -39,6 +39,15 @@ class Particle
     attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
     attribute_type const& at(const std::string& name) const {return attributes_.at(name);}
 
+    std::optional<attribute_type> try_at(const std::string& name) const noexcept
+    {
+        if(attributes_.count(name) == 0)
+        {
+            return std::nullopt;
+        }
+        return attributes_.at(name);
+    }
+
     attribute_container_type &      attributes()       noexcept {return attributes_;}
     attribute_container_type const& attributes() const noexcept {return attributes_;}
     vector_type &      position()       noexcept {return position_;}
