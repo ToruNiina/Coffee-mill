@@ -61,10 +61,28 @@ class Snapshot
     particle_type&       at(std::size_t i)       {return particles_.at(i);}
     particle_type const& at(std::size_t i) const {return particles_.at(i);}
 
+    std::optional<particle_type> try_at(const std::size_t i) const noexcept
+    {
+        if(this->particvles_.size() <= i)
+        {
+            return std::nullopt;
+        }
+        return this->snapshots_.at(i);
+    }
+
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
     attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
     attribute_type const& at(const std::string& name) const {return attributes_.at(name);}
+
+    std::optional<attribute_type> try_at(const std::string& name) const noexcept
+    {
+        if(attributes_.count(name) == 0)
+        {
+            return std::nullopt;
+        }
+        return attributes_.at(name);
+    }
 
     iterator        begin()       noexcept {return particles_.begin();}
     iterator        end()         noexcept {return particles_.end();}
