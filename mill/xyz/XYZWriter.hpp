@@ -9,11 +9,12 @@
 
 #ifndef COFFEE_MILL_XYZ_WRITER_HPP
 #define COFFEE_MILL_XYZ_WRITER_HPP
-#include "XYZData.hpp"
+#include <mill/common/Trajectory.hpp>
 #include <memory>
 #include <utility>
 #include <iostream>
 #include <fstream>
+#include <iomanip>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -30,9 +31,10 @@ class XYZWriter
 {
   public:
     using vector_type     = vectorT;
-    using position_type   = vector_type;
-    using frame_type      = XYZFrame<position_type>;
-    using trajectory_type = std::vector<frame_type>;
+    using trajectory_type = Trajectory<vector_type>;
+    using snapshot_type   = typename trajectory_type::snapshot_type;
+    using particle_type   = typename snapshot_type::particle_type;
+    using attribute_type  = typename particle_type::attribute_type;
 
   public:
 
@@ -48,11 +50,11 @@ class XYZWriter
     ~XYZWriter() = default;
 
     void write(const trajectory_type& traj) const;
-    void write(const frame_type&     frame) const;
+    void write(const snapshot_type&   snap) const;
 
   private:
 
-    void write(std::ostream& os, const frame_type& frame) const;
+    void write(std::ostream& os, const snapshot_type& frame) const;
 
   private:
 
@@ -75,7 +77,7 @@ void XYZWriter<vectorT>::write(const trajectory_type& traj) const
 }
 
 template<typename vectorT>
-void XYZWriter<vectorT>::write(const frame_type& frame) const
+void XYZWriter<vectorT>::write(const snapshot_type& frame) const
 {
     std::ofstream ofs(filename_, std::ios::app | std::ios::out);
     if(!ofs.good())
@@ -87,14 +89,19 @@ void XYZWriter<vectorT>::write(const frame_type& frame) const
 }
 
 template<typename vectorT>
-void XYZWriter<vectorT>::write(std::ostream& os, const frame_type& frame) const
+void XYZWriter<vectorT>::write(std::ostream& os, const snapshot_type& frame) const
 {
-    os << ss.size()     << '\n';
-    os << frame.comment << '\n';
-    for(const auto& particle : frame.particles)
+    using namespace std::literals::string_literals;
+    os << frame.size() << '\n';
+    os << frame.try_at("comment").value_or(attribute_type(""s))
+               .try_string().value_or(""s) << '\n';
+    for(const auto& particle : frame.particles())
     {
-        os << particle.first     << ' ' << particle.second[0] << ' '
-              particle.second[1] << ' ' << particle.second[2] << '\n';
+        os << particle.try_at("name"s).value_or(attribute_type("X"s))
+                      .try_string().value_or("X"s) << ' ';
+        os << std::fixed << std::setprecision(17) << std::setw(20) << particle.position()[0] << ' '
+           << std::fixed << std::setprecision(17) << std::setw(20) << particle.position()[1] << ' '
+           << std::fixed << std::setprecision(17) << std::setw(20) << particle.position()[2] << '\n';
     }
     return;
 }
