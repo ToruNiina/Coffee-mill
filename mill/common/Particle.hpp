@@ -3,6 +3,7 @@
 #include <mill/common/Attribute.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <vector>
+#include <map>
 #include <memory>
 
 namespace mill
