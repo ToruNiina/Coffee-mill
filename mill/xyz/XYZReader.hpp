@@ -12,8 +12,8 @@
 #include <mill/common/Trajectory.hpp>
 #include <memory>
 #include <utility>
-#include <iostream>
 #include <fstream>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -83,7 +83,7 @@ typename XYZReader<vecT>::snapshot_type XYZReader<vecT>::read_frame()
     snapshot_type frame(N);
 
     std::getline(this->xyz_, line);
-    frame.at("comment") = line;
+    frame["comment"] = line;
 
     for(std::size_t i=0; i<N; ++i)
     {
@@ -94,7 +94,7 @@ typename XYZReader<vecT>::snapshot_type XYZReader<vecT>::read_frame()
         iss >> atom >> x >> y >> z;
 
         particle_type p(vector_type(x, y, z), {{"name", atom}});
-        frame.particles().push_back(std::move(p));
+        frame.at(i) = std::move(p);
     }
     return frame;
 }
