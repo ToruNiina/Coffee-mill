@@ -4,6 +4,7 @@
 #include <variant>
 #include <string>
 #include <vector>
+#include <optional>
 #include <cstdint>
 
 namespace mill
@@ -198,12 +199,12 @@ class Attribute
     vector_type   &&     as_vector()   &&     {return std::get<5>(std::move(storage_));}
     array_type    &&     as_array()    &&     {return std::get<6>(std::move(storage_));}
 
-    std::optional<boolean_type > try_boolean()  const noexcept {return is_boolean()  ? as_boolean()  : std::nullopt;}
-    std::optional<integer_type > try_integer()  const noexcept {return is_integer()  ? as_integer()  : std::nullopt;}
-    std::optional<floating_type> try_floating() const noexcept {return is_floating() ? as_floating() : std::nullopt;}
-    std::optional<string_type  > try_string()   const noexcept {return is_string()   ? as_string()   : std::nullopt;}
-    std::optional<vector_type  > try_vector()   const noexcept {return is_vector()   ? as_vector()   : std::nullopt;}
-    std::optional<array_type   > try_array()    const noexcept {return is_array()    ? as_array()    : std::nullopt;}
+    std::optional<boolean_type > try_boolean()  const noexcept {if(is_boolean() ){return make_optional(as_boolean() );} return std::nullopt;}
+    std::optional<integer_type > try_integer()  const noexcept {if(is_integer() ){return make_optional(as_integer() );} return std::nullopt;}
+    std::optional<floating_type> try_floating() const noexcept {if(is_floating()){return make_optional(as_floating());} return std::nullopt;}
+    std::optional<string_type  > try_string()   const noexcept {if(is_string()  ){return make_optional(as_string()  );} return std::nullopt;}
+    std::optional<vector_type  > try_vector()   const noexcept {if(is_vector()  ){return make_optional(as_vector()  );} return std::nullopt;}
+    std::optional<array_type   > try_array()    const noexcept {if(is_array()   ){return make_optional(as_array()   );} return std::nullopt;}
 
     AttributeKind which() const noexcept
     {
