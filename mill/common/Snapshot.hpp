@@ -23,7 +23,7 @@ class Snapshot
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
     using const_iterator = typename container_type::const_iterator;
-    using boundary_type  = std::unique_ptr<BoundaryCondition<vector_type>>;
+    using boundary_type  = BoundaryCondition<vector_type>;
 
   public:
 

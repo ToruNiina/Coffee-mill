@@ -3,52 +3,34 @@
 #include <mill/math/Vector.hpp>
 #include <mill/util/scalar_type_of.hpp>
 #include <limits>
+#include <variant>
 
 namespace mill
 {
 
 template<typename vectorT>
-struct BoundaryCondition
+struct UnlimitedBoundary
 {
   public:
     using vector_type = vectorT;
     using real_type   = typename scalar_type_of<vector_type>::type;
 
   public:
-
-    virtual ~BoundaryCondition() = default;
-
-    virtual vector_type adjust_direction(vector_type dr) const noexcept = 0;
-    virtual vector_type adjust_position (vector_type r ) const noexcept = 0;
-
-    virtual real_type volume() const noexcept = 0;
-};
-
-template<typename vectorT>
-struct UnlimitedBoundary final : BoundaryCondition<vectorT>
-{
-  public:
-    using base_type   = BoundaryCondition<vectorT>;
-    using vector_type = typename base_type::vector_type;
-    using real_type   = typename base_type::real_type;
-
-  public:
     UnlimitedBoundary() = default;
-    ~UnlimitedBoundary() override = default;
+    ~UnlimitedBoundary() = default;
 
-    vector_type adjust_direction(vector_type dr) const noexcept override {return dr;}
-    vector_type adjust_position (vector_type r ) const noexcept override {return r;}
+    vector_type adjust_direction(vector_type dr) const noexcept {return dr;}
+    vector_type adjust_position (vector_type r ) const noexcept {return r;}
 
-    real_type volume() const noexcept override {return std::numeric_limits<real_type>::infinity();}
+    real_type volume() const noexcept {return std::numeric_limits<real_type>::infinity();}
 };
 
 template<typename vectorT>
-struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
+struct CuboidalPeriodicBoundary
 {
   public:
-    using base_type   = BoundaryCondition<vectorT>;
-    using vector_type = typename base_type::vector_type;
-    using real_type   = typename base_type::real_type;
+    using vector_type = vectorT;
+    using real_type   = typename scalar_type_of<vector_type>::type;
 
   public:
 
@@ -59,9 +41,9 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
     CuboidalPeriodicBoundary(const vector_type& lw, const vector_type& up) noexcept
         : lower_(lw), upper_(up), width_(up - lw), halfw_((up - lw) * 0.5)
     {}
-    ~CuboidalPeriodicBoundary() override = default;
+    ~CuboidalPeriodicBoundary() = default;
 
-    vector_type adjust_direction(vector_type dr) const noexcept override
+    vector_type adjust_direction(vector_type dr) const noexcept
     {
         if     (dr[0] < -halfw_[0]) {dr[0] += width_[0];}
         else if(dr[0] >= halfw_[0]) {dr[0] -= width_[0];}
@@ -72,7 +54,7 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
         return dr;
     }
 
-    vector_type adjust_position(vector_type pos) const noexcept override
+    vector_type adjust_position(vector_type pos) const noexcept
     {
         if     (pos[0] <  lower_[0]) {pos[0] += width_[0];}
         else if(pos[0] >= upper_[0]) {pos[0] -= width_[0];}
@@ -83,7 +65,7 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
         return pos;
     }
 
-    real_type volume() const noexcept override
+    real_type volume() const noexcept
     {
         return width_[0] * width_[1] * width_[2];
     }
@@ -108,6 +90,70 @@ struct CuboidalPeriodicBoundary final : BoundaryCondition<vectorT>
     vector_type width_;
     vector_type halfw_;
 };
+
+enum class BoundaryConditionKind : std::size_t
+{
+    Unlimited = 0,
+    CuboidalPeriodicBoundary = 1,
+};
+
+template<typename vectorT>
+struct BoundaryCondition
+{
+  public:
+
+    using vector_type  = vectorT;
+    using real_type    = typename scalar_type_of<vector_type>::type;
+    using storage_type = std::variant<
+            UnlimitedBoundary<vector_type>,
+            CuboidalPeriodicBoundary<vector_type>
+        >;
+
+  public:
+
+    BoundaryCondition()  = default;
+    ~BoundaryCondition() = default;
+
+    explicit BoundaryCondition(UnlimitedBoundary<vector_type> b)
+        : storage_(std::move(b))
+    {}
+    explicit BoundaryCondition(CuboidalPeriodicBoundary<vector_type> b)
+        : storage_(std::move(b))
+    {}
+
+    vector_type adjust_direction(vector_type dr) const noexcept
+    {
+        return std::visit([dr](const auto& b) -> vector_type {
+                    return b.adjust_direction(dr);
+                }, storage_);
+    }
+    vector_type adjust_position (vector_type r ) const noexcept
+    {
+        return std::visit([r](const auto& b) -> vector_type {
+                    return b.adjust_position(r);
+                }, storage_);
+    }
+    real_type volume() const noexcept
+    {
+        return std::visit([](const auto& b) -> real_type {
+                    return b.volume();
+                }, storage_);
+    }
+
+    BoundaryConditionKind kind() const noexcept
+    {
+        return static_cast<BoundaryConditionKind>(storage_.get());
+    }
+
+    UnlimitedBoundary<vector_type> const&        as_unlimited() const {return std::get<UnlimitedBoundary<vector_type>>(storage_);}
+    UnlimitedBoundary<vector_type> &             as_unlimited()       {return std::get<UnlimitedBoundary<vector_type>>(storage_);}
+    CuboidalPeriodicBoundary<vector_type> const& as_periodic()  const {return std::get<CuboidalPeriodicBoundary<vector_type>>(storage_);}
+    CuboidalPeriodicBoundary<vector_type> &      as_periodic()        {return std::get<CuboidalPeriodicBoundary<vector_type>>(storage_);}
+
+  private:
+    storage_type storage_;
+};
+
 
 }// mill
 #endif /* COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP */
