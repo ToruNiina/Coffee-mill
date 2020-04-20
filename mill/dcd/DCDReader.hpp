@@ -67,7 +67,7 @@ class DCDReader
     void read_header_block2(std::istream& dcdfile, data_type& data);
     void read_header_block3(std::istream& dcdfile, data_type& data);
 
-    std::unique_ptr<boundary_type> read_unit_cell(std::istream& dcdfile) const;
+    boundary_type read_unit_cell(std::istream& dcdfile) const;
 
   private:
 
@@ -274,12 +274,12 @@ void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
 }
 
 template <typename T>
-std::unique_ptr<typename DCDReader<T>::boundary_type>
+typename DCDReader<T>::boundary_type
 DCDReader<T>::read_unit_cell(std::istream& is) const
 {
     if(not this->has_unitcell_)
     {
-        return nullptr;
+        return boundary_type(UnlimitedBoundary<vector_type>());
     }
     using position_type = typename data_type::position_type;
 
@@ -298,7 +298,7 @@ DCDReader<T>::read_unit_cell(std::istream& is) const
         log::error("block_begin = ", block_begin, ", block_end = ", block_end, "\n");
         log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C,      "\n");
         log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma,  "\n");
-        return nullptr;
+        return boundary_type(UnlimitedBoundary<vector_type>());
     }
 
     const auto differs = [](const double lhs, const double rhs) noexcept -> bool {
@@ -318,8 +318,8 @@ DCDReader<T>::read_unit_cell(std::istream& is) const
         log::error("angle beta  = ", beta , '\n');
         log::error("angle gamma = ", gamma, '\n');
     }
-    return std::make_unique<CuboidalPeriodicBoundary<position_type>>(
-            position_type(0, 0, 0), position_type(A, B, C));
+    return boundary_type(CuboidalPeriodicBoundary<position_type>(
+            position_type(0, 0, 0), position_type(A, B, C)));
 }
 
 template <typename T>

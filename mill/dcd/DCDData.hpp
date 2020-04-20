@@ -94,7 +94,7 @@ class DCDData
     using header_type     = DCDHeader<real_type>;
     using comment_type    = typename header_type::comment_type;
     using boundary_type   = BoundaryCondition<vector_type>;
-    using boundary_trajectory_type = std::vector<std::unique_ptr<boundary_type>>;
+    using boundary_trajectory_type = std::vector<boundary_type>;
 
   public:
 
@@ -165,7 +165,7 @@ class DCDData
 
     header_type     header_; //!< header data. realT is deduced as a scalar_type of vectorT.
     trajectory_type trajectory_; //!< trajectory data.
-    std::vector<std::unique_ptr<boundary_type>> boundary_trajectory_;
+    boundary_trajectory_type boundary_trajectory_;
 };
 
 } // dcd
