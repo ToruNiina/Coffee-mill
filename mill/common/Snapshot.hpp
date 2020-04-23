@@ -9,16 +9,15 @@
 namespace mill
 {
 
-template<typename vectorT>
 class Snapshot
 {
   public:
-    using vector_type    = vectorT;
-    using real_type      = scalar_type_of_t<vector_type>;
-    using attribute_type = Attribute<vector_type>;
+    using real_type      = double;
+    using vector_type    = Vector<real_type, 3>;
+    using attribute_type = Attribute;
     using attribute_container_type = std::map<std::string, attribute_type>;
     // {position, {name:attributes, ...}}
-    using particle_type  = Particle<vector_type>;
+    using particle_type  = Particle;
     using value_type     = particle_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
@@ -36,18 +35,18 @@ class Snapshot
 
     Snapshot(std::size_t N): particles_(N) {}
 
-    Snapshot(attribute_type attr): attributes_(std::move(attr)) {}
+    Snapshot(attribute_container_type attr): attributes_(std::move(attr)) {}
     Snapshot(container_type ps)  : particles_(std::move(ps))    {}
     Snapshot(const std::vector<vector_type>& ps): particles_(ps.size())
     {
         std::transform(ps.begin(), ps.end(), particles_.begin(),
-                [](const vector_type& v){
-                    return std::make_pair(v, attribute_container_type{});
+                [](const vector_type& pos) -> particle_type {
+                    return particle_type(pos, attribute_container_type{});
                 });
     }
 
     void clear() {attributes_.clear(); particles_.clear(); return;}
-    void empty() const noexcept
+    bool empty() const noexcept
     {
         return attributes_.empty() && particles_.empty();
     }
@@ -63,11 +62,11 @@ class Snapshot
 
     std::optional<particle_type> try_at(const std::size_t i) const noexcept
     {
-        if(this->particvles_.size() <= i)
+        if(this->particles_.size() <= i)
         {
             return std::nullopt;
         }
-        return this->snapshots_.at(i);
+        return this->particles_.at(i);
     }
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}

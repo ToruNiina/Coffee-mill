@@ -1,5 +1,6 @@
 #ifndef COFFEE_MILL_COMMON_ATTRIBUTES_HPP
 #define COFFEE_MILL_COMMON_ATTRIBUTES_HPP
+#include <mill/math/Vector.hpp>
 #include <utility>
 #include <variant>
 #include <string>
@@ -21,21 +22,15 @@ enum class AttributeKind: std::size_t
     array    = 6,
 };
 
-template<typename vectorT,
-         typename booleanT  = bool,
-         typename integerT  = std::int64_t,
-         typename floatingT = double,
-         typename stringT   = std::string,
-         template<typename ...> class arrayT = std::vector>
 class Attribute
 {
   public:
-    using boolean_type  = booleanT;
-    using integer_type  = integerT;
-    using floating_type = floatingT;
-    using string_type   = stringT;
-    using vector_type   = vectorT;
-    using array_type    = arrayT<Attribute>;
+    using boolean_type  = bool;
+    using integer_type  = std::int64_t;
+    using floating_type = double;
+    using string_type   = std::string;
+    using vector_type   = Vector<double, 3>;
+    using array_type    = std::vector<Attribute>;
     using storage_type  = std::variant<
             std::monostate,
             boolean_type,
@@ -199,12 +194,12 @@ class Attribute
     vector_type   &&     as_vector()   &&     {return std::get<5>(std::move(storage_));}
     array_type    &&     as_array()    &&     {return std::get<6>(std::move(storage_));}
 
-    std::optional<boolean_type > try_boolean()  const noexcept {if(is_boolean() ){return make_optional(as_boolean() );} return std::nullopt;}
-    std::optional<integer_type > try_integer()  const noexcept {if(is_integer() ){return make_optional(as_integer() );} return std::nullopt;}
-    std::optional<floating_type> try_floating() const noexcept {if(is_floating()){return make_optional(as_floating());} return std::nullopt;}
-    std::optional<string_type  > try_string()   const noexcept {if(is_string()  ){return make_optional(as_string()  );} return std::nullopt;}
-    std::optional<vector_type  > try_vector()   const noexcept {if(is_vector()  ){return make_optional(as_vector()  );} return std::nullopt;}
-    std::optional<array_type   > try_array()    const noexcept {if(is_array()   ){return make_optional(as_array()   );} return std::nullopt;}
+    std::optional<boolean_type > try_boolean()  const noexcept {if(is_boolean() ){return std::make_optional(as_boolean() );} return std::nullopt;}
+    std::optional<integer_type > try_integer()  const noexcept {if(is_integer() ){return std::make_optional(as_integer() );} return std::nullopt;}
+    std::optional<floating_type> try_floating() const noexcept {if(is_floating()){return std::make_optional(as_floating());} return std::nullopt;}
+    std::optional<string_type  > try_string()   const noexcept {if(is_string()  ){return std::make_optional(as_string()  );} return std::nullopt;}
+    std::optional<vector_type  > try_vector()   const noexcept {if(is_vector()  ){return std::make_optional(as_vector()  );} return std::nullopt;}
+    std::optional<array_type   > try_array()    const noexcept {if(is_array()   ){return std::make_optional(as_array()   );} return std::nullopt;}
 
     AttributeKind which() const noexcept
     {

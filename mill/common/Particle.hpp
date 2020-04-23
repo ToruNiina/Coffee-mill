@@ -9,13 +9,12 @@
 namespace mill
 {
 
-template<typename vectorT>
 class Particle
 {
   public:
-    using vector_type              = vectorT;
-    using real_type                = scalar_type_of_t<vector_type>;
-    using attribute_type           = Attribute<vector_type>;
+    using real_type                = double;
+    using vector_type              = Vector<real_type, 3>;
+    using attribute_type           = Attribute;
     using attribute_container_type = std::map<std::string, attribute_type>;
 
   public:
