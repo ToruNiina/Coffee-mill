@@ -29,10 +29,10 @@ template<typename vectorT>
 class XYZReader
 {
   public:
-    using vector_type     = vectorT;
-    using trajectory_type = Trajectory<vector_type>;
+    using trajectory_type = Trajectory;
     using snapshot_type   = typename trajectory_type::snapshot_type;
     using particle_type   = typename snapshot_type::particle_type;
+    using vector_type     = typename particle_type::vector_type;
 
   public:
     XYZReader(const std::string& fname): xyz_(fname)
