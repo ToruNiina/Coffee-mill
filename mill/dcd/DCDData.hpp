@@ -93,7 +93,7 @@ class DCDData
     using const_iterator  = typename trajectory_type::const_iterator;
     using header_type     = DCDHeader<real_type>;
     using comment_type    = typename header_type::comment_type;
-    using boundary_type   = BoundaryCondition<vector_type>;
+    using boundary_type   = BoundaryCondition;
     using boundary_trajectory_type = std::vector<boundary_type>;
 
   public:

@@ -279,7 +279,7 @@ DCDReader<T>::read_unit_cell(std::istream& is) const
 {
     if(not this->has_unitcell_)
     {
-        return boundary_type(UnlimitedBoundary<vector_type>());
+        return boundary_type(UnlimitedBoundary{});
     }
     using position_type = typename data_type::position_type;
 
@@ -298,7 +298,7 @@ DCDReader<T>::read_unit_cell(std::istream& is) const
         log::error("block_begin = ", block_begin, ", block_end = ", block_end, "\n");
         log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C,      "\n");
         log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma,  "\n");
-        return boundary_type(UnlimitedBoundary<vector_type>());
+        return boundary_type(UnlimitedBoundary{});
     }
 
     const auto differs = [](const double lhs, const double rhs) noexcept -> bool {
@@ -318,7 +318,7 @@ DCDReader<T>::read_unit_cell(std::istream& is) const
         log::error("angle beta  = ", beta , '\n');
         log::error("angle gamma = ", gamma, '\n');
     }
-    return boundary_type(CuboidalPeriodicBoundary<position_type>(
+    return boundary_type(CuboidalPeriodicBoundary(
             position_type(0, 0, 0), position_type(A, B, C)));
 }
 
