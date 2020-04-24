@@ -13,8 +13,8 @@ BOOST_AUTO_TEST_CASE(unlimited)
 {
     using namespace std::literals::string_literals;
     using vector_type             = mill::Vector<double, 3>;
-    using boundary_condition_type = mill::BoundaryCondition<vector_type>;
-    using unlimited_boundary_type = mill::UnlimitedBoundary<vector_type>;
+    using boundary_condition_type = mill::BoundaryCondition;
+    using unlimited_boundary_type = mill::UnlimitedBoundary;
     {
         boundary_condition_type b(unlimited_boundary_type{});
 
@@ -36,8 +36,8 @@ BOOST_AUTO_TEST_CASE(periodic)
 {
     using namespace std::literals::string_literals;
     using vector_type             = mill::Vector<double, 3>;
-    using boundary_condition_type = mill::BoundaryCondition<vector_type>;
-    using periodic_boundary_type  = mill::CuboidalPeriodicBoundary<vector_type>;
+    using boundary_condition_type = mill::BoundaryCondition;
+    using periodic_boundary_type  = mill::CuboidalPeriodicBoundary;
     {
         vector_type upper( 2.0,  2.0,  2.0);
         vector_type lower(-1.0, -1.0, -1.0);

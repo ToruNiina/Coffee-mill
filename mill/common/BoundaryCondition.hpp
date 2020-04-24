@@ -8,12 +8,11 @@
 namespace mill
 {
 
-template<typename vectorT>
 struct UnlimitedBoundary
 {
   public:
-    using vector_type = vectorT;
-    using real_type   = typename scalar_type_of<vector_type>::type;
+    using real_type   = double;
+    using vector_type = Vector<real_type, 3>;
 
   public:
     UnlimitedBoundary() = default;
@@ -25,12 +24,11 @@ struct UnlimitedBoundary
     real_type volume() const noexcept {return std::numeric_limits<real_type>::infinity();}
 };
 
-template<typename vectorT>
 struct CuboidalPeriodicBoundary
 {
   public:
-    using vector_type = vectorT;
-    using real_type   = typename scalar_type_of<vector_type>::type;
+    using real_type   = double;
+    using vector_type = Vector<real_type, 3>;
 
   public:
 
@@ -94,19 +92,18 @@ struct CuboidalPeriodicBoundary
 enum class BoundaryConditionKind : std::size_t
 {
     Unlimited = 0,
-    CuboidalPeriodicBoundary = 1,
+    CuboidalPeriodic = 1,
 };
 
-template<typename vectorT>
 struct BoundaryCondition
 {
   public:
 
-    using vector_type  = vectorT;
-    using real_type    = typename scalar_type_of<vector_type>::type;
+    using real_type   = double;
+    using vector_type = Vector<real_type, 3>;
     using storage_type = std::variant<
-            UnlimitedBoundary<vector_type>,
-            CuboidalPeriodicBoundary<vector_type>
+            UnlimitedBoundary,
+            CuboidalPeriodicBoundary
         >;
 
   public:
@@ -114,10 +111,10 @@ struct BoundaryCondition
     BoundaryCondition()  = default;
     ~BoundaryCondition() = default;
 
-    explicit BoundaryCondition(UnlimitedBoundary<vector_type> b)
+    explicit BoundaryCondition(UnlimitedBoundary b)
         : storage_(std::move(b))
     {}
-    explicit BoundaryCondition(CuboidalPeriodicBoundary<vector_type> b)
+    explicit BoundaryCondition(CuboidalPeriodicBoundary b)
         : storage_(std::move(b))
     {}
 
@@ -142,18 +139,17 @@ struct BoundaryCondition
 
     BoundaryConditionKind kind() const noexcept
     {
-        return static_cast<BoundaryConditionKind>(storage_.get());
+        return static_cast<BoundaryConditionKind>(storage_.index());
     }
 
-    UnlimitedBoundary<vector_type> const&        as_unlimited() const {return std::get<UnlimitedBoundary<vector_type>>(storage_);}
-    UnlimitedBoundary<vector_type> &             as_unlimited()       {return std::get<UnlimitedBoundary<vector_type>>(storage_);}
-    CuboidalPeriodicBoundary<vector_type> const& as_periodic()  const {return std::get<CuboidalPeriodicBoundary<vector_type>>(storage_);}
-    CuboidalPeriodicBoundary<vector_type> &      as_periodic()        {return std::get<CuboidalPeriodicBoundary<vector_type>>(storage_);}
+    UnlimitedBoundary const&        as_unlimited() const {return std::get<UnlimitedBoundary>(storage_);}
+    UnlimitedBoundary &             as_unlimited()       {return std::get<UnlimitedBoundary>(storage_);}
+    CuboidalPeriodicBoundary const& as_periodic()  const {return std::get<CuboidalPeriodicBoundary>(storage_);}
+    CuboidalPeriodicBoundary &      as_periodic()        {return std::get<CuboidalPeriodicBoundary>(storage_);}
 
   private:
     storage_type storage_;
 };
-
 
 }// mill
 #endif /* COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP */
