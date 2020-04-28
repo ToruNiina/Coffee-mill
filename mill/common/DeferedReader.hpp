@@ -9,21 +9,19 @@
 namespace mill
 {
 
-template<typename vectorT>
 class DeferedReaderBase;
 
-template<typename vectorT>
 class ReaderIterator
 {
   public:
     using iterator_category = std::input_iterator_tag;
     using difference_type   = std::ptrdiff_t;
-    using value_type        = Snapshot<vectorT>;
+    using value_type        = Snapshot;
     using reference         = value_type&;
     using pointer           = value_type*;
 
   public:
-    explicit ReaderIterator(DeferedReaderBase<vectorT>& reader)
+    explicit ReaderIterator(DeferedReaderBase& reader)
         : current_(std::nullopt), reader_(std::addressof(reader))
     {}
 
@@ -55,29 +53,25 @@ class ReaderIterator
 
   private:
     std::optional<value_type> current_;
-    DeferedReaderBase<vectorT>* reader_;
+    DeferedReaderBase*        reader_;
 };
 
-template<typename T>
-bool operator==(const DeferedReaderBase<T>& lhs, const DeferedReaderBase<T>& rhs)
+inline bool operator==(const ReaderIterator& lhs, const ReaderIterator& rhs)
 {
     return std::make_tuple(lhs->is_eof(), lhs->current(), lhs->file_name()) ==
            std::make_tuple(lhs->is_eof(), lhs->current(), lhs->file_name());
 }
-template<typename T>
-bool operator!=(const DeferedReaderBase<T>& lhs, const DeferedReaderBase<T>& rhs)
+inline bool operator!=(const ReaderIterator& lhs, const ReaderIterator& rhs)
 {
     return !(lhs == rhs);
 }
 
-template<typename vectorT>
 class DeferedReaderBase
 {
   public:
-    using vector_type     = vectorT;
-    using trajectory_type = Trajectory<vector_type>;
-    using snapshot_type   = typename trajectory_type::snapshot_type;
-    using attribute_container_type = typename trajectory_type::attribute_container_type;
+    using trajectory_type = Trajectory;
+    using snapshot_type   = Snapshot;
+    using attribute_container_type = trajectory_type::attribute_container_type;
 
   public:
 
