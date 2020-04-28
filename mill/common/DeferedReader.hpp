@@ -66,12 +66,18 @@ class ReaderIterator
 
     ReaderIterator& operator++()
     {
-        current_ = reader_->read_frame();
+        if(not this->is_eof())
+        {
+            current_ = reader_->read_frame();
+        }
         return *this;
     }
     ReaderIterator  operator++(int)
     {
-        current_ = reader_->read_frame();
+        if(not this->is_eof())
+        {
+            current_ = reader_->read_frame();
+        }
         return *this;
     }
 
@@ -133,6 +139,14 @@ inline bool operator==(const ReaderIterator& lhs, const ReaderIteratorSentinel& 
 inline bool operator==(const ReaderIteratorSentinel& lhs, const ReaderIterator& rhs)
 {
     return rhs.is_eof() && (lhs.file_name() == rhs.file_name());
+}
+inline bool operator!=(const ReaderIterator& lhs, const ReaderIteratorSentinel& rhs)
+{
+    return !(lhs == rhs);
+}
+inline bool operator!=(const ReaderIteratorSentinel& lhs, const ReaderIterator& rhs)
+{
+    return !(lhs == rhs);
 }
 
 inline ReaderIterator DeferedReaderBase::begin()
