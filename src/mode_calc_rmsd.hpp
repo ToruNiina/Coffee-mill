@@ -51,7 +51,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     }
     else if(fname.substr(fname.size() - 4, 4) == ".xyz")
     {
-        XYZReader<vectorT> reader(fname);
+        XYZReader reader(fname);
         const auto xyz_traj = reader.read();
         for(const auto& snapshot : xyz_traj)
         {
@@ -81,7 +81,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     }
     else if(refname.substr(refname.size() - 4, 4) == ".xyz")
     {
-        XYZReader<vectorT> reader(refname);
+        XYZReader reader(refname);
         std::vector<vectorT> ss;
         for(const auto& particle : reader.read_frame().particles())
         {
