@@ -17,6 +17,8 @@ class DeferedReaderBase
   public:
     using trajectory_type = Trajectory;
     using snapshot_type   = Snapshot;
+    using particle_type   = Particle;
+    using vector_type     = Particle::vector_type;
     using attribute_container_type = trajectory_type::attribute_container_type;
 
   public:
@@ -31,6 +33,7 @@ class DeferedReaderBase
     ReaderIterator         begin();
     ReaderIteratorSentinel end();
 
+    virtual void             rewind()    = 0;
     virtual bool             is_eof()    const noexcept = 0;
     virtual std::size_t      current()   const noexcept = 0;
     virtual std::string_view file_name() const noexcept = 0;
