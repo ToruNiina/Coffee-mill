@@ -10,6 +10,7 @@
 #ifndef COFFEE_MILL_XYZ_READER_HPP
 #define COFFEE_MILL_XYZ_READER_HPP
 #include <mill/common/Trajectory.hpp>
+#include <mill/common/DeferedReader.hpp>
 #include <memory>
 #include <utility>
 #include <fstream>
@@ -25,26 +26,35 @@ namespace mill
 /*!
  *  @tparam vectorT type of position
  */
-class XYZReader
+class XYZReader final : public DeferedReaderBase
 {
   public:
-    using trajectory_type = Trajectory;
-    using snapshot_type   = typename trajectory_type::snapshot_type;
-    using particle_type   = typename snapshot_type::particle_type;
-    using vector_type     = typename particle_type::vector_type;
+    using base_type = DeferedReaderBase;
+    using trajectory_type          = base_type::trajectory_type         ;
+    using snapshot_type            = base_type::snapshot_type           ;
+    using particle_type            = base_type::particle_type           ;
+    using attribute_container_type = base_type::attribute_container_type;
 
   public:
-    XYZReader(const std::string& fname): xyz_(fname)
+
+    XYZReader(const std::string& fname)
+        : current_(0), file_name_(fname), xyz_(fname)
     {
         if(!xyz_.good())
         {
             throw std::runtime_error("XYZReader: file open error: " + fname);
         }
     }
-    ~XYZReader() = default;
+    ~XYZReader() override = default;
 
-    trajectory_type read()
+    attribute_container_type read_header() override
     {
+        return attribute_container_type{};
+    }
+    trajectory_type read() override
+    {
+        this->rewind();
+
         trajectory_type traj;
         while(!this->xyz_.eof())
         {
@@ -53,7 +63,7 @@ class XYZReader
         }
         return traj;
     }
-    snapshot_type   read_frame()
+    snapshot_type   read_frame() override
     {
         std::string line;
         std::getline(this->xyz_, line);
@@ -83,12 +93,52 @@ class XYZReader
             particle_type p(vector_type(x, y, z), {{"name", atom}});
             frame.at(i) = std::move(p);
         }
+        current_ += 1;
         return frame;
     }
 
-    bool is_eof() const noexcept {return xyz_.eof();}
+    snapshot_type   read_frame(const std::size_t idx) override
+    {
+        this->rewind();
+
+        // skip n snapshots
+        std::string line;
+        for(std::size_t i=0; i<idx; ++i)
+        {
+            std::getline(this->xyz_, line);
+            std::size_t N = 0;
+            try
+            {
+                N = std::stoull(line);
+            }
+            catch(...)
+            {
+                throw std::runtime_error("XYZReader::read_frame: "
+                        "expected number, but got " + line);
+            }
+
+            // skip comment line and N particles
+            for(std::size_t j=0; j<N+1; ++j)
+            {
+                std::getline(this->xyz_, line);
+            }
+        }
+        return this->read_frame();
+    }
+
+    void rewind() override
+    {
+        current_ = 0;
+        xyz_.seekg(0, std::ios_base::beg);
+    }
+
+    bool             is_eof()    const noexcept override {return xyz_.eof();}
+    std::size_t      current()   const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
+    std::size_t   current_;
+    std::string   file_name_;
     std::ifstream xyz_;
 };
 
