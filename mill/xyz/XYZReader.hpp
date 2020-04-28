@@ -9,6 +9,7 @@
 
 #ifndef COFFEE_MILL_XYZ_READER_HPP
 #define COFFEE_MILL_XYZ_READER_HPP
+#include <mill/util/logger.hpp>
 #include <mill/common/Trajectory.hpp>
 #include <mill/common/DeferedReader.hpp>
 #include <memory>
@@ -49,10 +50,13 @@ class XYZReader final : public DeferedReaderBase
 
     attribute_container_type read_header() override
     {
+        mill::log::debug("mill::XYZReader: reading header ...\n");
+        mill::log::debug("mill::XYZReader: done.\n");
         return attribute_container_type{};
     }
     trajectory_type read() override
     {
+        mill::log::debug("mill::XYZReader: reading the whole trajectory...\n");
         this->rewind();
 
         trajectory_type traj;
@@ -61,10 +65,13 @@ class XYZReader final : public DeferedReaderBase
             traj.snapshots().push_back(this->read_frame());
             this->xyz_.peek();
         }
+        mill::log::debug("mill::XYZReader: done.\n");
         return traj;
     }
     snapshot_type   read_frame() override
     {
+        mill::log::debug("mill::XYZReader: reading the next snapshot...\n");
+
         std::string line;
         std::getline(this->xyz_, line);
         std::size_t N = 0;
@@ -77,10 +84,14 @@ class XYZReader final : public DeferedReaderBase
             throw std::runtime_error("XYZReader::read_frame: expected number, "
                     "but got " + line);
         }
+        mill::log::debug("mill::XYZReader: the next snapshot has ", N,
+                         " particles.\n");
         snapshot_type frame(N);
 
         std::getline(this->xyz_, line);
         frame["comment"] = line;
+        mill::log::debug("mill::XYZReader: comment of the next snapshot is ",
+                         line, "\n");
 
         for(std::size_t i=0; i<N; ++i)
         {
@@ -94,11 +105,13 @@ class XYZReader final : public DeferedReaderBase
             frame.at(i) = std::move(p);
         }
         current_ += 1;
+        mill::log::debug("mill::XYZReader: done.\n");
         return frame;
     }
 
     snapshot_type   read_frame(const std::size_t idx) override
     {
+        mill::log::debug("mill::XYZReader: reading the ", idx, "-th snapshot\n");
         this->rewind();
 
         // skip n snapshots
@@ -116,6 +129,7 @@ class XYZReader final : public DeferedReaderBase
                 throw std::runtime_error("XYZReader::read_frame: "
                         "expected number, but got " + line);
             }
+            mill::log::debug("mill::XYZReader: the next snapshot has ", N, "particles.\n");
 
             // skip comment line and N particles
             for(std::size_t j=0; j<N+1; ++j)
@@ -123,13 +137,16 @@ class XYZReader final : public DeferedReaderBase
                 std::getline(this->xyz_, line);
             }
         }
+        mill::log::debug("mill::XYZReader: done.\n");
         return this->read_frame();
     }
 
     void rewind() override
     {
+        mill::log::debug("mill::XYZReader: rewinding the file\n");
         current_ = 0;
         xyz_.seekg(0, std::ios_base::beg);
+        mill::log::debug("mill::XYZReader: done.\n");
     }
 
     bool             is_eof()    const noexcept override {return xyz_.eof();}
