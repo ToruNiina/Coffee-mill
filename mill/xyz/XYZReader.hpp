@@ -38,7 +38,7 @@ class XYZReader final : public DeferedReaderBase
 
   public:
 
-    XYZReader(const std::string& fname)
+    explicit XYZReader(const std::string& fname)
         : current_(0), file_name_(fname), xyz_(fname)
     {
         if(!xyz_.good())
@@ -74,18 +74,8 @@ class XYZReader final : public DeferedReaderBase
 
         std::string line;
         std::getline(this->xyz_, line);
-        std::size_t N = 0;
-        try
-        {
-            N = std::stoull(line);
-        }
-        catch(...)
-        {
-            throw std::runtime_error("XYZReader::read_frame: expected number, "
-                    "but got " + line);
-        }
-        mill::log::debug("mill::XYZReader: the next snapshot has ", N,
-                         " particles.\n");
+
+        const std::size_t N = convert_to_ull(line);
         snapshot_type frame(N);
 
         std::getline(this->xyz_, line);
@@ -105,6 +95,7 @@ class XYZReader final : public DeferedReaderBase
             frame.at(i) = std::move(p);
         }
         current_ += 1;
+        xyz_.peek();
         mill::log::debug("mill::XYZReader: done.\n");
         return frame;
     }
@@ -118,24 +109,21 @@ class XYZReader final : public DeferedReaderBase
         std::string line;
         for(std::size_t i=0; i<idx; ++i)
         {
+            if(this->is_eof())
+            {
+                mill::log::error("mill::XYZReader: ", idx, "-th snapshot"
+                                 " does not exist\n");
+                throw std::out_of_range("mill::XYZReader: frame index out of range");
+            }
             std::getline(this->xyz_, line);
-            std::size_t N = 0;
-            try
-            {
-                N = std::stoull(line);
-            }
-            catch(...)
-            {
-                throw std::runtime_error("XYZReader::read_frame: "
-                        "expected number, but got " + line);
-            }
-            mill::log::debug("mill::XYZReader: the next snapshot has ", N, "particles.\n");
+            const std::size_t N = convert_to_ull(line);
 
             // skip comment line and N particles
             for(std::size_t j=0; j<N+1; ++j)
             {
                 std::getline(this->xyz_, line);
             }
+            xyz_.peek();
         }
         mill::log::debug("mill::XYZReader: done.\n");
         return this->read_frame();
@@ -152,6 +140,24 @@ class XYZReader final : public DeferedReaderBase
     bool             is_eof()    const noexcept override {return xyz_.eof();}
     std::size_t      current()   const noexcept override {return current_;}
     std::string_view file_name() const noexcept override {return file_name_;}
+
+  private:
+
+    std::size_t convert_to_ull(const std::string& str)
+    {
+        std::size_t N;
+        try
+        {
+            N = std::stoull(line);
+        }
+        catch(...)
+        {
+            throw std::runtime_error("XYZReader::read_frame: "
+                    "expected number, but got " + line);
+        }
+        mill::log::debug("mill::XYZReader: the next snapshot has ", N, "particles.\n");
+        return N;
+    }
 
   private:
     std::size_t   current_;
