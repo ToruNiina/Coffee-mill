@@ -143,7 +143,7 @@ class XYZReader final : public DeferedReaderBase
 
   private:
 
-    std::size_t convert_to_ull(const std::string& str)
+    std::size_t convert_to_ull(const std::string& line)
     {
         std::size_t N;
         try
