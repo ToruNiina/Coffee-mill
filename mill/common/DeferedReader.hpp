@@ -9,7 +9,32 @@
 namespace mill
 {
 
-class DeferedReaderBase;
+class ReaderIterator;
+class ReaderIteratorSentinel;
+
+class DeferedReaderBase
+{
+  public:
+    using trajectory_type = Trajectory;
+    using snapshot_type   = Snapshot;
+    using attribute_container_type = trajectory_type::attribute_container_type;
+
+  public:
+
+    virtual ~DeferedReaderBase() = default;
+
+    virtual attribute_container_type read_header()                     = 0;
+    virtual trajectory_type          read()                            = 0;
+    virtual snapshot_type            read_frame()                      = 0;
+    virtual snapshot_type            read_frame(const std::size_t idx) = 0;
+
+    ReaderIterator         begin();
+    ReaderIteratorSentinel end();
+
+    virtual bool             is_eof()    const noexcept = 0;
+    virtual std::size_t      current()   const noexcept = 0;
+    virtual std::string_view file_name() const noexcept = 0;
+};
 
 class ReaderIterator
 {
@@ -25,12 +50,12 @@ class ReaderIterator
         : current_(std::nullopt), reader_(std::addressof(reader))
     {}
 
-    const value_type& operator* () const
+    value_type& operator*()
     {
         if(!current_) {current_ = reader_->read_frame();}
         return *current_;
     }
-    const value_type* operator->() const
+    value_type* operator->()
     {
         if(!current_) {current_ = reader_->read_frame();}
         return std::addressof(*current_);
@@ -58,32 +83,63 @@ class ReaderIterator
 
 inline bool operator==(const ReaderIterator& lhs, const ReaderIterator& rhs)
 {
-    return std::make_tuple(lhs->is_eof(), lhs->current(), lhs->file_name()) ==
-           std::make_tuple(lhs->is_eof(), lhs->current(), lhs->file_name());
+    return std::make_tuple(lhs.is_eof(), lhs.current(), lhs.file_name()) ==
+           std::make_tuple(rhs.is_eof(), rhs.current(), rhs.file_name());
 }
 inline bool operator!=(const ReaderIterator& lhs, const ReaderIterator& rhs)
 {
     return !(lhs == rhs);
 }
 
-class DeferedReaderBase
+class ReaderIteratorSentinel
 {
   public:
-    using trajectory_type = Trajectory;
-    using snapshot_type   = Snapshot;
-    using attribute_container_type = trajectory_type::attribute_container_type;
+    using iterator_category = std::input_iterator_tag;
+    using difference_type   = std::ptrdiff_t;
+    using value_type        = Snapshot;
+    using reference         = value_type&;
+    using pointer           = value_type*;
 
   public:
+    explicit ReaderIteratorSentinel(DeferedReaderBase& reader)
+        : file_name_(reader.file_name())
+    {}
 
-    attribute_container_type read_header()                     = 0;
-    trajectory_type          read()                            = 0;
-    snapshot_type            read_frame()                      = 0;
-    snapshot_type            read_frame(const std::size_t idx) = 0;
+    bool             is_eof()    const noexcept {return true;}
+    std::string_view file_name() const noexcept {return file_name_;}
 
-    bool             is_eof()    const noexcept = 0;
-    std::size_t      current()   const noexcept = 0;
-    std::string_view file_name() const noexcept = 0;
+  private:
+    std::string_view file_name_;
 };
+
+inline bool operator==(
+        const ReaderIteratorSentinel& lhs, const ReaderIteratorSentinel& rhs)
+{
+    return lhs.file_name() == rhs.file_name();
+}
+inline bool operator!=(
+        const ReaderIteratorSentinel& lhs, const ReaderIteratorSentinel& rhs)
+{
+    return !(lhs == rhs);
+}
+
+inline bool operator==(const ReaderIterator& lhs, const ReaderIteratorSentinel& rhs)
+{
+    return lhs.is_eof() && (lhs.file_name() == rhs.file_name());
+}
+inline bool operator==(const ReaderIteratorSentinel& lhs, const ReaderIterator& rhs)
+{
+    return rhs.is_eof() && (lhs.file_name() == rhs.file_name());
+}
+
+inline ReaderIterator DeferedReaderBase::begin()
+{
+    return ReaderIterator(*this);
+}
+inline ReaderIteratorSentinel DeferedReaderBase::end()
+{
+    return ReaderIteratorSentinel(*this);
+}
 
 } // mill
 #endif// COFFEE_MILL_COMMON_DEFERED_READER_HPP
