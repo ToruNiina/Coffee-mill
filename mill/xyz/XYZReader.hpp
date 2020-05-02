@@ -62,15 +62,19 @@ class XYZReader final : public DeferedReaderBase
         trajectory_type traj;
         while(!this->xyz_.eof())
         {
-            traj.snapshots().push_back(this->read_frame());
+            traj.snapshots().push_back(*read_frame());
             this->xyz_.peek();
         }
         mill::log::debug("mill::XYZReader: done.\n");
         return traj;
     }
-    snapshot_type   read_frame() override
+    std::optional<snapshot_type>   read_frame() override
     {
         mill::log::debug("mill::XYZReader: reading the next snapshot...\n");
+        if(this->is_eof())
+        {
+            return std::nullopt;
+        }
 
         std::string line;
         std::getline(this->xyz_, line);
@@ -100,7 +104,7 @@ class XYZReader final : public DeferedReaderBase
         return frame;
     }
 
-    snapshot_type   read_frame(const std::size_t idx) override
+    std::optional<snapshot_type> read_frame(const std::size_t idx) override
     {
         mill::log::debug("mill::XYZReader: reading the ", idx, "-th snapshot\n");
         this->rewind();
@@ -113,7 +117,7 @@ class XYZReader final : public DeferedReaderBase
             {
                 mill::log::error("mill::XYZReader: ", idx, "-th snapshot"
                                  " does not exist\n");
-                throw std::out_of_range("mill::XYZReader: frame index out of range");
+                return std::nullopt;
             }
             std::getline(this->xyz_, line);
             const std::size_t N = convert_to_ull(line);

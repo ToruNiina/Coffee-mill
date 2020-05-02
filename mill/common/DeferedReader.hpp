@@ -25,10 +25,10 @@ class DeferedReaderBase
 
     virtual ~DeferedReaderBase() = default;
 
-    virtual attribute_container_type read_header()                     = 0;
-    virtual trajectory_type          read()                            = 0;
-    virtual snapshot_type            read_frame()                      = 0;
-    virtual snapshot_type            read_frame(const std::size_t idx) = 0;
+    virtual attribute_container_type read_header()                         = 0;
+    virtual trajectory_type          read()                                = 0;
+    virtual std::optional<snapshot_type> read_frame()                      = 0;
+    virtual std::optional<snapshot_type> read_frame(const std::size_t idx) = 0;
 
     ReaderIterator         begin();
     ReaderIteratorSentinel end();
@@ -50,37 +50,50 @@ class ReaderIterator
 
   public:
     explicit ReaderIterator(DeferedReaderBase& reader)
-        : current_(std::nullopt), reader_(std::addressof(reader))
+        : current_(reader.read_frame()), reader_(std::addressof(reader))
     {}
+    ~ReaderIterator() = default;
+
+    ReaderIterator(const ReaderIterator&) = default;
+    ReaderIterator(ReaderIterator&&)      = default;
+    ReaderIterator& operator=(const ReaderIterator&) = default;
+    ReaderIterator& operator=(ReaderIterator&&)      = default;
 
     value_type& operator*()
     {
-        if(!current_) {current_ = reader_->read_frame();}
+        if(!current_)
+        {
+            using namespace std::literals::string_literals;
+            throw std::out_of_range("ReaderIterator: "s +
+                    std::string(reader_->file_name()) +
+                    " does not have any more snapshot"s);
+        }
         return *current_;
     }
     value_type* operator->()
     {
-        if(!current_) {current_ = reader_->read_frame();}
+        if(!current_)
+        {
+            using namespace std::literals::string_literals;
+            throw std::out_of_range("ReaderIterator: "s +
+                    std::string(reader_->file_name()) +
+                    " does not have any more snapshot"s);
+        }
         return std::addressof(*current_);
     }
 
     ReaderIterator& operator++()
     {
-        if(not this->is_eof())
-        {
-            current_ = reader_->read_frame();
-        }
+        current_ = reader_->read_frame();
         return *this;
     }
     ReaderIterator  operator++(int)
     {
-        if(not this->is_eof())
-        {
-            current_ = reader_->read_frame();
-        }
+        current_ = reader_->read_frame();
         return *this;
     }
 
+    bool             has_value() const noexcept {return current_.has_value();}
     bool             is_eof()    const noexcept {return reader_->is_eof();}
     std::size_t      current()   const noexcept {return reader_->current();}
     std::string_view file_name() const noexcept {return reader_->file_name();}
@@ -134,11 +147,11 @@ inline bool operator!=(
 
 inline bool operator==(const ReaderIterator& lhs, const ReaderIteratorSentinel& rhs)
 {
-    return lhs.is_eof() && (lhs.file_name() == rhs.file_name());
+    return (not lhs.has_value()) && (lhs.file_name() == rhs.file_name());
 }
 inline bool operator==(const ReaderIteratorSentinel& lhs, const ReaderIterator& rhs)
 {
-    return rhs.is_eof() && (lhs.file_name() == rhs.file_name());
+    return (not rhs.has_value()) && (lhs.file_name() == rhs.file_name());
 }
 inline bool operator!=(const ReaderIterator& lhs, const ReaderIteratorSentinel& rhs)
 {
