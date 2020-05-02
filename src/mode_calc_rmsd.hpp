@@ -55,7 +55,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     {
         mill::log::info("mill calc rmsd: reading ", fname, " as a XYZ file...\n");
         XYZReader reader(fname);
-        for(const auto& snapshot : reader.read())
+        for(const auto& snapshot : reader)
         {
             std::vector<vectorT> ss;
             ss.reserve(snapshot.size());
@@ -88,9 +88,12 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     {
         mill::log::info("mill calc rmsd: reading ", refname, " as a XYZ file...\n");
         XYZReader reader(refname);
-        for(const auto& particle : reader.read_frame())
+        if(const auto first_frame = reader.read_frame())
         {
-            ref.push_back(particle.position());
+            for(const auto& particle : *first_frame)
+            {
+                ref.push_back(particle.position());
+            }
         }
         mill::log::info("mill calc rmsd: done. reference structure has ",
                         ref.size(), " particles.\n");
