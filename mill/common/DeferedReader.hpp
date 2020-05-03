@@ -89,8 +89,9 @@ class ReaderIterator
     }
     ReaderIterator  operator++(int)
     {
+        const auto self(*this);
         current_ = reader_->read_frame();
-        return *this;
+        return self;
     }
 
     bool             has_value() const noexcept {return current_.has_value();}
