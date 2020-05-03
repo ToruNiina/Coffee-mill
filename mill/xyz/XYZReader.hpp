@@ -59,7 +59,7 @@ class XYZReader final : public DeferedReaderBase
         mill::log::debug("mill::XYZReader: reading the whole trajectory...\n");
         this->rewind();
 
-        trajectory_type traj;
+        trajectory_type traj(this->read_header());
         while(!this->xyz_.eof())
         {
             traj.snapshots().push_back(*read_frame());
