@@ -26,22 +26,19 @@ namespace mill
 /*!
  *  @tparam vectorT type of position
  */
-template<typename vectorT>
 class XYZWriter
 {
   public:
-    using vector_type     = vectorT;
-    using trajectory_type = Trajectory<vector_type>;
-    using snapshot_type   = typename trajectory_type::snapshot_type;
-    using particle_type   = typename snapshot_type::particle_type;
-    using attribute_type  = typename particle_type::attribute_type;
+    using trajectory_type          = Trajectory;
+    using snapshot_type            = Snapshot;
+    using particle_type            = Particle;
+    using attribute_container_type = Trajectory::attribute_container_type;
 
   public:
 
-    XYZWriter(const std::string& fname): filename_(fname)
+    XYZWriter(const std::string& fname)
+        : current_(0), file_name_(fname), xyz_(fname)
     {
-        // clear the content
-        std::ofstream ofs(fname);
         if(!ofs.good())
         {
             throw std::runtime_error("XYZWriter: file open error: " + fname);
@@ -49,16 +46,54 @@ class XYZWriter
     }
     ~XYZWriter() = default;
 
-    void write(const trajectory_type& traj) const;
-    void write(const snapshot_type&   snap) const;
+    void write_header(const attribute_container_type&)
+    {
+        return; // xyz does not have any header info
+    }
+    void write(const trajectory_type& traj) const
+    {
+        for(const auto& frame : traj)
+        {
+            this->write_frame(frame);
+        }
+        return;
+    }
+    void write_frame(const snapshot_type& frame) const
+    {
+        xyz_ << frame.size()                         << '\n';
+        xyz_ << frame.try_at("comment").value_or("") << '\n';
+
+        std::size_t max_width = 0;
+        for(const auto& particle : frame)
+        {
+            using namespace std::literals::string_literals;
+            const auto name = particle.try_at("name").value_or(Attribute("X"s));
+            max_width = std::max(max_width, name.as_string().size());
+        }
+        for(const auto& particle : frame)
+        {
+            const auto name = particle.try_at("name").value_or(Attribute("X"s));
+            xyz_ << std::setw(max_width + 1) << std::left << name.as_string();
+            xyz_ << std::setw(20) << std::fixed << std::setprecision(17)
+                 << particle.position()[0];
+            xyz_ << std::setw(20) << std::fixed << std::setprecision(17)
+                 << particle.position()[1];
+            xyz_ << std::setw(20) << std::fixed << std::setprecision(17)
+                 << particle.position()[2];
+            xyz_ << '\n';
+        }
+        xyz_ << std::flush;
+        return;
+    }
+
+    std::size_t      size()      const noexcept {return current_;}
+    std::string_view file_name() const noexcept {return file_name_;}
 
   private:
 
-    void write(std::ostream& os, const snapshot_type& frame) const;
-
-  private:
-
-    std::string filename_;
+    std::size_t current_;
+    std::string file_name_;
+    std::ifstream xyz_;
 };
 
 template<typename vectorT>
