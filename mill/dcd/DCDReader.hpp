@@ -80,6 +80,11 @@ class DCDReader final : public DeferedReaderBase
     std::optional<snapshot_type> read_frame() override
     {
         log::debug("mill::DCDReader: reading a frame...\n");
+        if(this->num_particles_ == 0)
+        {
+            this->read_header();
+        }
+
         if(this->is_eof())
         {
             return std::nullopt;
@@ -347,14 +352,14 @@ class DCDReader final : public DeferedReaderBase
   private:
 
     // To check the number of frames contained, store those values.
-    std::size_t file_size_;
-    std::size_t header1_size_;
-    std::size_t header2_size_;
-    std::size_t header3_size_;
-    std::size_t snapshot_size_;
-    std::size_t num_particles_;
+    std::size_t file_size_     = 0;
+    std::size_t header1_size_  = 0;
+    std::size_t header2_size_  = 0;
+    std::size_t header3_size_  = 0;
+    std::size_t snapshot_size_ = 0;
+    std::size_t num_particles_ = 0;
     std::size_t current_;
-    std::int32_t has_unitcell_; // a flag. dcd header uses i32 as a flag.
+    std::int32_t has_unitcell_ = 0; // a flag. dcd header uses i32 as a flag.
     std::string file_name_;
     std::ifstream dcd_;
 };
