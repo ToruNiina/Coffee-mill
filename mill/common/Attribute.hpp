@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <optional>
+#include <ostream>
 #include <cstdint>
 
 namespace mill
@@ -252,6 +253,36 @@ template<typename R, typename F, typename ... Variants>
 R visit(F&& f, Variants&& ... vs)
 {
     return std::visit(std::forward<F>(f), std::forward<Variants>(vs).storage() ...);
+}
+
+template<typename charT, typename traits>
+std::basic_ostream<charT, traits>&
+operator<<(std::basic_ostream<charT, traits>& os, const Attribute& attr)
+{
+    switch(attr.which())
+    {
+        case AttributeKind::empty:    {os << "nil"; break;}
+        case AttributeKind::boolean:  {os << attr.as_boolean();  break;}
+        case AttributeKind::integer:  {os << attr.as_integer();  break;}
+        case AttributeKind::floating: {os << attr.as_floating(); break;}
+        case AttributeKind::string:   {os << attr.as_string();  break;}
+        case AttributeKind::vector:   {os << attr.as_vector();  break;}
+        case AttributeKind::array:
+        {
+            os << "[ ";
+            for(const auto& elem : attr.as_array())
+            {
+                os << elem << ' ';
+            }
+            os << "]";
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return os;
 }
 
 } // mill
