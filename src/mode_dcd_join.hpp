@@ -53,108 +53,26 @@ int mode_dcd_join(int argument_c, const char** argument_v)
         return 1;
     }
 
+    std::vector<std::string> files;
+    std::string outname;
+    bool include_initial;
+
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
         //! argv = {"join", {"1.dcd", "2.dcd", ...}}
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read_header(fname);
-
-        // check total steps
         for(int i=2; i<argument_c; ++i)
         {
-            const std::string filename(argument_v[i]);
-            const auto tmphdr = reader.read_header(filename);
-
-            if(tmphdr.nparticle() != dcddata.nparticle())
-            {
-                std::cerr << "error: mill dcd join: "
-                          << "dcd files have different structures!\n";
-                std::cerr << "file " << fname << " has " << dcddata.nparticle()
-                          << ", but file " << filename << " has "
-                          << tmphdr.nparticle() << std::endl;
-                return 1;
-            }
-            dcddata.nset() += tmphdr.nset();
+            files.push_back(argument_v[i]);
         }
-
-        const std::string outname =
-            fname.substr(0, fname.size() - 4) + "_joined.dcd";
-
-        std::ofstream ofs(outname);
-        if(not ofs.good())
-        {
-            std::cerr << "error: mill dcd join: output file open error: "
-                      << outname << std::endl;
-            return 1;
-        }
-
-        DCDWriter<vectorT> writer;
-        writer.write_header(ofs, dcddata.header());
-        for(int i=0; i<argument_c; ++i)
-        {
-            const std::string filename(argument_v[i]);
-            const auto tmpdata = reader.read(filename);
-            for(const auto& ss : tmpdata)
-            {
-                writer.write_snapshot(ofs, ss);
-            }
-        }
-        ofs.close();
-
-        return 0;
+        outname = fname.substr(0, fname.size() - 4) + "_joined.dcd";
+        include_initial = true;
     }
     else if(fname.substr(fname.size() - 5, 5) == ".toml")
     {
         const auto tomldata = toml::parse(fname);
-        const auto inputs = toml::find<std::vector<std::string>>(tomldata, "inputs");
-        const auto output = toml::find<std::string>(tomldata, "output");
-        const bool include_initial = toml::find_or(tomldata, "include_initial", true);
-
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read_header(inputs.front());
-
-        // check total steps
-        for(std::size_t i=1; i<inputs.size(); ++i)
-        {
-            const auto& filename = inputs[i];
-            const auto tmpdata = reader.read_header(filename);
-            if(tmpdata.nparticle() != dcddata.nparticle())
-            {
-                std::cerr << "error: mill dcd join: "
-                          << "dcd files have different structures!\n";
-                std::cerr << "file " << inputs.front() << " has "
-                          << dcddata.nparticle()
-                          << ", but file " << filename << " has "
-                          << tmpdata.nparticle() << std::endl;
-                return 1;
-            }
-            dcddata.nset() += tmpdata.nset();
-        }
-
-        std::ofstream ofs(output);
-        if(not ofs.good())
-        {
-            std::cerr << "error: mill dcd join: output file open error: "
-                      << output << std::endl;
-            return 1;
-        }
-
-        DCDWriter<vectorT> writer;
-        writer.write_header(ofs, dcddata.header());
-        for(const auto& filename : inputs)
-        {
-            const auto tmpdata = reader.read(filename);
-            if(include_initial)
-            {
-                writer.write_snapshot(ofs, tmpdata.front());
-            }
-            for(auto iter = tmpdata.cbegin()+1; iter != tmpdata.cend(); ++iter)
-            {
-                writer.write_snapshot(ofs, *iter);
-            }
-        }
-        ofs.close();
-        return 0;
+        files = toml::find<std::vector<std::string>>(tomldata, "inputs");
+        outname = toml::find<std::string>(tomldata, "output");
+        include_initial = toml::find_or(tomldata, "include_initial", true);
     }
     else
     {
@@ -163,6 +81,42 @@ int mode_dcd_join(int argument_c, const char** argument_v)
         std::cerr << dcd_join_usage() << std::endl;
         return 1;
     }
+
+    Trajectory traj(DCDReader(fname).read_header());
+
+    // check total steps
+    for(const auto& file : files)
+    {
+        DCDReader reader(file);
+        const auto header = reader.read_header();
+
+        if(header.at("nparticle").as_integer() != traj.at("nparticle").as_integer())
+        {
+            log::error("mill dcd join: dcd files have different structures!\n");
+            log::error("file ", fname, " has ", traj.at("nparticle"),
+                       " particles, but ", file, " has ", header.at("nparticle"), "\n");
+            return 1;
+        }
+        traj.at("nset").as_integer() += header.at("nset").as_integer();
+    }
+
+    DCDWriter writer(outname);
+    writer.write_header(traj.attributes());
+    for(const auto& file : files)
+    {
+        DCDReader reader(file);
+        reader.read_header();
+        if(not include_initial)
+        {
+            reader.read_frame();
+        }
+        for(const auto& frame : reader)
+        {
+            writer.write_frame(frame);
+        }
+    }
+    return 0;
+
 }
 
 }//mill

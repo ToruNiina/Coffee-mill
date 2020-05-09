@@ -46,12 +46,11 @@ int mode_dcd_calc_dist(int argument_c, const char **argument_v)
         }
         ofs << "# distance\n";
 
-        DCDReader<vectorT> reader;
-        const auto dcdtraj = reader.read(input);
-        for(const auto& snap : dcdtraj)
+        DCDReader reader(input);
+        reader.read_header();
+        for(const auto& frame : reader)
         {
-            const vectorT v = snap.at(to) - snap.at(from);
-
+            const auto v = frame.at(to).position() - frame.at(from).position();
             ofs << std::setw(20) << std::setprecision(12) << length(v) << '\n';
         }
         return 0;

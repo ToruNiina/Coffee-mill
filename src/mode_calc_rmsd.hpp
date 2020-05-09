@@ -45,9 +45,16 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
         mill::log::info("mill calc rmsd: reading ", fname, " as a DCD file...\n");
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read(fname);
-        traj = std::move(dcddata.traj());
+        DCDReader reader(fname);
+        for(const auto& snapshot : reader)
+        {
+            std::vector<vectorT> ss; ss.reserve(snapshot.size());
+            for(const auto& particle : snapshot)
+            {
+                ss.push_back(particle.position());
+            }
+            traj.push_back(std::move(ss));
+        }
         mill::log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
                         " snapshots.\n");
     }
