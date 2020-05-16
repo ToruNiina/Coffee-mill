@@ -63,7 +63,20 @@ class DCDWriter
     }
     void write_frame(const snapshot_type& frame)
     {
-        // TODO: output boundary info
+        if(frame.boundary().kind() == BoundaryConditionKind::CuboidalPeriodic)
+        {
+            const auto& b = frame.boundary().as_periodic();
+
+            const std::int32_t block_size = 6 * sizeof(double);
+            write_as_binary<std::int32_t>(dcd_, block_size);
+            write_as_binary<double      >(dcd_, b.width()[0]);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, b.width()[1]);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, b.width()[2]);
+            write_as_binary<std::int32_t>(dcd_, block_size);
+        }
 
         std::vector<float> x(frame.size());
         std::vector<float> y(frame.size());
