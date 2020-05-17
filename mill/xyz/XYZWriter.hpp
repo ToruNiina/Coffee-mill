@@ -10,6 +10,7 @@
 #ifndef COFFEE_MILL_XYZ_WRITER_HPP
 #define COFFEE_MILL_XYZ_WRITER_HPP
 #include <mill/common/Trajectory.hpp>
+#include <mill/common/WriterBase.hpp>
 #include <mill/util/logger.hpp>
 #include <iomanip>
 #include <fstream>
@@ -21,13 +22,14 @@ namespace mill
 /*!
  *  @tparam vectorT type of position
  */
-class XYZWriter
+class XYZWriter final : public WriterBase
 {
   public:
-    using trajectory_type          = Trajectory;
-    using snapshot_type            = Snapshot;
-    using particle_type            = Particle;
-    using attribute_container_type = Trajectory::attribute_container_type;
+    using base_type                = WriterBase;
+    using trajectory_type          = using base_type::trajectory_type;
+    using snapshot_type            = using base_type::snapshot_type;
+    using particle_type            = using base_type::particle_type;
+    using attribute_container_type = using base_type::attribute_container_type;
 
   public:
 
@@ -39,13 +41,13 @@ class XYZWriter
             throw std::runtime_error("XYZWriter: file open error: " + fname);
         }
     }
-    ~XYZWriter() = default;
+    ~XYZWriter() override = default;
 
-    void write_header(const attribute_container_type&)
+    void write_header(const attribute_container_type&) override
     {
         return; // xyz does not have any header info
     }
-    void write(const trajectory_type& traj)
+    void write(const trajectory_type& traj) override
     {
         for(const auto& frame : traj)
         {
@@ -53,7 +55,7 @@ class XYZWriter
         }
         return;
     }
-    void write_frame(const snapshot_type& frame)
+    void write_frame(const snapshot_type& frame) override
     {
         using namespace std::literals::string_literals;
         xyz_ << frame.size() << '\n';
@@ -78,8 +80,8 @@ class XYZWriter
         return;
     }
 
-    std::size_t      size()      const noexcept {return current_;}
-    std::string_view file_name() const noexcept {return file_name_;}
+    std::size_t      size()      const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
 

@@ -14,7 +14,7 @@
 #ifndef COFFEE_MILL_DCD_WRITER_HPP
 #define COFFEE_MILL_DCD_WRITER_HPP
 #include <mill/common/Trajectory.hpp>
-#include <mill/common/DeferedReader.hpp>
+#include <mill/common/WriterBase.hpp>
 #include <mill/util/write_as_binary.hpp>
 #include <mill/util/logger.hpp>
 #include <fstream>
@@ -23,15 +23,16 @@ namespace mill
 {
 
 //! writes DCD into a file.
-class DCDWriter
+class DCDWriter final : public WriterBase
 {
   public:
-    using trajectory_type          = Trajectory;
-    using attribute_container_type = trajectory_type::attribute_container_type;
-    using snapshot_type            = Snapshot;
-    using boundary_type            = snapshot_type::boundary_type;
-    using particle_type            = Particle;
-    using vector_type              = particle_type::vector_type;
+    using base_type                = WriterBase;
+    using trajectory_type          = base_type::trajectory_type         ;
+    using attribute_container_type = base_type::attribute_container_type;
+    using snapshot_type            = base_type::snapshot_type           ;
+    using boundary_type            = base_type::boundary_type           ;
+    using particle_type            = base_type::particle_type           ;
+    using vector_type              = base_type::vector_type             ;
 
   public:
 
@@ -43,16 +44,16 @@ class DCDWriter
             throw std::runtime_error("DCDWriter: file open error: " + fname);
         }
     }
-    ~DCDWriter() = default;
+    ~DCDWriter() override = default;
 
-    void write_header(const attribute_container_type& header)
+    void write_header(const attribute_container_type& header) override
     {
         this->write_head_block1(header);
         this->write_head_block2(header);
         this->write_head_block3(header);
         return;
     }
-    void write(const trajectory_type& traj)
+    void write(const trajectory_type& traj) override
     {
         this->write_header(traj.attributes());
         for(const auto& frame : traj)
@@ -61,7 +62,7 @@ class DCDWriter
         }
         return;
     }
-    void write_frame(const snapshot_type& frame)
+    void write_frame(const snapshot_type& frame) override
     {
         if(frame.boundary().kind() == BoundaryConditionKind::CuboidalPeriodic)
         {
@@ -93,8 +94,8 @@ class DCDWriter
         return;
     }
 
-    std::size_t      size()      const noexcept {return current_;}
-    std::string_view file_name() const noexcept {return file_name_;}
+    std::size_t      size()      const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
 
