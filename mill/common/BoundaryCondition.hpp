@@ -22,6 +22,31 @@ struct UnlimitedBoundary
     vector_type adjust_position (vector_type r ) const noexcept {return r;}
 
     real_type volume() const noexcept {return std::numeric_limits<real_type>::infinity();}
+
+    vector_type lower() const noexcept
+    {
+        return vector_type{
+            -std::numeric_limits<real_type>::infinity(),
+            -std::numeric_limits<real_type>::infinity(),
+            -std::numeric_limits<real_type>::infinity()
+        };
+    }
+    vector_type upper() const noexcept
+    {
+        return vector_type{
+            std::numeric_limits<real_type>::infinity(),
+            std::numeric_limits<real_type>::infinity(),
+            std::numeric_limits<real_type>::infinity()
+        };
+    }
+    vector_type width() const noexcept
+    {
+        return vector_type{
+            std::numeric_limits<real_type>::infinity(),
+            std::numeric_limits<real_type>::infinity(),
+            std::numeric_limits<real_type>::infinity()
+        };
+    }
 };
 
 struct CuboidalPeriodicBoundary
@@ -135,6 +160,25 @@ struct BoundaryCondition
         return std::visit([](const auto& b) -> real_type {
                     return b.volume();
                 }, storage_);
+    }
+
+    vector_type lower() const noexcept
+    {
+        return std::visit([](const auto& b) -> vector_type {
+                return b.lower();
+            }, storage_);
+    }
+    vector_type upper() const noexcept
+    {
+        return std::visit([](const auto& b) -> vector_type {
+                return b.upper();
+            }, storage_);
+    }
+    vector_type width() const noexcept
+    {
+        return std::visit([](const auto& b) -> vector_type {
+                return b.width();
+            }, storage_);
     }
 
     BoundaryConditionKind kind() const noexcept
