@@ -221,7 +221,7 @@ class DCDReader final : public DeferedReaderBase
         const auto block_size = read_binary_as<std::int32_t>(dcd_);
 
         const auto lines = read_binary_as<std::int32_t>(dcd_);
-        if((80 * lines + sizeof(std::int32_t)) != block_size)
+        if((80 * lines + sizeof(std::int32_t)) != static_cast<std::size_t>(block_size))
         {
             log::error("mill::DCDReader: header block 2 is broken.\n");
             log::error("block size (", block_size, ") is not consistent with ",
