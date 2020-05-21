@@ -83,7 +83,7 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
         DCDWriter writer(outname);
         writer.write_header(reader.read_header());
 
-        const auto& first_frame = *reader.read_frame();
+        const auto first_frame = *reader.read_frame();
 
         std::vector<vectorT> ref;
         for(const auto& p : first_frame)

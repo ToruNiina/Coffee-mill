@@ -85,10 +85,10 @@ class Snapshot
 
     iterator        begin()       noexcept {return particles_.begin();}
     iterator        end()         noexcept {return particles_.end();}
-    const_iterator  begin() const noexcept {return particles_.begin();}
-    const_iterator  end()   const noexcept {return particles_.end();}
-    const_iterator cbegin() const noexcept {return particles_.begin();}
-    const_iterator cend()   const noexcept {return particles_.end();}
+    const_iterator  begin() const noexcept {return particles_.cbegin();}
+    const_iterator  end()   const noexcept {return particles_.cend();}
+    const_iterator cbegin() const noexcept {return particles_.cbegin();}
+    const_iterator cend()   const noexcept {return particles_.cend();}
 
     attribute_container_type &      attributes()       noexcept {return attributes_;}
     attribute_container_type const& attributes() const noexcept {return attributes_;}
