@@ -39,7 +39,7 @@ void error(Ts&& ... args)
     if(not logger.is_activated(level::error)) {return;}
     std::cerr << "\x1b[31mError:\x1b[0m ";
     (std::cerr << ... << args);
-    std::cerr << std::flush;
+    std::cerr << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -48,7 +48,7 @@ void warn(Ts&& ... args)
     if(not logger.is_activated(level::warn)) {return;}
     std::cerr << "\x1b[33mWarn :\x1b[0m ";
     (std::cerr << ... << args);
-    std::cerr << std::flush;
+    std::cerr << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -57,7 +57,7 @@ void info(Ts&& ... args)
     if(not logger.is_activated(level::info)) {return;}
     std::cerr << "\x1b[32mInfo :\x1b[0m ";
     (std::cerr << ... << args);
-    std::cerr << std::flush;
+    std::cerr << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -66,7 +66,7 @@ void debug(Ts&& ... args)
     if(not logger.is_activated(level::debug)) {return;}
     std::cerr << "\x1b[34mDebug:\x1b[0m ";
     (std::cerr << ... << args);
-    std::cerr << std::flush;
+    std::cerr << std::endl;
     return;
 }
 
