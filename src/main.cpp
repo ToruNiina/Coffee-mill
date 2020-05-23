@@ -49,14 +49,12 @@ int main(int argc, char **argv)
         }
         else
         {
-            mill::log::error("unknown mode: ", mode, '\n');
-            std::cerr << mill::main_usage() << std::endl;
-            return 1;
+            return mill::mode_help(argc_ - 1, argv_ + 1);
         }
     }
     catch(std::exception& excpt)
     {
-        mill::log::error(excpt.what(), '\n');
+        mill::log::error(excpt.what());
         std::cerr << mill::main_usage() << std::endl;
         return 1;
     }
@@ -64,12 +62,12 @@ int main(int argc, char **argv)
 
 void print_logo()
 {
-    mill::log::info(R"(  ___        __  __             __    __ _  _  _ )""\n");
-    mill::log::info(R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)""\n");
-    mill::log::info(R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)""\n");
-    mill::log::info(R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)""\n");
-    mill::log::info(R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)""\n");
-    mill::log::info(R"(                   Copyright 2016-now Toru Niina))""\n");
+    mill::log::info(R"(  ___        __  __             __    __ _  _  _ )");
+    mill::log::info(R"( / __| ___  / _|/ _| ___  ___   | \  / |(_)| || |)");
+    mill::log::info(R"(| |   / _ \| |_| |_ / _ \/ _ \  |  \/  || || || |)");
+    mill::log::info(R"(| |__| (_) |  _|  _|  __|  __/  | |\/| || || || |)");
+    mill::log::info(R"( \___|\___/|_| |_|  \___|\___|  |_|  |_||_||_||_|)");
+    mill::log::info(R"(                   Copyright 2016-now Toru Niina))");
     return;
 }
 
