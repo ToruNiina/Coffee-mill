@@ -52,18 +52,18 @@ class DCDReader final : public DeferedReaderBase
 
     attribute_container_type read_header() override
     {
-        log::debug("mill::DCDReader: reading header ...\n");
+        log::debug("mill::DCDReader: reading header ...");
         attribute_container_type attr;
         this->read_header_block1(attr);
         this->read_header_block2(attr);
         this->read_header_block3(attr);
         this->validate_filesize(attr);
-        log::debug("mill::DCDReader: done.\n");
+        log::debug("mill::DCDReader: done.");
         return attr;
     }
     trajectory_type read() override
     {
-        log::debug("mill::DCDReader: reading the whole trajectory...\n");
+        log::debug("mill::DCDReader: reading the whole trajectory...");
         this->rewind();
 
         trajectory_type traj(this->read_header());
@@ -74,12 +74,12 @@ class DCDReader final : public DeferedReaderBase
             traj.snapshots().push_back(*read_frame());
             this->dcd_.peek();
         }
-        log::debug("mill::DCDReader: done.\n");
+        log::debug("mill::DCDReader: done.");
         return traj;
     }
     std::optional<snapshot_type> read_frame() override
     {
-        log::debug("mill::DCDReader: reading a frame...\n");
+        log::debug("mill::DCDReader: reading a frame...");
         if(this->num_particles_ == 0)
         {
             this->read_header();
@@ -102,12 +102,12 @@ class DCDReader final : public DeferedReaderBase
             frame.at(i).position()[2] = z.at(i);
         }
         this->current_ += 1;
-        log::debug("mill::DCDReader: done.\n");
+        log::debug("mill::DCDReader: done.");
         return frame;
     }
     std::optional<snapshot_type> read_frame(const std::size_t idx) override
     {
-        log::debug("mill::DCDReader: reading ", idx, "-th frame...\n");
+        log::debug("mill::DCDReader: reading ", idx, "-th frame...");
         this->rewind();
 
         const auto header_size = header1_size_ + header2_size_ + header3_size_;
@@ -121,16 +121,16 @@ class DCDReader final : public DeferedReaderBase
         this->current_ = idx;
 
         const auto frame = this->read_frame();
-        log::debug("mill::DCDReader: done.\n");
+        log::debug("mill::DCDReader: done.");
         return frame;
     }
 
     void rewind() override
     {
-        log::debug("mill::DCDReader: rewinding the file\n");
+        log::debug("mill::DCDReader: rewinding the file");
         current_ = 0;
         dcd_.seekg(0, std::ios_base::beg);
-        log::debug("mill::DCDReader: done.\n");
+        log::debug("mill::DCDReader: done.");
         return;
     }
     bool             is_eof()    const noexcept override {return dcd_.eof();}
@@ -144,9 +144,9 @@ class DCDReader final : public DeferedReaderBase
         const int size_of_block = read_binary_as<int>(dcd_);
         if(size_of_block / sizeof(float) != num_particles_)
         {
-            log::error("invalid coordinate block!\n");
-            log::error("size of coordinate block is ", size_of_block, "\n");
-            log::error("but the number of particle is  ", num_particles_, "\n");
+            log::error("invalid coordinate block!");
+            log::error("size of coordinate block is ", size_of_block);
+            log::error("but the number of particle is  ", num_particles_);
             throw std::runtime_error("dcd coordinate block size invalid");
         }
 
@@ -159,9 +159,9 @@ class DCDReader final : public DeferedReaderBase
         const int size_of_block_f = read_binary_as<int>(dcd_);
         if(size_of_block != size_of_block_f)
         {
-            log::error("invalid coordinate block delimiter\n");
+            log::error("invalid coordinate block delimiter");
             log::error("the size of the block is not ", size_of_block_f,
-                                  " but ", size_of_block, "\n");
+                       " but ", size_of_block);
             throw std::runtime_error("invalid delimiter in a coordinate block");
         }
         return coordinate;
@@ -172,7 +172,7 @@ class DCDReader final : public DeferedReaderBase
         const auto block_size = read_binary_as<std::int32_t>(dcd_);
         if(block_size != 84)
         {
-            log::warn("Unrecognized header block size, ", block_size, "\n");
+            log::warn("Unrecognized header block size, ", block_size);
         }
 
         char signature[5];
@@ -183,7 +183,7 @@ class DCDReader final : public DeferedReaderBase
         if(header["signature"].as_string() != "CORD" &&
            header["signature"].as_string() != "VELO")
         {
-            log::warn("Unknown file signature -> ", signature, "\n");
+            log::warn("Unknown file signature -> ", signature);
         }
 
         header["nset"      ] = read_binary_as<std::int32_t>(dcd_);
@@ -197,20 +197,20 @@ class DCDReader final : public DeferedReaderBase
         dcd_.ignore(32);
         header["verCHARMM" ] = read_binary_as<std::int32_t>(dcd_);
 
-        log::debug("signature  = ", header.at("signature") .as_string(),  '\n');
-        log::debug("nset       = ", header.at("nset")      .as_integer(), '\n');
-        log::debug("istart     = ", header.at("istart")    .as_integer(), '\n');
-        log::debug("nstep_save = ", header.at("nstep_save").as_integer(), '\n');
-        log::debug("nstep      = ", header.at("nstep")     .as_integer(), '\n');
-        log::debug("nunit      = ", header.at("nunit")     .as_integer(), '\n');
-        log::debug("delta_t    = ", header.at("delta_t")   .as_floating(), '\n');
+        log::debug("signature  = ", header.at("signature") .as_string()  );
+        log::debug("nset       = ", header.at("nset")      .as_integer() );
+        log::debug("istart     = ", header.at("istart")    .as_integer() );
+        log::debug("nstep_save = ", header.at("nstep_save").as_integer() );
+        log::debug("nstep      = ", header.at("nstep")     .as_integer() );
+        log::debug("nunit      = ", header.at("nunit")     .as_integer() );
+        log::debug("delta_t    = ", header.at("delta_t")   .as_floating());
 
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 1 is broken.\n");
+            log::error("mill::DCDReader: header block 1 is broken.");
             log::error("first block size (", block_size, ") != last (",
-                       block_size_check, ").\n");
+                       block_size_check, ").");
             throw std::runtime_error("DCDReader: header block 1 is broken");
         }
         this->header1_size_ = block_size + sizeof(std::int32_t) * 2;
@@ -223,9 +223,9 @@ class DCDReader final : public DeferedReaderBase
         const auto lines = read_binary_as<std::int32_t>(dcd_);
         if((80 * lines + sizeof(std::int32_t)) != static_cast<std::size_t>(block_size))
         {
-            log::error("mill::DCDReader: header block 2 is broken.\n");
+            log::error("mill::DCDReader: header block 2 is broken.");
             log::error("block size (", block_size, ") is not consistent with ",
-                       "the number of lines (", lines, ").\n");
+                       "the number of lines (", lines, ").");
             throw std::invalid_argument("DCDReader: header block2 is broken");
         }
 
@@ -238,14 +238,14 @@ class DCDReader final : public DeferedReaderBase
             comment += std::string(line);
         }
         header["comment"] = comment;
-        log::debug("comment = ", header.at("comment").as_string(), '\n');
+        log::debug("comment = ", header.at("comment").as_string());
 
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 2 is broken.\n");
+            log::error("mill::DCDReader: header block 2 is broken.");
             log::error("first block size (", block_size, ") != last (",
-                       block_size_check, ").\n");
+                       block_size_check, ").");
             throw std::runtime_error("DCDReader: header block 2 is broken");
         }
         header2_size_ = block_size + sizeof(std::int32_t) * 2;
@@ -257,14 +257,14 @@ class DCDReader final : public DeferedReaderBase
 
         this->num_particles_   = read_binary_as<std::int32_t>(dcd_);
         header["nparticle"] = num_particles_;
-        log::debug("nparticle = ", header.at("nparticle").as_integer(), "\n");
+        log::debug("nparticle = ", header.at("nparticle").as_integer());
 
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 3 is broken.\n");
+            log::error("mill::DCDReader: header block 3 is broken.");
             log::error("first block size (", block_size, ") != last (",
-                       block_size_check, ").\n");
+                       block_size_check, ").");
             throw std::runtime_error("DCDReader: header block 3 is broken");
         }
         header3_size_ = block_size + sizeof(std::int32_t) * 2;
@@ -284,22 +284,22 @@ class DCDReader final : public DeferedReaderBase
 
         if(file_size_ != expected_size)
         {
-            log::warn("invalid filesize!\n");
-            log::warn("actual file size is ", file_size_, " bytes.\n");
+            log::warn("invalid filesize!");
+            log::warn("actual file size is ", file_size_, " bytes.");
             log::warn("header says there are ", header.at("nset").as_integer(),
-                      " snapshots.\n");
+                      " snapshots.");
             log::warn("and there are ", header.at("nparticle").as_integer(),
-                      " particles.\n");
-            log::warn("The file must have ",  expected_size, " bytes\n");
+                      " particles.");
+            log::warn("The file must have ",  expected_size, " bytes");
 
             const auto traj_size = file_size_ - header_size;
             if(traj_size % snapshot_size_ != 0)
             {
-                log::warn("The last snapshot seems to be incomplete.\n");
+                log::warn("The last snapshot seems to be incomplete.");
             }
             header.at("nset") = traj_size / snapshot_size_;
             log::warn("The actual number of snapshots seems to be ",
-                      header.at("nset").as_integer(), ".\n");
+                      header.at("nset").as_integer(), ".");
         }
         return;
     }
@@ -321,10 +321,10 @@ class DCDReader final : public DeferedReaderBase
 
         if(block_begin != block_end)
         {
-            log::error("DCD file has invalid unit cell information.\n");
-            log::error("block_begin = ", block_begin, ", block_end = ", block_end, "\n");
-            log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C,      "\n");
-            log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma,  "\n");
+            log::error("DCD file has invalid unit cell information.");
+            log::error("block_begin = ", block_begin, ", block_end = ", block_end);
+            log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C     );
+            log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma );
             return boundary_type(UnlimitedBoundary{});
         }
 
@@ -340,10 +340,10 @@ class DCDReader final : public DeferedReaderBase
            (differs(beta,  90.0) && differs(beta,  std::cos(half_pi))) ||
            (differs(gamma, 90.0) && differs(gamma, std::cos(half_pi))))
         {
-            log::error("The unit cell is not a rectangle\n");
-            log::error("angle alpha = ", alpha, '\n');
-            log::error("angle beta  = ", beta , '\n');
-            log::error("angle gamma = ", gamma, '\n');
+            log::error("The unit cell is not a rectangle");
+            log::error("angle alpha = ", alpha);
+            log::error("angle beta  = ", beta );
+            log::error("angle gamma = ", gamma);
         }
         return boundary_type(CuboidalPeriodicBoundary(
                 vector_type(0, 0, 0), vector_type(A, B, C)));

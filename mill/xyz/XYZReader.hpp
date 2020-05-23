@@ -42,13 +42,13 @@ class XYZReader final : public DeferedReaderBase
 
     attribute_container_type read_header() override
     {
-        log::debug("mill::XYZReader: reading header ...\n");
-        log::debug("mill::XYZReader: done.\n");
+        log::debug("mill::XYZReader: reading header ...");
+        log::debug("mill::XYZReader: done.");
         return attribute_container_type{};
     }
     trajectory_type read() override
     {
-        log::debug("mill::XYZReader: reading the whole trajectory...\n");
+        log::debug("mill::XYZReader: reading the whole trajectory...");
         this->rewind();
 
         trajectory_type traj(this->read_header());
@@ -57,12 +57,12 @@ class XYZReader final : public DeferedReaderBase
             traj.snapshots().push_back(*read_frame());
             this->xyz_.peek();
         }
-        log::debug("mill::XYZReader: done.\n");
+        log::debug("mill::XYZReader: done.");
         return traj;
     }
     std::optional<snapshot_type>   read_frame() override
     {
-        log::debug("mill::XYZReader: reading the next snapshot...\n");
+        log::debug("mill::XYZReader: reading the next snapshot...");
         if(this->is_eof())
         {
             return std::nullopt;
@@ -76,7 +76,7 @@ class XYZReader final : public DeferedReaderBase
 
         std::getline(this->xyz_, line);
         frame["comment"] = line;
-        log::debug("mill::XYZReader: comment of the next snapshot is ", line, "\n");
+        log::debug("mill::XYZReader: comment of the next snapshot is ", line);
 
         for(std::size_t i=0; i<N; ++i)
         {
@@ -91,13 +91,13 @@ class XYZReader final : public DeferedReaderBase
         }
         current_ += 1;
         xyz_.peek();
-        log::debug("mill::XYZReader: done.\n");
+        log::debug("mill::XYZReader: done.");
         return frame;
     }
 
     std::optional<snapshot_type> read_frame(const std::size_t idx) override
     {
-        log::debug("mill::XYZReader: reading the ", idx, "-th snapshot\n");
+        log::debug("mill::XYZReader: reading the ", idx, "-th snapshot");
         this->rewind();
 
         // skip n snapshots
@@ -106,7 +106,7 @@ class XYZReader final : public DeferedReaderBase
         {
             if(this->is_eof())
             {
-                log::error("mill::XYZReader: ", idx, "-th snapshot does not exist\n");
+                log::error("mill::XYZReader: ", idx, "-th snapshot does not exist");
                 return std::nullopt;
             }
             std::getline(this->xyz_, line);
@@ -119,16 +119,16 @@ class XYZReader final : public DeferedReaderBase
             }
             xyz_.peek();
         }
-        log::debug("mill::XYZReader: done.\n");
+        log::debug("mill::XYZReader: done.");
         return this->read_frame();
     }
 
     void rewind() override
     {
-        log::debug("mill::XYZReader: rewinding the file\n");
+        log::debug("mill::XYZReader: rewinding the file");
         current_ = 0;
         xyz_.seekg(0, std::ios_base::beg);
-        log::debug("mill::XYZReader: done.\n");
+        log::debug("mill::XYZReader: done.");
     }
 
     bool             is_eof()    const noexcept override {return xyz_.eof();}
@@ -149,7 +149,7 @@ class XYZReader final : public DeferedReaderBase
             throw std::runtime_error("XYZReader::read_frame: "
                     "expected number, but got " + line);
         }
-        log::debug("mill::XYZReader: the next snapshot has ", N, "particles.\n");
+        log::debug("mill::XYZReader: the next snapshot has ", N, "particles.");
         return N;
     }
 
