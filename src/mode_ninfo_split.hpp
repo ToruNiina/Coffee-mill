@@ -20,22 +20,22 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
 
     if(argument_c == 1)
     {
-        log::error("mill ninfo split: too few arguments\n");
-        std::cerr << ninfo_split_usage() << std::endl;
+        log::error("mill ninfo split: too few arguments");
+        log::error(ninfo_split_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << ninfo_split_usage() << std::endl;
+        log::error(ninfo_split_usage());
         return 0;
     }
 
     if(fname.size() < 6)
     {
-        log::error("mill ninfo split: invalid filename: ", fname, '\n');
-        std::cerr << ninfo_split_usage() << std::endl;
+        log::error("mill ninfo split: invalid filename: ", fname);
+        log::error(ninfo_split_usage());
         return 1;
     }
 
@@ -57,7 +57,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 if(splitted.count(units) == 0)
                 {
                     log::debug("mill ninfo split: found ninfo block "
-                            "between ", units.first, " and ", units.second, '\n');
+                            "between ", units.first, " and ", units.second);
                     splitted.emplace(units, NinfoData<real_type>());
                 }
 
@@ -65,7 +65,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 if(splitted.at(units).count(kind) == 0)
                 {
                     log::debug("mill ninfo split: found ninfo ", kind,
-                            " between ", units.first, " and ", units.second, '\n');
+                            " between ", units.first, " and ", units.second);
 
                     splitted.at(units).emplace(kind,
                             std::vector<std::shared_ptr<NinfoBase<real_type>>>{});
@@ -76,7 +76,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
             }
         }
         log::debug("mill ninfo split: blocks are splitted into ",
-                splitted.size(), " ninfoes. writing one-by-one...\n");
+                splitted.size(), " ninfoes. writing one-by-one...");
         NinfoWriter<real_type> writer;
         const std::string file_prefix = fname.substr(0, fname.size() - 6);
         for(const auto& one_by_one : splitted)
@@ -87,15 +87,15 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 std::to_string(units.second) + std::string(".ninfo");
 
             log::debug("mill ninfo split: writing ninfo between ",
-                    units.first, " and ", units.second, " into ", outname, '\n');
+                    units.first, " and ", units.second, " into ", outname);
             writer.write(one_by_one.second, outname);
         }
         return 0;
     }
     else
     {
-        log::error("mill ninfo split: invalid argument: ", fname, '\n');
-        std::cerr << ninfo_split_usage() << std::endl;
+        log::error("mill ninfo split: invalid argument: ", fname);
+        log::error(ninfo_split_usage());
         return 1;
     }
 }

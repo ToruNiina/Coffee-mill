@@ -92,9 +92,9 @@ int mode_dcd_join(int argument_c, const char** argument_v)
 
         if(header.at("nparticle").as_integer() != traj.at("nparticle").as_integer())
         {
-            log::error("mill dcd join: dcd files have different structures!\n");
+            log::error("mill dcd join: dcd files have different structures!");
             log::error("file ", fname, " has ", traj.at("nparticle"),
-                       " particles, but ", file, " has ", header.at("nparticle"), "\n");
+                       " particles, but ", file, " has ", header.at("nparticle"));
             return 1;
         }
         traj.at("nset").as_integer() += header.at("nset").as_integer();

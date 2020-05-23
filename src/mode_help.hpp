@@ -31,7 +31,7 @@ inline int mode_help(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << main_usage() << std::endl;
+        log::error(main_usage());
         return 0;
     }
 
@@ -55,8 +55,8 @@ inline int mode_help(int argument_c, const char **argument_v)
     }
     else
     {
-        log::error("mill help mode: unknown command", command, '\n');
-        std::cerr << main_usage() << std::endl;
+        log::error("mill help mode: unknown command", command);
+        log::error(main_usage());
         return 1;
     }
 }
