@@ -1,9 +1,12 @@
 #ifndef COFFEE_MILL_COMMON_ATTRIBUTES_HPP
 #define COFFEE_MILL_COMMON_ATTRIBUTES_HPP
+#include <mill/math/Vector.hpp>
 #include <utility>
 #include <variant>
 #include <string>
 #include <vector>
+#include <optional>
+#include <ostream>
 #include <cstdint>
 
 namespace mill
@@ -20,21 +23,15 @@ enum class AttributeKind: std::size_t
     array    = 6,
 };
 
-template<typename vectorT,
-         typename booleanT  = bool,
-         typename integerT  = std::int64_t,
-         typename floatingT = double,
-         typename stringT   = std::string,
-         template<typename ...> class arrayT = std::vector>
 class Attribute
 {
   public:
-    using boolean_type  = booleanT;
-    using integer_type  = integerT;
-    using floating_type = floatingT;
-    using string_type   = stringT;
-    using vector_type   = vectorT;
-    using array_type    = arrayT<Attribute>;
+    using boolean_type  = bool;
+    using integer_type  = std::int64_t;
+    using floating_type = double;
+    using string_type   = std::string;
+    using vector_type   = Vector<double, 3>;
+    using array_type    = std::vector<Attribute>;
     using storage_type  = std::variant<
             std::monostate,
             boolean_type,
@@ -198,12 +195,12 @@ class Attribute
     vector_type   &&     as_vector()   &&     {return std::get<5>(std::move(storage_));}
     array_type    &&     as_array()    &&     {return std::get<6>(std::move(storage_));}
 
-    std::optional<boolean_type > try_boolean()  const noexcept {return is_boolean()  ? as_boolean()  : std::nullopt;}
-    std::optional<integer_type > try_integer()  const noexcept {return is_integer()  ? as_integer()  : std::nullopt;}
-    std::optional<floating_type> try_floating() const noexcept {return is_floating() ? as_floating() : std::nullopt;}
-    std::optional<string_type  > try_string()   const noexcept {return is_string()   ? as_string()   : std::nullopt;}
-    std::optional<vector_type  > try_vector()   const noexcept {return is_vector()   ? as_vector()   : std::nullopt;}
-    std::optional<array_type   > try_array()    const noexcept {return is_array()    ? as_array()    : std::nullopt;}
+    std::optional<boolean_type > try_boolean()  const noexcept {if(is_boolean() ){return std::make_optional(as_boolean() );} return std::nullopt;}
+    std::optional<integer_type > try_integer()  const noexcept {if(is_integer() ){return std::make_optional(as_integer() );} return std::nullopt;}
+    std::optional<floating_type> try_floating() const noexcept {if(is_floating()){return std::make_optional(as_floating());} return std::nullopt;}
+    std::optional<string_type  > try_string()   const noexcept {if(is_string()  ){return std::make_optional(as_string()  );} return std::nullopt;}
+    std::optional<vector_type  > try_vector()   const noexcept {if(is_vector()  ){return std::make_optional(as_vector()  );} return std::nullopt;}
+    std::optional<array_type   > try_array()    const noexcept {if(is_array()   ){return std::make_optional(as_array()   );} return std::nullopt;}
 
     AttributeKind which() const noexcept
     {
@@ -257,6 +254,36 @@ R visit(F&& f, Variants&& ... vs)
 {
     return std::visit(std::forward<F>(f), std::forward<Variants>(vs).storage() ...);
 }
-    
+
+template<typename charT, typename traits>
+std::basic_ostream<charT, traits>&
+operator<<(std::basic_ostream<charT, traits>& os, const Attribute& attr)
+{
+    switch(attr.which())
+    {
+        case AttributeKind::empty:    {os << "nil"; break;}
+        case AttributeKind::boolean:  {os << attr.as_boolean();  break;}
+        case AttributeKind::integer:  {os << attr.as_integer();  break;}
+        case AttributeKind::floating: {os << attr.as_floating(); break;}
+        case AttributeKind::string:   {os << attr.as_string();  break;}
+        case AttributeKind::vector:   {os << attr.as_vector();  break;}
+        case AttributeKind::array:
+        {
+            os << "[ ";
+            for(const auto& elem : attr.as_array())
+            {
+                os << elem << ' ';
+            }
+            os << "]";
+            break;
+        }
+        default:
+        {
+            break;
+        }
+    }
+    return os;
+}
+
 } // mill
 #endif // COFFEE_MILL_COMMON_ATTRIBUTES_HPP

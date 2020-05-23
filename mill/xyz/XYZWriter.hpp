@@ -9,14 +9,11 @@
 
 #ifndef COFFEE_MILL_XYZ_WRITER_HPP
 #define COFFEE_MILL_XYZ_WRITER_HPP
-#include "XYZData.hpp"
-#include <memory>
-#include <utility>
-#include <iostream>
+#include <mill/common/Trajectory.hpp>
+#include <mill/common/WriterBase.hpp>
+#include <mill/util/logger.hpp>
+#include <iomanip>
 #include <fstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
 
 namespace mill
 {
@@ -25,79 +22,73 @@ namespace mill
 /*!
  *  @tparam vectorT type of position
  */
-template<typename vectorT>
-class XYZWriter
+class XYZWriter final : public WriterBase
 {
   public:
-    using vector_type     = vectorT;
-    using position_type   = vector_type;
-    using frame_type      = XYZFrame<position_type>;
-    using trajectory_type = std::vector<frame_type>;
+    using base_type                = WriterBase;
+    using trajectory_type          = using base_type::trajectory_type;
+    using snapshot_type            = using base_type::snapshot_type;
+    using particle_type            = using base_type::particle_type;
+    using attribute_container_type = using base_type::attribute_container_type;
 
   public:
 
-    XYZWriter(const std::string& fname): filename_(fname)
+    XYZWriter(const std::string& fname)
+        : current_(0), file_name_(fname), xyz_(fname)
     {
-        // clear the content
-        std::ofstream ofs(fname);
-        if(!ofs.good())
+        if(!xyz_.good())
         {
             throw std::runtime_error("XYZWriter: file open error: " + fname);
         }
     }
-    ~XYZWriter() = default;
+    ~XYZWriter() override = default;
 
-    void write(const trajectory_type& traj) const;
-    void write(const frame_type&     frame) const;
+    void write_header(const attribute_container_type&) override
+    {
+        return; // xyz does not have any header info
+    }
+    void write(const trajectory_type& traj) override
+    {
+        for(const auto& frame : traj)
+        {
+            this->write_frame(frame);
+        }
+        return;
+    }
+    void write_frame(const snapshot_type& frame) override
+    {
+        using namespace std::literals::string_literals;
+        xyz_ << frame.size() << '\n';
+        xyz_ << frame.try_at("comment").value_or(Attribute(""s)).as_string() << '\n';
+
+        std::size_t max_width = 0;
+        for(const auto& particle : frame)
+        {
+            const auto name = particle.try_at("name").value_or(Attribute("X"s));
+            max_width = std::max(max_width, name.as_string().size());
+        }
+        for(const auto& particle : frame)
+        {
+            const auto name = particle.try_at("name").value_or(Attribute("X"s));
+            xyz_ << std::setw(max_width + 1) << std::left << name.as_string();
+            xyz_ << std::right;
+            xyz_ << std::setw(18) << std::fixed << particle.position()[0] << ' ';
+            xyz_ << std::setw(18) << std::fixed << particle.position()[1] << ' ';
+            xyz_ << std::setw(18) << std::fixed << particle.position()[2] << '\n';
+        }
+        xyz_ << std::flush;
+        return;
+    }
+
+    std::size_t      size()      const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
 
-    void write(std::ostream& os, const frame_type& frame) const;
-
-  private:
-
-    std::string filename_;
+    std::size_t current_;
+    std::string file_name_;
+    std::ofstream xyz_;
 };
-
-template<typename vectorT>
-void XYZWriter<vectorT>::write(const trajectory_type& traj) const
-{
-    std::ofstream ofs(filename_, std::ios::app | std::ios::out);
-    if(!ofs.good())
-    {
-        throw std::runtime_error("XYZWriter: file open error: " + filename_);
-    }
-    for(const auto& frame : traj)
-    {
-        this->write(ofs, frame);
-    }
-    return;
-}
-
-template<typename vectorT>
-void XYZWriter<vectorT>::write(const frame_type& frame) const
-{
-    std::ofstream ofs(filename_, std::ios::app | std::ios::out);
-    if(!ofs.good())
-    {
-        throw std::runtime_error("XYZWriter: file open error: " + filename_);
-    }
-    this->write(ofs, frame);
-    return;
-}
-
-template<typename vectorT>
-void XYZWriter<vectorT>::write(std::ostream& os, const frame_type& frame) const
-{
-    os << ss.size()     << '\n';
-    os << frame.comment << '\n';
-    for(const auto& particle : frame.particles)
-    {
-        os << particle.first     << ' ' << particle.second[0] << ' '
-              particle.second[1] << ' ' << particle.second[2] << '\n';
-    }
-    return;
-}
 
 }// mill
 #endif //COFFEE_MILL_DCD_READER

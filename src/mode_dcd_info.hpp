@@ -1,6 +1,5 @@
 #ifndef COFFEE_MILL_DCD_INFO
 #define COFFEE_MILL_DCD_INFO
-#include <mill/dcd/DCDWriter.hpp>
 #include <mill/dcd/DCDReader.hpp>
 
 namespace mill
@@ -33,22 +32,17 @@ int mode_dcd_info(int argument_c, const char **argument_v)
 
     if(fname.substr(fname.size()-4, 4) == ".dcd")
     {
-        std::ifstream ifs(fname);
-        DCDReader<vectorT> reader;
-        const auto data = reader.read_header(ifs);
+        DCDReader reader(fname);
+        const auto data = reader.read_header();
 
-        std::cout << "number of frames       : " << data.nset() << std::endl;
-        std::cout << "initial step           : " << data.istart() << std::endl;
-        std::cout << "interval between frames: " << data.nstep_save() << std::endl;
-        std::cout << "total step             : " << data.nstep() << std::endl;
-        std::cout << "number of units        : " << data.nunit() << std::endl;
-        std::cout << "number of particles    : " << data.nparticle() << std::endl;
-        std::cout << "delta t                : " << data.delta_t() << std::endl;
-        std::cout << "comment                :\n";
-        for(const auto& str : data.comment())
-        {
-            std::cout << str << std::endl;
-        }
+        std::cout << "number of frames       : " << data.at("nset")       << std::endl;
+        std::cout << "initial step           : " << data.at("istart")     << std::endl;
+        std::cout << "interval between frames: " << data.at("nstep_save") << std::endl;
+        std::cout << "total step             : " << data.at("nstep")      << std::endl;
+        std::cout << "number of units        : " << data.at("nunit")      << std::endl;
+        std::cout << "number of particles    : " << data.at("nparticle")  << std::endl;
+        std::cout << "delta t                : " << data.at("delta_t")    << std::endl;
+        std::cout << "comment                : " << data.at("comment")    << std::endl;
         return 0;
     }
     else

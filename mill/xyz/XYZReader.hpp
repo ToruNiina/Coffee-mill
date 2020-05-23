@@ -9,94 +9,155 @@
 
 #ifndef COFFEE_MILL_XYZ_READER_HPP
 #define COFFEE_MILL_XYZ_READER_HPP
-#include "XYZData.hpp"
-#include <memory>
-#include <utility>
-#include <iostream>
+#include <mill/util/logger.hpp>
+#include <mill/common/Trajectory.hpp>
+#include <mill/common/DeferedReader.hpp>
 #include <fstream>
-#include <stdexcept>
-#include <string>
-#include <vector>
+#include <sstream>
 
 namespace mill
 {
 
 //! read XYZfile and return the data as std::vector<std::vector<position>>.
-/*!
- *  @tparam vectorT type of position
- */
-template<typename vectorT>
-class XYZReader
+class XYZReader final : public DeferedReaderBase
 {
   public:
-    using vector_type     = vectorT;
-    using position_type   = vector_type;
-    using frame_type      = XYZFrame<position_type>;
-    using snapshot_type   = frame_type;
-    using trajectory_type = std::vector<frame_type>;
+    using base_type = DeferedReaderBase;
+    using trajectory_type          = base_type::trajectory_type         ;
+    using snapshot_type            = base_type::snapshot_type           ;
+    using particle_type            = base_type::particle_type           ;
+    using attribute_container_type = base_type::attribute_container_type;
 
   public:
 
-    XYZReader(const std::string& fname): xyz_(fname)
+    explicit XYZReader(const std::string& fname)
+        : current_(0), file_name_(fname), xyz_(fname)
     {
         if(!xyz_.good())
         {
             throw std::runtime_error("XYZReader: file open error: " + fname);
         }
     }
-    ~XYZReader() = default;
+    ~XYZReader() override = default;
 
-    trajectory_type read();
-    snapshot_type   read_frame();
+    attribute_container_type read_header() override
+    {
+        log::debug("mill::XYZReader: reading header ...\n");
+        log::debug("mill::XYZReader: done.\n");
+        return attribute_container_type{};
+    }
+    trajectory_type read() override
+    {
+        log::debug("mill::XYZReader: reading the whole trajectory...\n");
+        this->rewind();
 
-    bool is_eof() const noexcept {return xyz_.eof();}
+        trajectory_type traj(this->read_header());
+        while(!this->xyz_.eof())
+        {
+            traj.snapshots().push_back(*read_frame());
+            this->xyz_.peek();
+        }
+        log::debug("mill::XYZReader: done.\n");
+        return traj;
+    }
+    std::optional<snapshot_type>   read_frame() override
+    {
+        log::debug("mill::XYZReader: reading the next snapshot...\n");
+        if(this->is_eof())
+        {
+            return std::nullopt;
+        }
+
+        std::string line;
+        std::getline(this->xyz_, line);
+
+        const std::size_t N = convert_to_ull(line);
+        snapshot_type frame(N);
+
+        std::getline(this->xyz_, line);
+        frame["comment"] = line;
+        log::debug("mill::XYZReader: comment of the next snapshot is ", line, "\n");
+
+        for(std::size_t i=0; i<N; ++i)
+        {
+            std::getline(this->xyz_, line);
+            std::istringstream iss(line);
+            std::string atom;
+            double x, y, z;
+            iss >> atom >> x >> y >> z;
+
+            particle_type p(vector_type(x, y, z), {{"name", atom}});
+            frame.at(i) = std::move(p);
+        }
+        current_ += 1;
+        xyz_.peek();
+        log::debug("mill::XYZReader: done.\n");
+        return frame;
+    }
+
+    std::optional<snapshot_type> read_frame(const std::size_t idx) override
+    {
+        log::debug("mill::XYZReader: reading the ", idx, "-th snapshot\n");
+        this->rewind();
+
+        // skip n snapshots
+        std::string line;
+        for(std::size_t i=0; i<idx; ++i)
+        {
+            if(this->is_eof())
+            {
+                log::error("mill::XYZReader: ", idx, "-th snapshot does not exist\n");
+                return std::nullopt;
+            }
+            std::getline(this->xyz_, line);
+            const std::size_t N = convert_to_ull(line);
+
+            // skip comment line and N particles
+            for(std::size_t j=0; j<N+1; ++j)
+            {
+                std::getline(this->xyz_, line);
+            }
+            xyz_.peek();
+        }
+        log::debug("mill::XYZReader: done.\n");
+        return this->read_frame();
+    }
+
+    void rewind() override
+    {
+        log::debug("mill::XYZReader: rewinding the file\n");
+        current_ = 0;
+        xyz_.seekg(0, std::ios_base::beg);
+        log::debug("mill::XYZReader: done.\n");
+    }
+
+    bool             is_eof()    const noexcept override {return xyz_.eof();}
+    std::size_t      current()   const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
+
+    std::size_t convert_to_ull(const std::string& line)
+    {
+        std::size_t N;
+        try
+        {
+            N = std::stoull(line);
+        }
+        catch(...)
+        {
+            throw std::runtime_error("XYZReader::read_frame: "
+                    "expected number, but got " + line);
+        }
+        log::debug("mill::XYZReader: the next snapshot has ", N, "particles.\n");
+        return N;
+    }
+
+  private:
+    std::size_t   current_;
+    std::string   file_name_;
     std::ifstream xyz_;
 };
-
-template<typename vecT>
-typename XYZReader<vecT>::trajectory_type XYZReader<vecT>::read()
-{
-    trajectory_type traj;
-    while(!this->xyz_.eof())
-    {
-        traj.push_back(this->read_frame());
-        this->xyz_.peek();
-    }
-    return traj;
-}
-
-template<typename vecT>
-typename XYZReader<vecT>::frame_type XYZReader<vecT>::read_frame()
-{
-    std::string line;
-    std::getline(this->xyz_, line);
-    std::size_t N = 0;
-    try
-    {
-        N = std::stoull(line);
-    }
-    catch(...)
-    {
-        throw std::runtime_error("XYZReader::read_frame: expected number, "
-                "but get " + line);
-    }
-    frame_type frame;
-    std::getline(this->xyz_, frame.comment);
-    frame.particles.reserve(N);
-
-    for(std::size_t i=0; i<N; ++i)
-    {
-        std::getline(this->xyz_, line);
-        std::istringstream iss(line);
-        std::string atom;
-        double x, y, z;
-        iss >> atom >> x >> y >> z;
-        frame.particles.emplace_back(atom, vector_type(x, y, z));
-    }
-    return frame;
-}
 
 }// mill
 #endif //COFFEE_MILL_XYZ_READER

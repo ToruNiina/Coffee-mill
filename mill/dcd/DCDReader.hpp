@@ -12,373 +12,357 @@
 
 #ifndef COFFEE_MILL_DCD_READER_HPP
 #define COFFEE_MILL_DCD_READER_HPP
+#include <mill/common/Trajectory.hpp>
+#include <mill/common/DeferedReader.hpp>
 #include <mill/util/read_binary_as.hpp>
 #include <mill/util/logger.hpp>
-#include "DCDData.hpp"
-#include <memory>
-#include <utility>
-#include <iostream>
 #include <fstream>
 
 namespace mill
 {
 
 //! read DCDfile and return the data as a DCDData.
-/*!
- *  @tparam vectorT type of position
- */
-template <typename vectorT>
-class DCDReader
+class DCDReader final : public DeferedReaderBase
 {
   public:
-    using vector_type   = vectorT;
-    using data_type     = DCDData<vector_type>;
-    using real_type     = typename data_type::real_type;
-    using header_type   = typename data_type::header_type;
-    using snapshot_type = typename data_type::snapshot_type;
+    using base_type = DeferedReaderBase;
+    using trajectory_type          = base_type::trajectory_type         ;
+    using snapshot_type            = base_type::snapshot_type           ;
+    using boundary_type            = snapshot_type::boundary_type       ;
+    using particle_type            = base_type::particle_type           ;
+    using vector_type              = particle_type::vector_type         ;
+    using attribute_container_type = base_type::attribute_container_type;
 
   public:
 
-    DCDReader(){}
-    ~DCDReader() = default;
-
-    //! read all of the file and return full dcd data.
-    data_type read(const std::string& fname);
-    data_type read(std::istream& is);
-
-    //! return full header information and empty trajectory.
-    data_type read_header(const std::string& fname);
-    data_type read_header(std::istream& is);
-
-    //! read only i-th snapshot from file.
-    snapshot_type read_snapshot(const std::string& fname, const std::size_t i);
-    //! read next snapshot (required having read the header).
-    snapshot_type read_snapshot(std::istream& is, const header_type& header);
-
-  private:
-
-    bool validate_filesize(const data_type& dat, const std::size_t file_size);
-
-    std::vector<float> read_coord(std::istream& dcdfile, const std::size_t i);
-    void read_trajectory(std::istream& dcdfile, data_type& data);
-
-    void read_header_block1(std::istream& dcdfile, data_type& data);
-    void read_header_block2(std::istream& dcdfile, data_type& data);
-    void read_header_block3(std::istream& dcdfile, data_type& data);
-
-  private:
-
-    // for filesize validation
-    std::size_t header1_size;
-    std::size_t header2_size;
-    std::size_t header3_size;
-    std::size_t snapshot_size;
-    std::int32_t has_unitcell_;
-};
-
-template <typename T>
-typename DCDReader<T>::data_type
-DCDReader<T>::read(const std::string& fname)
-{
-    std::ifstream ifs(fname, std::ios::in | std::ios::binary);
-    if(not ifs.good())
+    explicit DCDReader(const std::string& fname)
+        : current_(0), file_name_(fname),
+          dcd_(fname, std::ios::in | std::ios::binary)
     {
-        throw std::runtime_error("DCDReader: file open error" + fname);
-    }
-    auto retval = this->read(ifs);
-    ifs.close();
-    return retval;
-}
-
-template <typename T>
-typename DCDReader<T>::data_type
-DCDReader<T>::read(std::istream& is)
-{
-    log::debug("DCD file reading start\n");
-
-    data_type data = read_header(is);
-    read_trajectory(is, data);
-
-    log::debug("DCD file reading completed\n");
-    return data;
-}
-
-template <typename vectorT>
-typename DCDReader<vectorT>::data_type
-DCDReader<vectorT>::read_header(const std::string& filename)
-{
-    std::ifstream ifs(filename, std::ios::binary);
-    if(not ifs.good())
-    {
-        throw std::runtime_error("DCDReader file open error " + filename);
-    }
-    return this->read_header(ifs);
-}
-
-template <typename T>
-typename DCDReader<T>::data_type
-DCDReader<T>::read_header(std::istream& is)
-{
-    is.seekg(0, is.end);
-    const std::size_t file_size = is.tellg();
-    is.seekg(0, is.beg);
-
-    data_type dat;
-    this->read_header_block1(is, dat);
-    this->read_header_block2(is, dat);
-    this->read_header_block3(is, dat);
-
-    // if file size is incorrect, warn and redefine the number of snapshot
-    if(!validate_filesize(dat, file_size))
-    {
-        const auto expected_size = header1_size + header2_size + header3_size +
-                                   snapshot_size * dat.nset();
-        log::warn("invalid filesize!\n");
-        log::warn("actual size is ", file_size, " bytes\n");
-        log::warn("but it contains ", dat.nset(), " snapshots.\n");
-        log::warn("number of particles is ", dat.nparticle(), ".\n");
-        log::warn("1st header block has ", header1_size, " bytes\n");
-        log::warn("2nd header block has ", header2_size, " bytes\n");
-        log::warn("3rd header block has ", header3_size, " bytes\n");
-        log::warn("The file must have ",  expected_size, " bytes\n");
-
-        if((file_size - header1_size - header2_size - header3_size) % snapshot_size != 0)
+        if(!dcd_.good())
         {
-            log::warn("The last snapshot seems to be incomplete.\n");
+            throw std::runtime_error("DCDReader: file open error: " + fname);
         }
 
-        dat.nset() = (file_size - header1_size - header2_size - header3_size) /
-                     snapshot_size;
-        log::warn("The actual number of snapshots seems to be ",
-                             dat.nset(), ".\n");
+        dcd_.seekg(0, dcd_.end);
+        this->file_size_ = dcd_.tellg();
+        dcd_.seekg(0, dcd_.beg);
     }
-    return dat;
-}
+    ~DCDReader() override = default;
 
-template <typename T>
-bool DCDReader<T>::validate_filesize(
-        const data_type& data, std::size_t file_size)
-{
-    this->snapshot_size = 12 * (data.nparticle() + 2);
-    if(this->has_unitcell_)
+    attribute_container_type read_header() override
     {
-        this->snapshot_size += 56;
+        log::debug("mill::DCDReader: reading header ...\n");
+        attribute_container_type attr;
+        this->read_header_block1(attr);
+        this->read_header_block2(attr);
+        this->read_header_block3(attr);
+        this->validate_filesize(attr);
+        log::debug("mill::DCDReader: done.\n");
+        return attr;
     }
-    return file_size == (header1_size + header2_size + header3_size +
-                        snapshot_size * data.nset());
-}
-
-template <typename T>
-void DCDReader<T>::read_header_block1(std::istream& dcdfile, data_type& data)
-{
-    const int byte = read_binary_as<int>(dcdfile);
-    if(byte != 84)
+    trajectory_type read() override
     {
-        log::warn("this file may not be cafemol output\n");
+        log::debug("mill::DCDReader: reading the whole trajectory...\n");
+        this->rewind();
+
+        trajectory_type traj(this->read_header());
+        traj.snapshots().reserve(traj["nset"].as_integer());
+
+        while(!this->dcd_.eof())
+        {
+            traj.snapshots().push_back(*read_frame());
+            this->dcd_.peek();
+        }
+        log::debug("mill::DCDReader: done.\n");
+        return traj;
     }
-
-    char csigneture[5];
-    dcdfile.read(csigneture, 4);
-    csigneture[4] = '\0';
-    std::string signeture(csigneture);
-    log::debug("file signeture is \"", signeture, "\"\n");
-
-    if(signeture != "CORD" && signeture != "VELD")
+    std::optional<snapshot_type> read_frame() override
     {
-        throw std::runtime_error("Unknown File Signeture: " + signeture);
+        log::debug("mill::DCDReader: reading a frame...\n");
+        if(this->num_particles_ == 0)
+        {
+            this->read_header();
+        }
+
+        if(this->is_eof())
+        {
+            return std::nullopt;
+        }
+        snapshot_type frame(this->num_particles_);
+        frame.boundary() = read_unit_cell();
+
+        const auto x = read_coord();
+        const auto y = read_coord();
+        const auto z = read_coord();
+        for(std::size_t i=0; i<num_particles_; ++i)
+        {
+            frame.at(i).position()[0] = x.at(i);
+            frame.at(i).position()[1] = y.at(i);
+            frame.at(i).position()[2] = z.at(i);
+        }
+        this->current_ += 1;
+        log::debug("mill::DCDReader: done.\n");
+        return frame;
     }
-
-    data.signeture() = signeture;
-    data.nset() = read_binary_as<int>(dcdfile);
-    log::debug("nset       = ", data.nset(), "\n");
-
-    data.istart() = read_binary_as<int>(dcdfile);
-    log::debug("istart     = ", data.istart(), "\n");
-
-    data.nstep_save() = read_binary_as<int>(dcdfile);
-    log::debug("nstep_save = ", data.nstep_save(), "\n");
-
-    data.nstep() = read_binary_as<int>(dcdfile);
-    log::debug("nstep      = ", data.nstep(), "\n");
-
-    data.nunit() = read_binary_as<int>(dcdfile);
-    log::debug("nunit      = ", data.nunit(), "\n");
-
-    dcdfile.ignore(16); // skip 4x int
-
-    data.delta_t() = read_binary_as<float>(dcdfile);
-    log::debug("delta_t    = ", data.delta_t(), "\n");
-
-    this->has_unitcell_ = read_binary_as<std::int32_t>(dcdfile);
-
-    dcdfile.ignore(32);
-
-    data.verCHARMM() = read_binary_as<int>(dcdfile);
-
-    const int bytes_f = read_binary_as<int>(dcdfile);
-    if(byte != bytes_f)
+    std::optional<snapshot_type> read_frame(const std::size_t idx) override
     {
-        throw std::runtime_error("header block1 has invalid size information");
-    }
-    this->header1_size = byte + sizeof(int) * 2;
-    return;
-}
+        log::debug("mill::DCDReader: reading ", idx, "-th frame...\n");
+        this->rewind();
 
-template <typename T>
-void DCDReader<T>::read_header_block2(std::istream& dcdfile, data_type& data)
-{
-    const int bytes = read_binary_as<int>(dcdfile);
+        const auto header_size = header1_size_ + header2_size_ + header3_size_;
+        const auto pos = header_size + snapshot_size_ * idx;
 
-    const int lines = read_binary_as<int>(dcdfile);
-    if((80 * lines + 4) != bytes)
-    {
-        std::cerr << "Error  : header block2 size = " << bytes << " bytes."
-                  << " But block2 has " << lines << "lines" << std::endl;
-        throw std::invalid_argument("header block2 has invalid size");
+        if(file_size_ <= pos)
+        {
+            return std::nullopt;
+        }
+        dcd_.seekg(pos, dcd_.beg);
+        this->current_ = idx;
+
+        const auto frame = this->read_frame();
+        log::debug("mill::DCDReader: done.\n");
+        return frame;
     }
 
-    for(int i(0); i<lines; ++i)
+    void rewind() override
     {
-        char line[81];
-        dcdfile.read(line, 80);
-        line[80] = '\0';
-        log::debug(i, "-th comment: ", line, "\n");
-        data.comment().push_back(std::string(line));
+        log::debug("mill::DCDReader: rewinding the file\n");
+        current_ = 0;
+        dcd_.seekg(0, std::ios_base::beg);
+        log::debug("mill::DCDReader: done.\n");
+        return;
     }
-    const int bytes_f = read_binary_as<int>(dcdfile);
-    if(bytes != bytes_f)
+    bool             is_eof()    const noexcept override {return dcd_.eof();}
+    std::size_t      current()   const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
+
+  private:
+
+    std::vector<float> read_coord()
     {
-        throw std::runtime_error("header block2 has invalid size information");
+        const int size_of_block = read_binary_as<int>(dcd_);
+        if(size_of_block / sizeof(float) != num_particles_)
+        {
+            log::error("invalid coordinate block!\n");
+            log::error("size of coordinate block is ", size_of_block, "\n");
+            log::error("but the number of particle is  ", num_particles_, "\n");
+            throw std::runtime_error("dcd coordinate block size invalid");
+        }
+
+        std::vector<float> coordinate(num_particles_, 0.0f);
+        for(auto& v : coordinate)
+        {
+            v = read_binary_as<float>(dcd_);
+        }
+
+        const int size_of_block_f = read_binary_as<int>(dcd_);
+        if(size_of_block != size_of_block_f)
+        {
+            log::error("invalid coordinate block delimiter\n");
+            log::error("the size of the block is not ", size_of_block_f,
+                                  " but ", size_of_block, "\n");
+            throw std::runtime_error("invalid delimiter in a coordinate block");
+        }
+        return coordinate;
     }
-    header2_size = bytes + sizeof(int) * 2;
-    return;
-}
 
-template <typename T>
-void DCDReader<T>::read_header_block3(std::istream& dcdfile, data_type& data)
-{
-    const int bytes  = read_binary_as<int>(dcdfile);
-    data.nparticle() = read_binary_as<int>(dcdfile);
-    log::debug("nparticle = ", data.nparticle(), "\n");
-
-    const int bytes_f = read_binary_as<int>(dcdfile);
-    if(bytes != bytes_f)
+    void read_header_block1(attribute_container_type& header)
     {
-        throw std::runtime_error("header block3 has invalid size information");
+        const auto block_size = read_binary_as<std::int32_t>(dcd_);
+        if(block_size != 84)
+        {
+            log::warn("Unrecognized header block size, ", block_size, "\n");
+        }
+
+        char signature[5];
+        dcd_.read(signature, 4);
+        signature[4] = '\0';
+        header["signature"] = std::string(signature);
+
+        if(header["signature"].as_string() != "CORD" &&
+           header["signature"].as_string() != "VELO")
+        {
+            log::warn("Unknown file signature -> ", signature, "\n");
+        }
+
+        header["nset"      ] = read_binary_as<std::int32_t>(dcd_);
+        header["istart"    ] = read_binary_as<std::int32_t>(dcd_);
+        header["nstep_save"] = read_binary_as<std::int32_t>(dcd_);
+        header["nstep"     ] = read_binary_as<std::int32_t>(dcd_);
+        header["nunit"     ] = read_binary_as<std::int32_t>(dcd_);
+        dcd_.ignore(16);
+        header["delta_t"   ] = read_binary_as<float>(dcd_);
+        this->has_unitcell_     = read_binary_as<std::int32_t>(dcd_);
+        dcd_.ignore(32);
+        header["verCHARMM" ] = read_binary_as<std::int32_t>(dcd_);
+
+        log::debug("signature  = ", header.at("signature") .as_string(),  '\n');
+        log::debug("nset       = ", header.at("nset")      .as_integer(), '\n');
+        log::debug("istart     = ", header.at("istart")    .as_integer(), '\n');
+        log::debug("nstep_save = ", header.at("nstep_save").as_integer(), '\n');
+        log::debug("nstep      = ", header.at("nstep")     .as_integer(), '\n');
+        log::debug("nunit      = ", header.at("nunit")     .as_integer(), '\n');
+        log::debug("delta_t    = ", header.at("delta_t")   .as_floating(), '\n');
+
+        const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
+        if(block_size != block_size_check)
+        {
+            log::error("mill::DCDReader: header block 1 is broken.\n");
+            log::error("first block size (", block_size, ") != last (",
+                       block_size_check, ").\n");
+            throw std::runtime_error("DCDReader: header block 1 is broken");
+        }
+        this->header1_size_ = block_size + sizeof(std::int32_t) * 2;
+        return;
     }
-    header3_size = bytes + sizeof(int) * 2;
-    return;
-}
-
-template <typename T>
-void DCDReader<T>::read_trajectory(std::istream& is, data_type& data)
-{
-    using position_type = typename data_type::position_type;
-    data.traj().clear();
-    data.traj().reserve(data.nset());
-
-    for(int i=0; i<data.nset(); ++i)
+    void read_header_block2(attribute_container_type& header)
     {
+        const auto block_size = read_binary_as<std::int32_t>(dcd_);
+
+        const auto lines = read_binary_as<std::int32_t>(dcd_);
+        if((80 * lines + sizeof(std::int32_t)) != static_cast<std::size_t>(block_size))
+        {
+            log::error("mill::DCDReader: header block 2 is broken.\n");
+            log::error("block size (", block_size, ") is not consistent with ",
+                       "the number of lines (", lines, ").\n");
+            throw std::invalid_argument("DCDReader: header block2 is broken");
+        }
+
+        std::string comment;
+        for(std::int32_t i(0); i<lines; ++i)
+        {
+            char line[81];
+            dcd_.read(line, 80);
+            line[80] = '\0';
+            comment += std::string(line);
+        }
+        header["comment"] = comment;
+        log::debug("comment = ", header.at("comment").as_string(), '\n');
+
+        const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
+        if(block_size != block_size_check)
+        {
+            log::error("mill::DCDReader: header block 2 is broken.\n");
+            log::error("first block size (", block_size, ") != last (",
+                       block_size_check, ").\n");
+            throw std::runtime_error("DCDReader: header block 2 is broken");
+        }
+        header2_size_ = block_size + sizeof(std::int32_t) * 2;
+        return;
+    }
+    void read_header_block3(attribute_container_type& header)
+    {
+        const auto block_size = read_binary_as<std::int32_t>(dcd_);
+
+        this->num_particles_   = read_binary_as<std::int32_t>(dcd_);
+        header["nparticle"] = num_particles_;
+        log::debug("nparticle = ", header.at("nparticle").as_integer(), "\n");
+
+        const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
+        if(block_size != block_size_check)
+        {
+            log::error("mill::DCDReader: header block 3 is broken.\n");
+            log::error("first block size (", block_size, ") != last (",
+                       block_size_check, ").\n");
+            throw std::runtime_error("DCDReader: header block 3 is broken");
+        }
+        header3_size_ = block_size + sizeof(std::int32_t) * 2;
+        return;
+    }
+
+    void validate_filesize (attribute_container_type& header)
+    {
+        this->snapshot_size_ = 12 * (header.at("nparticle").as_integer() + 2);
         if(this->has_unitcell_)
         {
-            std::pair<vector_type, vector_type> cell;
-
-            const auto block_begin = read_binary_as<std::int32_t>(is); // 4
-            cell.first[0] = read_binary_as<double>(is);                // 8
-            cell.first[1] = read_binary_as<double>(is);
-            cell.first[2] = read_binary_as<double>(is);
-
-            cell.second[0] = read_binary_as<double>(is);
-            cell.second[1] = read_binary_as<double>(is);
-            cell.second[2] = read_binary_as<double>(is);
-            const auto block_end = read_binary_as<std::int32_t>(is);
-
-            data.cell_traj().push_back(cell);
-            if(block_begin != block_end)
-            {
-                throw std::runtime_error("invalid block size in unitcell");
-            }
+            this->snapshot_size_ += sizeof(std::int32_t) * 2 + sizeof(double) * 6;
         }
+        const auto header_size = header1_size_ + header2_size_ + header3_size_;
+        const auto expected_size = header_size +
+            snapshot_size_ * header.at("nset").as_integer();
 
-        const std::vector<float> x(read_coord(is, data.nparticle()));
-        const std::vector<float> y(read_coord(is, data.nparticle()));
-        const std::vector<float> z(read_coord(is, data.nparticle()));
-
-        snapshot_type temp_snapshot(data.nparticle());
-        for(int c=0; c < data.nparticle(); ++c)
+        if(file_size_ != expected_size)
         {
-            temp_snapshot[c] = position_type(x[c], y[c], z[c]);
+            log::warn("invalid filesize!\n");
+            log::warn("actual file size is ", file_size_, " bytes.\n");
+            log::warn("header says there are ", header.at("nset").as_integer(),
+                      " snapshots.\n");
+            log::warn("and there are ", header.at("nparticle").as_integer(),
+                      " particles.\n");
+            log::warn("The file must have ",  expected_size, " bytes\n");
+
+            const auto traj_size = file_size_ - header_size;
+            if(traj_size % snapshot_size_ != 0)
+            {
+                log::warn("The last snapshot seems to be incomplete.\n");
+            }
+            header.at("nset") = traj_size / snapshot_size_;
+            log::warn("The actual number of snapshots seems to be ",
+                      header.at("nset").as_integer(), ".\n");
         }
-        data.traj().push_back(temp_snapshot);
+        return;
     }
 
-    return;
-}
-
-template <typename T>
-typename DCDReader<T>::snapshot_type
-DCDReader<T>::read_snapshot(std::istream& is, const header_type& header)
-{
-    using position_type = typename data_type::position_type;
-    const std::vector<float> x(read_coord(is, header.nparticle));
-    const std::vector<float> y(read_coord(is, header.nparticle));
-    const std::vector<float> z(read_coord(is, header.nparticle));
-
-    snapshot_type snap(header.nparticle);
-    for(int c = 0; c < header.nparticle; ++c)
+    boundary_type read_unit_cell()
     {
-        snap[c] = position_type(x[c], y[c], z[c]);
+        if(not this->has_unitcell_)
+        {
+            return boundary_type(UnlimitedBoundary{});
+        }
+        const auto block_begin = read_binary_as<std::int32_t>(dcd_);
+        const auto A           = read_binary_as<double      >(dcd_);
+        const auto gamma       = read_binary_as<double      >(dcd_);
+        const auto B           = read_binary_as<double      >(dcd_);
+        const auto beta        = read_binary_as<double      >(dcd_);
+        const auto alpha       = read_binary_as<double      >(dcd_);
+        const auto C           = read_binary_as<double      >(dcd_);
+        const auto block_end   = read_binary_as<std::int32_t>(dcd_);
+
+        if(block_begin != block_end)
+        {
+            log::error("DCD file has invalid unit cell information.\n");
+            log::error("block_begin = ", block_begin, ", block_end = ", block_end, "\n");
+            log::error("A     = ", A,     ", B    = ", B,    ", C     = ", C,      "\n");
+            log::error("alpha = ", alpha, ", beta = ", beta, ", gamma = ", gamma,  "\n");
+            return boundary_type(UnlimitedBoundary{});
+        }
+
+        const auto differs = [](const double lhs, const double rhs) noexcept -> bool {
+            constexpr double rel_tol = 1e-8;
+            constexpr double abs_tol = 1e-10;
+            return abs_tol                     < std::abs(lhs - rhs) ||
+                   rel_tol * 0.5 * (lhs + rhs) < std::abs(lhs - rhs);
+        };
+        constexpr double half_pi = 1.57079632679;
+
+        if((differs(alpha, 90.0) && differs(alpha, std::cos(half_pi))) ||
+           (differs(beta,  90.0) && differs(beta,  std::cos(half_pi))) ||
+           (differs(gamma, 90.0) && differs(gamma, std::cos(half_pi))))
+        {
+            log::error("The unit cell is not a rectangle\n");
+            log::error("angle alpha = ", alpha, '\n');
+            log::error("angle beta  = ", beta , '\n');
+            log::error("angle gamma = ", gamma, '\n');
+        }
+        return boundary_type(CuboidalPeriodicBoundary(
+                vector_type(0, 0, 0), vector_type(A, B, C)));
     }
-    return snap;
-}
 
-template <typename T>
-typename DCDReader<T>::snapshot_type
-DCDReader<T>::read_snapshot(const std::string& fname, const std::size_t i)
-{
-    std::ifstream ifs(fname, std::ios::in | std::ios::binary);
-    if(not ifs.good())
-    {
-        throw std::runtime_error("DCDReader: file open error" + fname);
-    }
+  private:
 
-    const auto header = this->read_header(ifs);
-    const std::size_t npart = header.nparticle();
-    const std::size_t snapsize = (npart + 2) * 3 * sizeof(float);
-    ifs.ignore(snapsize * (i-1));
-
-    return this->read_snapshot(ifs, header);
-}
-
-template <typename T>
-std::vector<float>
-DCDReader<T>::read_coord(std::istream& is, const std::size_t nparticle)
-{
-    const int size_of_block = read_binary_as<int>(is);
-    if(size_of_block / sizeof(float) != nparticle)
-    {
-        log::error("invalid coordinate block!\n");
-        log::error("size of coordinate block is ", size_of_block, "\n");
-        log::error("but the number of particle is  ", nparticle, "\n");
-        throw std::runtime_error("dcd coordinate block size invalid");
-    }
-
-    std::vector<float> coordinate(nparticle, 0.0);
-    for(auto& v : coordinate)
-    {
-        v = read_binary_as<float>(is);
-    }
-
-    const int size_of_block_f = read_binary_as<int>(is);
-    if(size_of_block != size_of_block_f)
-    {
-        log::error("invalid coordinate block delimiter\n");
-        log::error("the size of the block is not ", size_of_block_f,
-                              " but ", size_of_block, "\n");
-        throw std::runtime_error("invalid delimiter in a coordinate block");
-    }
-    return coordinate;
-}
+    // To check the number of frames contained, store those values.
+    std::size_t file_size_     = 0;
+    std::size_t header1_size_  = 0;
+    std::size_t header2_size_  = 0;
+    std::size_t header3_size_  = 0;
+    std::size_t snapshot_size_ = 0;
+    std::size_t num_particles_ = 0;
+    std::size_t current_;
+    std::int32_t has_unitcell_ = 0; // a flag. dcd header uses i32 as a flag.
+    std::string file_name_;
+    std::ifstream dcd_;
+};
 
 }// mill
 #endif //COFFEE_MILL_DCD_READER

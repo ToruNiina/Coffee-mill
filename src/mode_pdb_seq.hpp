@@ -102,16 +102,15 @@ struct generate_sequence
         {
             return res.at(1);
         }
-        else if(res.size() == 3 && amino.contains(res))
+        else if(res.size() == 3 && amino_acid_3to1.count(res) != 0)
         {
-            return amino.at(res);
+            return amino_acid_3to1.at(res);
         }
         else
         {
             throw std::invalid_argument("unknown sequence: " + res);
         }
     }
-    AminoAcidCode amino;
 };
 
 // argv := {"seq", "file.pdb"}

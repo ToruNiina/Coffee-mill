@@ -18,10 +18,21 @@ class Matrix
 
     static Matrix zero() noexcept
     {
-        return Matrix<realT, Row, Col>();;
+        return Matrix<realT, Row, Col>();
+    }
+
+    static Matrix identity() noexcept
+    {
+        Matrix<realT, Row, Col> I;
+        for(std::size_t i=0, e=std::min(Row, Col); i<e; ++i)
+        {
+            I(i, i) = 1.0;
+        }
+        return I;
     }
 
   public:
+
     Matrix(){values_.fill(0);}
     ~Matrix() = default;
 

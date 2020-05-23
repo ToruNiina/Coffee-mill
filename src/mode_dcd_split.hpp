@@ -71,67 +71,41 @@ int mode_dcd_split(int argument_c, const char** argument_v)
             return 1;
         }
 
-        std::ifstream ifs(fname);
-        if(not ifs.good())
-        {
-            std::cerr << "error: mill dcd split: file open error: "
-                      << fname << '\n';
-            std::cerr << dcd_split_usage() << std::endl;
-            return 1;
-        }
+        DCDReader reader(fname);
+        Trajectory traj(reader.read_header());
+        const std::size_t total_frame = traj.at("nset").as_integer();
+        const std::size_t n_files = total_frame / unit;
 
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read_header(ifs);
-        const auto header = dcddata.header();
-
-        dcddata.nset() = unit;
-        dcddata.traj().resize(unit);
-        const std::size_t n_files = header.nset / unit;
+        traj.at("nset") = unit;
+        traj.snapshots().resize(unit);
         for(std::size_t i=0; i<n_files; ++i)
         {
             const std::string outname = fname.substr(0, fname.size() - 4) +
                 std::string("_") + std::to_string(i) + std::string(".dcd");
 
-            std::ofstream ofs(outname);
-            if(not ofs.good())
-            {
-                std::cerr << "error: mill dcd split: output file open error: "
-                          << outname << std::endl;
-                return 1;
-            }
+            DCDWriter writer(outname);
+            writer.write_header(traj.attributes());
             for(std::size_t i=0; i < unit; ++i)
             {
-                dcddata[i] = reader.read_snapshot(ifs, header);
+                writer.write_frame(*reader.read_frame());
             }
-
-            DCDWriter<vectorT> writer;
-            writer.write(ofs, dcddata);
-            ofs.close();
         }
 
-        if(header.nset % unit != 0)
+        if(total_frame % unit != 0)
         {
-            const std::size_t sz = header.nset % unit;
-            dcddata.nset() = sz;
-            dcddata.traj().resize(sz);
+            const std::size_t sz = total_frame % unit;
+            traj.at("nset") = sz;
+            traj.snapshots().resize(sz);
+
             const std::string outname = fname.substr(0, fname.size() - 4) +
                 std::string("_") + std::to_string(n_files) + std::string(".dcd");
 
-            std::ofstream ofs(outname);
-            if(not ofs.good())
-            {
-                std::cerr << "error: mill dcd split: output file open error: "
-                          << outname << std::endl;
-                return 1;
-            }
+            DCDWriter writer(outname);
+            writer.write_header(traj.attributes());
             for(std::size_t i=0; i < sz; ++i)
             {
-                dcddata[i] = reader.read_snapshot(ifs, header);
+                writer.write_frame(*reader.read_frame());
             }
-
-            DCDWriter<vectorT> writer;
-            writer.write(ofs, dcddata);
-            ofs.close();
         }
         return 0;
     }

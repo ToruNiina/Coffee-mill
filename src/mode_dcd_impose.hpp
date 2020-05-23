@@ -26,23 +26,25 @@ inline const char* dcd_impose_usage() noexcept
            "    ]\n";
 }
 
-template<typename T>
-std::vector<T>
-remove_except_elements(const std::vector<T>& elements,
+template<typename vectorT>
+std::vector<vectorT>
+remove_except_elements(const Snapshot& frame,
         const std::vector<std::array<std::int64_t, 2>>& exception)
 {
-    std::vector<T> retval;
-    retval.reserve(elements.size());
+    std::vector<vectorT> retval;
+    retval.reserve(frame.size());
     std::int64_t index = 0;
-    for(const auto& elem : elements)
+    for(const auto& particle : frame)
     {
         ++index;
         if(std::find_if(exception.begin(), exception.end(),
             [=](const std::array<std::int64_t, 2>& e){
                 return e.front() <= index && index <= e.back();
-            }) != exception.end()) {continue;}
-
-        retval.push_back(elem);
+            }) != exception.end())
+        {
+            continue;
+        }
+        retval.push_back(particle.position());
     }
     return retval;
 }
@@ -77,27 +79,36 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
         const std::string outname =
             fname.substr(0, fname.size() - 4) + "_imposed.dcd";
 
-        std::ofstream ofs(outname);
-        if(not ofs.good())
+        DCDReader reader(fname);
+        DCDWriter writer(outname);
+        writer.write_header(reader.read_header());
+
+        const auto first_frame = *reader.read_frame();
+
+        std::vector<vectorT> ref;
+        for(const auto& p : first_frame)
         {
-            std::cerr << "error: mill dcd impose: file open error : "
-                      << outname << '\n';
-            std::cerr << dcd_impose_usage() << std::endl;
-            return 1;
+            ref.push_back(p.position());
         }
-
-        DCDReader<vectorT> reader;
-        DCDWriter<vectorT> writer;
-        auto dcddata = reader.read(fname);
-        writer.write_header(ofs, dcddata.header());
-
         BestFit<typename scalar_type_of<vectorT>::type> bestfit;
-        bestfit.set_reference(dcddata.traj().front());
-        for(const auto& snap : dcddata)
+        bestfit.set_reference(ref);
+
+        writer.write_frame(first_frame);
+        for(auto frame : reader)
         {
-            writer.write_snapshot(ofs, bestfit.fit(snap));
+            std::vector<vectorT> coord;
+            for(const auto& p : frame)
+            {
+                coord.push_back(p.position());
+            }
+            std::size_t i=0;
+            for(const auto& p : bestfit.fit(coord))
+            {
+                frame[i].position() = p;
+                ++i;
+            }
+            writer.write_frame(frame);
         }
-        ofs.close();
         return 0;
     }
     else if(fname.substr(fname.size() - 5, 5) == ".toml")
@@ -109,45 +120,32 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
         const auto except_particle = toml::find<
             std::vector<std::array<std::int64_t, 2>>>(data, "except");
 
-        std::ofstream outfile(output);
-        if(not outfile.good())
-        {
-            std::cerr << "error: mill dcd impose: file open error : "
-                      << output << '\n';
-            std::cerr << dcd_impose_usage() << std::endl;
-            return 1;
-        }
+        DCDReader reader(input);
+        DCDWriter writer(output);
 
-        std::ifstream dcdfile(input);
-        if(not dcdfile.good())
-        {
-            std::cerr << "error: mill dcd impose: file open error : "
-                      << input << '\n';
-            std::cerr << dcd_impose_usage() << std::endl;
-            return 1;
-        }
+        writer.write_header(reader.read_header());
 
-        DCDReader<vectorT> reader;
-        DCDWriter<vectorT> writer;
+        const auto& first_frame = *reader.read_frame();
 
-        auto dcddata = reader.read(dcdfile);
-        writer.write_header(outfile, dcddata.header());
-
-        auto initial = dcddata.traj().front();
         BestFit<typename scalar_type_of<vectorT>::type> bestfit;
-        bestfit.set_reference(remove_except_elements(initial, except_particle));
+        bestfit.set_reference(remove_except_elements<vectorT>(first_frame, except_particle));
 
-        for(const auto& snap : dcddata)
+        for(auto frame : reader)
         {
-            const auto core = remove_except_elements(snap, except_particle);
+            const auto core = remove_except_elements<vectorT>(frame, except_particle);
             const auto R  = bestfit.rotational_matrix(core);
             const auto dx = bestfit.zeroing_vector(core);
-            auto rotated = snap;
-            for(auto& item : rotated) {item -= dx;}
-            for(auto& item : rotated) {const auto tmp(R * item); item = tmp;}
-            writer.write_snapshot(outfile, rotated);
+            for(auto& particle : frame)
+            {
+                particle.position() -= dx;
+            }
+            for(auto& particle : frame)
+            {
+                const auto tmp(R * particle.position());
+                particle.position() = tmp;
+            }
+            writer.write_frame(frame);
         }
-        outfile.close();
         return 0;
     }
     else

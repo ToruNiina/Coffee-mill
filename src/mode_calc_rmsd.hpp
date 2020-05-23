@@ -11,7 +11,7 @@ namespace mill
 
 inline const char* mode_calc_rmsd_usage() noexcept
 {
-    return "usage: mill calc rmsd [files...]\n"
+    return "usage: mill calc rmsd [traj file] [ref file]\n"
            "    files can be a pdb|xyz|dcd file.\n";
 }
 
@@ -21,7 +21,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 {
     if(argument_c < 3)
     {
-        std::cerr << "error: mill calc rmsd: too few arguments\n";
+        mill::log::error("mill calc rmsd: too few arguments.\n");
         std::cerr << mode_calc_rmsd_usage() << std::endl;
         return 1;
     }
@@ -35,8 +35,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 
     if(fname.size() < 5)
     {
-        std::cerr << "error: mill calc rmsd: invalid argument : "
-                  << fname << '\n';
+        mill::log::error("mill calc rmsd: unknown file format: ", fname, '\n');
         std::cerr << mode_calc_rmsd_usage() << std::endl;
         return 1;
     }
@@ -45,26 +44,41 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read(fname);
-        traj = std::move(dcddata.traj());
+        mill::log::info("mill calc rmsd: reading ", fname, " as a DCD file...\n");
+        DCDReader reader(fname);
+        for(const auto& snapshot : reader)
+        {
+            std::vector<vectorT> ss; ss.reserve(snapshot.size());
+            for(const auto& particle : snapshot)
+            {
+                ss.push_back(particle.position());
+            }
+            traj.push_back(std::move(ss));
+        }
+        mill::log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
+                        " snapshots.\n");
     }
     else if(fname.substr(fname.size() - 4, 4) == ".xyz")
     {
-        XYZReader<vectorT> reader(fname);
-        const auto xyz_traj = reader.read();
-        for(const auto& snapshot : xyz_traj)
+        mill::log::info("mill calc rmsd: reading ", fname, " as a XYZ file...\n");
+        XYZReader reader(fname);
+        for(const auto& snapshot : reader)
         {
             std::vector<vectorT> ss;
-            std::transform(snapshot.particles.begin(), snapshot.particles.end(),
-                std::back_inserter(ss), [](const auto& np) {return np.second;});
+            ss.reserve(snapshot.size());
+            for(const auto& particle : snapshot)
+            {
+                ss.push_back(particle.position());
+            }
+            mill::log::debug("read snapshot ", snapshot.at("comment").as_string(), "\n");
             traj.push_back(std::move(ss));
         }
+        mill::log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
+                        " snapshots.\n");
     }
     else
     {
-        std::cerr << "error: mill calc rmsd: invalid argument : "
-                  << fname << '\n';
+        mill::log::error("mill calc rmsd: unknown file format: ", fname, '\n');
         std::cerr << mode_calc_rmsd_usage() << std::endl;
         return 1;
     }
@@ -74,23 +88,26 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 
     if(refname.substr(refname.size() - 4, 4) == ".pdb")
     {
-        std::cerr << "error: mill calc rmsd: sorry, pdb is now implementing!\n";
+        mill::log::error("mill calc rmsd: unknown file format: ", refname, '\n');
         return 1;
     }
     else if(refname.substr(refname.size() - 4, 4) == ".xyz")
     {
-        XYZReader<vectorT> reader(refname);
-        const auto snapshot = reader.read_frame().particles;
-
-        std::vector<vectorT> ss;
-        std::transform(snapshot.begin(), snapshot.end(), std::back_inserter(ss),
-            [](const auto& np) {return np.second;});
-        ref = std::move(ss);
+        mill::log::info("mill calc rmsd: reading ", refname, " as a XYZ file...\n");
+        XYZReader reader(refname);
+        if(const auto first_frame = reader.read_frame())
+        {
+            for(const auto& particle : *first_frame)
+            {
+                ref.push_back(particle.position());
+            }
+        }
+        mill::log::info("mill calc rmsd: done. reference structure has ",
+                        ref.size(), " particles.\n");
     }
     else
     {
-        std::cerr << "error: mill calc rmsd: invalid argument : "
-                  << refname << '\n';
+        mill::log::error("mill calc rmsd: invalid argument: ", refname, '\n');
         std::cerr << mode_calc_rmsd_usage() << std::endl;
         return 1;
     }

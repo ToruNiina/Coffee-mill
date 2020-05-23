@@ -74,32 +74,23 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
         }
         const std::size_t num = end - beg + 1;
 
-        std::ifstream ifs(dcdname);
-        if(not ifs.good())
-        {
-            std::cerr << "error: mill dcd extract: file open error: "
-                      << dcdname << std::endl;
-            std::cerr << dcd_extract_usage() << std::endl;
-            return 1;
-        }
+        DCDReader reader(dcdname);
+        Trajectory traj(reader.read_header());
+        traj.at("nset") = num;
+        traj.snapshots().resize(num);
 
-        DCDReader<vectorT> reader;
-        auto dcddata = reader.read_header(ifs);
-        dcddata.nset() = num;
-        dcddata.traj().resize(num);
         for(std::size_t i=0; i<beg; ++i)
         {
             // discard first part
-            reader.read_snapshot(ifs, dcddata.header());
+            reader.read_frame();
         }
         for(std::size_t i=0; i<num; ++i)
         {
-            dcddata[i] = reader.read_snapshot(ifs, dcddata.header());
+            traj[i] = *reader.read_frame();
         }
-        ifs.close();
 
-        DCDWriter<vectorT> writer;
-        writer.write(outname, dcddata);
+        DCDWriter writer(outname);
+        writer.write(traj);
         return 0;
     }
     else

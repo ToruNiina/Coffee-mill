@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(construct)
 {
     using namespace std::literals::string_literals;
     using vector_type    = mill::Vector<double, 3>;
-    using attribute_type = mill::Attribute<vector_type>;
+    using attribute_type = mill::Attribute;
     {
         const attribute_type attr;
         BOOST_TEST(attr.is_empty());

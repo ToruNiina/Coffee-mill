@@ -1,6 +1,5 @@
 #ifndef COFFEE_MILL_DCD_CONVERT
 #define COFFEE_MILL_DCD_CONVERT
-#include <mill/dcd/DCDWriter.hpp>
 #include <mill/dcd/DCDReader.hpp>
 #include <mill/pdb/PDBReader.hpp>
 #include <mill/pdb/PDBWriter.hpp>
@@ -70,13 +69,13 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             return 1;
         }
 
-        DCDReader<vectorT> reader;
+        DCDReader reader(fname);
         PDBWriter<vectorT> writer;
 
-        std::ifstream ifs(fname);
-        const auto dcddata = reader.read_header(ifs);
+        const auto header = reader.read_header();
 
-        std::vector<PDBAtom<vectorT>> atoms(dcddata.nparticle());
+        const std::size_t num_particles = header.at("nparticle").as_integer();
+        std::vector<PDBAtom<vectorT>> atoms(num_particles);
         if(not pdbname.empty()) // reference pdb exists.
         {
             PDBReader<vectorT> pdbreader;
@@ -89,11 +88,11 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
                 return 1;
             }
             atoms = pdbreader.read(pdbname);
-            if(atoms.size() != static_cast<std::size_t>(dcddata.nparticle()))
+            if(atoms.size() != static_cast<std::size_t>(num_particles))
             {
                 std::cerr << "error: mill dcd convert: "
                           << "pdb file may have different structure: "
-                          << "num particle in dcd = " << dcddata.nparticle()
+                          << "num particle in dcd = " << num_particles
                           << "num particle in pdb = " << atoms.size() << '\n';
                 std::cerr << dcd_convert_usage() << std::endl;
                 return 1;
@@ -109,13 +108,15 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             }
         }
 
-        for(int i=0; i<dcddata.nset(); ++i)
+        std::size_t model = 0;
+        for(const auto& frame : reader)
         {
-            ofs << "MODEL     " << std::setw(4) << i << '\n';
+            ++model;
+            ofs << "MODEL     " << std::setw(4) << model << '\n';
             std::size_t idx = 0;
-            for(auto&& p : reader.read_snapshot(ifs, dcddata.header()))
+            for(const auto& p : frame)
             {
-                atoms.at(idx).position = std::move(p);
+                atoms.at(idx).position = p.position();
                 ++idx;
             }
             writer.write(ofs, atoms);

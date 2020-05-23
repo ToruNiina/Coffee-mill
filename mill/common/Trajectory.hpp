@@ -5,19 +5,18 @@
 namespace mill
 {
 
-template<typename vectorT>
 class Trajectory
 {
   public:
-    using vector_type    = vectorT;
-    using real_type      = scalar_type_of_t<vector_type>;
-    using attribute_type = Attribute<vector_type>;
+    using real_type      = double;
+    using vector_type    = Vector<real_type, 3>;
+    using attribute_type = Attribute;
     using attribute_container_type = std::map<std::string, attribute_type>;
-    using snapshot_type  = Snapshot<vector_type>;
-    using value_type     = std::pair<snapshot_type, attribute_container_type>;
+    using snapshot_type  = Snapshot;
+    using value_type     = snapshot_type;
     using container_type = std::vector<value_type>;
     using iterator       = typename container_type::iterator;
-    using const_iterator = typename const_iterator::const_iterator;
+    using const_iterator = typename container_type::const_iterator;
 
   public:
 
@@ -29,18 +28,15 @@ class Trajectory
     Trajectory& operator=(Trajectory &&)     = default;
 
     Trajectory(std::size_t N): snapshots_(N) {}
-    Trajectory(attribute_type attr): attributes_(std::move(attr)) {}
+    Trajectory(attribute_container_type attr): attributes_(std::move(attr)) {}
     Trajectory(container_type ps)  : snapshots_(std::move(ps))    {}
     Trajectory(const std::vector<snapshot_type>& ss): snapshots_(ss.size())
     {
-        std::transform(ps.begin(), ps.end(), snapshots_.begin(),
-                [](const vector_type& v){
-                    return std::make_pair(v, attribute_container_type{});
-                });
+        std::copy(ss.begin(), ss.end(), snapshots_.begin());
     }
 
     void clear() {attributes_.clear(); snapshots_.clear(); return;}
-    void empty() const noexcept
+    bool empty() const noexcept
     {
         return attributes_.empty() && snapshots_.empty();
     }
@@ -49,24 +45,24 @@ class Trajectory
         return snapshots_.size();
     }
 
-    value_type&       operator[](std::size_t i)       noexcept {return snapshots_[i];}
-    value_type const& operator[](std::size_t i) const noexcept {return snapshots_[i];}
-    value_type&       at(std::size_t i)       {return snapshots_.at(i);}
-    value_type const& at(std::size_t i) const {return snapshots_.at(i);}
+    snapshot_type&       operator[](std::size_t i)       noexcept {return snapshots_[i];}
+    snapshot_type const& operator[](std::size_t i) const noexcept {return snapshots_[i];}
+    snapshot_type&       at(std::size_t i)       {return snapshots_.at(i);}
+    snapshot_type const& at(std::size_t i) const {return snapshots_.at(i);}
 
-    std::optional<value_type> try_at(const std::size_t i) const noexcept
+    std::optional<snapshot_type> try_at(const std::size_t i) const noexcept
     {
         if(this->snapshots_.size() <= i)
         {
-            return this->snapshots_.at(i);
+            return std::nullopt;
         }
-        return std::nullopt;
+        return this->snapshots_.at(i);
     }
 
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
-    attribute_type&       at(const std::string& name) {return attributes_.at(name);}
-    attribute_type const& at(const std::string& name) {return attributes_.at(name);}
+    attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
+    attribute_type const& at(const std::string& name) const {return attributes_.at(name);}
 
     std::optional<attribute_type> try_at(const std::string& name) const noexcept
     {

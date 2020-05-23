@@ -13,239 +13,155 @@
 
 #ifndef COFFEE_MILL_DCD_WRITER_HPP
 #define COFFEE_MILL_DCD_WRITER_HPP
-#include "DCDData.hpp"
-#include "mill/util/write_as_binary.hpp"
-#include <iostream>
+#include <mill/common/Trajectory.hpp>
+#include <mill/common/WriterBase.hpp>
+#include <mill/util/write_as_binary.hpp>
+#include <mill/util/logger.hpp>
 #include <fstream>
-#include <stdexcept>
-#include <cstdint>
 
 namespace mill
 {
 
-//! DCD writer class.
-/*!
- *  DCDWriter writes not only entire DCDData but also many Snapshots into dcd file.
- */
-template <typename vectorT>
-class DCDWriter
+//! writes DCD into a file.
+class DCDWriter final : public WriterBase
 {
   public:
-    using vector_type     = vectorT;
-    using data_type       = DCDData<vector_type>;
-    using header_type     = typename data_type::header_type;
-    using snapshot_type   = typename data_type::snapshot_type;
-    using trajectory_type = typename data_type::trajectory_type;
+    using base_type                = WriterBase;
+    using trajectory_type          = base_type::trajectory_type         ;
+    using attribute_container_type = base_type::attribute_container_type;
+    using snapshot_type            = base_type::snapshot_type           ;
+    using boundary_type            = base_type::boundary_type           ;
+    using particle_type            = base_type::particle_type           ;
+    using vector_type              = base_type::vector_type             ;
 
   public:
 
-    DCDWriter(){}
-    ~DCDWriter() = default;
+    DCDWriter(const std::string& fname)
+        : current_(0), file_name_(fname), dcd_(fname)
+    {
+        if(!dcd_.good())
+        {
+            throw std::runtime_error("DCDWriter: file open error: " + fname);
+        }
+    }
+    ~DCDWriter() override = default;
 
-    void write(const std::string& fname, const data_type& dcd);
-    void write(std::ostream& os,         const data_type& dcd);
-    void write_header    (const std::string& fname, const header_type& dcd);
-    void write_header    (std::ostream& os,         const header_type& dcd);
-    void write_trajectory(const std::string& fname, const trajectory_type& traj);
-    void write_trajectory(std::ostream& dcdfile,    const trajectory_type& traj);
-    void write_snapshot  (const std::string& fname, const snapshot_type& snapshot);
-    void write_snapshot  (std::ostream& os,         const snapshot_type& snapshot);
+    void write_header(const attribute_container_type& header) override
+    {
+        this->write_head_block1(header);
+        this->write_head_block2(header);
+        this->write_head_block3(header);
+        return;
+    }
+    void write(const trajectory_type& traj) override
+    {
+        this->write_header(traj.attributes());
+        for(const auto& frame : traj)
+        {
+            this->write_frame(frame);
+        }
+        return;
+    }
+    void write_frame(const snapshot_type& frame) override
+    {
+        if(frame.boundary().kind() == BoundaryConditionKind::CuboidalPeriodic)
+        {
+            const auto& b = frame.boundary().as_periodic();
+
+            const std::int32_t block_size = 6 * sizeof(double);
+            write_as_binary<std::int32_t>(dcd_, block_size);
+            write_as_binary<double      >(dcd_, b.width()[0]);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, b.width()[1]);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, 90.0);
+            write_as_binary<double      >(dcd_, b.width()[2]);
+            write_as_binary<std::int32_t>(dcd_, block_size);
+        }
+
+        std::vector<float> x(frame.size());
+        std::vector<float> y(frame.size());
+        std::vector<float> z(frame.size());
+        for(std::size_t i=0; i<frame.size(); ++i)
+        {
+            x.at(i) = static_cast<float>(frame.at(i).position()[0]);
+            y.at(i) = static_cast<float>(frame.at(i).position()[1]);
+            z.at(i) = static_cast<float>(frame.at(i).position()[2]);
+        }
+        this->write_coord(x);
+        this->write_coord(y);
+        this->write_coord(z);
+        return;
+    }
+
+    std::size_t      size()      const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
 
   private:
 
-    void write_head_block1(std::ostream& dcdfile, const header_type& header);
-    void write_head_block2(std::ostream& dcdfile, const header_type& header);
-    void write_head_block3(std::ostream& dcdfile, const header_type& header);
-    void write_coord      (std::ostream& dcdfile, const std::vector<float>& coord);
-};
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write(const std::string& filename, const data_type& dcd)
-{
-    std::ofstream ifs(filename);
-    if(not ifs.good())
+    void write_head_block1(const attribute_container_type& header)
     {
-        throw std::runtime_error("file open error: " + filename);
+        write_as_binary<std::int32_t>(dcd_, 84);
+
+        const auto sign = header.at("signature").as_string();
+        dcd_.write(sign.c_str(), 4);
+
+        write_as_binary<std::int32_t>(dcd_, static_cast<std::int32_t>(header.at("nset")      .as_integer()));
+        write_as_binary<std::int32_t>(dcd_, static_cast<std::int32_t>(header.at("istart")    .as_integer()));
+        write_as_binary<std::int32_t>(dcd_, static_cast<std::int32_t>(header.at("nstep_save").as_integer()));
+        write_as_binary<std::int32_t>(dcd_, static_cast<std::int32_t>(header.at("nstep")     .as_integer()));
+        write_as_binary<std::int32_t>(dcd_, static_cast<std::int32_t>(header.at("nunit")     .as_integer()));
+
+        for(std::size_t i=0; i<4; ++i){write_as_binary<std::int32_t>(dcd_, 0);}
+
+        write_as_binary<float>(dcd_,
+            static_cast<float>(header.at("delta_t").as_floating()));
+        write_as_binary<std::int32_t>(dcd_, 0); // TODO boundary info flag.
+
+        for(std::size_t i=0; i<8; ++i){write_as_binary<std::int32_t>(dcd_, 0);}
+
+        write_as_binary<std::int32_t>(dcd_,
+            static_cast<std::int32_t>(header.at("verCHARMM").as_integer()));
+        write_as_binary<std::int32_t>(dcd_, 84);
+        return;
     }
-    this->write(ifs, dcd);
-    ifs.close();
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write(std::ostream& os, const data_type& dcd)
-{
-    this->write_header(os, dcd.header());
-    this->write_trajectory(os, dcd.traj());
-
-    log::debug("DCDWriter: file written");
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_header(
-        const std::string& fname, const header_type& dcd)
-{
-    std::ofstream dcdfile(fname, std::ios::binary);
-    if(!dcdfile.good())
-    {
-        throw std::runtime_error("file open error: " + fname);
-    }
-    write_header(dcdfile, dcd);
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_header(std::ostream& os, const header_type& dcd)
-{
-    write_head_block1(os, dcd);
-    write_head_block2(os, dcd);
-    write_head_block3(os, dcd);
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_head_block1(
-        std::ostream& os, const header_type& data)
-{
-    write_as_binary<std::int32_t>(os, 84);
-
-    os.write(data.signeture.c_str(), 4);
-
-    write_as_binary<std::int32_t>(os, data.nset);
-    write_as_binary<std::int32_t>(os, data.istart);
-    write_as_binary<std::int32_t>(os, data.nstep_save);
-    write_as_binary<std::int32_t>(os, data.nstep);
-    write_as_binary<std::int32_t>(os, data.nunit);
-
-    // null data
-    for(std::size_t i=0; i<4; ++i){write_as_binary<std::int32_t>(os, 0);}
-
-    write_as_binary<float>(os, static_cast<float>(data.delta_t));
-    write_as_binary<std::int32_t>(os, 0); // boundary info flag. no boundary.
-
-    // null data
-    for(std::size_t i=0; i<8; ++i){write_as_binary<std::int32_t>(os, 0);}
-
-    write_as_binary<std::int32_t>(os, data.verCHARMM);
-    write_as_binary<std::int32_t>(os, 84);
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_head_block2(std::ostream& os, const header_type& data)
-{
-    if(data.comment.empty())
+    void write_head_block2(const attribute_container_type&)
     {
         const char comment[81] = "====================== Generated by Coff"
                                  "ee-mill DCDWriter ======================";
-        write_as_binary<std::int32_t>(os, 84);
-        write_as_binary<std::int32_t>(os,  1);
-        os.write(comment, 80);
-        write_as_binary<std::int32_t>(os, 84);
+        write_as_binary<std::int32_t>(dcd_, 84);
+        write_as_binary<std::int32_t>(dcd_,  1);
+        dcd_.write(comment, 80);
+        write_as_binary<std::int32_t>(dcd_, 84);
+        return;
     }
-    else
+    void write_head_block3(const attribute_container_type& header)
     {
-        const std::int32_t lines = data.comment.size();
-        const std::int32_t bytes = 4 + 80 * lines;
+        write_as_binary<std::int32_t>(dcd_, 4);
+        write_as_binary<std::int32_t>(dcd_,
+                static_cast<std::int32_t>(header.at("nparticle").as_integer()));
+        write_as_binary<std::int32_t>(dcd_, 4);
+        return;
+    }
 
-        write_as_binary(os, bytes);
-        write_as_binary(os, lines);
-        for(auto com : data.comment)
+    void write_coord(const std::vector<float>& coord)
+    {
+        const std::int32_t size = 4 * coord.size();
+        write_as_binary(dcd_, size);
+        for(const float v : coord)
         {
-            if(com.size() < 80) {com.resize(80, ' ');}
-            os.write(com.c_str(), 80);
+            write_as_binary(dcd_, v);
         }
-        write_as_binary(os, bytes);
-    }
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_head_block3(
-        std::ostream& os, const header_type& data)
-{
-    write_as_binary<std::int32_t>(os, 4);
-    write_as_binary<std::int32_t>(os, data.nparticle);
-    write_as_binary<std::int32_t>(os, 4);
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_trajectory(
-        const std::string& fname, const trajectory_type& traj)
-{
-    std::ifstream ifs(fname);
-    if(not ifs.good())
-    {
-        throw std::runtime_error("file open error: " + fname);
-    }
-    this->write_trajectory(ifs, traj);
-    ifs.close();
-    return ;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_trajectory(
-        std::ostream& os, const trajectory_type& traj)
-{
-    for(const auto& ss : traj)
-    {
-        this->write_snapshot(os, ss);
-    }
-    return;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_snapshot(
-        const std::string& fname, const snapshot_type& snapshot)
-{
-    std::ifstream ifs(fname);
-    if(not ifs.good())
-    {
-        throw std::runtime_error("file open error: " + fname);
-    }
-    this->write_snapshot(ifs, snapshot);
-    ifs.close();
-    return ;
-}
-
-template <typename vectorT>
-void DCDWriter<vectorT>::write_snapshot(
-        std::ostream& os, const snapshot_type& snapshot)
-{
-    std::vector<float> x(snapshot.size());
-    std::vector<float> y(snapshot.size());
-    std::vector<float> z(snapshot.size());
-
-    std::size_t counter = 0;
-    for(const auto& pos : snapshot)
-    {
-        x[counter] = static_cast<float>(pos[0]);
-        y[counter] = static_cast<float>(pos[1]);
-        z[counter] = static_cast<float>(pos[2]);
-        ++counter;
+        write_as_binary(dcd_, size);
+        return;
     }
 
-    this->write_coord(os, x);
-    this->write_coord(os, y);
-    this->write_coord(os, z);
-    return;
-}
+  private:
 
-template <typename vectorT>
-void DCDWriter<vectorT>::write_coord(
-        std::ostream& os, const std::vector<float>& coord)
-{
-    const std::int32_t size = 4 * coord.size();
-    write_as_binary(os, size);
-    for(const float v : coord)
-    {
-        write_as_binary(os, v);
-    }
-    write_as_binary(os, size);
-    return;
-}
+    std::size_t current_;
+    std::string file_name_;
+    std::ofstream dcd_;
+};
 
 }//mill
 #endif //COFFEE_MILL_DCD_WRITER

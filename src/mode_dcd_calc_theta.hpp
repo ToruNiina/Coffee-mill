@@ -52,35 +52,34 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
         }
         ofs << "# dot product, theta\n";
 
-        DCDReader<vectorT> reader;
-        const auto dcdtraj = reader.read(input);
-        for(const auto& snap : dcdtraj)
+        DCDReader reader(input);
+        for(const auto& snapshot : reader)
         {
             vectorT v1_from(0., 0., 0.);
             for(const auto idx : vidx1[0])
             {
-                v1_from += snap.at(idx);
+                v1_from += snapshot.at(idx).position();
             }
             v1_from /= vidx1[0].size();
 
             vectorT v1_to(0., 0., 0.);
             for(const auto idx : vidx1[1])
             {
-                v1_to += snap.at(idx);
+                v1_to += snapshot.at(idx).position();
             }
             v1_to /= vidx1[1].size();
 
             vectorT v2_from(0., 0., 0.);
             for(const auto idx : vidx2[0])
             {
-                v2_from += snap.at(idx);
+                v2_from += snapshot.at(idx).position();
             }
             v2_from /= vidx2[0].size();
 
             vectorT v2_to(0., 0., 0.);
             for(const auto idx : vidx2[1])
             {
-                v2_to += snap.at(idx);
+                v2_to += snapshot.at(idx).position();
             }
             v2_to /= vidx2[1].size();
 

@@ -56,59 +56,45 @@ std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
 JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
 {
     if(not this->is_symmetric(mat))
+    {
         throw std::invalid_argument("asymmetric matrix");
+    }
 
     typedef Matrix<scalarT, N, N> Matrix_type;
     typedef Matrix<scalarT, N, 1> Vector_type;
     typedef scalarT               Real;
 
     Matrix_type m = mat;
-    Matrix_type Ps;
-    for(std::size_t i=0; i<N; ++i)
-    {
-        for(std::size_t j=0; j<N; ++j)
-        {
-            Ps(i, j) = 0.0;
-        }
-        Ps(i, i) = 1.0;
-    }
+    Matrix_type Ps = Matrix_type::identity();
 
     std::size_t loop=0;
     for(; loop < max_loop; ++loop)
     {
-        const auto index = this->max_element(m);
-        if(std::abs(m(index.first, index.second)) < absolute_tolerance<Real>())
+        const auto [i, j] = this->max_element(m);
+        if(std::abs(m(i, j)) < absolute_tolerance<Real>())
         {
             break;
         }
 
-        const Real alpha = (m(index.first, index.first) -
-                            m(index.second, index.second)) * 0.5;
-        const Real beta  = -1. * m(index.first, index.second);
+        const Real alpha = (m(i, i) - m(j, j)) * 0.5;
+        const Real beta  = -1. * m(i, j);
         const Real gamma = std::abs(alpha) / std::sqrt(alpha * alpha + beta * beta);
         const Real cos_t = std::sqrt(0.5 + gamma * 0.5);
         const Real sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
 
-        Matrix_type P;
-        for(std::size_t i=0; i<N; ++i)
-        {
-            for(std::size_t j=0; j<N; ++j)
-            {
-                P(i, j) = (i == j) ? 1. : 0.;
-            }
-        }
-        P(index.first,  index.first)  =  cos_t;
-        P(index.first,  index.second) =  sin_t;
-        P(index.second, index.first)  = -sin_t;
-        P(index.second, index.second) =  cos_t;
+        Matrix_type P = Matrix_type::identity();
+        P(i, i) =  cos_t;
+        P(i, j) =  sin_t;
+        P(j, i) = -sin_t;
+        P(j, j) =  cos_t;
 
         Matrix_type tmp = transpose(P) * m * P;
         if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>())
         {
             break;
         }
-        tmp(index.first,  index.second) = 0.;
-        tmp(index.second, index.first)  = 0.;
+        tmp(i, j) = 0.;
+        tmp(j, i) = 0.;
 
         m = tmp;
         tmp = Ps * P;
