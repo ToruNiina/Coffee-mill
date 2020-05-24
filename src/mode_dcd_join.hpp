@@ -34,22 +34,21 @@ int mode_dcd_join(int argument_c, const char** argument_v)
 {
     if(argument_c == 1)
     {
-        std::cerr << "error: mill dcd-mode: too few arguments\n";
-        std::cerr << dcd_join_usage() << std::endl;
+        log::error("mill dcd-mode: too few arguments");
+        log::error(dcd_join_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_join_usage() << std::endl;
+        log::info(dcd_join_usage());
         return 0;
     }
     if(fname.size() < 5)
     {
-        std::cerr << "error: mill dcd join: invalid argument : "
-                  << fname << '\n';
-        std::cerr << dcd_join_usage() << std::endl;
+        log::error("mill dcd join: invalid argument : ", fname);
+        log::error(dcd_join_usage());
         return 1;
     }
 
@@ -76,9 +75,8 @@ int mode_dcd_join(int argument_c, const char** argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd join: invalid argument : "
-                  << fname << '\n';
-        std::cerr << dcd_join_usage() << std::endl;
+        log::error("mill dcd join: invalid argument : ", fname);
+        log::error(dcd_join_usage());
         return 1;
     }
 

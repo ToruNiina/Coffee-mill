@@ -14,21 +14,20 @@ int mill_pdb_mutate(int argument_c, char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << "error: mill pdb mutate: too few commands" << std::endl;
+        log::error("mill pdb mutate: too few commands");
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname.substr(fname.size()-5, 5) != ".toml")
     {
-        std::cerr << "error: mill pdb mutate: toml file is required" << std::endl;
+        log::error("mill pdb mutate: toml file is required -> ", fname);
         return 1;
     }
     std::ifstream ifs(fname);
     if(!ifs.good())
     {
-        std::cerr << "error: mill pdb mutate: file cannot open "
-                  << fname << std::endl;
+        log::error("mill pdb mutate: file open error: ", fname);
         return 1;
     }
     const auto data = toml::parse(ifs);
@@ -47,8 +46,7 @@ int mill_pdb_mutate(int argument_c, char **argument_v)
 
         if(seq.size() != chain.size())
         {
-            std::cerr << "error: mill pdb mutate:"
-                      << "length of sequence differs from pdb" << std::endl;
+            log::error("mill pdb mutate: the length of given sequence differ from pdb");
             return 1;
         }
 

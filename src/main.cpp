@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     if(argc_ < 2)
     {
-        std::cerr << mill::main_usage() << std::endl;
+        mill::log::error(mill::main_usage());
         return 1;
     }
 
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
     catch(std::exception& excpt)
     {
         mill::log::error(excpt.what());
-        std::cerr << mill::main_usage() << std::endl;
+        mill::log::error(mill::main_usage());
         return 1;
     }
 }

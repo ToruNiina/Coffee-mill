@@ -26,7 +26,7 @@ inline int mode_pdb_help(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        log::error(mode_pdb_help_usage());
+        log::info(mode_pdb_help_usage());
         return 0;
     }
 

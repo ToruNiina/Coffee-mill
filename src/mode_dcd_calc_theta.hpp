@@ -23,15 +23,15 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
 {
     if(argument_c == 1)
     {
-        std::cerr << "error: mill dcd calc_theta: too few arguments\n";
-        std::cerr << dcd_extract_usage() << std::endl;
+        log::error("mill dcd calc_theta: too few arguments");
+        log::error(dcd_extract_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_calc_theta_usage() << std::endl;
+        log::info(dcd_extract_usage());
         return 0;
     }
 
@@ -47,7 +47,7 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
         std::ofstream ofs(output);
         if(!ofs.good())
         {
-            std::cerr << "file open error: " << output << std::endl;
+            log::error("mill dcd calc_theta: file open error: ", output);
             return 1;
         }
         ofs << "# dot product, theta\n";
@@ -104,9 +104,8 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd calc_theta: unknown file extension: "
-                  << fname << '\n';
-        std::cerr << dcd_calc_theta_usage() << std::endl;
+        log::error("mill dcd calc_theta: unknown file extension: ", fname);
+        log::error(dcd_extract_usage());
         return 1;
     }
 }

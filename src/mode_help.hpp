@@ -31,7 +31,7 @@ inline int mode_help(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        log::error(main_usage());
+        log::info(main_usage());
         return 0;
     }
 

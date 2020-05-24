@@ -21,22 +21,22 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 {
     if(argument_c < 3)
     {
-        mill::log::error("mill calc rmsd: too few arguments.");
-        std::cerr << mode_calc_rmsd_usage() << std::endl;
+        log::error("mill calc rmsd: too few arguments.");
+        log::error(mode_calc_rmsd_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << mode_calc_rmsd_usage() << std::endl;
+        log::info(mode_calc_rmsd_usage());
         return 0;
     }
 
     if(fname.size() < 5)
     {
-        mill::log::error("mill calc rmsd: unknown file format: ", fname);
-        std::cerr << mode_calc_rmsd_usage() << std::endl;
+        log::error("mill calc rmsd: unknown file format: ", fname);
+        log::error(mode_calc_rmsd_usage());
         return 1;
     }
 
@@ -44,7 +44,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
-        mill::log::info("mill calc rmsd: reading ", fname, " as a DCD file...");
+        log::info("mill calc rmsd: reading ", fname, " as a DCD file...");
         DCDReader reader(fname);
         for(const auto& snapshot : reader)
         {
@@ -55,12 +55,12 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
             }
             traj.push_back(std::move(ss));
         }
-        mill::log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
+        log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
                         " snapshots.");
     }
     else if(fname.substr(fname.size() - 4, 4) == ".xyz")
     {
-        mill::log::info("mill calc rmsd: reading ", fname, " as a XYZ file...");
+        log::info("mill calc rmsd: reading ", fname, " as a XYZ file...");
         XYZReader reader(fname);
         for(const auto& snapshot : reader)
         {
@@ -70,16 +70,16 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
             {
                 ss.push_back(particle.position());
             }
-            mill::log::debug("read snapshot ", snapshot.at("comment").as_string());
+            log::debug("read snapshot ", snapshot.at("comment").as_string());
             traj.push_back(std::move(ss));
         }
-        mill::log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
+        log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
                         " snapshots.");
     }
     else
     {
-        mill::log::error("mill calc rmsd: unknown file format: ", fname);
-        std::cerr << mode_calc_rmsd_usage() << std::endl;
+        log::error("mill calc rmsd: unknown file format: ", fname);
+        log::error(mode_calc_rmsd_usage());
         return 1;
     }
 
@@ -88,12 +88,12 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
 
     if(refname.substr(refname.size() - 4, 4) == ".pdb")
     {
-        mill::log::error("mill calc rmsd: unknown file format: ", refname);
+        log::error("mill calc rmsd: unknown file format: ", refname);
         return 1;
     }
     else if(refname.substr(refname.size() - 4, 4) == ".xyz")
     {
-        mill::log::info("mill calc rmsd: reading ", refname, " as a XYZ file...");
+        log::info("mill calc rmsd: reading ", refname, " as a XYZ file...");
         XYZReader reader(refname);
         if(const auto first_frame = reader.read_frame())
         {
@@ -102,13 +102,13 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
                 ref.push_back(particle.position());
             }
         }
-        mill::log::info("mill calc rmsd: done. reference structure has ",
+        log::info("mill calc rmsd: done. reference structure has ",
                         ref.size(), " particles.");
     }
     else
     {
-        mill::log::error("mill calc rmsd: invalid argument: ", refname);
-        std::cerr << mode_calc_rmsd_usage() << std::endl;
+        log::error("mill calc rmsd: invalid argument: ", refname);
+        log::error(mode_calc_rmsd_usage());
         return 1;
     }
 
@@ -122,8 +122,6 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         ofs << i << ' ' << rmsd(ref, bestfit.fit(traj[i])) << '\n';
 //         ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
     }
-    std::cerr << "done.\n";
-
     return 0;
 }
 

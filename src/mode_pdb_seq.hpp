@@ -119,15 +119,15 @@ int mode_pdb_seq(int argument_c, const char **argument_v)
 {
     if(argument_c != 2)
     {
-        std::cerr << "error: mill pdb seq: too few arguments\n";
-        std::cerr << pdb_seq_usage() << std::endl;
+        log::error("error: mill pdb seq: too few arguments");
+        log::error(pdb_seq_usage());
         return 1;
     }
     const std::string pdbname(argument_v[1]);
 
     if(pdbname == "help")
     {
-        std::cerr << pdb_seq_usage() << std::endl;
+        log::info(pdb_seq_usage());
         return 0;
     }
 

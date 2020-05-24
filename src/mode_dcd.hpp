@@ -67,7 +67,7 @@ int mode_dcd(int argument_c, const char **argument_v)
     else
     {
         log::error("mill dcd mode: unknown command: ", command);
-        std::cerr << mode_dcd_help_usage() << std::endl;
+        log::error(mode_dcd_help_usage());
         return 1;
     }
 }

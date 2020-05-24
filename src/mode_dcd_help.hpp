@@ -38,7 +38,7 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << mode_dcd_help_usage() << std::endl;
+        log::info(mode_dcd_help_usage());
         return 0;
     }
 
@@ -76,9 +76,8 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd help: unknown command : "
-                  << command << "\n\n";
-        std::cerr << mode_dcd_help_usage() << std::endl;
+        log::error("mill dcd help: unknown command : ", command);
+        log::error(mode_dcd_help_usage());
         return 1;
     }
 }

@@ -23,29 +23,28 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << "error: mill dcd convert: too few arguments\n";
-        std::cerr << dcd_convert_usage() << std::endl;
+        log::error("mill dcd convert: too few arguments");
+        log::error(dcd_convert_usage());
         return 1;
     }
 
     const std::string format(argument_v[1]);
     if(format == "help")
     {
-        std::cerr << dcd_convert_usage() << std::endl;
+        log::info(dcd_convert_usage());
         return 0;
     }
     else if(format != "pdb")
     {
-        std::cerr << "error: mill dcd convert: unknown format: "
-                  << format << '\n';
-        std::cerr << dcd_convert_usage() << std::endl;
+        log::error("mill dcd convert: unknown format: ", format);
+        log::error(dcd_convert_usage());
         return 1;
     }
 
     if(argument_c < 3)
     {
-        std::cerr << "error: mill dcd convert: too few arguments\n";
-        std::cerr << dcd_convert_usage() << std::endl;
+        log::error("mill dcd convert: too few arguments");
+        log::error(dcd_convert_usage());
         return 1;
     }
     const std::string fname(argument_v[2]);
@@ -63,9 +62,8 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
         std::ofstream ofs(outname);
         if(not ofs.good())
         {
-            std::cerr << "error: mill dcd convert: file open error: "
-                      << outname << '\n';
-            std::cerr << dcd_convert_usage() << std::endl;
+            log::error("mill dcd convert: file open error: ", outname);
+            log::error(dcd_convert_usage());
             return 1;
         }
 
@@ -82,19 +80,18 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             std::ifstream pdbfile(pdbname);
             if(not pdbfile.good())
             {
-                std::cerr << "error: mill dcd convert: file open error: "
-                          << pdbname << '\n';
-                std::cerr << dcd_convert_usage() << std::endl;
+                log::error("mill dcd convert: file open error: ", pdbname);
+                log::error(dcd_convert_usage());
                 return 1;
             }
             atoms = pdbreader.read(pdbname);
             if(atoms.size() != static_cast<std::size_t>(num_particles))
             {
-                std::cerr << "error: mill dcd convert: "
-                          << "pdb file may have different structure: "
-                          << "num particle in dcd = " << num_particles
-                          << "num particle in pdb = " << atoms.size() << '\n';
-                std::cerr << dcd_convert_usage() << std::endl;
+                log::error("mill dcd convert: file open error: "
+                           "pdb file may have different structure: ",
+                           "num particle in dcd = ", num_particles,
+                           "num particle in pdb = ", atoms.size());
+                log::error(dcd_convert_usage());
                 return 1;
             }
         }
@@ -128,9 +125,8 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd convert: unknown file extension"
-                  << fname << '\n';
-        std::cerr << dcd_convert_usage() << std::endl;
+        log::error("error: mill dcd convert: unknown file extension: ", fname);
+        log::error(dcd_convert_usage());
         return 1;
     }
 }

@@ -22,7 +22,7 @@ inline int mode_calc_help(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << mode_calc_help_usage() << std::endl;
+        log::info(mode_calc_help_usage());
         return 0;
     }
 
@@ -35,14 +35,13 @@ inline int mode_calc_help(int argument_c, const char **argument_v)
     }
     else if(command == "help")
     {
-        std::cerr << mode_calc_help_usage();
+        log::info(mode_calc_help_usage());
         return 0;
     }
     else
     {
-        std::cerr << "error: mill calc help: unknown command : "
-                  << command << "\n\n";
-        std::cerr << mode_calc_help_usage() << std::endl;
+        log::error("mill calc help: unknown command : ", command);
+        log::error(mode_calc_help_usage());
         return 1;
     }
 }

@@ -30,7 +30,7 @@ int mode_calc(int argument_c, const char **argument_v)
     else
     {
         log::error("mill calc mode: unknown command: ", command);
-        std::cerr << mode_calc_help_usage() << std::endl;
+        log::error(mode_calc_help_usage());
         return 1;
     }
 }

@@ -29,22 +29,21 @@ int mode_dcd_split(int argument_c, const char** argument_v)
 {
     if(argument_c == 1)
     {
-        std::cerr << "error: mill dcd split: too few arguments\n";
-        std::cerr << dcd_split_usage() << std::endl;
+        log::error("error: mill dcd split: too few arguments");
+        log::error(dcd_split_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_split_usage() << std::endl;
+        log::info(dcd_split_usage());
         return 0;
     }
     if(fname.size() < 5)
     {
-        std::cerr << "error: mill dcd split: invalid argument : "
-                  << fname << '\n';
-        std::cerr << dcd_split_usage() << std::endl;
+        log::error("mill dcd split: invalid argument : ", fname);
+        log::error(dcd_split_usage());
         return 1;
     }
 
@@ -53,8 +52,8 @@ int mode_dcd_split(int argument_c, const char** argument_v)
         //! argv = {"split", "traj.dcd" 100}
         if(argument_c < 3)
         {
-            std::cerr << "error: mill dcd split: too few arguments\n";
-            std::cerr << dcd_split_usage() << std::endl;
+            log::error("mill dcd split: too few arguments");
+            log::error(dcd_split_usage());
             return 0;
         }
 
@@ -65,9 +64,9 @@ int mode_dcd_split(int argument_c, const char** argument_v)
         }
         catch(std::exception& excpt)
         {
-            std::cerr << "error: mill dcd-mode: invalid argument: ";
-            std::cerr << argument_v[2] << " cannot parse as int.\n";
-            std::cerr << dcd_split_usage() << std::endl;
+            log::error("mill dcd split: invalid argument: ", argument_v[2],
+                       " is not an integer.");
+            log::error(dcd_split_usage());
             return 1;
         }
 
@@ -111,9 +110,8 @@ int mode_dcd_split(int argument_c, const char** argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd split: invalid argument : "
-                  << fname << '\n';
-        std::cerr << dcd_split_usage() << std::endl;
+        log::error("mill dcd split: invalid argument : ", fname);
+        log::error(dcd_split_usage());
         return 1;
     }
 }

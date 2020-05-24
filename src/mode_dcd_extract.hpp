@@ -22,15 +22,15 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
 {
     if(argument_c == 1)
     {
-        std::cerr << "error: mill dcd-mode: too few arguments\n";
-        std::cerr << dcd_extract_usage() << std::endl;
+        log::error("mill dcd-mode: too few arguments");
+        log::error(dcd_extract_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_extract_usage() << std::endl;
+        log::info(dcd_extract_usage());
         return 0;
     }
 
@@ -38,9 +38,8 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
     {
         if(argument_c < 4)
         {
-            std::cerr << "error: mill dcd extract: too few arguments"
-                      << std::endl;
-            std::cerr << dcd_extract_usage() << std::endl;
+            log::error("mill dcd extract: too few arguments");
+            log::error(dcd_extract_usage());
             return 1;
         }
         const std::string dcdname = fname;
@@ -53,11 +52,9 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
         }
         catch(std::exception&)
         {
-            std::cerr << "error: mill dcd extract: "
-                         "string -> integer parsing failed\n";
-            std::cerr << argument_v[2] << std::endl;
-            std::cerr << argument_v[3] << std::endl;
-            std::cerr << dcd_extract_usage() << std::endl;
+            log::error("error: mill dcd extract: integer parsing failed ",
+                       argument_v[2], ", ", argument_v[3]);
+            log::error(dcd_extract_usage());
             return 1;
         }
         const std::string outname =
@@ -67,9 +64,8 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
 
         if(beg > end)
         {
-            std::cerr << "error: mill dcd extract: begin(" << beg
-                      << ") > end (" << end << ")" << std::endl;
-            std::cerr << dcd_extract_usage() << std::endl;
+            log::error("mill dcd extract: begin(", beg, ") > end (", end, ")");
+            log::error(dcd_extract_usage());
             return 1;
         }
         const std::size_t num = end - beg + 1;
@@ -95,9 +91,8 @@ int mode_dcd_extract(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd extract: unknown file extension"
-                  << fname << '\n';
-        std::cerr << dcd_extract_usage() << std::endl;
+        log::error("mill dcd extract: unknown file extension: ", fname);
+        log::error(dcd_extract_usage());
         return 1;
     }
 }

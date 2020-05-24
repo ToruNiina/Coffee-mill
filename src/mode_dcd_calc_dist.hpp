@@ -18,15 +18,15 @@ int mode_dcd_calc_dist(int argument_c, const char **argument_v)
 {
     if(argument_c == 1)
     {
-        std::cerr << "error: mill dcd calc_dist: too few arguments\n";
-        std::cerr << dcd_calc_dist_usage() << std::endl;
+        log::error("mill dcd calc_dist: too few arguments");
+        log::error(dcd_calc_dist_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_calc_dist_usage() << std::endl;
+        log::info(dcd_calc_dist_usage());
         return 0;
     }
 
@@ -41,7 +41,7 @@ int mode_dcd_calc_dist(int argument_c, const char **argument_v)
         std::ofstream ofs(output);
         if(!ofs.good())
         {
-            std::cerr << "file open error: " << output << std::endl;
+            log::error("file open error: ", output);
             return 1;
         }
         ofs << "# distance\n";
@@ -57,9 +57,8 @@ int mode_dcd_calc_dist(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd calc_dist: unknown file extension: "
-                  << fname << '\n';
-        std::cerr << dcd_calc_dist_usage() << std::endl;
+        log::error("mill dcd calc_dist: unknown file extension: ", fname);
+        log::error(dcd_calc_dist_usage());
         return 1;
     }
 }

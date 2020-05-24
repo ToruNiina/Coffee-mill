@@ -25,7 +25,7 @@ int mode_ninfo(int argument_c, const char** argument_v)
     else
     {
         log::error("mill ninfo mode: unknown command", command);
-        std::cerr << mode_ninfo_help_usage() << std::endl;
+        log::error(mode_ninfo_help_usage());
         return 1;
     }
 }

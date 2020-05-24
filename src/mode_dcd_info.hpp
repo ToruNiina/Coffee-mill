@@ -18,15 +18,15 @@ int mode_dcd_info(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {
-        std::cerr << "error: mill dcd info: too few arguments\n";
-        std::cerr << dcd_info_usage() << std::endl;
+        log::error("mill dcd info: too few arguments");
+        log::error(dcd_info_usage());
         return 1;
     }
 
     const std::string fname(argument_v[1]);
     if(fname == "help")
     {
-        std::cerr << dcd_info_usage() << std::endl;
+        log::info(dcd_info_usage());
         return 0;
     }
 
@@ -47,9 +47,8 @@ int mode_dcd_info(int argument_c, const char **argument_v)
     }
     else
     {
-        std::cerr << "error: mill dcd info: unknown file extension"
-                  << fname << '\n';
-        std::cerr << dcd_info_usage() << std::endl;
+        log::error("mill dcd info: unknown file extension ", fname);
+        log::error(dcd_info_usage());
         return 1;
     }
 }
