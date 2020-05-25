@@ -26,10 +26,10 @@ class XYZWriter final : public WriterBase
 {
   public:
     using base_type                = WriterBase;
-    using trajectory_type          = using base_type::trajectory_type;
-    using snapshot_type            = using base_type::snapshot_type;
-    using particle_type            = using base_type::particle_type;
-    using attribute_container_type = using base_type::attribute_container_type;
+    using trajectory_type          = base_type::trajectory_type;
+    using snapshot_type            = base_type::snapshot_type;
+    using particle_type            = base_type::particle_type;
+    using attribute_container_type = base_type::attribute_container_type;
 
   public:
 
