@@ -3,7 +3,7 @@
 #include <type_traits>
 #include <utility>
 #include <memory>
-#include <iosfwd>
+#include <ostream>
 
 namespace mill
 {
