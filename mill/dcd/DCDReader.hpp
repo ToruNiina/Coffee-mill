@@ -106,6 +106,8 @@ class DCDReader final : public DeferedReaderBase
         }
         this->current_ += 1;
         log::debug("mill::DCDReader: done.");
+
+        this->dcd_.peek(); // to check currently we are in EOF.
         return frame;
     }
     std::optional<snapshot_type> read_frame(const std::size_t idx) override
@@ -125,6 +127,7 @@ class DCDReader final : public DeferedReaderBase
 
         const auto frame = this->read_frame();
         log::debug("mill::DCDReader: done.");
+        this->dcd_.peek(); // to check currently we are in EOF.
         return frame;
     }
 
@@ -132,7 +135,9 @@ class DCDReader final : public DeferedReaderBase
     {
         log::debug("mill::DCDReader: rewinding the file");
         current_ = 0;
+        dcd_.clear(); // clear failbit flags like the EOF flag
         dcd_.seekg(0, std::ios_base::beg);
+        dcd_.peek(); // check whether we are at the EOF
         log::debug("mill::DCDReader: done.");
         return;
     }
