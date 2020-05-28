@@ -127,7 +127,9 @@ class XYZReader final : public DeferedReaderBase
     {
         log::debug("mill::XYZReader: rewinding the file");
         current_ = 0;
+        xyz_.clear(); // clear failbit flags like the EOF flag
         xyz_.seekg(0, std::ios_base::beg);
+        xyz_.peek();
         log::debug("mill::XYZReader: done.");
     }
 
