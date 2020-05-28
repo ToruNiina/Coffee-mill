@@ -82,13 +82,16 @@ class DCDReader final : public DeferedReaderBase
         log::debug("mill::DCDReader: reading a frame...");
         if(this->num_particles_ == 0)
         {
+            log::debug("mill::DCDReader: number of particles is 0. reading header.");
             this->read_header();
         }
 
         if(this->is_eof())
         {
+            log::debug("mill::DCDReader: we are already at the EOF. done.");
             return std::nullopt;
         }
+
         snapshot_type frame(this->num_particles_);
         frame.boundary() = read_unit_cell();
 
