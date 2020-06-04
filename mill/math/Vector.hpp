@@ -52,8 +52,7 @@ length(const coordT& lhs)
 }
 
 template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-regularize(const coordT& v)
+inline coordT regularize(const coordT& v)
 {
     return v / length(v);
 }
