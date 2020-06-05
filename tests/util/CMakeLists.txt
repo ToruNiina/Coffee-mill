@@ -1,9 +1,10 @@
 set(TEST_NAMES
     test_string
     test_flat_map
+    test_range
     )
 
-add_definitions("-O3 -std=c++11")
+add_definitions("-O3 -std=c++17")
 
 foreach(TEST_NAME ${TEST_NAMES})
     add_executable(${TEST_NAME} ${TEST_NAME}.cpp)
