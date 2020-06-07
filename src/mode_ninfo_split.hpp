@@ -16,8 +16,6 @@ inline const char* ninfo_split_usage() noexcept
 template<typename vectorT>
 int mode_ninfo_split(int argument_c, const char** argument_v)
 {
-    using real_type = typename scalar_type_of<vectorT>::type;
-
     if(argument_c == 1)
     {
         log::error("mill ninfo split: too few arguments");
@@ -42,10 +40,10 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
     if(fname.substr(fname.size() - 6, 6) == ".ninfo")
     {
         //! argv = {"split", "traj.ninfo"}
-        NinfoReader<real_type> reader;
+        NinfoReader reader;
         const auto all_in_one = reader.read(fname);
 
-        std::map<std::pair<std::size_t, std::size_t>, NinfoData<real_type>> splitted;
+        std::map<std::pair<std::size_t, std::size_t>, NinfoData> splitted;
         for(const auto& block : all_in_one)
         {
             const NinfoKind kind = block.first;
@@ -58,7 +56,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                 {
                     log::debug("mill ninfo split: found ninfo block "
                             "between ", units.first, " and ", units.second);
-                    splitted.emplace(units, NinfoData<real_type>());
+                    splitted.emplace(units, NinfoData());
                 }
 
                 // search this kind of native information is already found or not.
@@ -68,7 +66,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
                             " between ", units.first, " and ", units.second);
 
                     splitted.at(units).emplace(kind,
-                            std::vector<std::shared_ptr<NinfoBase<real_type>>>{});
+                            std::vector<std::shared_ptr<NinfoBase>>{});
                 }
 
                 // insert data to return value.
@@ -77,7 +75,7 @@ int mode_ninfo_split(int argument_c, const char** argument_v)
         }
         log::debug("mill ninfo split: blocks are splitted into ",
                 splitted.size(), " ninfoes. writing one-by-one...");
-        NinfoWriter<real_type> writer;
+        NinfoWriter writer;
         const std::string file_prefix = fname.substr(0, fname.size() - 6);
         for(const auto& one_by_one : splitted)
         {
