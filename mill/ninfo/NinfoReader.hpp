@@ -19,12 +19,11 @@
 namespace mill
 {
 
-template<typename realT>
 class NinfoReader
 {
   public:
-    using real_type = realT;
-    using data_type = NinfoData<real_type>;
+    using real_type = double;
+    using data_type = NinfoData;
 
   public:
 
@@ -38,9 +37,7 @@ class NinfoReader
     void read_line(data_type& data, const std::string& line) const;
 };
 
-template<typename realT>
-NinfoData<realT>
-NinfoReader<realT>::read(const std::string& filename) const
+inline NinfoData NinfoReader::read(const std::string& filename) const
 {
     std::ifstream filestream(filename);
     if(not filestream.good()) {throw std::runtime_error("file open error");}
@@ -49,11 +46,9 @@ NinfoReader<realT>::read(const std::string& filename) const
     return retval;
 }
 
-template<typename realT>
-NinfoData<realT>
-NinfoReader<realT>::read(std::istream& is) const
+inline NinfoData NinfoReader::read(std::istream& is) const
 {
-    NinfoData<realT> data;
+    NinfoData data;
     std::size_t lineindex = 0;
     while(not is.eof())
     {
@@ -80,9 +75,7 @@ NinfoReader<realT>::read(std::istream& is) const
     return data;
 }
 
-template<typename realT>
-void
-NinfoReader<realT>::read_line(data_type& data, const std::string& line) const
+inline void NinfoReader::read_line(data_type& data, const std::string& line) const
 {
     std::istringstream iss(line);
     std::string prefix;
@@ -92,7 +85,7 @@ NinfoReader<realT>::read_line(data_type& data, const std::string& line) const
     iss.seekg(line_head);
 
     NinfoKind kind;
-    std::shared_ptr<NinfoBase<realT>> ninfo;
+    std::shared_ptr<NinfoBase> ninfo;
 // switch with prefix: set kind and ninfo {{{
     if(prefix == "bond")
     {
@@ -165,7 +158,7 @@ NinfoReader<realT>::read_line(data_type& data, const std::string& line) const
 
     if(data.count(kind) == 0) // if data do not have this kind of ninfo yet
     {
-        std::vector<std::shared_ptr<NinfoBase<realT>>> block{ninfo};
+        std::vector<std::shared_ptr<NinfoBase>> block{ninfo};
         data.emplace(kind, block);
     }
     else

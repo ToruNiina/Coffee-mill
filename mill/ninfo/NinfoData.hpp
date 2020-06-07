@@ -6,7 +6,7 @@
   NinfoBlock(vector of ninfobase*).
   this contains one Block for each NinfoKind. normally, this has all the
   information that one ninfo file contains.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-09 18:00
   @copyright Toru Niina 2016 on MIT License
@@ -26,12 +26,11 @@ namespace mill
  *  NinfoData is a map of NinfoKind and std::vector<NinfoElement>.
  *  normally, this class can contain all the information of one ninfo file.
  */
-template<typename realT>
 class NinfoData
 {
   public:
-    using real_type      = realT;
-    using ninfobase_type = NinfoBase<real_type>;
+    using real_type      = double;
+    using ninfobase_type = NinfoBase;
     using key_type       = NinfoKind;
     using value_type     = std::vector<std::shared_ptr<ninfobase_type>>;
     using container_type = std::map<key_type, value_type>;
@@ -74,17 +73,16 @@ class NinfoData
 
   public:
 
-    constexpr static const char* const bond      = "native bond length";
-    constexpr static const char* const angl      = "native bond angles";
-    constexpr static const char* const dihd      = "native dihedral angles";
-    constexpr static const char* const aicg13    = "1-3 contacts with L_AICG2 or L_AICG2_PLUS";
-    constexpr static const char* const aicg14    = "1-4 contacts with L_AICG2";
-    constexpr static const char* const aicgdih   = "1-4 contacts with L_AICG2_PLUS";
-    constexpr static const char* const contact   = "native contact";
-    constexpr static const char* const basepair  = "native basepair";
-    constexpr static const char* const basestack = "native basestack";
+    inline constexpr static const char* const bond      = "native bond length";
+    inline constexpr static const char* const angl      = "native bond angles";
+    inline constexpr static const char* const dihd      = "native dihedral angles";
+    inline constexpr static const char* const aicg13    = "1-3 contacts with L_AICG2 or L_AICG2_PLUS";
+    inline constexpr static const char* const aicg14    = "1-4 contacts with L_AICG2";
+    inline constexpr static const char* const aicgdih   = "1-4 contacts with L_AICG2_PLUS";
+    inline constexpr static const char* const contact   = "native contact";
+    inline constexpr static const char* const basepair  = "native basepair";
+    inline constexpr static const char* const basestack = "native basestack";
 };
 
 }//mill
-
 #endif /* COFFEE_MILL_NINFO_DATA */

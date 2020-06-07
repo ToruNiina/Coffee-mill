@@ -24,14 +24,13 @@
 namespace mill
 {
 
-template<typename realT>
 class NinfoBase
 {
   public:
 
     using size_type  = std::size_t;
     using index_type = size_type;
-    using real_type  = realT;
+    using real_type  = double;
 
   public:
 
@@ -97,11 +96,11 @@ class NinfoBase
  *  @tparam N_bodies the number of bodies corresponding to the interaction.
  *  @tparam N_coefs  the number of coefficients corresponding to the interaction.
  */
-template<std::size_t N_bodies, std::size_t N_coefs, typename realT = double>
-class NinfoElement : public NinfoBase<realT>
+template<std::size_t N_bodies, std::size_t N_coefs>
+class NinfoElement : public NinfoBase
 {
   public:
-    using base_type    = NinfoBase<realT>;
+    using base_type    = NinfoBase;
     using size_type    = typename base_type::size_type;
     using index_type   = typename base_type::index_type;
     using real_type    = typename base_type::real_type;
@@ -212,15 +211,15 @@ operator<<(std::basic_ostream<charT, traitT>& os, const NinfoKind kd)
 }
 
 
-using NinfoBond      = NinfoElement<2, 4, double>;
-using NinfoAngl      = NinfoElement<3, 4, double>;
-using NinfoAicg13    = NinfoElement<3, 5, double>;
-using NinfoDihd      = NinfoElement<4, 5, double>;
-using NinfoAicg14    = NinfoElement<4, 5, double>;
-using NinfoAicgdih   = NinfoElement<4, 5, double>;
-using NinfoContact   = NinfoElement<2, 4, double>;
-using NinfoBasePair  = NinfoElement<2, 4, double>;
-using NinfoBaseStack = NinfoElement<2, 4, double>;
+using NinfoBond      = NinfoElement<2, 4>;
+using NinfoAngl      = NinfoElement<3, 4>;
+using NinfoAicg13    = NinfoElement<3, 5>;
+using NinfoDihd      = NinfoElement<4, 5>;
+using NinfoAicg14    = NinfoElement<4, 5>;
+using NinfoAicgdih   = NinfoElement<4, 5>;
+using NinfoContact   = NinfoElement<2, 4>;
+using NinfoBasePair  = NinfoElement<2, 4>;
+using NinfoBaseStack = NinfoElement<2, 4>;
 
 //! output NinfoElement.
 /*!
@@ -229,9 +228,9 @@ using NinfoBaseStack = NinfoElement<2, 4, double>;
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
  */
-template<std::size_t N_bodies, std::size_t N_coefs, typename real_type>
-std::ostream& operator<<(std::ostream& os,
-        NinfoElement<N_bodies, N_coefs, real_type> const& ninfo)
+template<std::size_t N_bodies, std::size_t N_coefs>
+std::ostream&
+operator<<(std::ostream& os, const NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     os << ninfo.header();
     os << std::setw(7) << std::right << ninfo.id();
@@ -268,10 +267,9 @@ std::ostream& operator<<(std::ostream& os,
  *  @tparam N_coefs  template argument of NinfoElement.
  *  @sa     NinfoElement
  */
-template<std::size_t N_bodies, std::size_t N_coefs, typename real_type>
-std::basic_istream<char>&
-operator>>(std::basic_istream<char>& is,
-           NinfoElement<N_bodies, N_coefs, real_type>& ninfo)
+template<std::size_t N_bodies, std::size_t N_coefs>
+std::istream&
+operator>>(std::istream& is, NinfoElement<N_bodies, N_coefs>& ninfo)
 {
     std::string line;
     std::getline(is, line);

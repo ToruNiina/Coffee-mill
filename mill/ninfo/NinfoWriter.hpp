@@ -3,7 +3,7 @@
   @brief definition of NinfoWriter class.
 
   NinfoWriter writes NinfoData into a file.
-  
+
   @author Toru Niina (niina.toru.68u@gmail.com)
   @date 2016-06-10 10:00
   @copyright Toru Niina 2016 on MIT License
@@ -16,12 +16,11 @@
 namespace mill
 {
 
-template<typename realT>
 class NinfoWriter
 {
   public:
-    using real_type = realT;
-    using data_type = NinfoData<real_type>;
+    using real_type = double;
+    using data_type = NinfoData;
     using block_type = typename data_type::value_type;
 
   public:
@@ -42,8 +41,7 @@ class NinfoWriter
     }
 };
 
-template<typename realT>
-void NinfoWriter<realT>::write(
+inline void NinfoWriter::write(
         const data_type& data, const std::string& filename) const
 {
     std::ofstream file_stream(filename);
@@ -56,8 +54,7 @@ void NinfoWriter<realT>::write(
     return;
 }
 
-template<typename realT>
-void NinfoWriter<realT>::write(
+inline void NinfoWriter::write(
         const data_type& data, std::ostream& stream) const
 {
     for(auto iter = data.cbegin(); iter != data.cend(); ++iter)
@@ -67,55 +64,55 @@ void NinfoWriter<realT>::write(
         {
             case NinfoKind::Bond:
             {
-                stream << NinfoData<realT>::bond << std::endl;
+                stream << NinfoData::bond << std::endl;
                 this->write_block<NinfoBond>(stream, iter->second);
                 break;
             }
             case NinfoKind::Angl:
             {
-                stream << NinfoData<realT>::angl << std::endl;
+                stream << NinfoData::angl << std::endl;
                 this->write_block<NinfoAngl>(stream, iter->second);
                 break;
             }
             case NinfoKind::Dihd:
             {
-                stream << NinfoData<realT>::dihd << std::endl;
+                stream << NinfoData::dihd << std::endl;
                 this->write_block<NinfoDihd>(stream, iter->second);
                 break;
             }
             case NinfoKind::Aicg13:
             {
-                stream << NinfoData<realT>::aicg13 << std::endl;
+                stream << NinfoData::aicg13 << std::endl;
                 this->write_block<NinfoAicg13>(stream, iter->second);
                 break;
             }
             case NinfoKind::Aicg14:
             {
-                stream << NinfoData<realT>::aicg14 << std::endl;
+                stream << NinfoData::aicg14 << std::endl;
                 this->write_block<NinfoAicg14>(stream, iter->second);
                 break;
             }
             case NinfoKind::Aicgdih:
             {
-                stream << NinfoData<realT>::aicgdih << std::endl;
+                stream << NinfoData::aicgdih << std::endl;
                 this->write_block<NinfoAicgdih>(stream, iter->second);
                 break;
             }
             case NinfoKind::Contact:
             {
-                stream << NinfoData<realT>::contact << std::endl;
+                stream << NinfoData::contact << std::endl;
                 this->write_block<NinfoContact>(stream, iter->second);
                 break;
             }
             case NinfoKind::BasePair:
             {
-                stream << NinfoData<realT>::basepair << std::endl;
+                stream << NinfoData::basepair << std::endl;
                 this->write_block<NinfoBasePair>(stream, iter->second);
                 break;
             }
             case NinfoKind::BaseStack:
             {
-                stream << NinfoData<realT>::basestack << std::endl;
+                stream << NinfoData::basestack << std::endl;
                 this->write_block<NinfoBaseStack>(stream, iter->second);
                 break;
             }
