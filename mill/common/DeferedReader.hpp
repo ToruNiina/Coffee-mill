@@ -30,8 +30,8 @@ class DeferedReaderBase
     virtual std::optional<snapshot_type> read_frame()                      = 0;
     virtual std::optional<snapshot_type> read_frame(const std::size_t idx) = 0;
 
-    ReaderIterator         begin();
-    ReaderIteratorSentinel end();
+    ReaderIterator         begin(); // defined later
+    ReaderIteratorSentinel end();   // ditto
 
     virtual void             rewind()    = 0;
     virtual bool             is_eof()    const noexcept = 0;
