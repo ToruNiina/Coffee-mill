@@ -80,5 +80,74 @@ inline DeferedReader read(std::string_view filename)
     }
 }
 
+class TrajWriter
+{
+  public:
+    using trajectory_type          = Trajectory;
+    using snapshot_type            = Snapshot;
+    using particle_type            = Particle;
+    using attribute_container_type = Trajectory::attribute_container_type;
+    using boundary_type            = Snapshot::boundary_type;
+    using vector_type              = Particle::vector_type;
+
+  public:
+
+    explicit TrajWriter(std::unique_ptr<WriterBase> writer)
+        : writer_(std::move(writer))
+    {}
+    ~TrajWriter() override = default;
+    TrajWriter(const Writer&)            = delete;
+    TrajWriter& operator=(const Writer&) = delete;
+    TrajWriter(Writer&&)                 = default;
+    TrajWriter& operator=(Writer&&)      = default;
+
+    void write_header(const attribute_container_type& header)
+    {
+        return writer_->write_header(header);
+    }
+    void write(const trajectory_type& traj)
+    {
+        return writer_->write(traj);
+    }
+    void write_frame(const snapshot_type& frame)
+    {
+        return writer_->write_frame(frame);
+    }
+
+    std::size_t      size()      const noexcept {return writer_->size();}
+    std::string_view file_name() const noexcept {return writer_->file_name();}
+
+  private:
+
+    std::unique_ptr<WriterBase> writer_;
+};
+
+inline TrajWriter writer(std::string_view filename)
+{
+    const auto dot = filename.rfind('.');
+    const auto ext = filename.substr(dot, filename.size() - dot);
+
+    if(ext == ".dcd")
+    {
+        return TrajWriter(std::make_unique<DCDWriter>(filename));
+    }
+    else if(ext == ".trr")
+    {
+        return TrajWriter(std::make_unique<TRRWriter>(filename));
+    }
+    else if(ext == ".xyz")
+    {
+        return TrajWriter(std::make_unique<XYZWriter>(filename));
+    }
+    else
+    {
+        log::error("mill::writer(file): unknown file extension \"", ext, "\".");
+        log::error("mill::writer(file): supported formats are \".dcd\", "
+                   "\".trr\", and \".xyz\".");
+        throw std::runtime_error("unknown file.");
+    }
+}
+
+
 } // mill
 #endif// COFFEE_MILL_TRAJ_HPP
