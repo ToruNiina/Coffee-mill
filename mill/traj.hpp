@@ -27,7 +27,7 @@ class DeferedReader
     explicit DeferedReader(std::unique_ptr<DeferedReaderBase> reader)
         : reader_(std::move(reader))
     {}
-    ~DeferedReader() = default;
+    ~DeferedReader() override = default;
     DeferedReader(const DeferedReader&)            = delete;
     DeferedReader& operator=(const DeferedReader&) = delete;
     DeferedReader(DeferedReader&&)                 = default;
