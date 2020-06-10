@@ -3,6 +3,7 @@
 #include <mill/dcd/DCDReader.hpp>
 #include <mill/pdb/PDBReader.hpp>
 #include <mill/pdb/PDBWriter.hpp>
+#include <mill/util/file_extension.hpp>
 #include <toml/toml.hpp>
 
 namespace mill
@@ -49,7 +50,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
     }
     const std::string fname(argument_v[2]);
 
-    if(fname.substr(fname.size()-4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
         std::string pdbname;
         if(argument_c >= 4)
