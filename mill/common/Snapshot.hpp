@@ -2,7 +2,6 @@
 #define COFFEE_MILL_COMMON_SNAPSHOT_HPP
 #include <mill/common/Particle.hpp>
 #include <mill/common/BoundaryCondition.hpp>
-#include <mill/util/scalar_type_of.hpp>
 #include <vector>
 #include <memory>
 

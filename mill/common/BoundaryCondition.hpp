@@ -1,7 +1,6 @@
 #ifndef COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP
 #define COFFEE_MILL_COMMON_BOUNDARY_CONDITION_HPP
 #include <mill/math/Vector.hpp>
-#include <mill/util/scalar_type_of.hpp>
 #include <limits>
 #include <variant>
 
