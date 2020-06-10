@@ -10,6 +10,8 @@
 #include "xyz/XYZReader.hpp"
 #include "xyz/XYZWriter.hpp"
 
+#include "util/file_extension.hpp"
+
 namespace mill
 {
 
@@ -56,9 +58,7 @@ class DeferedReader
 
 inline DeferedReader read(std::string_view filename)
 {
-    const auto dot = filename.rfind('.');
-    const auto ext = filename.substr(dot, filename.size() - dot);
-
+    const auto ext = extension_of(filename);
     if(ext == ".dcd")
     {
         return DeferedReader(std::make_unique<DCDReader>(filename));
@@ -124,8 +124,7 @@ class TrajWriter
 
 inline TrajWriter writer(std::string_view filename)
 {
-    const auto dot = filename.rfind('.');
-    const auto ext = filename.substr(dot, filename.size() - dot);
+    const auto ext = extension_of(filename);
 
     if(ext == ".dcd")
     {
