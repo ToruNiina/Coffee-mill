@@ -2,6 +2,7 @@ set(TEST_NAMES
     test_string
     test_flat_map
     test_range
+    test_file_extension
     )
 
 add_definitions("-O3 -std=c++17")
