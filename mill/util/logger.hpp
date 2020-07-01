@@ -34,6 +34,18 @@ struct Logger
 };
 inline Logger logger;
 
+// fatal will never be filtered.
+template<typename ... Ts>
+[[noreturn]] void fatal(Ts&& ... args)
+{
+    if(isatty(std::cerr)) {std::cerr << "\x1b[31mFATAL:\x1b[0m ";}
+    else                  {std::cerr <<         "FATAL: ";}
+    (std::cerr << ... << args);
+    std::cerr << std::endl;
+
+    std::terminate(); // stop the execution because it is a fatal error.
+}
+
 template<typename ... Ts>
 void error(Ts&& ... args)
 {
