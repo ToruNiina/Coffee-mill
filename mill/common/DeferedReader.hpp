@@ -63,10 +63,8 @@ class ReaderIterator
     {
         if(!current_)
         {
-            using namespace std::literals::string_literals;
-            throw std::out_of_range("ReaderIterator: "s +
-                    std::string(reader_->file_name()) +
-                    " does not have any more snapshot"s);
+            log::fatal("ReaderIterator: ", reader_->file_name(),
+                       " does not have any more snapshot");
         }
         return *current_;
     }
@@ -74,10 +72,8 @@ class ReaderIterator
     {
         if(!current_)
         {
-            using namespace std::literals::string_literals;
-            throw std::out_of_range("ReaderIterator: "s +
-                    std::string(reader_->file_name()) +
-                    " does not have any more snapshot"s);
+            log::fatal("ReaderIterator: ", reader_->file_name(),
+                       " does not have any more snapshot");
         }
         return std::addressof(*current_);
     }

@@ -41,7 +41,7 @@ class DCDReader final : public DeferedReaderBase
     {
         if(!dcd_.good())
         {
-            throw std::runtime_error("DCDReader: file open error: " + fname);
+            log::fatal("DCDReader: file open error: ", fname);
         }
 
         dcd_.seekg(0, dcd_.end);

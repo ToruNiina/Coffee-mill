@@ -35,7 +35,7 @@ class XYZReader final : public DeferedReaderBase
     {
         if(!xyz_.good())
         {
-            throw std::runtime_error("XYZReader: file open error: " + fname);
+            log::fatal("XYZReader: file open error: ", fname);
         }
     }
     ~XYZReader() override = default;

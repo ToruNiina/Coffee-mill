@@ -28,7 +28,7 @@ class TRRWriter final : public WriterBase
     {
         if(!trr_.good())
         {
-            throw std::runtime_error("TRRWriter: file open error: " + fname);
+            log::fatal("TRRWriter: file open error: ", fname);
         }
     }
     ~TRRWriter() override = default;

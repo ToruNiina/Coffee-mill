@@ -38,7 +38,7 @@ class XYZWriter final : public WriterBase
     {
         if(!xyz_.good())
         {
-            throw std::runtime_error("XYZWriter: file open error: " + fname);
+            log::fatal("XYZWriter: file open error: ", fname);
         }
     }
     ~XYZWriter() override = default;

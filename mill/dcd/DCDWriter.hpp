@@ -41,7 +41,7 @@ class DCDWriter final : public WriterBase
     {
         if(!dcd_.good())
         {
-            throw std::runtime_error("DCDWriter: file open error: " + fname);
+            log::fatal("DCDWriter: file open error: ", fname);
         }
     }
     ~DCDWriter() override = default;
