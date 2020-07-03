@@ -152,10 +152,9 @@ class DCDReader final : public DeferedReaderBase
         const int size_of_block = read_binary_as<int>(dcd_);
         if(size_of_block / sizeof(float) != num_particles_)
         {
-            log::error("invalid coordinate block!");
-            log::error("size of coordinate block is ", size_of_block);
-            log::error("but the number of particle is  ", num_particles_);
-            throw std::runtime_error("dcd coordinate block size invalid");
+            log::fatal("invalid coordinate block!\n",
+                       "size of coordinate block is ", size_of_block, '\n',
+                       "but the number of particle is  ", num_particles_);
         }
 
         std::vector<float> coordinate(num_particles_, 0.0f);
@@ -167,10 +166,9 @@ class DCDReader final : public DeferedReaderBase
         const int size_of_block_f = read_binary_as<int>(dcd_);
         if(size_of_block != size_of_block_f)
         {
-            log::error("invalid coordinate block delimiter");
-            log::error("the size of the block is not ", size_of_block_f,
+            log::fatal("invalid coordinate block delimiter\n",
+                       "the size of the block is not ", size_of_block_f,
                        " but ", size_of_block);
-            throw std::runtime_error("invalid delimiter in a coordinate block");
         }
         return coordinate;
     }
@@ -216,10 +214,9 @@ class DCDReader final : public DeferedReaderBase
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 1 is broken.");
-            log::error("first block size (", block_size, ") != last (",
+            log::fatal("mill::DCDReader: header block 1 is broken.\n",
+                       "first block size (", block_size, ") != last (",
                        block_size_check, ").");
-            throw std::runtime_error("DCDReader: header block 1 is broken");
         }
         this->header1_size_ = block_size + sizeof(std::int32_t) * 2;
         return;
@@ -231,10 +228,9 @@ class DCDReader final : public DeferedReaderBase
         const auto lines = read_binary_as<std::int32_t>(dcd_);
         if((80 * lines + sizeof(std::int32_t)) != static_cast<std::size_t>(block_size))
         {
-            log::error("mill::DCDReader: header block 2 is broken.");
-            log::error("block size (", block_size, ") is not consistent with ",
+            log::fatal("mill::DCDReader: header block 2 is broken.\n",
+                       "block size (", block_size, ") is not consistent with ",
                        "the number of lines (", lines, ").");
-            throw std::invalid_argument("DCDReader: header block2 is broken");
         }
 
         std::string comment;
@@ -251,10 +247,9 @@ class DCDReader final : public DeferedReaderBase
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 2 is broken.");
-            log::error("first block size (", block_size, ") != last (",
+            log::fatal("mill::DCDReader: header block 2 is broken.\n",
+                       "first block size (", block_size, ") != last (",
                        block_size_check, ").");
-            throw std::runtime_error("DCDReader: header block 2 is broken");
         }
         header2_size_ = block_size + sizeof(std::int32_t) * 2;
         return;
@@ -270,10 +265,9 @@ class DCDReader final : public DeferedReaderBase
         const auto block_size_check = read_binary_as<std::int32_t>(dcd_);
         if(block_size != block_size_check)
         {
-            log::error("mill::DCDReader: header block 3 is broken.");
-            log::error("first block size (", block_size, ") != last (",
+            log::fatal("mill::DCDReader: header block 3 is broken.\n",
+                       "first block size (", block_size, ") != last (",
                        block_size_check, ").");
-            throw std::runtime_error("DCDReader: header block 3 is broken");
         }
         header3_size_ = block_size + sizeof(std::int32_t) * 2;
         return;
