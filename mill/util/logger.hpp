@@ -3,6 +3,7 @@
 #include <mill/util/isatty.hpp>
 #include <map>
 #include <iostream>
+#include <sstream>
 #include <cstdint>
 
 namespace mill
@@ -34,14 +35,34 @@ struct Logger
 };
 inline Logger logger;
 
-// fatal will never be filtered.
+template<typename T, typename ... Ts>
+std::string fatal_printer(std::ostringstream& oss, T&& head, Ts&& ... args)
+{
+    if(oss.str().back() == '\n')
+    {
+        //     "FATAL: "
+        oss << "     : ";
+    }
+    oss << std::forward<T>(head);
+
+    if constexpr (sizeof...(Ts) == 0)
+    {
+        return oss.str();
+    }
+    else
+    {
+        return fatal_printer(oss, std::forward<Ts>(args)...);
+    }
+}
+
 template<typename ... Ts>
 [[noreturn]] void fatal(Ts&& ... args)
 {
     if(isatty(std::cerr)) {std::cerr << "\x1b[31mFATAL:\x1b[0m ";}
     else                  {std::cerr <<         "FATAL: ";}
-    (std::cerr << ... << args);
-    std::cerr << std::endl;
+
+    std::ostringstream oss;
+    std::cerr << fatal_printer(oss, std::forward<Ts>(args)...) << std::endl;
 
     std::terminate(); // stop the execution because it is a fatal error.
 }
