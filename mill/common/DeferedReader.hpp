@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_COMMON_DEFERED_READER_HPP
 #define COFFEE_MILL_COMMON_DEFERED_READER_HPP
 #include <mill/common/Trajectory.hpp>
+#include <mill/util/logger.hpp>
 #include <string_view>
 #include <optional>
 #include <iterator>
