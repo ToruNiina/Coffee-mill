@@ -55,16 +55,18 @@ std::string fatal_printer(std::ostringstream& oss, T&& head, Ts&& ... args)
     }
 }
 
-template<typename ... Ts>
+template<typename Exception = std::runtime_error, typename ... Ts>
 [[noreturn]] void fatal(Ts&& ... args)
 {
+    using namespace std::literals::string_literals;
     if(isatty(std::cerr)) {std::cerr << "\x1b[31mFATAL:\x1b[0m ";}
     else                  {std::cerr <<         "FATAL: ";}
 
     std::ostringstream oss;
-    std::cerr << fatal_printer(oss, std::forward<Ts>(args)...) << std::endl;
+    const auto msg = fatal_printer(oss, std::forward<Ts>(args)...);
+    std::cerr << msg << std::endl;
 
-    std::terminate(); // stop the execution because it is a fatal error.
+    throw Exception("FATAL: "s + msg);
 }
 
 template<typename ... Ts>
