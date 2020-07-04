@@ -148,8 +148,7 @@ class XYZReader final : public DeferedReaderBase
         }
         catch(...)
         {
-            throw std::runtime_error("XYZReader::read_frame: "
-                    "expected number, but got " + line);
+            log::fatal("XYZReader::read_frame: expected number, but got ", line);
         }
         log::debug("mill::XYZReader: the next snapshot has ", N, "particles.");
         return N;
