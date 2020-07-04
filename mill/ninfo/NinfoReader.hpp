@@ -40,7 +40,10 @@ class NinfoReader
 inline NinfoData NinfoReader::read(const std::string& filename) const
 {
     std::ifstream filestream(filename);
-    if(not filestream.good()) {throw std::runtime_error("file open error");}
+    if(not filestream.good())
+    {
+        log::fatal("NinfoReader: file open error: ", filename);
+    }
     const auto retval = this->read(filestream);
     filestream.close();
     return retval;
@@ -67,8 +70,7 @@ inline NinfoData NinfoReader::read(std::istream& is) const
         }
         catch(std::exception& except)
         {
-            throw std::runtime_error( "invalid ninfo line found at line #" +
-                    std::to_string(lineindex));
+            log::fatal("invalid ninfo line found at line #", lineindex);
         }
     }
 
@@ -152,7 +154,7 @@ inline void NinfoReader::read_line(data_type& data, const std::string& line) con
     }
     else
     {
-        throw std::logic_error("invalid line: " + prefix);
+        log::fatal("NinfoReader: invalid line starting with ", prefix);
     }
 //}}}
 

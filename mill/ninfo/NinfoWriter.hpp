@@ -47,7 +47,7 @@ inline void NinfoWriter::write(
     std::ofstream file_stream(filename);
     if(not file_stream.good())
     {
-        throw std::runtime_error("file open error: " + filename);
+        log::fatal("NinfoWriter: file open error: ", filename);
     }
     this->write(data, file_stream);
     file_stream.close();
