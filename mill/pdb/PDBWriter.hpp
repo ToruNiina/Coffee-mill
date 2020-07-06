@@ -10,6 +10,7 @@
 */
 #ifndef COFFEE_MILL_PDB_WRITER_HPP
 #define COFFEE_MILL_PDB_WRITER_HPP
+#include <mill/util/logger.hpp>
 #include "PDBChain.hpp"
 #include <fstream>
 #include <sstream>
@@ -55,10 +56,7 @@ void PDBWriter<vectorT>::write(
         const std::string& filename, const std::vector<atom_type>& atoms) const
 {
     std::ofstream ofs(filename);
-    if(not ofs.good())
-    {
-        throw std::runtime_error("file open error: " + filename);
-    }
+    if(not ifs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
     this->write(ofs, atoms);
     ofs.close();
     return;
@@ -70,10 +68,7 @@ void PDBWriter<vectorT>::write(
         const style sty) const
 {
     std::ofstream ofs(filename);
-    if(not ofs.good())
-    {
-        throw std::runtime_error("file open error: " + filename);
-    }
+    if(not ifs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
     this->write(ofs, model, sty);
     ofs.close();
     return;

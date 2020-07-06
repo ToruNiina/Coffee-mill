@@ -11,6 +11,7 @@
 
 #ifndef COFFEE_MILL_PDB_READER_HPP
 #define COFFEE_MILL_PDB_READER_HPP
+#include <mill/util/logger.hpp>
 #include "PDBChain.hpp"
 #include <fstream>
 #include <sstream>
@@ -54,7 +55,7 @@ PDBReader<vectorT>::read(const std::string& fname) const
 {
     log::debug("reading PDB file ", fname);
     std::ifstream ifs(fname);
-    if(not ifs.good()) {throw std::runtime_error("file open error: " + fname);}
+    if(not ifs.good()) {log::fatal("PDBReader: file open error: ", fname);}
     const auto data = this->read(ifs);
     return data;
 }
@@ -65,7 +66,7 @@ PDBReader<vectorT>::read(const std::string& fname, const std::size_t model_idx) 
 {
     log::debug("reading PDB file ", fname, " model ", model_idx);
     std::ifstream ifs(fname);
-    if(not ifs.good()) {throw std::runtime_error("file open error: " + fname);}
+    if(not ifs.good()) {log::fatal("PDBReader: file open error: ", fname);}
     const auto data = this->read(ifs, model_idx);
     return data;
 }
@@ -91,7 +92,7 @@ PDBReader<vectorT>::read(std::istream& ifs, const std::size_t model_idx) const
     }
     if(ifs.eof())
     {
-        throw std::invalid_argument("no model #" + std::to_string(model_idx));
+        log::fatal("PDBReader: no model #", model_idx);
     }
     return this->read(ifs);
 }
