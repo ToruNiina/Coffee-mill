@@ -56,7 +56,7 @@ void PDBWriter<vectorT>::write(
         const std::string& filename, const std::vector<atom_type>& atoms) const
 {
     std::ofstream ofs(filename);
-    if(not ifs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
+    if(not ofs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
     this->write(ofs, atoms);
     ofs.close();
     return;
@@ -68,7 +68,7 @@ void PDBWriter<vectorT>::write(
         const style sty) const
 {
     std::ofstream ofs(filename);
-    if(not ifs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
+    if(not ofs.good()) {log::fatal("PDBWriter: file open error: ", fname);}
     this->write(ofs, model, sty);
     ofs.close();
     return;
