@@ -18,7 +18,6 @@ inline const char* dcd_calc_theta_usage() noexcept
 }
 
 // argv := arrayof{ "calc_theta", "filename", {rests...} }
-template<typename vectorT>
 int mode_dcd_calc_theta(int argument_c, const char **argument_v)
 {
     if(argument_c == 1)
@@ -53,30 +52,32 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
         ofs << "# dot product, theta\n";
 
         DCDReader reader(input);
+        using vector_type = DCDReader::vector_type;
+
         for(const auto& snapshot : reader)
         {
-            vectorT v1_from(0., 0., 0.);
+            vector_type v1_from(0., 0., 0.);
             for(const auto idx : vidx1[0])
             {
                 v1_from += snapshot.at(idx).position();
             }
             v1_from /= vidx1[0].size();
 
-            vectorT v1_to(0., 0., 0.);
+            vector_type v1_to(0., 0., 0.);
             for(const auto idx : vidx1[1])
             {
                 v1_to += snapshot.at(idx).position();
             }
             v1_to /= vidx1[1].size();
 
-            vectorT v2_from(0., 0., 0.);
+            vector_type v2_from(0., 0., 0.);
             for(const auto idx : vidx2[0])
             {
                 v2_from += snapshot.at(idx).position();
             }
             v2_from /= vidx2[0].size();
 
-            vectorT v2_to(0., 0., 0.);
+            vector_type v2_to(0., 0., 0.);
             for(const auto idx : vidx2[1])
             {
                 v2_to += snapshot.at(idx).position();
@@ -84,11 +85,11 @@ int mode_dcd_calc_theta(int argument_c, const char **argument_v)
             v2_to /= vidx2[1].size();
 
 
-            const vectorT v1 = v1_to - v1_from;
-            const vectorT v2 = v2_to - v2_from;
+            const vector_type v1 = v1_to - v1_from;
+            const vector_type v2 = v2_to - v2_from;
 
-            const vectorT v1_n = v1 / length(v1);
-            const vectorT v2_n = v2 / length(v2);
+            const vector_type v1_n = v1 / length(v1);
+            const vector_type v2_n = v2 / length(v2);
 
             auto dot = dot_product(v1_n, v2_n);
 

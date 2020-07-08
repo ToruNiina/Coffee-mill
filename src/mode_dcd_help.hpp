@@ -47,32 +47,32 @@ inline int mode_dcd_help(int argument_c, const char **argument_v)
     if(command == "join")
     {
         const char *cmds[2] = {"join", "help"};
-        return mode_dcd_join<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_join(2, cmds);
     }
     else if(command == "extract")
     {
         const char *cmds[2] = {"extract", "help"};
-        return mode_dcd_extract<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_extract(2, cmds);
     }
     else if(command == "impose")
     {
         const char *cmds[2] = {"impose", "help"};
-        return mode_dcd_impose<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_impose(2, cmds);
     }
     else if(command == "split")
     {
         const char *cmds[2] = {"split", "help"};
-        return mode_dcd_split<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_split(2, cmds);
     }
     else if(command == "convert")
     {
         const char *cmds[2] = {"convert", "help"};
-        return mode_dcd_convert<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_convert(2, cmds);
     }
     else if(command == "info")
     {
         const char *cmds[2] = {"info", "help"};
-        return mode_dcd_info<mill::Vector<double, 3>>(2, cmds);
+        return mode_dcd_info(2, cmds);
     }
     else
     {

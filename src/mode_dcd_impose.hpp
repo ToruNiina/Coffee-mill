@@ -50,9 +50,9 @@ remove_except_elements(const Snapshot& frame,
 }
 
 //! argv = {"impose", {args...}}
-template<typename vectorT>
 int mode_dcd_impose(int argument_c, const char** argument_v)
 {
+    using vector_type = DCDReader::vector_type;
     if(argument_c == 1)
     {
         log::error("error: mill dcd impose: too few arguments");
@@ -84,18 +84,18 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
 
         const auto first_frame = *reader.read_frame();
 
-        std::vector<vectorT> ref;
+        std::vector<vector_type> ref;
         for(const auto& p : first_frame)
         {
             ref.push_back(p.position());
         }
-        BestFit<typename scalar_type_of<vectorT>::type> bestfit;
+        BestFit<typename scalar_type_of<vector_type>::type> bestfit;
         bestfit.set_reference(ref);
 
         writer.write_frame(first_frame);
         for(auto frame : reader)
         {
-            std::vector<vectorT> coord;
+            std::vector<vector_type> coord;
             for(const auto& p : frame)
             {
                 coord.push_back(p.position());
@@ -126,12 +126,12 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
 
         const auto& first_frame = *reader.read_frame();
 
-        BestFit<typename scalar_type_of<vectorT>::type> bestfit;
-        bestfit.set_reference(remove_except_elements<vectorT>(first_frame, except_particle));
+        BestFit<typename scalar_type_of<vector_type>::type> bestfit;
+        bestfit.set_reference(remove_except_elements<vector_type>(first_frame, except_particle));
 
         for(auto frame : reader)
         {
-            const auto core = remove_except_elements<vectorT>(frame, except_particle);
+            const auto core = remove_except_elements<vector_type>(frame, except_particle);
             const auto R  = bestfit.rotational_matrix(core);
             const auto dx = bestfit.zeroing_vector(core);
             for(auto& particle : frame)

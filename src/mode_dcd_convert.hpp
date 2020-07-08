@@ -19,9 +19,9 @@ inline const char* dcd_convert_usage() noexcept
 }
 
 // argv := arrayof{ "convert", "pdb", "filename", [pdb] }
-template<typename vectorT>
 int mode_dcd_convert(int argument_c, const char **argument_v)
 {
+    using vector_type = DCDReader::vector_type;
     if(argument_c < 2)
     {
         log::error("mill dcd convert: too few arguments");
@@ -69,15 +69,15 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
         }
 
         DCDReader reader(fname);
-        PDBWriter<vectorT> writer;
+        PDBWriter<vector_type> writer;
 
         const auto header = reader.read_header();
 
         const std::size_t num_particles = header.at("nparticle").as_integer();
-        std::vector<PDBAtom<vectorT>> atoms(num_particles);
+        std::vector<PDBAtom<vector_type>> atoms(num_particles);
         if(not pdbname.empty()) // reference pdb exists.
         {
-            PDBReader<vectorT> pdbreader;
+            PDBReader<vector_type> pdbreader;
             std::ifstream pdbfile(pdbname);
             if(not pdbfile.good())
             {
@@ -101,7 +101,7 @@ int mode_dcd_convert(int argument_c, const char **argument_v)
             std::size_t idx = 1;
             for(auto& atom : atoms)
             {
-                atom = make_default_atom(static_cast<int>(idx), vectorT(0,0,0));
+                atom = make_default_atom(static_cast<int>(idx), vector_type(0,0,0));
                 ++idx;
             }
         }

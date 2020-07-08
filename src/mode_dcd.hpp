@@ -30,35 +30,35 @@ int mode_dcd(int argument_c, const char **argument_v)
     if(command == "join")
     {
         // {"join", {"args"...}}
-        return mode_dcd_join<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_join(--argument_c, ++argument_v);
     }
     else if(command == "extract")
     {
-        return mode_dcd_extract<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_extract(--argument_c, ++argument_v);
     }
     else if(command == "split")
     {
-        return mode_dcd_split<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_split(--argument_c, ++argument_v);
     }
     else if(command == "impose")
     {
-        return mode_dcd_impose<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_impose(--argument_c, ++argument_v);
     }
     else if(command == "convert")
     {
-        return mode_dcd_convert<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_convert(--argument_c, ++argument_v);
     }
     else if(command == "calc_theta")
     {
-        return mode_dcd_calc_theta<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_calc_theta(--argument_c, ++argument_v);
     }
     else if(command == "calc_dist")
     {
-        return mode_dcd_calc_dist<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_calc_dist(--argument_c, ++argument_v);
     }
     else if(command == "info")
     {
-        return mode_dcd_info<vectorT>(--argument_c, ++argument_v);
+        return mode_dcd_info(--argument_c, ++argument_v);
     }
     else if(command == "help")
     {
