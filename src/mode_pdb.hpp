@@ -4,7 +4,6 @@
 #include <mill/pdb/PDBWriter.hpp>
 #include <src/mode_pdb_help.hpp>
 #include <src/mode_pdb_seq.hpp>
-// #include <src/mode_pdb_mutate.hpp>
 #include <iostream>
 
 namespace mill
@@ -26,10 +25,6 @@ int mode_pdb(int argument_c, const char **argument_v)
     {
         return mode_pdb_seq<vectorT>(--argument_c, ++argument_v);
     }
-//     else if(command == "mutate")
-//     {
-//         return mode_pdb_mutate<vectorT>(--argument_c, ++argument_v);
-//     }
     else
     {
         log::error("mill pdb mode: unknown command: ", command);
