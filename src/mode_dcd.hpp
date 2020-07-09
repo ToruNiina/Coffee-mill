@@ -16,7 +16,6 @@ namespace mill
 {
 
 // argv := arrayof{ "dcd", "command-name", {rests...} }
-template<typename vectorT>
 int mode_dcd(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)

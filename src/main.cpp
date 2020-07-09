@@ -29,7 +29,7 @@ int main(int argc, char **argv)
     {
         if(mode == "dcd")
         {
-            return mill::mode_dcd<vector_type>(argc_ - 1, argv_ + 1);
+            return mill::mode_dcd(argc_ - 1, argv_ + 1);
         }
         else if(mode == "pdb")
         {
