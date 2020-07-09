@@ -31,7 +31,7 @@ inline int mode_calc_help(int argument_c, const char **argument_v)
     if(command == "rmsd")
     {
         const char *cmds[2] = {"rmsd", "help"};
-        return mode_calc_rmsd<mill::Vector<double, 3>>(2, cmds);
+        return mode_calc_rmsd(2, cmds);
     }
     else if(command == "help")
     {

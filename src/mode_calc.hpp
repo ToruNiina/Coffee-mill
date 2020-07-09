@@ -8,7 +8,6 @@ namespace mill
 {
 
 // argv := arrayof{ "dcd", "command-name", {rests...} }
-template<typename vectorT>
 int mode_calc(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
@@ -21,7 +20,7 @@ int mode_calc(int argument_c, const char **argument_v)
     const std::string command(argument_v[1]);
     if(command == "rmsd")
     {
-        return mode_calc_rmsd<vectorT>(--argument_c, ++argument_v);
+        return mode_calc_rmsd(--argument_c, ++argument_v);
     }
     else if(command == "help")
     {

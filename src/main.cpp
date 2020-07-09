@@ -41,7 +41,7 @@ int main(int argc, char **argv)
         }
         else if(mode == "calc")
         {
-            return mill::mode_calc<vector_type>(argc_ - 1, argv_ + 1);
+            return mill::mode_calc(argc_ - 1, argv_ + 1);
         }
         else if(mode == "help")
         {

@@ -16,9 +16,9 @@ inline const char* mode_calc_rmsd_usage() noexcept
 }
 
 //! argv = {"impose", {args...}}
-template<typename vectorT>
 int mode_calc_rmsd(int argument_c, const char** argument_v)
 {
+    using vector_type = Vector<double, 3>;
     if(argument_c < 3)
     {
         log::error("mill calc rmsd: too few arguments.");
@@ -40,7 +40,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         return 1;
     }
 
-    std::vector<std::vector<vectorT>> traj;
+    std::vector<std::vector<vector_type>> traj;
 
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
@@ -48,7 +48,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         DCDReader reader(fname);
         for(const auto& snapshot : reader)
         {
-            std::vector<vectorT> ss; ss.reserve(snapshot.size());
+            std::vector<vector_type> ss; ss.reserve(snapshot.size());
             for(const auto& particle : snapshot)
             {
                 ss.push_back(particle.position());
@@ -64,7 +64,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         XYZReader reader(fname);
         for(const auto& snapshot : reader)
         {
-            std::vector<vectorT> ss;
+            std::vector<vector_type> ss;
             ss.reserve(snapshot.size());
             for(const auto& particle : snapshot)
             {
@@ -84,7 +84,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
     }
 
     const std::string refname(argument_v[2]);
-    std::vector<vectorT> ref;
+    std::vector<vector_type> ref;
 
     if(refname.substr(refname.size() - 4, 4) == ".pdb")
     {
@@ -112,7 +112,7 @@ int mode_calc_rmsd(int argument_c, const char** argument_v)
         return 1;
     }
 
-    BestFit<typename scalar_type_of<vectorT>::type> bestfit;
+    BestFit<typename scalar_type_of<vector_type>::type> bestfit;
     bestfit.set_reference(ref);
 
     std::ofstream ofs("mill_rmsd.dat");
