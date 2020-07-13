@@ -13,7 +13,6 @@ inline const char* ninfo_split_usage() noexcept
 }
 
 //! argv = {"split", {args...}}
-template<typename vectorT>
 int mode_ninfo_split(int argument_c, const char** argument_v)
 {
     if(argument_c == 1)

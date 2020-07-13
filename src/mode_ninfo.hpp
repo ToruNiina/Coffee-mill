@@ -7,7 +7,6 @@
 namespace mill
 {
 
-template<typename vectorT>
 int mode_ninfo(int argument_c, const char** argument_v)
 {
     if(argument_c < 2)
@@ -20,7 +19,7 @@ int mode_ninfo(int argument_c, const char** argument_v)
     const std::string command(argument_v[1]);
     if(command == "split")
     {
-        return mode_ninfo_split<vectorT>(--argument_c, ++argument_v);
+        return mode_ninfo_split(--argument_c, ++argument_v);
     }
     else
     {

@@ -37,7 +37,7 @@ int main(int argc, char **argv)
         }
         else if(mode == "ninfo")
         {
-            return mill::mode_ninfo<vector_type>(argc_ - 1, argv_ + 1);
+            return mill::mode_ninfo(argc_ - 1, argv_ + 1);
         }
         else if(mode == "calc")
         {
