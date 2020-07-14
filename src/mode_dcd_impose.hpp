@@ -26,12 +26,11 @@ inline const char* dcd_impose_usage() noexcept
            "    ]\n";
 }
 
-template<typename vectorT>
-std::vector<vectorT>
+std::vector<Snapshot::vector_type>
 remove_except_elements(const Snapshot& frame,
         const std::vector<std::array<std::int64_t, 2>>& exception)
 {
-    std::vector<vectorT> retval;
+    std::vector<Snapshot::vector_type> retval;
     retval.reserve(frame.size());
     std::int64_t index = 0;
     for(const auto& particle : frame)
@@ -127,11 +126,11 @@ int mode_dcd_impose(int argument_c, const char** argument_v)
         const auto& first_frame = *reader.read_frame();
 
         BestFit<typename scalar_type_of<vector_type>::type> bestfit;
-        bestfit.set_reference(remove_except_elements<vector_type>(first_frame, except_particle));
+        bestfit.set_reference(remove_except_elements(first_frame, except_particle));
 
         for(auto frame : reader)
         {
-            const auto core = remove_except_elements<vector_type>(frame, except_particle);
+            const auto core = remove_except_elements(frame, except_particle);
             const auto R  = bestfit.rotational_matrix(core);
             const auto dx = bestfit.zeroing_vector(core);
             for(auto& particle : frame)
