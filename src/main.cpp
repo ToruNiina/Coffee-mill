@@ -33,7 +33,7 @@ int main(int argc, char **argv)
         }
         else if(mode == "pdb")
         {
-            return mill::mode_pdb<vector_type>(argc_ - 1, argv_ + 1);
+            return mill::mode_pdb(argc_ - 1, argv_ + 1);
         }
         else if(mode == "ninfo")
         {

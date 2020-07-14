@@ -35,7 +35,7 @@ inline int mode_pdb_help(int argument_c, const char **argument_v)
     if(command == "seq")
     {
         const char *cmds[2] = {"seq", "help"};
-        return mode_pdb_seq<mill::Vector<double, 3>>(2, cmds);
+        return mode_pdb_seq(2, cmds);
     }
 //     else if(command == "mutate")
 //     {

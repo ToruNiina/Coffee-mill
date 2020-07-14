@@ -10,7 +10,6 @@ namespace mill
 {
 
 // argv := arrayof{ "pdb", "command-name", {rests...} }
-template<typename vectorT>
 int mode_pdb(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
@@ -23,7 +22,7 @@ int mode_pdb(int argument_c, const char **argument_v)
     const std::string command(argument_v[1]);
     if(command == "seq")
     {
-        return mode_pdb_seq<vectorT>(--argument_c, ++argument_v);
+        return mode_pdb_seq(--argument_c, ++argument_v);
     }
     else
     {

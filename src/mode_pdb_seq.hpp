@@ -114,7 +114,6 @@ struct generate_sequence
 };
 
 // argv := {"seq", "file.pdb"}
-template<typename vectorT>
 int mode_pdb_seq(int argument_c, const char **argument_v)
 {
     if(argument_c != 2)
@@ -131,7 +130,7 @@ int mode_pdb_seq(int argument_c, const char **argument_v)
         return 0;
     }
 
-    PDBReader<vectorT> reader;
+    PDBReader<mill::Vector<double, 3>> reader;
     for(auto&& chain : reader.parse(reader.read(pdbname)))
     {
         std::string sequence(chain.size(), ' ');
