@@ -11,8 +11,6 @@ std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-    using vector_type = mill::Vector<double, 3>;
-
     auto [argc_, argv_v] = setup_logger(argc, argv);
     const char** argv_ = argv_v.data();
 
