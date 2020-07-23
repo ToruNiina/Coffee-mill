@@ -11,6 +11,7 @@
 #ifndef COFFEE_MILL_NINFO_WRITER_HPP
 #define COFFEE_MILL_NINFO_WRITER_HPP
 #include "NinfoData.hpp"
+#include <mill/util/logger.hpp>
 #include <fstream>
 
 namespace mill

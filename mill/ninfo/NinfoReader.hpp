@@ -13,7 +13,8 @@
 #ifndef COFFEE_MILL_NINFO_READER_HPP
 #define COFFEE_MILL_NINFO_READER_HPP
 #include "NinfoData.hpp"
-#include "util/string.hpp"
+#include <mill/util/string.hpp>
+#include <mill/util/logger.hpp>
 #include <fstream>
 
 namespace mill
