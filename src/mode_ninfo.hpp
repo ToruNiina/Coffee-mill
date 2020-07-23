@@ -1,33 +1,10 @@
 #ifndef COFFEE_MILL_NINFO_MODE
 #define COFFEE_MILL_NINFO_MODE
-#include <src/mode_ninfo_help.hpp>
-#include <src/mode_ninfo_split.hpp>
-#include <iostream>
 
 namespace mill
 {
 
-int mode_ninfo(int argument_c, const char** argument_v)
-{
-    if(argument_c < 2)
-    {
-        log::error("mill ninfo mode: too few arguments");
-        mode_ninfo_help(--argument_c, ++argument_v);
-        return 1;
-    }
-
-    const std::string command(argument_v[1]);
-    if(command == "split")
-    {
-        return mode_ninfo_split(--argument_c, ++argument_v);
-    }
-    else
-    {
-        log::error("mill ninfo mode: unknown command", command);
-        log::error(mode_ninfo_help_usage());
-        return 1;
-    }
-}
+int mode_ninfo(int, const char**);
 
 } // mill
 #endif /* COFFEE_MILL_NINFO_MODE */
