@@ -36,20 +36,19 @@ class JacobiEigenSolver
                               const Matrix<scalarT, N, N>& rhs) const;
 
     template<typename scalarT>
-    static scalarT relative_tolerance();
+    static scalarT relative_tolerance()
+    {
+        if constexpr (std::is_same_v<scalarT, double>) {return 1e-13;}
+        else {return 1e-5f;}
+    }
+
     template<typename scalarT>
-    static scalarT absolute_tolerance();
+    static scalarT absolute_tolerance()
+    {
+        if constexpr (std::is_same_v<scalarT, double>) {return 1e-13;}
+        else {return 1e-5f;}
+    }
 };
-
-template<>
-double JacobiEigenSolver::relative_tolerance<double>(){return 1e-13;}
-template<>
-float  JacobiEigenSolver::relative_tolerance<float>(){return 1e-5;}
-
-template<>
-double JacobiEigenSolver::absolute_tolerance<double>(){return 1e-13;}
-template<>
-float  JacobiEigenSolver::absolute_tolerance<float>(){return 1e-5;}
 
 template<typename scalarT, std::size_t N>
 std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
