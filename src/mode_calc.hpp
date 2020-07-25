@@ -8,7 +8,7 @@ namespace mill
 {
 
 // argv := arrayof{ "dcd", "command-name", {rests...} }
-int mode_calc(int argument_c, const char **argument_v)
+inline int mode_calc(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {

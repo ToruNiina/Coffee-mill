@@ -26,7 +26,7 @@ inline const char* dcd_impose_usage() noexcept
            "    ]\n";
 }
 
-std::vector<Snapshot::vector_type>
+inline std::vector<Snapshot::vector_type>
 remove_except_elements(const Snapshot& frame,
         const std::vector<std::array<std::int64_t, 2>>& exception)
 {
@@ -49,7 +49,7 @@ remove_except_elements(const Snapshot& frame,
 }
 
 //! argv = {"impose", {args...}}
-int mode_dcd_impose(int argument_c, const char** argument_v)
+inline int mode_dcd_impose(int argument_c, const char** argument_v)
 {
     using vector_type = DCDReader::vector_type;
     if(argument_c == 1)

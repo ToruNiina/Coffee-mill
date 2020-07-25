@@ -13,7 +13,7 @@ inline const char* dcd_info_usage() noexcept
            " and etc.\n";
 }
 
-int mode_dcd_info(int argument_c, const char **argument_v)
+inline int mode_dcd_info(int argument_c, const char **argument_v)
 {
     if(argument_c < 2)
     {

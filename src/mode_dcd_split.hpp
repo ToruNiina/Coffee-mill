@@ -24,7 +24,7 @@ inline const char* dcd_split_usage() noexcept
 }
 
 //! argv = {"split", {args...}}
-int mode_dcd_split(int argument_c, const char** argument_v)
+inline int mode_dcd_split(int argument_c, const char** argument_v)
 {
     if(argument_c == 1)
     {

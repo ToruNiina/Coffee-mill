@@ -19,7 +19,7 @@ inline const char* dcd_convert_usage() noexcept
 }
 
 // argv := arrayof{ "convert", "pdb", "filename", [pdb] }
-int mode_dcd_convert(int argument_c, const char **argument_v)
+inline int mode_dcd_convert(int argument_c, const char **argument_v)
 {
     using vector_type = DCDReader::vector_type;
     if(argument_c < 2)

@@ -17,7 +17,7 @@ inline const char* dcd_extract_usage() noexcept
 }
 
 // argv := arrayof{ "extract", "filename", {rests...} }
-int mode_dcd_extract(int argument_c, const char **argument_v)
+inline int mode_dcd_extract(int argument_c, const char **argument_v)
 {
     if(argument_c == 1)
     {

@@ -16,7 +16,7 @@ inline const char* mode_calc_rmsd_usage() noexcept
 }
 
 //! argv = {"impose", {args...}}
-int mode_calc_rmsd(int argument_c, const char** argument_v)
+inline int mode_calc_rmsd(int argument_c, const char** argument_v)
 {
     using vector_type = Vector<double, 3>;
     if(argument_c < 3)
