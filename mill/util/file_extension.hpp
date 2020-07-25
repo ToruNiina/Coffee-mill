@@ -6,7 +6,7 @@
 namespace mill
 {
 
-std::string_view extension_of(const std::string_view filename)
+inline std::string_view extension_of(const std::string_view filename)
 {
     const auto dot = filename.rfind('.');
     if(dot == std::string_view::npos)
