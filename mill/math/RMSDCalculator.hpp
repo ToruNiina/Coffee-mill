@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_MATH_RMSD_CALCULATOR_HPP
 #define COFFEE_MILL_MATH_RMSD_CALCULATOR_HPP
 #include "Vector.hpp"
+#include <vector>
 
 namespace mill
 {
