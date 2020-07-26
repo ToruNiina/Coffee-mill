@@ -1,5 +1,6 @@
 #include "mode_help.hpp"
 
+#include <mill/util/logger.hpp>
 #include <src/mode_dcd_help.hpp>
 #include <src/mode_pdb_help.hpp>
 #include <src/mode_ninfo_help.hpp>
