@@ -24,7 +24,7 @@ class TRRWriter final : public WriterBase
 
     explicit TRRWriter(const std::string& fname)
         : current_(0), file_name_(fname),
-          trr_(fname, std::ios::in | std::ios::binary)
+          trr_(fname, std::ios::out | std::ios::binary)
     {
         if(!trr_.good())
         {
@@ -129,26 +129,42 @@ class TRRWriter final : public WriterBase
         {
             for(const auto& p : frame)
             {
-                const auto vel = p.try_at("velocity").value_or(vector_type(0,0,0));
-                write_as_binary<double>(trr_, vel[0]);
-                write_as_binary<double>(trr_, vel[1]);
-                write_as_binary<double>(trr_, vel[2]);
+                if(const auto vel = p.try_at("velocity"); vel->is_vector())
+                {
+                    write_as_binary<double>(trr_, vel->as_vector()[0]);
+                    write_as_binary<double>(trr_, vel->as_vector()[1]);
+                    write_as_binary<double>(trr_, vel->as_vector()[2]);
+                }
+                else
+                {
+                    write_as_binary<double>(trr_, 0.0);
+                    write_as_binary<double>(trr_, 0.0);
+                    write_as_binary<double>(trr_, 0.0);
+                }
             }
         }
         if(!frame.empty() && frame.at(0).attributes().count("force") != 0)
         {
             for(const auto& p : frame)
             {
-                const auto frc = p.try_at("force").value_or(vector_type(0,0,0));
-                write_as_binary<double>(trr_, frc[0]);
-                write_as_binary<double>(trr_, frc[1]);
-                write_as_binary<double>(trr_, frc[2]);
+                if(const auto frc = p.try_at("force"); frc->is_vector())
+                {
+                    write_as_binary<double>(trr_, frc->as_vector()[0]);
+                    write_as_binary<double>(trr_, frc->as_vector()[1]);
+                    write_as_binary<double>(trr_, frc->as_vector()[2]);
+                }
+                else
+                {
+                    write_as_binary<double>(trr_, 0.0);
+                    write_as_binary<double>(trr_, 0.0);
+                    write_as_binary<double>(trr_, 0.0);
+                }
             }
         }
 
         this->current_ += 1;
         log::debug("mill::TRRWriter: done.");
-        return frame;
+        return;
     }
 
     std::size_t      size()      const noexcept override {return current_;}
@@ -159,7 +175,7 @@ class TRRWriter final : public WriterBase
     // To check the number of frames contained, store those values.
     std::size_t current_;
     std::string file_name_;
-    std::ifstream trr_;
+    std::ofstream trr_;
 };
 
 } // mill
