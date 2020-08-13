@@ -28,7 +28,7 @@ class TRRReader final : public DeferedReaderBase
     {
         if(!trr_.good())
         {
-            log:::fatal("TRRReader: file open error: ", fname);
+            log::fatal("TRRReader: file open error: ", fname);
         }
         trr_.seekg(0, trr_.end);
         this->file_size_ = trr_.tellg();
