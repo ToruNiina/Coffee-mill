@@ -29,7 +29,7 @@ class DeferedReader
     explicit DeferedReader(std::unique_ptr<DeferedReaderBase> reader)
         : reader_(std::move(reader))
     {}
-    ~DeferedReader() override = default;
+    ~DeferedReader() = default;
     DeferedReader(const DeferedReader&)            = delete;
     DeferedReader& operator=(const DeferedReader&) = delete;
     DeferedReader(DeferedReader&&)                 = default;
@@ -44,7 +44,7 @@ class DeferedReader
     }
 
     ReaderIterator         begin() {return reader_->begin();}
-    ReaderIteratorSentinel end()   {return reader_->begin();}
+    ReaderIteratorSentinel end()   {return reader_->end();}
 
     void             rewind()                   {return reader_->rewind()   ;}
     bool             is_eof()    const noexcept {return reader_->is_eof()   ;}
@@ -61,15 +61,15 @@ inline DeferedReader read(std::string_view filename)
     const auto ext = extension_of(filename);
     if(ext == ".dcd")
     {
-        return DeferedReader(std::make_unique<DCDReader>(filename));
+        return DeferedReader(std::make_unique<DCDReader>(std::string(filename)));
     }
     else if(ext == ".trr")
     {
-        return DeferedReader(std::make_unique<TRRReader>(filename));
+        return DeferedReader(std::make_unique<TRRReader>(std::string(filename)));
     }
     else if(ext == ".xyz")
     {
-        return DeferedReader(std::make_unique<XYZReader>(filename));
+        return DeferedReader(std::make_unique<XYZReader>(std::string(filename)));
     }
     else
     {
@@ -95,11 +95,11 @@ class TrajWriter
     explicit TrajWriter(std::unique_ptr<WriterBase> writer)
         : writer_(std::move(writer))
     {}
-    ~TrajWriter() override = default;
-    TrajWriter(const Writer&)            = delete;
-    TrajWriter& operator=(const Writer&) = delete;
-    TrajWriter(Writer&&)                 = default;
-    TrajWriter& operator=(Writer&&)      = default;
+    ~TrajWriter() = default;
+    TrajWriter(const TrajWriter&)            = delete;
+    TrajWriter& operator=(const TrajWriter&) = delete;
+    TrajWriter(TrajWriter&&)                 = default;
+    TrajWriter& operator=(TrajWriter&&)      = default;
 
     void write_header(const attribute_container_type& header)
     {
@@ -128,15 +128,15 @@ inline TrajWriter writer(std::string_view filename)
 
     if(ext == ".dcd")
     {
-        return TrajWriter(std::make_unique<DCDWriter>(filename));
+        return TrajWriter(std::make_unique<DCDWriter>(std::string(filename)));
     }
     else if(ext == ".trr")
     {
-        return TrajWriter(std::make_unique<TRRWriter>(filename));
+        return TrajWriter(std::make_unique<TRRWriter>(std::string(filename)));
     }
     else if(ext == ".xyz")
     {
-        return TrajWriter(std::make_unique<XYZWriter>(filename));
+        return TrajWriter(std::make_unique<XYZWriter>(std::string(filename)));
     }
     else
     {
