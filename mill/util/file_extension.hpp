@@ -6,6 +6,7 @@
 namespace mill
 {
 
+// the resulting string_view contains the period.
 inline std::string_view extension_of(const std::string_view filename)
 {
     const auto dot = filename.rfind('.');
