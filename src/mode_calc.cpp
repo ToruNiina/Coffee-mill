@@ -1,6 +1,7 @@
 #include "mode_calc.hpp"
 #include "mode_calc_help.hpp"
 #include "mode_calc_rmsd.hpp"
+#include "mode_calc_dist.hpp"
 #include <mill/util/logger.hpp>
 
 namespace mill
@@ -19,6 +20,10 @@ int mode_calc(int argument_c, const char **argument_v)
     if(command == "rmsd")
     {
         return mode_calc_rmsd(--argument_c, ++argument_v);
+    }
+    else if(command == "dist")
+    {
+        return mode_calc_dist(--argument_c, ++argument_v);
     }
     else if(command == "help")
     {
