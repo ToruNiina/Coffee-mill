@@ -27,7 +27,7 @@ const char* mode_calc_dist_usage() noexcept
 
 int mode_calc_dist(int argc, const char** argv)
 {
-    if(argc < 3)
+    if(argc < 2)
     {
         log::error("mill calc dist: too few arguments.");
         log::error(mode_calc_dist_usage());
@@ -58,7 +58,7 @@ int mode_calc_dist(int argc, const char** argv)
         {
             for(const auto [i, j] : pairs)
             {
-                output << length(frame[i].position() - frame[j].position()) << '\n';
+                output << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << '\n';
             }
         }
     }
@@ -68,7 +68,7 @@ int mode_calc_dist(int argc, const char** argv)
         const auto j = std::atoi(argv[3]);
         for(const auto frame : read(fname))
         {
-            std::cout << length(frame[i].position() - frame[j].position()) << '\n';
+            std::cout << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << '\n';
         }
     }
     return 0;
