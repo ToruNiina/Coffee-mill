@@ -2,6 +2,7 @@
 #include <mill/util/logger.hpp>
 #include "mode_calc_help.hpp"
 #include "mode_calc_rmsd.hpp"
+#include "mode_calc_dist.hpp"
 
 namespace mill
 {
@@ -12,6 +13,8 @@ const char* mode_calc_help_usage() noexcept
            "    avaiable commands\n"
            "    - rmsd\n"
            "      : calculate RMSD\n"
+           "    - dist\n"
+           "      : calculate distance from traj file\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -31,6 +34,11 @@ int mode_calc_help(int argument_c, const char **argument_v)
     {
         const char *cmds[2] = {"rmsd", "help"};
         return mode_calc_rmsd(2, cmds);
+    }
+    else if(command == "dist")
+    {
+        const char *cmds[2] = {"dist", "help"};
+        return mode_calc_dist(2, cmds);
     }
     else if(command == "help")
     {
