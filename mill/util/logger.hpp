@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_UTIL_LOGGER_HPP
 #define COFFEE_MILL_UTIL_LOGGER_HPP
 #include <mill/util/isatty.hpp>
+#include <vector>
 #include <map>
 #include <iostream>
 #include <sstream>
@@ -113,6 +114,20 @@ void debug(Ts&& ... args)
     std::cerr << std::endl; // logs should be flashed every time
     return;
 }
+
+template<typename T, typename Alloc>
+std::ostream& operator<<(std::ostream& os, const std::vector<T, Alloc>& vec)
+{
+    os << "[";
+    for(std::size_t i=0; i<vec.size(); ++i)
+    {
+        if(i != 0) {os << ", ";}
+        os << vec[i];
+    }
+    os << "]";
+    return os;
+}
+
 
 } // log
 } // mill
