@@ -15,6 +15,8 @@ const char* mode_calc_help_usage() noexcept
            "      : calculate RMSD\n"
            "    - dist\n"
            "      : calculate distance from traj file\n"
+           "    - wham\n"
+           "      : reconstruct free energy surface by WHAM\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
