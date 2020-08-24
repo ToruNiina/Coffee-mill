@@ -21,8 +21,8 @@ class WHAMSolver
         : kBT_(kBT), beta_(1.0 / kBT), tolerance_(tolerance)
     {}
 
-    ProbabilityDensity operator()(const std::vector<
-            std::pair<Trajectory, std::unique_ptr<PotentialFunction>>>& trajs,
+    ProbabilityDensity operator()(const std::vector<std::pair<
+            std::vector<double>, std::unique_ptr<PotentialFunction>>>& trajs,
             const std::size_t bins = 100)
     {
         return this->reconstruct(this->solve_f(trajs), trajs, bins);
@@ -35,20 +35,20 @@ class WHAMSolver
         return (lhs - rhs) / ((lhs + rhs) * 0.5);
     }
 
-    std::vector<double> solve_f(const std::vector<
-            std::pair<Trajectory, std::unique_ptr<PotentialFunction>>>& trajs);
+    std::vector<double> solve_f(const std::vector<std::pair<
+            std::vector<double>, std::unique_ptr<PotentialFunction>>>& trajs);
 
     ProbabilityDensity reconstruct(const std::vector<double>& fs,
-            const std::vector<std::pair<
-                Trajectory, std::unique_ptr<PotentialFunction>>>& trajs,
+            const std::vector<std::pair<std::vector<double>,
+                std::unique_ptr<PotentialFunction>>>& trajs,
             const std::size_t bins);
 
   private:
     double kBT_, beta_, tolerance_;
 };
 
-inline std::vector<double> WHAMSolver::solve_f(const std::vector<
-        std::pair<Trajectory, std::unique_ptr<PotentialFunction>>>& trajs)
+inline std::vector<double> WHAMSolver::solve_f(const std::vector<std::pair<
+        std::vector<double>, std::unique_ptr<PotentialFunction>>>& trajs)
 {
     const auto nwin = trajs.size();
     std::vector<double> expfs_prev(nwin, 1.0);
@@ -128,16 +128,15 @@ inline std::vector<double> WHAMSolver::solve_f(const std::vector<
 }
 
 inline ProbabilityDensity WHAMSolver::reconstruct(const std::vector<double>& expfs,
-    const std::vector<std::pair<Trajectory, std::unique_ptr<PotentialFunction>>>& trajs,
+    const std::vector<std::pair<std::vector<double>, std::unique_ptr<PotentialFunction>>>& trajs,
     const std::size_t bins)
 {
     double start =  std::numeric_limits<double>::max();
     double stop  = -std::numeric_limits<double>::max();
     for(const auto& [traj, rc] : trajs)
     {
-        for(const auto& frame : traj)
+        for(const auto& x : traj)
         {
-            const double x = rc->rc(frame);
             start = std::min(start, x);
             stop  = std::max(stop,  x);
         }
@@ -150,15 +149,15 @@ inline ProbabilityDensity WHAMSolver::reconstruct(const std::vector<double>& exp
     Histogram<double, double> unbiased(bins, start, stop);
     for(const auto& [traj, rc] : trajs)
     {
-        for(const auto& frame: traj)
+        for(const auto& x: traj)
         {
             double denom = 0.0;
             for(std::size_t i=0; i<trajs.size(); ++i)
             {
                 denom += trajs.at(i).first.size() * expfs.at(i) *
-                         std::exp(-1.0 * this->beta_ * (*trajs.at(i).second)(frame));
+                         std::exp(-1.0 * this->beta_ * (*trajs.at(i).second)(x));
             }
-            unbiased.at(rc->rc(frame)) += 1.0 / denom;
+            unbiased.at(x) += 1.0 / denom;
         }
     }
     return ProbabilityDensity(unbiased);

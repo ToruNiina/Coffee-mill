@@ -56,7 +56,8 @@ int mode_calc_wham(int argument_c, const char** argument_v)
 
     WHAMSolver solver(kBT, tolerance);
 
-    std::vector<std::pair<Trajectory, std::unique_ptr<PotentialFunction>>> trajs;
+    std::vector<std::pair<std::vector<double>,
+                          std::unique_ptr<PotentialFunction>>> trajs;
     for(const auto trajectory : input.at("trajectories").as_array())
     {
         // assuming harmonic bond length ...
@@ -65,10 +66,15 @@ int mode_calc_wham(int argument_c, const char** argument_v)
         const auto k  = toml::find<double>(pot, "k");
         const auto v0 = toml::find<double>(pot, "v0");
 
-        trajs.emplace_back(
-            read(toml::find<std::string>(trajectory, "trajectory")).read(),
-            std::make_unique<HarmonicPotential>(
-                std::make_unique<ReactionDistance>(i, j), k, v0));
+        auto potential = std::make_unique<HarmonicPotential>(
+                std::make_unique<ReactionDistance>(i, j), k, v0);
+
+        std::vector<double> rcs;
+        for(auto frame : read(toml::find<std::string>(trajectory, "trajectory")))
+        {
+            rcs.push_back(potential->rc(frame));
+        }
+        trajs.emplace_back(std::move(rcs), std::move(potential));
     }
 
     const auto P = solver(trajs, bins);
