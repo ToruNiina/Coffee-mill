@@ -50,11 +50,12 @@ int mode_calc_wham(int argument_c, const char** argument_v)
     }
     const auto input = toml::parse(fname);
 
-    const double kBT       = toml::find_or<double>(input, "kBT", 0.59587);
-    const double tolerance = toml::find_or<double>(input, "tolerance", 1e-4);
-    const std::size_t bins = toml::find_or<std::size_t>(input, "bins", 100);
+    const auto kBT           = toml::find_or<double>(input, "kBT", 0.59587);
+    const auto tolerance     = toml::find_or<double>(input, "tolerance", 1e-4);
+    const auto bins          = toml::find_or<std::size_t>(input, "bins", 100);
+    const auto max_iteration = toml::find_or<std::size_t>(input, "max_iteration", 10000);
 
-    WHAMSolver solver(kBT, tolerance);
+    WHAMSolver solver(kBT, tolerance, max_iteration);
 
     std::vector<std::pair<std::vector<double>,
                           std::unique_ptr<PotentialFunction>>> trajs;

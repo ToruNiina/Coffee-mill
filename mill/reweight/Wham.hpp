@@ -17,8 +17,9 @@ class WHAMSolver
 {
   public:
 
-    WHAMSolver(const double kBT, const double tolerance = 1e-4)
-        : kBT_(kBT), beta_(1.0 / kBT), tolerance_(tolerance)
+    WHAMSolver(const double kBT, const double tolerance,
+               const std::size_t max_iteration)
+        : kBT_(kBT), beta_(1.0 / kBT), tolerance_(tolerance), max_iteration_(max_iteration)
     {}
 
     ProbabilityDensity operator()(const std::vector<std::pair<
@@ -45,6 +46,7 @@ class WHAMSolver
 
   private:
     double kBT_, beta_, tolerance_;
+    std::size_t max_iteration_;
 };
 
 inline std::vector<double> WHAMSolver::solve_f(const std::vector<std::pair<
@@ -76,8 +78,7 @@ inline std::vector<double> WHAMSolver::solve_f(const std::vector<std::pair<
     }
     log::info("expW cached");
 
-    constexpr std::size_t max_iteration = 10000;
-    for(std::size_t iteration = 0; iteration < max_iteration; ++iteration)
+    for(std::size_t iteration = 0; iteration < max_iteration_; ++iteration)
     {
         std::vector<double> expfs(trajs.size(), 0.0);
 
@@ -124,7 +125,7 @@ inline std::vector<double> WHAMSolver::solve_f(const std::vector<std::pair<
         }
         expfs_prev = expfs;
     }
-    log::fatal("WHAM does not converge after ", max_iteration, " iteration.");
+    log::fatal("WHAM does not converge after ", max_iteration_, " iteration.");
 }
 
 inline ProbabilityDensity WHAMSolver::reconstruct(const std::vector<double>& expfs,
