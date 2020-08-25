@@ -57,6 +57,7 @@ inline int mode_dcd_join(int argument_c, const char** argument_v)
 
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
+        files.push_back(fname);
         //! argv = {"join", {"1.dcd", "2.dcd", ...}}
         for(int i=2; i<argument_c; ++i)
         {
@@ -79,11 +80,15 @@ inline int mode_dcd_join(int argument_c, const char** argument_v)
         return 1;
     }
 
+    log::info("files = ", files);
+
     Trajectory traj(DCDReader(fname).read_header());
 
     // check total steps
+    traj.at("nset").as_integer() = 0;
     for(const auto& file : files)
     {
+        log::info("reading ", file);
         DCDReader reader(file);
         const auto header = reader.read_header();
 
@@ -96,11 +101,13 @@ inline int mode_dcd_join(int argument_c, const char** argument_v)
         }
         traj.at("nset").as_integer() += header.at("nset").as_integer();
     }
+    log::info("total frames = ", traj.at("nset"));
 
     DCDWriter writer(outname);
     writer.write_header(traj.attributes());
     for(const auto& file : files)
     {
+        log::info("reading ", file);
         DCDReader reader(file);
         reader.read_header();
         if(not include_initial)
