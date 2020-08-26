@@ -58,8 +58,9 @@ int mode_calc_dist(int argc, const char** argv)
         {
             for(const auto [i, j] : pairs)
             {
-                output << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << '\n';
+                output << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << ' ';
             }
+            output << '\n';
         }
     }
     else
