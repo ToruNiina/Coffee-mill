@@ -73,10 +73,9 @@ inline DeferedReader read(std::string_view filename)
     }
     else
     {
-        log::error("mill::read(file): unknown file extension \"", ext, "\".");
-        log::error("mill::read(file): supported formats are \".dcd\", "
-                   "\".trr\", and \".xyz\".");
-        throw std::runtime_error("unknown file.");
+        log::fatal("from mill::read(file):\n",
+                   " -> unknown file extension \"", ext, "\".\n",
+                   "    supported formats are \".dcd\", \".trr\", and \".xyz\".");
     }
 }
 
@@ -140,10 +139,9 @@ inline TrajWriter writer(std::string_view filename)
     }
     else
     {
-        log::error("mill::writer(file): unknown file extension \"", ext, "\".");
-        log::error("mill::writer(file): supported formats are \".dcd\", "
-                   "\".trr\", and \".xyz\".");
-        throw std::runtime_error("unknown file.");
+        log::fatal("from mill::write(file):\n",
+                   " -> unknown file extension \"", ext, "\".\n",
+                   "    supported formats are \".dcd\", \".trr\", and \".xyz\".");
     }
 }
 
