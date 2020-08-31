@@ -40,6 +40,7 @@ int mode_calc_angle(int argc, const char** argv)
         log::error(mode_calc_angle_usage());
         return 1;
     }
+    constexpr double rad_to_deg = 180.0 / 3.14159265358979;
 
     if(argc == 5) // angle traj.dcd i j k
     {
@@ -50,7 +51,7 @@ int mode_calc_angle(int argc, const char** argv)
         {
             const auto v1 = frame[i].position() - frame[j].position();
             const auto v2 = frame[k].position() - frame[j].position();
-            std::cout << std::setprecision(16) << angle(v1, v2) << '\n';
+            std::cout << std::setprecision(16) << angle(v1, v2) * rad_to_deg << '\n';
         }
     }
     else if(argc == 6) // angle traj.dcd i j k l
@@ -64,7 +65,7 @@ int mode_calc_angle(int argc, const char** argv)
         {
             const auto v1 = frame[j].position() - frame[i].position();
             const auto v2 = frame[l].position() - frame[k].position();
-            std::cout << std::setprecision(16) << angle(v1, v2) << '\n';
+            std::cout << std::setprecision(16) << angle(v1, v2) * rad_to_deg << '\n';
         }
     }
     return 0;
