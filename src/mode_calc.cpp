@@ -2,6 +2,7 @@
 #include "mode_calc_help.hpp"
 #include "mode_calc_rmsd.hpp"
 #include "mode_calc_dist.hpp"
+#include "mode_calc_angle.hpp"
 #include "mode_calc_wham.hpp"
 #include <mill/util/logger.hpp>
 
@@ -25,6 +26,10 @@ int mode_calc(int argument_c, const char **argument_v)
     else if(command == "dist")
     {
         return mode_calc_dist(--argument_c, ++argument_v);
+    }
+    else if(command == "angle")
+    {
+        return mode_calc_angle(--argument_c, ++argument_v);
     }
     else if(command == "wham")
     {
