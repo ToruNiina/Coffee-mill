@@ -1,70 +1,10 @@
-#ifndef COFFEE_MILL_DCD_MODE
-#define COFFEE_MILL_DCD_MODE
-#include <src/mode_dcd_help.hpp>
-#include <src/mode_dcd_join.hpp>
-#include <src/mode_dcd_split.hpp>
-#include <src/mode_dcd_extract.hpp>
-#include <src/mode_dcd_impose.hpp>
-#include <src/mode_dcd_convert.hpp>
-#include <src/mode_dcd_calc_theta.hpp>
-#include <src/mode_dcd_info.hpp>
-// #include "mill_dcd_msd.hpp"
-#include <iostream>
+#ifndef COFFEE_MILL_DCD_MODE_HPP
+#define COFFEE_MILL_DCD_MODE_HPP
 
 namespace mill
 {
-
 // argv := arrayof{ "dcd", "command-name", {rests...} }
-inline int mode_dcd(int argument_c, const char **argument_v)
-{
-    if(argument_c < 2)
-    {
-        log::error("mill dcd mode: too few arguments");
-        mode_dcd_help(--argument_c, ++argument_v);
-        return 1;
-    }
-
-    const std::string command(argument_v[1]);
-    if(command == "join")
-    {
-        // {"join", {"args"...}}
-        return mode_dcd_join(--argument_c, ++argument_v);
-    }
-    else if(command == "extract")
-    {
-        return mode_dcd_extract(--argument_c, ++argument_v);
-    }
-    else if(command == "split")
-    {
-        return mode_dcd_split(--argument_c, ++argument_v);
-    }
-    else if(command == "impose")
-    {
-        return mode_dcd_impose(--argument_c, ++argument_v);
-    }
-    else if(command == "convert")
-    {
-        return mode_dcd_convert(--argument_c, ++argument_v);
-    }
-    else if(command == "calc_theta")
-    {
-        return mode_dcd_calc_theta(--argument_c, ++argument_v);
-    }
-    else if(command == "info")
-    {
-        return mode_dcd_info(--argument_c, ++argument_v);
-    }
-    else if(command == "help")
-    {
-        return mode_dcd_help(--argument_c, ++argument_v);
-    }
-    else
-    {
-        log::error("mill dcd mode: unknown command: ", command);
-        log::error(mode_dcd_help_usage());
-        return 1;
-    }
-}
+int mode_dcd(int argc, const char **argv);
 
 } // mill
 #endif /* COFFEE_MILL_PDB_MODE */
