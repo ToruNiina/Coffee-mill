@@ -1,11 +1,11 @@
 #include <mill/math/Vector.hpp>
 #include <mill/util/logger.hpp>
 #include <iostream>
-#include <src/mode_help.hpp>
-#include <src/mode_dcd.hpp>
-#include <src/mode_pdb.hpp>
-#include <src/mode_ninfo.hpp>
-#include <src/mode_calc.hpp>
+#include "mode_help.hpp"
+#include "mode_dcd.hpp"
+#include "mode_pdb.hpp"
+#include "mode_ninfo.hpp"
+#include "mode_calc.hpp"
 
 void print_logo();
 std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv);
