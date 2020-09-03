@@ -1,4 +1,5 @@
 #include <mill/math/Vector.hpp>
+#include <mill/util/logger.hpp>
 #include <iostream>
 #include <src/mode_help.hpp>
 #include <src/mode_dcd.hpp>
