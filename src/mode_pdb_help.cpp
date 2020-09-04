@@ -27,7 +27,7 @@ int mode_pdb_help(std::deque<std::string_view> args)
         return 0;
     }
 
-    const auto command = args.front();
+    const auto command = args.at(1);
 
     if(command == "seq")
     {
