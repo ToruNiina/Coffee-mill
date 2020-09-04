@@ -31,8 +31,8 @@ int mode_pdb_help(std::deque<std::string_view> args)
 
     if(command == "seq")
     {
-        const char *cmds[2] = {"seq", "help"};
-        return mode_pdb_seq(2, cmds);
+        using namespace std::literals::string_view_literals;
+        return mode_pdb_seq({"seq"sv, "help"sv});
     }
     else
     {

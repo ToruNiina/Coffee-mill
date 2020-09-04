@@ -19,15 +19,16 @@ inline const char* pdb_seq_usage() noexcept
 }
 
 // argv := {"seq", "file.pdb"}
-int mode_pdb_seq(int argument_c, const char **argument_v)
+int mode_pdb_seq(std::deque<std::string_view> args)
 {
-    if(argument_c != 2)
+    if(args.size() != 2)
     {
         log::error("error: mill pdb seq: too few arguments");
         log::error(pdb_seq_usage());
         return 1;
     }
-    const std::string pdbname(argument_v[1]);
+
+    const auto pdbname = args.at(1);
 
     if(pdbname == "help")
     {
@@ -36,7 +37,7 @@ int mode_pdb_seq(int argument_c, const char **argument_v)
     }
 
     PDBReader<mill::Vector<double, 3>> reader;
-    for(auto&& chain : reader.parse(reader.read(pdbname)))
+    for(auto&& chain : reader.parse(reader.read(std::string(pdbname))))
     {
         std::string sequence(chain.size(), ' ');
         std::transform(chain.cbegin(), chain.cend(), sequence.begin(),

@@ -38,7 +38,7 @@ int main(int argc, char **argv)
         }
         else if(mode == "pdb")
         {
-            return mill::mode_pdb(argc_ - 1, argv_ + 1);
+            return mill::mode_pdb(std::move(args));
         }
         else if(mode == "ninfo")
         {
