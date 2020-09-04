@@ -2,6 +2,7 @@
 #define COFFEE_MILL_UTIL_LOGGER_HPP
 #include <mill/util/isatty.hpp>
 #include <vector>
+#include <deque>
 #include <map>
 #include <iostream>
 #include <sstream>
