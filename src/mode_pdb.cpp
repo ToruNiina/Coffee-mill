@@ -14,7 +14,7 @@ int mode_pdb(int argument_c, const char **argument_v)
     if(argument_c < 2)
     {
         log::error("mill pdb mode: too few arguments");
-        mode_pdb_help(--argument_c, ++argument_v); // {}
+        mode_pdb_help({});
         return 1;
     }
 

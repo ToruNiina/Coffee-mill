@@ -18,7 +18,7 @@ int mode_dcd(int argument_c, const char **argument_v)
     if(argument_c < 2)
     {
         log::error("mill dcd mode: too few arguments");
-        mode_dcd_help(--argument_c, ++argument_v);
+        mode_dcd_help({});
         return 1;
     }
 
@@ -54,7 +54,12 @@ int mode_dcd(int argument_c, const char **argument_v)
     }
     else if(command == "help")
     {
-        return mode_dcd_help(--argument_c, ++argument_v);
+        std::deque<std::string_view> args;
+        for(int i=0; i<argument_c; ++i)
+        {
+            args.emplace_back(argument_v[i]);
+        }
+        return mode_dcd_help(std::move(args));
     }
     else
     {

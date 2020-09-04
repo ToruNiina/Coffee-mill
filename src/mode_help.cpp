@@ -27,31 +27,32 @@ const char* main_usage() noexcept
 
 //! this function forwards the arguments to different modes.
 // argv := { "help", {args...} }
-int mode_help(int argument_c, const char **argument_v)
+int mode_help(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::info(main_usage());
         return 0;
     }
 
-    const std::string command(argument_v[1]);
+    const auto command = args.front();
+    args.pop_front();
 
     if(command == "pdb")
     {
-        return mode_pdb_help(--argument_c, ++argument_v);
+        return mode_pdb_help(std::move(args));
     }
     else if(command == "ninfo")
     {
-        return mode_ninfo_help(--argument_c, ++argument_v);
+        return mode_ninfo_help(std::move(args));
     }
     else if(command == "dcd")
     {
-        return mode_dcd_help(--argument_c, ++argument_v);
+        return mode_dcd_help(std::move(args));
     }
     else if(command == "calc")
     {
-        return mode_calc_help(--argument_c, ++argument_v);
+        return mode_calc_help(std::move(args));
     }
     else
     {

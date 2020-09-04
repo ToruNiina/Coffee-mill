@@ -44,11 +44,21 @@ int main(int argc, char **argv)
         }
         else if(mode == "help")
         {
-            return mill::mode_help(argc_ - 1, argv_ + 1);
+            std::deque<std::string_view> args;
+            for(int i=1; i<argc; ++i)
+            {
+                args.push_back(std::string_view(argv[i]));
+            }
+            return mill::mode_help(args);
         }
         else
         {
-            return mill::mode_help(argc_ - 1, argv_ + 1);
+            std::deque<std::string_view> args;
+            for(int i=1; i<argc; ++i)
+            {
+                args.push_back(std::string_view(argv[i]));
+            }
+            return mill::mode_help(args);
         }
     }
     catch(std::exception& excpt)

@@ -16,15 +16,15 @@ const char* mode_ninfo_help_usage() noexcept
 }
 
 //! this function forwards the arguments to different modes.
-int mode_ninfo_help(int argument_c, const char **argument_v)
+int mode_ninfo_help(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::info(mode_ninfo_help_usage());
         return 0;
     }
 
-    const std::string command(argument_v[1]);
+    const auto command = args.front();
 
     if(command == "split")
     {
