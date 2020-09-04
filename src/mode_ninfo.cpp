@@ -6,24 +6,20 @@
 namespace mill
 {
 
-int mode_ninfo(int argument_c, const char** argument_v)
+int mode_ninfo(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill ninfo mode: too few arguments");
-        mode_ninfo_help({});
+        mode_ninfo_help(std::move(args));
         return 1;
     }
 
-    const std::string command(argument_v[1]);
+    const auto command = args.at(1);
+    args.pop_front();
     if(command == "split")
     {
-        return mode_ninfo_split(--argument_c, ++argument_v);
-    }
-    else if(command == "split")
-    {
-        mode_ninfo_split(--argument_c, ++argument_v);
-        return 0;
+        return mode_ninfo_split(std::move(args));
     }
     else
     {

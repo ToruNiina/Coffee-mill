@@ -24,6 +24,12 @@ int main(int argc, char **argv)
     }
 
     const std::string mode(argv_[1]);
+    std::deque<std::string_view> args;
+    for(int i=1; i<argc; ++i)
+    {
+        args.push_back(std::string_view(argv[i]));
+    }
+
     try
     {
         if(mode == "dcd")
@@ -36,7 +42,7 @@ int main(int argc, char **argv)
         }
         else if(mode == "ninfo")
         {
-            return mill::mode_ninfo(argc_ - 1, argv_ + 1);
+            return mill::mode_ninfo(std::move(args));
         }
         else if(mode == "calc")
         {
@@ -44,21 +50,11 @@ int main(int argc, char **argv)
         }
         else if(mode == "help")
         {
-            std::deque<std::string_view> args;
-            for(int i=1; i<argc; ++i)
-            {
-                args.push_back(std::string_view(argv[i]));
-            }
-            return mill::mode_help(args);
+            return mill::mode_help(std::move(args));
         }
         else
         {
-            std::deque<std::string_view> args;
-            for(int i=1; i<argc; ++i)
-            {
-                args.push_back(std::string_view(argv[i]));
-            }
-            return mill::mode_help(args);
+            return mill::mode_help(std::move(args));
         }
     }
     catch(std::exception& excpt)

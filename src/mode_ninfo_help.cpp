@@ -28,8 +28,8 @@ int mode_ninfo_help(std::deque<std::string_view> args)
 
     if(command == "split")
     {
-        const char *cmds[2] = {"split", "help"};
-        return mode_ninfo_split(2, cmds);
+        using namespace std::literals::string_view_literals;
+        return mode_ninfo_split({"split"sv, "help"sv});
     }
     else
     {
