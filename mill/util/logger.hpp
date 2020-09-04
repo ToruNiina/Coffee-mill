@@ -115,14 +115,29 @@ void debug(Ts&& ... args)
     return;
 }
 
+// ----------------------------------------------------------------------------
+// log output operator
+
 template<typename T, typename Alloc>
 std::ostream& operator<<(std::ostream& os, const std::vector<T, Alloc>& vec)
 {
-    os << "[";
+    os << "vector[";
     for(std::size_t i=0; i<vec.size(); ++i)
     {
         if(i != 0) {os << ", ";}
         os << vec[i];
+    }
+    os << "]";
+    return os;
+}
+template<typename T, typename Alloc>
+std::ostream& operator<<(std::ostream& os, const std::deque<T, Alloc>& deq)
+{
+    os << "deque[";
+    for(std::size_t i=0; i<deq.size(); ++i)
+    {
+        if(i != 0) {os << ", ";}
+        os << deq[i];
     }
     os << "]";
     return os;
