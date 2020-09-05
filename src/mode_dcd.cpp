@@ -55,7 +55,7 @@ int mode_dcd(int argument_c, const char **argument_v)
     else if(command == "help")
     {
         std::deque<std::string_view> args;
-        for(int i=0; i<argument_c; ++i)
+        for(int i=1; i<argument_c; ++i)
         {
             args.emplace_back(argument_v[i]);
         }
