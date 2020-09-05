@@ -27,8 +27,7 @@ int mode_pdb(std::deque<std::string_view> args)
     }
     else if(command == "help")
     {
-        mode_pdb_help(std::move(args));
-        return 0;
+        return mode_pdb_help(std::move(args));
     }
     else
     {
