@@ -25,16 +25,16 @@ const char* mode_calc_dist_usage() noexcept
            "    ```\n";
 }
 
-int mode_calc_dist(int argc, const char** argv)
+int mode_calc_dist(std::deque<std::string_view> args)
 {
-    if(argc < 2)
+    if(args.size() < 2)
     {
         log::error("mill calc dist: too few arguments.");
         log::error(mode_calc_dist_usage());
         return 1;
     }
 
-    const std::string fname(argv[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(mode_calc_dist_usage());
@@ -50,7 +50,7 @@ int mode_calc_dist(int argc, const char** argv)
 
     if(extension_of(fname) == ".toml")
     {
-        const auto config = toml::parse(fname);
+        const auto config = toml::parse(std::string(fname));
         std::ofstream output(toml::find<std::string>(config, "output"));
         const auto traj  = toml::find<std::string>(config, "input");
         const auto pairs = toml::find<std::vector<std::pair<std::size_t, std::size_t>>>(config, "pairs");
@@ -65,8 +65,8 @@ int mode_calc_dist(int argc, const char** argv)
     }
     else
     {
-        const auto i = std::atoi(argv[2]);
-        const auto j = std::atoi(argv[3]);
+        const auto i = std::stoi(std::string(args.at(2)));
+        const auto j = std::stoi(std::string(args.at(3)));
         for(const auto frame : read(fname))
         {
             std::cout << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << '\n';

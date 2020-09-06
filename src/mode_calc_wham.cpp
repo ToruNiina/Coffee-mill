@@ -33,22 +33,22 @@ const char* mode_calc_wham_usage() noexcept
         "```\n";
 }
 
-int mode_calc_wham(int argument_c, const char** argument_v)
+int mode_calc_wham(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill calc wham: too few arguments.");
         log::error(mode_calc_wham_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(mode_calc_wham_usage());
         return 0;
     }
-    const auto input = toml::parse(fname);
+    const auto input = toml::parse(std::string(fname));
 
     const auto kBT           = toml::find_or<double>(input, "kBT", 0.59587);
     const auto tolerance     = toml::find_or<double>(input, "tolerance", 1e-4);

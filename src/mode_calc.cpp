@@ -9,39 +9,35 @@
 namespace mill
 {
 
-int mode_calc(int argument_c, const char **argument_v)
+int mode_calc(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill calc: too few arguments");
         mode_calc_help({});
         return 1;
     }
 
-    const std::string command(argument_v[1]);
+    const auto command = args.at(1);
+    args.pop_front();
     if(command == "rmsd")
     {
-        return mode_calc_rmsd(--argument_c, ++argument_v);
+        return mode_calc_rmsd(std::move(args));
     }
     else if(command == "dist")
     {
-        return mode_calc_dist(--argument_c, ++argument_v);
+        return mode_calc_dist(std::move(args));
     }
     else if(command == "angle")
     {
-        return mode_calc_angle(--argument_c, ++argument_v);
+        return mode_calc_angle(std::move(args));
     }
     else if(command == "wham")
     {
-        return mode_calc_wham(--argument_c, ++argument_v);
+        return mode_calc_wham(std::move(args));
     }
     else if(command == "help")
     {
-        std::deque<std::string_view> args;
-        for(int i=1; i<argument_c; ++i)
-        {
-            args.emplace_back(argument_v[i]);
-        }
         return mode_calc_help(std::move(args));
     }
     else

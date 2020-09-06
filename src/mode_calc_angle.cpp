@@ -18,16 +18,16 @@ const char* mode_calc_angle_usage() noexcept
            "       - output will be printed on stdout.\n";
 }
 
-int mode_calc_angle(int argc, const char** argv)
+int mode_calc_angle(std::deque<std::string_view> args)
 {
-    if(argc < 2)
+    if(args.size() < 2)
     {
         log::error("mill calc angle: too few arguments.");
         log::error(mode_calc_angle_usage());
         return 1;
     }
 
-    const std::string fname(argv[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(mode_calc_angle_usage());
@@ -42,11 +42,11 @@ int mode_calc_angle(int argc, const char** argv)
     }
     constexpr double rad_to_deg = 180.0 / 3.14159265358979;
 
-    if(argc == 5) // angle traj.dcd i j k
+    if(args.size() == 5) // angle traj.dcd i j k
     {
-        const auto i = std::atoi(argv[2]);
-        const auto j = std::atoi(argv[3]);
-        const auto k = std::atoi(argv[4]);
+        const auto i = std::stoi(std::string(args.at(2)));
+        const auto j = std::stoi(std::string(args.at(3)));
+        const auto k = std::stoi(std::string(args.at(4)));
         for(const auto frame : read(fname))
         {
             const auto v1 = frame[i].position() - frame[j].position();
@@ -54,12 +54,12 @@ int mode_calc_angle(int argc, const char** argv)
             std::cout << std::setprecision(16) << angle(v1, v2) * rad_to_deg << '\n';
         }
     }
-    else if(argc == 6) // angle traj.dcd i j k l
+    else if(args.size() == 6) // angle traj.dcd i j k l
     {
-        const auto i = std::atoi(argv[2]);
-        const auto j = std::atoi(argv[3]);
-        const auto k = std::atoi(argv[4]);
-        const auto l = std::atoi(argv[5]);
+        const auto i = std::stoi(std::string(args.at(2)));
+        const auto j = std::stoi(std::string(args.at(3)));
+        const auto k = std::stoi(std::string(args.at(4)));
+        const auto l = std::stoi(std::string(args.at(5)));
 
         for(const auto frame : read(fname))
         {

@@ -31,16 +31,15 @@ int mode_calc_help(std::deque<std::string_view> args)
     }
 
     const auto command = args.at(1);
+    using namespace std::literals::string_view_literals;
 
     if(command == "rmsd")
     {
-        const char *cmds[2] = {"rmsd", "help"};
-        return mode_calc_rmsd(2, cmds);
+        return mode_calc_rmsd({"rmsd"sv, "help"sv});
     }
     else if(command == "dist")
     {
-        const char *cmds[2] = {"dist", "help"};
-        return mode_calc_dist(2, cmds);
+        return mode_calc_dist({"dist"sv, "help"sv});
     }
     else if(command == "help")
     {
