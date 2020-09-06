@@ -33,8 +33,8 @@ class XYZWriter final : public WriterBase
 
   public:
 
-    XYZWriter(const std::string& fname)
-        : current_(0), file_name_(fname), xyz_(fname)
+    XYZWriter(const std::string_view fname)
+        : current_(0), file_name_(fname), xyz_(file_name_)
     {
         if(!xyz_.good())
         {

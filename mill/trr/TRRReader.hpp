@@ -22,9 +22,9 @@ class TRRReader final : public DeferedReaderBase
 
   public:
 
-    explicit TRRReader(const std::string& fname)
+    explicit TRRReader(const std::string_view fname)
         : current_(0), file_name_(fname),
-          trr_(fname, std::ios::in | std::ios::binary)
+          trr_(file_name_, std::ios::in | std::ios::binary)
     {
         if(!trr_.good())
         {

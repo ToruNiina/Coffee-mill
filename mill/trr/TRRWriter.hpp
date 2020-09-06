@@ -22,9 +22,9 @@ class TRRWriter final : public WriterBase
 
   public:
 
-    explicit TRRWriter(const std::string& fname)
+    explicit TRRWriter(const std::string_view fname)
         : current_(0), file_name_(fname),
-          trr_(fname, std::ios::out | std::ios::binary)
+          trr_(file_name_, std::ios::out | std::ios::binary)
     {
         if(!trr_.good())
         {

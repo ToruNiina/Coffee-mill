@@ -30,8 +30,8 @@ class XYZReader final : public DeferedReaderBase
 
   public:
 
-    explicit XYZReader(const std::string& fname)
-        : current_(0), file_name_(fname), xyz_(fname)
+    explicit XYZReader(const std::string_view fname)
+        : current_(0), file_name_(fname), xyz_(file_name_)
     {
         if(!xyz_.good())
         {

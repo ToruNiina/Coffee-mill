@@ -35,9 +35,9 @@ class DCDReader final : public DeferedReaderBase
 
   public:
 
-    explicit DCDReader(const std::string& fname)
+    explicit DCDReader(const std::string_view fname)
         : current_(0), file_name_(fname),
-          dcd_(fname, std::ios::in | std::ios::binary)
+          dcd_(file_name_, std::ios::in | std::ios::binary)
     {
         if(!dcd_.good())
         {

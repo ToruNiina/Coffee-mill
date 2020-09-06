@@ -36,8 +36,8 @@ class DCDWriter final : public WriterBase
 
   public:
 
-    DCDWriter(const std::string& fname)
-        : current_(0), file_name_(fname), dcd_(fname)
+    DCDWriter(const std::string_view fname)
+        : current_(0), file_name_(fname), dcd_(file_name_)
     {
         if(!dcd_.good())
         {
