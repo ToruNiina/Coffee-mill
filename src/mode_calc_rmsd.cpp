@@ -75,7 +75,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     else if(extension_of(refname) == ".xyz")
     {
         log::info("mill calc rmsd: reading ", refname, " as a XYZ file...");
-        auto reader = read(refname);
+        XYZReader reader(refname);
         if(const auto first_frame = reader.read_frame())
         {
             for(const auto& particle : *first_frame)
