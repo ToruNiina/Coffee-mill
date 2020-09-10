@@ -3,6 +3,8 @@
 #include <mill/dcd/DCDWriter.hpp>
 #include <mill/dcd/DCDReader.hpp>
 #include <limits>
+#include <string_view>
+#include <deque>
 
 namespace mill
 {
@@ -17,16 +19,16 @@ inline const char* dcd_extract_usage() noexcept
 }
 
 // argv := arrayof{ "extract", "filename", {rests...} }
-inline int mode_dcd_extract(int argument_c, const char **argument_v)
+inline int mode_dcd_extract(std::deque<std::string_view> args)
 {
-    if(argument_c == 1)
+    if(args.size() < 2)
     {
         log::error("mill dcd-mode: too few arguments");
         log::error(dcd_extract_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(dcd_extract_usage());
@@ -35,29 +37,29 @@ inline int mode_dcd_extract(int argument_c, const char **argument_v)
 
     if(fname.substr(fname.size()-4, 4) == ".dcd")
     {
-        if(argument_c < 4)
+        if(args.size() < 4)
         {
             log::error("mill dcd extract: too few arguments");
             log::error(dcd_extract_usage());
             return 1;
         }
-        const std::string dcdname = fname;
+        const std::string dcdname(fname);
         std::size_t beg = std::numeric_limits<std::size_t>::max();
         std::size_t end = std::numeric_limits<std::size_t>::max();
         try
         {
-            beg = std::stoi(std::string(argument_v[2]));
-            end = std::stoi(std::string(argument_v[3]));
+            beg = std::stoi(std::string(args.at(2)));
+            end = std::stoi(std::string(args.at(3)));
         }
         catch(std::exception&)
         {
             log::error("error: mill dcd extract: integer parsing failed ",
-                       argument_v[2], ", ", argument_v[3]);
+                       args.at(2), ", ", args.at(3));
             log::error(dcd_extract_usage());
             return 1;
         }
         const std::string outname =
-            fname.substr(0, fname.size() - 4) + std::string("_") +
+            std::string(fname.substr(0, fname.size() - 4)) + std::string("_") +
             std::to_string(beg) + std::string("to") + std::to_string(end) +
             std::string(".dcd");
 

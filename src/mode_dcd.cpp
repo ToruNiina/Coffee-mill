@@ -13,52 +13,48 @@ namespace mill
 {
 
 // argv := arrayof{ "dcd", "command-name", {rests...} }
-int mode_dcd(int argument_c, const char **argument_v)
+int mode_dcd(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill dcd mode: too few arguments");
         mode_dcd_help({});
         return 1;
     }
 
-    const std::string command(argument_v[1]);
+    const auto command(args.at(1));
+    args.pop_front();
     if(command == "join")
     {
         // {"join", {"args"...}}
-        return mode_dcd_join(--argument_c, ++argument_v);
+        return mode_dcd_join(std::move(args));
     }
     else if(command == "extract")
     {
-        return mode_dcd_extract(--argument_c, ++argument_v);
+        return mode_dcd_extract(std::move(args));
     }
     else if(command == "split")
     {
-        return mode_dcd_split(--argument_c, ++argument_v);
+        return mode_dcd_split(std::move(args));
     }
     else if(command == "impose")
     {
-        return mode_dcd_impose(--argument_c, ++argument_v);
+        return mode_dcd_impose(std::move(args));
     }
     else if(command == "convert")
     {
-        return mode_dcd_convert(--argument_c, ++argument_v);
+        return mode_dcd_convert(std::move(args));
     }
     else if(command == "calc_theta")
     {
-        return mode_dcd_calc_theta(--argument_c, ++argument_v);
+        return mode_dcd_calc_theta(std::move(args));
     }
     else if(command == "info")
     {
-        return mode_dcd_info(--argument_c, ++argument_v);
+        return mode_dcd_info(std::move(args));
     }
     else if(command == "help")
     {
-        std::deque<std::string_view> args;
-        for(int i=1; i<argument_c; ++i)
-        {
-            args.emplace_back(argument_v[i]);
-        }
         return mode_dcd_help(std::move(args));
     }
     else

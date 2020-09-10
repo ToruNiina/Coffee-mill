@@ -8,6 +8,9 @@
 #include <fstream>
 #include <toml/toml.hpp>
 
+#include <string_view>
+#include <deque>
+
 namespace mill
 {
 
@@ -49,17 +52,17 @@ remove_except_elements(const Snapshot& frame,
 }
 
 //! argv = {"impose", {args...}}
-inline int mode_dcd_impose(int argument_c, const char** argument_v)
+inline int mode_dcd_impose(std::deque<std::string_view> args)
 {
     using vector_type = DCDReader::vector_type;
-    if(argument_c == 1)
+    if(args.size() < 2)
     {
         log::error("error: mill dcd impose: too few arguments");
         log::error(dcd_impose_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(dcd_impose_usage());
@@ -75,7 +78,7 @@ inline int mode_dcd_impose(int argument_c, const char** argument_v)
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
         const std::string outname =
-            fname.substr(0, fname.size() - 4) + "_imposed.dcd";
+            std::string(fname.substr(0, fname.size() - 4)) + "_imposed.dcd";
 
         DCDReader reader(fname);
         DCDWriter writer(outname);
@@ -111,7 +114,7 @@ inline int mode_dcd_impose(int argument_c, const char** argument_v)
     }
     else if(fname.substr(fname.size() - 5, 5) == ".toml")
     {
-        const auto data = toml::parse(fname);
+        const auto data = toml::parse(std::string(fname));
 
         const auto input    = toml::find<std::string>(data, "input");
         const auto output   = toml::find<std::string>(data, "output");

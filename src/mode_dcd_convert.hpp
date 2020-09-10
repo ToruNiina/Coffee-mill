@@ -6,6 +6,9 @@
 #include <mill/util/file_extension.hpp>
 #include <toml/toml.hpp>
 
+#include <string_view>
+#include <deque>
+
 namespace mill
 {
 
@@ -19,17 +22,17 @@ inline const char* dcd_convert_usage() noexcept
 }
 
 // argv := arrayof{ "convert", "pdb", "filename", [pdb] }
-inline int mode_dcd_convert(int argument_c, const char **argument_v)
+inline int mode_dcd_convert(std::deque<std::string_view> args)
 {
     using vector_type = DCDReader::vector_type;
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill dcd convert: too few arguments");
         log::error(dcd_convert_usage());
         return 1;
     }
 
-    const std::string format(argument_v[1]);
+    const auto format = args.at(1);
     if(format == "help")
     {
         log::info(dcd_convert_usage());
@@ -42,24 +45,24 @@ inline int mode_dcd_convert(int argument_c, const char **argument_v)
         return 1;
     }
 
-    if(argument_c < 3)
+    if(args.size() < 3)
     {
         log::error("mill dcd convert: too few arguments");
         log::error(dcd_convert_usage());
         return 1;
     }
-    const std::string fname(argument_v[2]);
+    const auto fname = args.at(2);
 
     if(extension_of(fname) == ".dcd")
     {
         std::string pdbname;
-        if(argument_c >= 4)
+        if(args.size() >= 4)
         {
-            pdbname = std::string(argument_v[3]);
+            pdbname = std::string(args.at(3));
         }
 
-        const std::string outname = fname.substr(0, fname.size()-4) +
-                                    "_converted.pdb";
+        const std::string outname = std::string(fname.substr(0, fname.size()-4)) +
+                                    std::string("_converted.pdb");
         std::ofstream ofs(outname);
         if(not ofs.good())
         {

@@ -34,7 +34,7 @@ int main(int argc, char **argv)
     {
         if(mode == "dcd")
         {
-            return mill::mode_dcd(argc_ - 1, argv_ + 1);
+            return mill::mode_dcd(std::move(args));
         }
         else if(mode == "pdb")
         {

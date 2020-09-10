@@ -24,16 +24,16 @@ inline const char* dcd_split_usage() noexcept
 }
 
 //! argv = {"split", {args...}}
-inline int mode_dcd_split(int argument_c, const char** argument_v)
+inline int mode_dcd_split(std::deque<std::string_view> args)
 {
-    if(argument_c == 1)
+    if(args.size() < 2)
     {
         log::error("error: mill dcd split: too few arguments");
         log::error(dcd_split_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(dcd_split_usage());
@@ -49,7 +49,7 @@ inline int mode_dcd_split(int argument_c, const char** argument_v)
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
         //! argv = {"split", "traj.dcd" 100}
-        if(argument_c < 3)
+        if(args.size() < 3)
         {
             log::error("mill dcd split: too few arguments");
             log::error(dcd_split_usage());
@@ -59,11 +59,11 @@ inline int mode_dcd_split(int argument_c, const char** argument_v)
         std::size_t unit;
         try
         {
-            unit = std::stoi(std::string(argument_v[2]));
+            unit = std::stoi(std::string(args.at(2)));
         }
         catch(std::exception& excpt)
         {
-            log::error("mill dcd split: invalid argument: ", argument_v[2],
+            log::error("mill dcd split: invalid argument: ", args.at(2),
                        " is not an integer.");
             log::error(dcd_split_usage());
             return 1;
@@ -78,7 +78,8 @@ inline int mode_dcd_split(int argument_c, const char** argument_v)
         traj.snapshots().resize(unit);
         for(std::size_t i=0; i<n_files; ++i)
         {
-            const std::string outname = fname.substr(0, fname.size() - 4) +
+            const std::string outname =
+                std::string(fname.substr(0, fname.size() - 4)) +
                 std::string("_") + std::to_string(i) + std::string(".dcd");
 
             DCDWriter writer(outname);
@@ -95,7 +96,8 @@ inline int mode_dcd_split(int argument_c, const char** argument_v)
             traj.at("nset") = sz;
             traj.snapshots().resize(sz);
 
-            const std::string outname = fname.substr(0, fname.size() - 4) +
+            const std::string outname =
+                std::string(fname.substr(0, fname.size() - 4)) +
                 std::string("_") + std::to_string(n_files) + std::string(".dcd");
 
             DCDWriter writer(outname);

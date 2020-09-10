@@ -2,6 +2,9 @@
 #define COFFEE_MILL_DCD_INFO
 #include <mill/dcd/DCDReader.hpp>
 
+#include <string_view>
+#include <deque>
+
 namespace mill
 {
 
@@ -13,16 +16,16 @@ inline const char* dcd_info_usage() noexcept
            " and etc.\n";
 }
 
-inline int mode_dcd_info(int argument_c, const char **argument_v)
+inline int mode_dcd_info(std::deque<std::string_view> args)
 {
-    if(argument_c < 2)
+    if(args.size() < 2)
     {
         log::error("mill dcd info: too few arguments");
         log::error(dcd_info_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(dcd_info_usage());

@@ -5,6 +5,9 @@
 #include <fstream>
 #include <toml/toml.hpp>
 
+#include <string_view>
+#include <deque>
+
 namespace mill
 {
 
@@ -29,16 +32,16 @@ inline const char* dcd_join_usage() noexcept
 }
 
 //! argv = {"join", {args...}}
-inline int mode_dcd_join(int argument_c, const char** argument_v)
+inline int mode_dcd_join(std::deque<std::string_view> args)
 {
-    if(argument_c == 1)
+    if(args.size() < 2)
     {
         log::error("mill dcd-mode: too few arguments");
         log::error(dcd_join_usage());
         return 1;
     }
 
-    const std::string fname(argument_v[1]);
+    const auto fname = args.at(1);
     if(fname == "help")
     {
         log::info(dcd_join_usage());
@@ -57,18 +60,18 @@ inline int mode_dcd_join(int argument_c, const char** argument_v)
 
     if(fname.substr(fname.size() - 4, 4) == ".dcd")
     {
-        files.push_back(fname);
+        files.push_back(std::string(fname));
         //! argv = {"join", {"1.dcd", "2.dcd", ...}}
-        for(int i=2; i<argument_c; ++i)
+        for(std::size_t i=2; i<args.size(); ++i)
         {
-            files.push_back(argument_v[i]);
+            files.push_back(std::string(args.at(i)));
         }
-        outname = fname.substr(0, fname.size() - 4) + "_joined.dcd";
+        outname = std::string(fname.substr(0, fname.size() - 4)) + "_joined.dcd";
         include_initial = true;
     }
     else if(fname.substr(fname.size() - 5, 5) == ".toml")
     {
-        const auto tomldata = toml::parse(fname);
+        const auto tomldata = toml::parse(std::string(fname));
         files = toml::find<std::vector<std::string>>(tomldata, "inputs");
         outname = toml::find<std::string>(tomldata, "output");
         include_initial = toml::find_or(tomldata, "include_initial", true);
