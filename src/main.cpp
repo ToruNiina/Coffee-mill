@@ -8,11 +8,11 @@
 #include "mode_calc.hpp"
 
 void print_logo();
-std::deque<std::string_view> setup_logger(int argc, char **argv);
+std::deque<std::string_view> get_commands(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-    auto args = setup_logger(argc, argv);
+    auto args = get_commands(argc, argv);
     print_logo();
 
     if(args.size() < 2)
@@ -21,7 +21,7 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    const auto mode = args.at(1);
+    const auto mode = args.front();
     try
     {
         if(mode == "dcd")
@@ -68,10 +68,10 @@ void print_logo()
     return;
 }
 
-std::deque<std::string_view> setup_logger(int argc, char **argv)
+std::deque<std::string_view> get_commands(int argc, char **argv)
 {
     std::deque<std::string_view> commands;
-    for(int i=0; i<argc; ++i)
+    for(int i=1; i<argc; ++i) // XXX: discard 0-th argument ("mill", normally)
     {
         const std::string_view opt(argv[i]);
         if(opt == "--debug")
