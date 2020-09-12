@@ -76,16 +76,17 @@ int mode_ninfo_split(std::deque<std::string_view> args)
             splitted.size(), " ninfoes. writing one-by-one...");
 
     NinfoWriter writer;
-    const std::string file_prefix(fname.substr(0, fname.size() - 6));
+    const std::string basename(base_name_of(fname));
     for(const auto& one_by_one : splitted)
     {
+        using namespace std::literals::string_literals;
         const auto units = one_by_one.first;
-        const std::string outname = file_prefix + std::string("_unit") +
-            std::to_string(units.first)  + std::string("-") +
-            std::to_string(units.second) + std::string(".ninfo");
+        const std::string outname = basename + "_unit"s +
+                std::to_string(units.first)  + "-"s     +
+                std::to_string(units.second) + ".ninfo"s;
 
         log::debug("mill ninfo split: writing ninfo between ",
-                units.first, " and ", units.second, " into ", outname);
+                   units.first, " and ", units.second, " into ", outname);
         writer.write(one_by_one.second, outname);
     }
     return 0;
