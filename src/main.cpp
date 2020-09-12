@@ -8,28 +8,20 @@
 #include "mode_calc.hpp"
 
 void print_logo();
-std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv);
+std::deque<std::string_view> setup_logger(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
-    auto [argc_, argv_v] = setup_logger(argc, argv);
-    const char** argv_ = argv_v.data();
-
+    auto args = setup_logger(argc, argv);
     print_logo();
 
-    if(argc_ < 2)
+    if(args.size() < 2)
     {
         mill::log::error(mill::main_usage());
         return 1;
     }
 
-    const std::string mode(argv_[1]);
-    std::deque<std::string_view> args;
-    for(int i=1; i<argc; ++i)
-    {
-        args.push_back(std::string_view(argv[i]));
-    }
-
+    const auto mode = args.at(1);
     try
     {
         if(mode == "dcd")
@@ -76,13 +68,12 @@ void print_logo()
     return;
 }
 
-std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv)
+std::deque<std::string_view> setup_logger(int argc, char **argv)
 {
-    // TODO simplify
-    std::vector<const char*> commands;
+    std::deque<std::string_view> commands;
     for(int i=0; i<argc; ++i)
     {
-        const std::string opt(argv[i]);
+        const std::string_view opt(argv[i]);
         if(opt == "--debug")
         {
             mill::log::logger.activate(mill::log::level::debug);
@@ -99,9 +90,9 @@ std::pair<int, std::vector<const char*>> setup_logger(int argc, char **argv)
         }
         else
         {
-            commands.push_back(argv[i]);
+            commands.emplace_back(argv[i]);
         }
     }
-    return std::make_pair(static_cast<int>(commands.size()), commands);
+    return commands;
 }
 
