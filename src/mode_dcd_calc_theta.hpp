@@ -38,7 +38,7 @@ inline int mode_dcd_calc_theta(std::deque<std::string_view> args)
     }
     args.pop_front();
 
-    if(fname.substr(fname.size()-5, 5) == ".toml")
+    if(extension_of(fname) == ".toml")
     {
         const auto data   = toml::parse(std::string(fname));
         const auto input  = toml::find<std::string>(data, "input");

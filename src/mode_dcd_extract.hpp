@@ -2,6 +2,7 @@
 #define COFFEE_MILL_DCD_EXTRACT
 #include <mill/dcd/DCDWriter.hpp>
 #include <mill/dcd/DCDReader.hpp>
+#include <mill/util/file_extension.hpp>
 #include <limits>
 #include <string_view>
 #include <deque>
@@ -35,7 +36,7 @@ inline int mode_dcd_extract(std::deque<std::string_view> args)
         return 0;
     }
 
-    if(fname.substr(fname.size()-4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
         if(args.size() < 4)
         {
@@ -58,10 +59,10 @@ inline int mode_dcd_extract(std::deque<std::string_view> args)
             log::error(dcd_extract_usage());
             return 1;
         }
-        const std::string outname =
-            std::string(fname.substr(0, fname.size() - 4)) + std::string("_") +
-            std::to_string(beg) + std::string("to") + std::to_string(end) +
-            std::string(".dcd");
+        using namespace std::literals::string_literals;
+
+        const std::string outname = std::string(base_name_of(fname)) + "_"s +
+            std::to_string(beg) + "to"s + std::to_string(end) + ".dcd"s;
 
         if(beg > end)
         {

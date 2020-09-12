@@ -2,6 +2,7 @@
 #define COFFEE_MILL_DCD_JOIN
 #include <mill/dcd/DCDReader.hpp>
 #include <mill/dcd/DCDWriter.hpp>
+#include <mill/util/file_extension.hpp>
 #include <fstream>
 #include <toml/toml.hpp>
 
@@ -58,7 +59,7 @@ inline int mode_dcd_join(std::deque<std::string_view> args)
     std::string outname;
     bool include_initial;
 
-    if(fname.substr(fname.size() - 4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
         files.push_back(std::string(fname));
         //! argv = {"join", {"1.dcd", "2.dcd", ...}}
@@ -66,10 +67,10 @@ inline int mode_dcd_join(std::deque<std::string_view> args)
         {
             files.push_back(std::string(args.at(i)));
         }
-        outname = std::string(fname.substr(0, fname.size() - 4)) + "_joined.dcd";
+        outname = std::string(base_name_of(fname)) + "_joined.dcd";
         include_initial = true;
     }
-    else if(fname.substr(fname.size() - 5, 5) == ".toml")
+    else if(extension_of(fname) == ".toml")
     {
         const auto tomldata = toml::parse(std::string(fname));
         files = toml::find<std::vector<std::string>>(tomldata, "inputs");

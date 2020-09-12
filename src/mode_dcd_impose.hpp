@@ -5,6 +5,7 @@
 #include <mill/dcd/DCDWriter.hpp>
 #include <mill/pdb/PDBReader.hpp>
 #include <mill/pdb/PDBWriter.hpp>
+#include <mill/util/file_extension.hpp>
 #include <fstream>
 #include <toml/toml.hpp>
 
@@ -75,10 +76,9 @@ inline int mode_dcd_impose(std::deque<std::string_view> args)
         return 1;
     }
 
-    if(fname.substr(fname.size() - 4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
-        const std::string outname =
-            std::string(fname.substr(0, fname.size() - 4)) + "_imposed.dcd";
+        const std::string outname = std::string(base_name_of(fname)) + "_imposed.dcd";
 
         DCDReader reader(fname);
         DCDWriter writer(outname);
@@ -112,7 +112,7 @@ inline int mode_dcd_impose(std::deque<std::string_view> args)
         }
         return 0;
     }
-    else if(fname.substr(fname.size() - 5, 5) == ".toml")
+    else if(extension_of(fname) == ".toml")
     {
         const auto data = toml::parse(std::string(fname));
 

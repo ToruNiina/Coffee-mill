@@ -2,6 +2,7 @@
 #define COFFEE_MILL_DCD_SPLIT
 #include <mill/dcd/DCDReader.hpp>
 #include <mill/dcd/DCDWriter.hpp>
+#include <mill/util/file_extension.hpp>
 #include <fstream>
 
 namespace mill
@@ -26,6 +27,7 @@ inline const char* dcd_split_usage() noexcept
 //! argv = {"split", {args...}}
 inline int mode_dcd_split(std::deque<std::string_view> args)
 {
+    using namespace std::literals::string_literals;
     if(args.size() < 2)
     {
         log::error("error: mill dcd split: too few arguments");
@@ -46,7 +48,7 @@ inline int mode_dcd_split(std::deque<std::string_view> args)
         return 1;
     }
 
-    if(fname.substr(fname.size() - 4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
         //! argv = {"split", "traj.dcd" 100}
         if(args.size() < 3)
@@ -78,9 +80,8 @@ inline int mode_dcd_split(std::deque<std::string_view> args)
         traj.snapshots().resize(unit);
         for(std::size_t i=0; i<n_files; ++i)
         {
-            const std::string outname =
-                std::string(fname.substr(0, fname.size() - 4)) +
-                std::string("_") + std::to_string(i) + std::string(".dcd");
+            const std::string outname = std::string(base_name_of(fname)) +
+                    "_"s + std::to_string(i) + ".dcd"s;
 
             DCDWriter writer(outname);
             writer.write_header(traj.attributes());
@@ -96,9 +97,8 @@ inline int mode_dcd_split(std::deque<std::string_view> args)
             traj.at("nset") = sz;
             traj.snapshots().resize(sz);
 
-            const std::string outname =
-                std::string(fname.substr(0, fname.size() - 4)) +
-                std::string("_") + std::to_string(n_files) + std::string(".dcd");
+            const std::string outname = std::string(base_name_of(fname)) +
+                    "_"s + std::to_string(n_files) + ".dcd"s;
 
             DCDWriter writer(outname);
             writer.write_header(traj.attributes());

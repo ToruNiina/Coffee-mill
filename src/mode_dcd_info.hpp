@@ -32,7 +32,7 @@ inline int mode_dcd_info(std::deque<std::string_view> args)
         return 0;
     }
 
-    if(fname.substr(fname.size()-4, 4) == ".dcd")
+    if(extension_of(fname) == ".dcd")
     {
         DCDReader reader(fname);
         const auto data = reader.read_header();

@@ -55,14 +55,13 @@ inline int mode_dcd_convert(std::deque<std::string_view> args)
 
     if(extension_of(fname) == ".dcd")
     {
-        std::string pdbname;
+        std::optional<std::string> pdbname;
         if(args.size() >= 4)
         {
             pdbname = std::string(args.at(3));
         }
 
-        const std::string outname = std::string(fname.substr(0, fname.size()-4)) +
-                                    std::string("_converted.pdb");
+        const std::string outname = std::string(base_name_of(fname)) + "_converted.pdb";
         std::ofstream ofs(outname);
         if(not ofs.good())
         {
@@ -78,17 +77,17 @@ inline int mode_dcd_convert(std::deque<std::string_view> args)
 
         const std::size_t num_particles = header.at("nparticle").as_integer();
         std::vector<PDBAtom<vector_type>> atoms(num_particles);
-        if(not pdbname.empty()) // reference pdb exists.
+        if(pdbname) // reference pdb exists.
         {
             PDBReader<vector_type> pdbreader;
-            std::ifstream pdbfile(pdbname);
+            std::ifstream pdbfile(*pdbname);
             if(not pdbfile.good())
             {
-                log::error("mill dcd convert: file open error: ", pdbname);
+                log::error("mill dcd convert: file open error: ", *pdbname);
                 log::error(dcd_convert_usage());
                 return 1;
             }
-            atoms = pdbreader.read(pdbname);
+            atoms = pdbreader.read(*pdbname);
             if(atoms.size() != static_cast<std::size_t>(num_particles))
             {
                 log::error("mill dcd convert: file open error: "
