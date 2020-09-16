@@ -134,9 +134,9 @@ inline ProbabilityDensity WHAMSolver::reconstruct(const std::vector<double>& exp
 {
     double start =  std::numeric_limits<double>::max();
     double stop  = -std::numeric_limits<double>::max();
-    for(const auto& [traj, rc] : trajs)
+    for(const auto& traj_rc : trajs)
     {
-        for(const auto& x : traj)
+        for(const auto& x : traj_rc.first)
         {
             start = std::min(start, x);
             stop  = std::max(stop,  x);
@@ -148,9 +148,9 @@ inline ProbabilityDensity WHAMSolver::reconstruct(const std::vector<double>& exp
     log::info("WHAM: range = [", start, ", ", stop, ") dx = ", dx);
 
     Histogram<double, double> unbiased(bins, start, stop);
-    for(const auto& [traj, rc] : trajs)
+    for(const auto& traj_rc : trajs)
     {
-        for(const auto& x: traj)
+        for(const auto& x: traj_rc.first)
         {
             double denom = 0.0;
             for(std::size_t i=0; i<trajs.size(); ++i)
