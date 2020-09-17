@@ -11,15 +11,14 @@ namespace mill
 
 int mode_calc(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill calc: too few arguments");
         mode_calc_help({});
         return 1;
     }
 
-    const auto command = args.at(1);
-    args.pop_front();
+    const auto command = args.front();
     if(command == "rmsd")
     {
         return mode_calc_rmsd(std::move(args));

@@ -15,15 +15,14 @@ namespace mill
 // argv := arrayof{ "dcd", "command-name", {rests...} }
 int mode_dcd(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill dcd mode: too few arguments");
         mode_dcd_help({});
         return 1;
     }
 
-    const auto command(args.at(1));
-    args.pop_front();
+    const auto command = args.front();
     if(command == "join")
     {
         // {"join", {"args"...}}

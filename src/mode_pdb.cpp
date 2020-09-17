@@ -11,15 +11,14 @@ namespace mill
 // argv := arrayof{ "pdb", "command-name", {rests...} }
 int mode_pdb(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill pdb mode: too few arguments");
         mode_pdb_help({});
         return 1;
     }
 
-    const auto command = args.at(1);
-    args.pop_front();
+    const auto command = args.front();
 
     if(command == "seq")
     {

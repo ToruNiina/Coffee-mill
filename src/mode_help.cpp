@@ -29,14 +29,13 @@ const char* main_usage() noexcept
 // argv := { "help", {args...} }
 int mode_help(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::info(main_usage());
         return 0;
     }
 
-    const auto command = args.at(1);
-    args.pop_front();
+    const auto command = args.front();
 
     if(command == "pdb")
     {

@@ -15,13 +15,14 @@ int main(int argc, char **argv)
     auto args = get_commands(argc, argv);
     print_logo();
 
-    if(args.size() < 2)
+    if(args.empty())
     {
         mill::log::error(mill::main_usage());
         return 1;
     }
 
     const auto mode = args.front();
+    args.pop_front();
     try
     {
         if(mode == "dcd")

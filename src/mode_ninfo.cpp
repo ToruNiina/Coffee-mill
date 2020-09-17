@@ -8,15 +8,14 @@ namespace mill
 
 int mode_ninfo(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill ninfo mode: too few arguments");
         mode_ninfo_help(std::move(args));
         return 1;
     }
 
-    const auto command = args.at(1);
-    args.pop_front();
+    const auto command = args.front();
     if(command == "split")
     {
         return mode_ninfo_split(std::move(args));
