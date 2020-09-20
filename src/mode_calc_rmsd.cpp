@@ -19,7 +19,7 @@ const char* mode_calc_rmsd_usage() noexcept
 int mode_calc_rmsd(std::deque<std::string_view> args)
 {
     using vector_type = Vector<double, 3>;
-    if(args.size() < 3)
+    if(args.size() < 2)
     {
         log::error("mill calc rmsd: too few arguments.");
         log::error(mode_calc_rmsd_usage());
