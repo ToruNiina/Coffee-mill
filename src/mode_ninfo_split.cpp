@@ -26,7 +26,7 @@ int mode_ninfo_split(std::deque<std::string_view> args)
     const auto fname = args.front();
     if(fname == "help")
     {
-        log::error(ninfo_split_usage());
+        log::info(ninfo_split_usage());
         return 0;
     }
 
