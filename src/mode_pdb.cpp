@@ -19,7 +19,7 @@ int mode_pdb(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
-
+    args.pop_front();
     if(command == "seq")
     {
         return mode_pdb_seq(std::move(args));

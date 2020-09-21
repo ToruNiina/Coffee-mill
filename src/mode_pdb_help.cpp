@@ -21,14 +21,13 @@ const char* mode_pdb_help_usage() noexcept
 // argv := { "help" or "pdb", {args...} }
 int mode_pdb_help(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::info(mode_pdb_help_usage());
         return 0;
     }
 
-    const auto command = args.at(1);
-
+    const auto command = args.front();
     if(command == "seq")
     {
         using namespace std::literals::string_view_literals;

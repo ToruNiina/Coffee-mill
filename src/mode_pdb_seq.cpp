@@ -21,15 +21,14 @@ inline const char* pdb_seq_usage() noexcept
 // argv := {"seq", "file.pdb"}
 int mode_pdb_seq(std::deque<std::string_view> args)
 {
-    if(args.size() != 2)
+    if(args.empty())
     {
         log::error("error: mill pdb seq: too few arguments");
         log::error(pdb_seq_usage());
         return 1;
     }
 
-    const auto pdbname = args.at(1);
-
+    const auto pdbname = args.front();
     if(pdbname == "help")
     {
         log::info(pdb_seq_usage());
