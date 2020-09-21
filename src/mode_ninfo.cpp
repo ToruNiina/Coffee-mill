@@ -16,6 +16,7 @@ int mode_ninfo(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
+    args.pop_front();
     if(command == "split")
     {
         return mode_ninfo_split(std::move(args));

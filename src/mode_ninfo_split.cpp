@@ -16,14 +16,14 @@ const char* ninfo_split_usage() noexcept
 //! argv = {"split", args...}
 int mode_ninfo_split(std::deque<std::string_view> args)
 {
-    if(args.size() == 1)
+    if(args.empty())
     {
         log::error("mill ninfo split: too few arguments");
         log::error(ninfo_split_usage());
         return 1;
     }
 
-    const auto fname = args.at(1);
+    const auto fname = args.front();
     if(fname == "help")
     {
         log::error(ninfo_split_usage());
