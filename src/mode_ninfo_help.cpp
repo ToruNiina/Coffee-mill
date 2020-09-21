@@ -28,7 +28,7 @@ int mode_ninfo_help(std::deque<std::string_view> args)
     if(command == "split")
     {
         using namespace std::literals::string_view_literals;
-        return mode_ninfo_split({"split"sv, "help"sv});
+        return mode_ninfo_split({"help"sv});
     }
     else
     {
