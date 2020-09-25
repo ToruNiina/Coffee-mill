@@ -29,9 +29,8 @@ if(COMPILER_SUPPORTS_Wpedantic)
     add_definitions(-Wpedantic)
 endif()
 
-include_directories(${PROJECT_SOURCE_DIR})
+include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/extlib)
-include_directories(${PROJECT_SOURCE_DIR}/mill)
 
 find_package(Boost)
 if(Boost_FOUND)

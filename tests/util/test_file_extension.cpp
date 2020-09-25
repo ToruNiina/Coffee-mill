@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "util/file_extension.hpp"
+#include <mill/util/file_extension.hpp>
 
 BOOST_AUTO_TEST_CASE(test_extension)
 {

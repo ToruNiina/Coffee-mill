@@ -7,8 +7,8 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "common/Attribute.hpp"
-#include "math/Vector.hpp"
+#include <mill/common/Attribute.hpp>
+#include <mill/math/Vector.hpp>
 
 BOOST_AUTO_TEST_CASE(construct)
 {

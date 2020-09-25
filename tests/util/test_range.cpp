@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "util/range.hpp"
+#include <mill/util/range.hpp>
 
 BOOST_AUTO_TEST_CASE(test_enumerate)
 {

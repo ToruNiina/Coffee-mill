@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "mill/xyz/XYZReader.hpp"
+#include <mill/xyz/XYZReader.hpp>
 
 BOOST_AUTO_TEST_CASE(read_xxx_functions)
 {

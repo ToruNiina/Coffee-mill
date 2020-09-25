@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "common/BoundaryCondition.hpp"
+#include <mill/common/BoundaryCondition.hpp>
 
 BOOST_AUTO_TEST_CASE(unlimited)
 {

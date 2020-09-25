@@ -2,8 +2,8 @@
 
 #include <mill/pdb/PDBReader.hpp>
 #include <mill/pdb/PDBWriter.hpp>
-#include <src/mode_pdb_help.hpp>
-#include <src/mode_pdb_seq.hpp>
+#include "mode_pdb_help.hpp"
+#include "mode_pdb_seq.hpp"
 
 namespace mill
 {

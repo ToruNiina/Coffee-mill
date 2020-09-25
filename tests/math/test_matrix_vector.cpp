@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "math/Vector.hpp"
+#include <mill/math/Vector.hpp>
 
 #include <random>
 constexpr static unsigned int seed = 32479327;

@@ -7,9 +7,9 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "math/Matrix.hpp"
-#include "math/Vector.hpp"
-#include "math/EigenSolver.hpp"
+#include <mill/math/Matrix.hpp>
+#include <mill/math/Vector.hpp>
+#include <mill/math/EigenSolver.hpp>
 
 #include <random>
 #include <iostream>
@@ -21,9 +21,9 @@ determinant(const mill::Matrix<double, 3, 3>& mat)
 {
     return mat(0,0) * mat(1,1) * mat(2,2) +
            mat(1,0) * mat(2,1) * mat(0,2) +
-           mat(2,0) * mat(0,1) * mat(1,2) - 
-           mat(0,0) * mat(2,1) * mat(1,2) - 
-           mat(2,0) * mat(1,1) * mat(0,2) - 
+           mat(2,0) * mat(0,1) * mat(1,2) -
+           mat(0,0) * mat(2,1) * mat(1,2) -
+           mat(2,0) * mat(1,1) * mat(0,2) -
            mat(1,0) * mat(0,1) * mat(2,2);
 }
 
@@ -55,7 +55,7 @@ BOOST_AUTO_TEST_CASE(eigenvalues)
 
             for(std::size_t j=0; j<3; ++j)
                 M(j, j) -= ev.at(i).first;
-            
+
             const mill::Vector<double, 3> vec = M * ev.at(i).second;
             BOOST_CHECK_SMALL(vec[0], 1e-7);
             BOOST_CHECK_SMALL(vec[1], 1e-7);

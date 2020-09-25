@@ -7,7 +7,7 @@
 #include <boost/test/included/unit_test.hpp>
 #endif
 
-#include "util/flat_map.hpp"
+#include <mill/util/flat_map.hpp>
 
 BOOST_AUTO_TEST_CASE(construct)
 {

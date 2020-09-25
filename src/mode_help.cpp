@@ -1,10 +1,10 @@
 #include "mode_help.hpp"
 
 #include <mill/util/logger.hpp>
-#include <src/mode_dcd_help.hpp>
-#include <src/mode_pdb_help.hpp>
-#include <src/mode_ninfo_help.hpp>
-#include <src/mode_calc_help.hpp>
+#include "mode_dcd_help.hpp"
+#include "mode_pdb_help.hpp"
+#include "mode_ninfo_help.hpp"
+#include "mode_calc_help.hpp"
 
 namespace mill
 {

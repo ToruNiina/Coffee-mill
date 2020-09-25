@@ -4,7 +4,7 @@
 
 #include <mill/traj.hpp>
 
-#include <extlib/toml/toml.hpp>
+#include <toml/toml.hpp>
 #include <fstream>
 
 namespace mill
