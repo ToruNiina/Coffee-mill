@@ -37,7 +37,7 @@ All the `dcd`, `xyz`, and `trr` formats are supported in `calc` mode.
 - `help`
   - prints help messages.
 
-### DCD
+### `dcd` mode
 
 - `impose`
   - imposes all the frames onto a reference configuration by minimizing RMSD.
@@ -56,14 +56,14 @@ All the `dcd`, `xyz`, and `trr` formats are supported in `calc` mode.
 - `help`
   - prints help messages.
 
-### PDB
+### `pdb` mode
 
 - `seq`
   - prints sequence of the chains in a PDB file.
 - `help`
   - prints help messages.
 
-### NINFO
+### `ninfo` mode
 
 - `split`
   - splits an all-in-one ninfo file into one-by-one files.
