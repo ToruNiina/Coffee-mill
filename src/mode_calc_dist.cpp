@@ -27,25 +27,18 @@ const char* mode_calc_dist_usage() noexcept
 
 int mode_calc_dist(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill calc dist: too few arguments.");
         log::error(mode_calc_dist_usage());
         return 1;
     }
 
-    const auto fname = args.at(1);
+    const auto fname = args.front();
     if(fname == "help")
     {
         log::info(mode_calc_dist_usage());
         return 0;
-    }
-
-    if(fname.size() < 5)
-    {
-        log::error("mill calc dist: unknown file format: ", fname);
-        log::error(mode_calc_dist_usage());
-        return 1;
     }
 
     if(extension_of(fname) == ".toml")
@@ -63,14 +56,21 @@ int mode_calc_dist(std::deque<std::string_view> args)
             output << '\n';
         }
     }
-    else
+    else if(args.size() == 3) // traj.dcd 100 110
     {
-        const auto i = std::stoi(std::string(args.at(2)));
-        const auto j = std::stoi(std::string(args.at(3)));
+        const auto i = std::stoi(std::string(args.at(1)));
+        const auto j = std::stoi(std::string(args.at(2)));
         for(const auto frame : read(fname))
         {
-            std::cout << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << '\n';
+            std::cout << std::setprecision(16)
+                      << length(frame[i].position() - frame[j].position()) << '\n';
         }
+    }
+    else
+    {
+        log::error("mill calc dist: too few arguments.");
+        log::error(mode_calc_dist_usage());
+        return 1;
     }
     return 0;
 }

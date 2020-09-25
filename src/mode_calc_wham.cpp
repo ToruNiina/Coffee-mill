@@ -35,14 +35,14 @@ const char* mode_calc_wham_usage() noexcept
 
 int mode_calc_wham(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill calc wham: too few arguments.");
         log::error(mode_calc_wham_usage());
         return 1;
     }
 
-    const auto fname = args.at(1);
+    const auto fname = args.front();
     if(fname == "help")
     {
         log::info(mode_calc_wham_usage());

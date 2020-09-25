@@ -19,6 +19,7 @@ int mode_calc(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
+    args.pop_front();
     if(command == "rmsd")
     {
         return mode_calc_rmsd(std::move(args));

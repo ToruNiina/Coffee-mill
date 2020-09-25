@@ -19,14 +19,14 @@ const char* mode_calc_rmsd_usage() noexcept
 int mode_calc_rmsd(std::deque<std::string_view> args)
 {
     using vector_type = Vector<double, 3>;
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::error("mill calc rmsd: too few arguments.");
         log::error(mode_calc_rmsd_usage());
         return 1;
     }
 
-    const auto fname = args.at(1);
+    const auto fname = args.front();
     if(fname == "help")
     {
         log::info(mode_calc_rmsd_usage());
@@ -64,7 +64,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         return 1;
     }
 
-    const auto refname = args.at(2);
+    const auto refname = args.at(1);
     std::vector<vector_type> ref;
 
     if(extension_of(refname) == ".pdb")

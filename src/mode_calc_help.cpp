@@ -24,14 +24,14 @@ const char* mode_calc_help_usage() noexcept
 //! this function forwards the arguments to different modes.
 int mode_calc_help(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    using namespace std::literals::string_view_literals;
+    if(args.empty())
     {
         log::info(mode_calc_help_usage());
         return 0;
     }
 
-    const auto command = args.at(1);
-    using namespace std::literals::string_view_literals;
+    const auto command = args.front();
 
     if(command == "rmsd")
     {
