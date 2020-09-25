@@ -1,9 +1,0 @@
-# coffee mill input file for dna-mode, --mutate job.
-# use this way
-#    $ mill dna --mutate dnamutate.toml
-
-[information]
-output   = "mutated.pdb"
-pdbfile = "template.pdb"
-chain_index = 0;
-sequence = "ATCG"
