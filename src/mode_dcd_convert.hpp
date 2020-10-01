@@ -79,24 +79,25 @@ inline int mode_dcd_convert(std::deque<std::string_view> args)
         std::vector<PDBAtom<vector_type>> atoms(num_particles);
         if(pdbname) // reference pdb exists.
         {
-            PDBReader<vector_type> pdbreader;
-            std::ifstream pdbfile(*pdbname);
-            if(not pdbfile.good())
-            {
-                log::error("mill dcd convert: file open error: ", *pdbname);
-                log::error(dcd_convert_usage());
-                return 1;
-            }
-            atoms = pdbreader.read(*pdbname);
-            if(atoms.size() != static_cast<std::size_t>(num_particles))
-            {
-                log::error("mill dcd convert: file open error: "
-                           "pdb file may have different structure: ",
-                           "num particle in dcd = ", num_particles,
-                           "num particle in pdb = ", atoms.size());
-                log::error(dcd_convert_usage());
-                return 1;
-            }
+            log::fatal("PDB reference option is currently unavailable");
+//             PDBReader<vector_type> pdbreader;
+//             std::ifstream pdbfile(*pdbname);
+//             if(not pdbfile.good())
+//             {
+//                 log::error("mill dcd convert: file open error: ", *pdbname);
+//                 log::error(dcd_convert_usage());
+//                 return 1;
+//             }
+//             atoms = pdbreader.read(*pdbname);
+//             if(atoms.size() != static_cast<std::size_t>(num_particles))
+//             {
+//                 log::error("mill dcd convert: file open error: "
+//                            "pdb file may have different structure: ",
+//                            "num particle in dcd = ", num_particles,
+//                            "num particle in pdb = ", atoms.size());
+//                 log::error(dcd_convert_usage());
+//                 return 1;
+//             }
         }
         else
         {
