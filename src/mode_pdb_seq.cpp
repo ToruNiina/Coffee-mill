@@ -11,7 +11,7 @@
 namespace mill
 {
 
-inline const char* pdb_seq_usage() noexcept
+const char* pdb_seq_usage() noexcept
 {
     return "usage: mill pdb seq [parameters...]\n"
            "    $ mill pdb seq model.pdb\n"
