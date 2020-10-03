@@ -34,18 +34,22 @@ class PDBReader final : public DeferedReaderBase
     {
         log::debug("mill::PDBReader: reading header ...");
         //
-        // TODO: REMARKs?
+        // TODO: read REMARKs?
+        //
+
+        // skip lines until "MODEL", "ATOM", "HETATM" is found.
+        // When a line is found, rollback to the beginning of first line
         std::string line;
         auto checkpoint = this->pdb_.tellg();
         while(line.substr(0, 6) != "MODEL " &&
               line.substr(0, 6) != "ATOM  " &&
               line.substr(0, 6) != "HETATM")
         {
-            checkpoint = this->pdb_.tellg();
+            checkpoint = this->pdb_.tellg(); // save the beginning of 1st line
             std::getline(this->pdb_, line);
             log::debug("skipping ", line);
         }
-        this->pdb_.seekg(checkpoint);
+        this->pdb_.seekg(checkpoint); // go back to the beginning of 1st line
         log::debug("mill::PDBReader: the first line is ", line);
         log::debug("mill::PDBReader: done.");
         return attribute_container_type{};
