@@ -67,10 +67,13 @@ class PDBWriter final : public WriterBase
         this->current_ += 1;
         this->pdb_ << "MODEL " << this->current_ << '\n';
 
+        char chain = '\0';
         std::int64_t serial = 0;
         for(const auto& p : frame)
         {
             serial += 1;
+            const auto atom          = p.at("name"    ).try_string().value_or(" C  "s).c_str();
+            const auto current_chain = p.at("chain_id").try_string().value_or("A"s).front();
 
             // 80 chars + line feed + null
             std::array<char, 82> buffer; buffer.fill('\0');
@@ -89,10 +92,15 @@ class PDBWriter final : public WriterBase
                 p.position()[2],
                 p.at("occupancy"  ).try_floating().value_or(  0.0),
                 p.at("temp_factor").try_floating().value_or(999.9),
-                p.at("element"    ).try_string()  .value_or("  "s).c_str(),
-                p.at("charge"     ).try_string()  .value_or("  "s).c_str()
-                );
+                p.at("element"    ).try_string()  .value_or(atom.substr(0, 2)).c_str(),
+                p.at("charge"     ).try_string()  .value_or("  "s).c_str());
             pdb_ << buffer.data();
+
+            if(chain != current_chain)
+            {
+                pdb << "TER\n";
+            }
+            chain = current_chain;
         }
         pdb_ << "ENDMDL\n";
         return;
