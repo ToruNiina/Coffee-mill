@@ -1,9 +1,7 @@
 #ifndef COFFEE_MILL_DCD_CONVERT
 #define COFFEE_MILL_DCD_CONVERT
-#include <mill/dcd/DCDReader.hpp>
-#include <mill/pdb/PDBReader.hpp>
-#include <mill/pdb/PDBWriter.hpp>
 #include <mill/util/file_extension.hpp>
+#include <mill/traj.hpp>
 #include <toml/toml.hpp>
 
 #include <string_view>
@@ -24,7 +22,6 @@ inline const char* dcd_convert_usage() noexcept
 // argv := arrayof{ "convert", "pdb", "filename", [pdb] }
 inline int mode_dcd_convert(std::deque<std::string_view> args)
 {
-    using vector_type = DCDReader::vector_type;
     if(args.size() < 2)
     {
         log::error("mill dcd convert: too few arguments");
@@ -51,84 +48,37 @@ inline int mode_dcd_convert(std::deque<std::string_view> args)
         log::error(dcd_convert_usage());
         return 1;
     }
-    const auto fname = args.at(2);
+    const auto filename = args.at(2);
 
-    if(extension_of(fname) == ".dcd")
+    if(extension_of(filename) == ".dcd")
     {
-        std::optional<std::string> pdbname;
-        if(args.size() >= 4)
+        std::optional<Snapshot> ref_frame = std::nullopt;
+        if(4 <= args.size() && extension_of(args.at(3)) == ".pdb")
         {
-            pdbname = std::string(args.at(3));
+            PDBReader reader(std::string(args.at(3)));
+            std::ignore = reader.read_header();
+            ref_frame = reader.read_frame(); // read 1st frame
         }
 
-        const std::string outname = std::string(base_name_of(fname)) + "_converted.pdb";
-        std::ofstream ofs(outname);
-        if(not ofs.good())
+        auto reader = read(filename);
+        auto traj = reader.read();
+
+        if(ref_frame)
         {
-            log::error("mill dcd convert: file open error: ", outname);
-            log::error(dcd_convert_usage());
-            return 1;
-        }
-
-        DCDReader reader(fname);
-        PDBWriter<vector_type> writer;
-
-        const auto header = reader.read_header();
-
-        const std::size_t num_particles = header.at("nparticle").as_integer();
-        std::vector<PDBAtom<vector_type>> atoms(num_particles);
-        if(pdbname) // reference pdb exists.
-        {
-            PDBReader<vector_type> pdbreader;
-            std::ifstream pdbfile(*pdbname);
-            if(not pdbfile.good())
+            for(auto& frame : traj)
             {
-                log::error("mill dcd convert: file open error: ", *pdbname);
-                log::error(dcd_convert_usage());
-                return 1;
-            }
-            atoms = pdbreader.read(*pdbname);
-            if(atoms.size() != static_cast<std::size_t>(num_particles))
-            {
-                log::error("mill dcd convert: file open error: "
-                           "pdb file may have different structure: ",
-                           "num particle in dcd = ", num_particles,
-                           "num particle in pdb = ", atoms.size());
-                log::error(dcd_convert_usage());
-                return 1;
+                Snapshot pdbinfo(ref_frame.value());
+                frame.merge_attributes(pdbinfo);
             }
         }
-        else
-        {
-            std::size_t idx = 1;
-            for(auto& atom : atoms)
-            {
-                atom = make_default_atom(static_cast<int>(idx), vector_type(0,0,0));
-                ++idx;
-            }
-        }
+        PDBWriter writer(std::string(base_name_of(filename)) + "_converted.pdb");
+        writer.write(traj);
 
-        std::size_t model = 0;
-        for(const auto& frame : reader)
-        {
-            ++model;
-            ofs << "MODEL     " << std::setw(4) << model << '\n';
-            std::size_t idx = 0;
-            for(const auto& p : frame)
-            {
-                atoms.at(idx).position = p.position();
-                ++idx;
-            }
-            writer.write(ofs, atoms);
-            ofs << "ENDMDL\n";
-        }
-        ofs << std::flush;
-        ofs.close();
         return 0;
     }
     else
     {
-        log::error("error: mill dcd convert: unknown file extension: ", fname);
+        log::error("error: mill dcd convert: unknown file extension: ", filename);
         log::error(dcd_convert_usage());
         return 1;
     }

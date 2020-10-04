@@ -52,6 +52,14 @@ class Particle
     vector_type &      position()       noexcept {return position_;}
     vector_type const& position() const noexcept {return position_;}
 
+    // It extracts attributes from `other`. If it already has the same key, it
+    // keeps the element in `other`. position is not merged.
+    void merge_attributes(Particle& other)
+    {
+        attributes_.merge(other.attributes_);
+        return;
+    }
+
   private:
     vector_type              position_;
     attribute_container_type attributes_;

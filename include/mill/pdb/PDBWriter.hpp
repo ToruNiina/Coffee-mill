@@ -10,106 +10,114 @@
 */
 #ifndef COFFEE_MILL_PDB_WRITER_HPP
 #define COFFEE_MILL_PDB_WRITER_HPP
+#include <mill/common/Trajectory.hpp>
+#include <mill/common/WriterBase.hpp>
 #include <mill/util/logger.hpp>
-#include "PDBChain.hpp"
 #include <fstream>
 #include <sstream>
+#include <cstdio>
 
 namespace mill
 {
 
-template<typename vectorT>
-class PDBWriter
+class PDBWriter final : public WriterBase
 {
   public:
+    using base_type                = WriterBase;
+    using trajectory_type          = base_type::trajectory_type;
+    using snapshot_type            = base_type::snapshot_type;
+    using particle_type            = base_type::particle_type;
+    using attribute_container_type = base_type::attribute_container_type;
 
-    enum class style
+    PDBWriter(const std::string_view fname)
+        : current_(0), file_name_(fname), pdb_(file_name_)
     {
-        normal,  // use TER.
-        cafemol, // use << protein 1 and >>
-    };
-
-    using vector_type  = vectorT;
-    using atom_type    = PDBAtom<vector_type>;
-    using residue_type = PDBResidue<vector_type>;
-    using chain_type   = PDBChain<vector_type>;
-
-  public:
-
-    PDBWriter() = default;
-    ~PDBWriter() = default;
-
-    void write(const std::string& filename,
-               const std::vector<atom_type>& atoms) const;
-
-    void write(std::ostream& os, const std::vector<atom_type>& atoms) const;
-
-    void write(const std::string& fname, const std::vector<chain_type>& model,
-               const style sty = style::normal) const;
-
-    void write(std::ostream& os, const std::vector<chain_type>& model,
-               const style sty = style::normal) const;
-};
-
-template<typename vectorT>
-void PDBWriter<vectorT>::write(
-        const std::string& filename, const std::vector<atom_type>& atoms) const
-{
-    std::ofstream ofs(filename);
-    if(not ofs.good()) {log::fatal("PDBWriter: file open error: ", filename);}
-    this->write(ofs, atoms);
-    ofs.close();
-    return;
-}
-
-template<typename vectorT>
-void PDBWriter<vectorT>::write(
-        const std::string& filename, const std::vector<chain_type>& model,
-        const style sty) const
-{
-    std::ofstream ofs(filename);
-    if(not ofs.good()) {log::fatal("PDBWriter: file open error: ", filename);}
-    this->write(ofs, model, sty);
-    ofs.close();
-    return;
-}
-
-template<typename vectorT>
-void PDBWriter<vectorT>::write(std::ostream& os,
-        const std::vector<atom_type>& atoms) const
-{
-    for(const auto& atom : atoms)
-    {
-        os << atom << std::endl;
-    }
-    return;
-}
-
-template<typename vectorT>
-void PDBWriter<vectorT>::write(
-        std::ostream& os, const std::vector<chain_type>& chains,
-        const style sty) const
-{
-    std::size_t index = 1;
-    for(const auto& chain : chains)
-    {
-        if(sty == style::cafemol)
+        if(!pdb_.good())
         {
-            os << "<< protein " << index << std::endl;
+            log::fatal("PDBWriter: file open error: ", fname);
         }
-        for(const auto& residue : chain)
+    }
+    ~PDBWriter() override = default;
+
+    void write_header(const attribute_container_type& header) override
+    {
+        if(header.count("boundary_width") != 0)
         {
-            for(const auto& atom : residue)
+            const auto w = header.at("boundary_width").as_vector();
+            // 80 chars + line feed + null
+            std::array<char, 82> buffer; buffer.fill('\0');
+            std::snprintf(buffer.data(), buffer.size(),
+                          "CRYST1%9.3f%9.3f%9.3f%7.2f%7.2f%7.2f%-10s%4d\n",
+                          w[0], w[1], w[2], 90.0, 90.0, 90.0, "P 1", 1);
+            pdb_ << buffer.data();
+        }
+        return; // xyz does not have any header info
+    }
+    void write(const trajectory_type& traj) override
+    {
+        for(const auto& frame : traj)
+        {
+            this->write_frame(frame);
+        }
+        return;
+    }
+    void write_frame(const snapshot_type& frame) override
+    {
+        using namespace std::literals::string_literals;
+        this->current_ += 1;
+        this->pdb_ << "MODEL     "
+                   << std::setw(4) << std::right << this->current_ << '\n';
+
+        char chain = '\0';
+        std::int64_t serial = 0;
+        for(const auto& p : frame)
+        {
+            serial += 1;
+            const auto atom          = p.at("name"    ).try_string().value_or(" C  "s);
+            const auto current_chain = p.at("chain_id").try_string().value_or("A"s).front();
+
+            // 80 chars + line feed + null
+            std::array<char, 82> buffer; buffer.fill('\0');
+            std::snprintf(buffer.data(), buffer.size(),
+                "%-6s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+                p.at("record"  ).try_string() .value_or("ATOM  "s).c_str(),
+                p.at("serial"  ).try_integer().value_or(serial),
+                p.at("name"    ).try_string() .value_or(" C  "s).c_str(),
+                p.at("alt_loc" ).try_string() .value_or(" "s).front(),
+                p.at("res_name").try_string() .value_or("XXX"s).c_str(),
+                p.at("chain_id").try_string() .value_or("A"s).front(),
+                p.at("res_seq" ).try_integer().value_or(serial),
+                p.at("i_code"  ).try_string() .value_or(" "s).front(),
+                p.position()[0],
+                p.position()[1],
+                p.position()[2],
+                p.at("occupancy"  ).try_floating().value_or(  0.0),
+                p.at("temp_factor").try_floating().value_or(999.9),
+                p.at("element"    ).try_string()  .value_or(atom.substr(0, 2)).c_str(),
+                p.at("charge"     ).try_string()  .value_or("  "s).c_str());
+            pdb_ << buffer.data();
+
+            if(chain != '\0' && chain != current_chain)
             {
-                os << atom << std::endl;
+                pdb_ << "TER\n";
             }
+            chain = current_chain;
         }
-        if     (sty == style::cafemol) {os << ">>" << std::endl; }
-        else if(sty == style::normal)  {os << "TER" << std::endl;}
-        ++index;
+        pdb_ << "TER\n";
+        pdb_ << "ENDMDL\n";
+        return;
     }
-    return;
-}
+
+    std::size_t      size()      const noexcept override {return current_;}
+    std::string_view file_name() const noexcept override {return file_name_;}
+
+  private:
+
+    std::size_t current_;
+    std::string file_name_;
+    std::ofstream pdb_;
+
+};
 
 } // mill
 #endif /* COFFEE_MILL_PDB_WRITER */

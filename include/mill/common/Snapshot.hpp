@@ -96,6 +96,19 @@ class Snapshot
     boundary_type &      boundary()       noexcept {return boundary_;}
     boundary_type const& boundary() const noexcept {return boundary_;}
 
+    void merge_attributes(Snapshot& other)
+    {
+        attributes_.merge(other.attributes_);
+        if(this->size() == other.size())
+        {
+            for(std::size_t i=0; i<this->size(); ++i)
+            {
+                this->at(i).merge_attributes(other.at(i));
+            }
+        }
+        return;
+    }
+
   private:
     attribute_container_type attributes_;
     container_type           particles_;
