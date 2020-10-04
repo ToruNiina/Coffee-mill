@@ -4,6 +4,9 @@
 #include "dcd/DCDReader.hpp"
 #include "dcd/DCDWriter.hpp"
 
+#include "pdb/PDBReader.hpp"
+#include "pdb/PDBWriter.hpp"
+
 #include "trr/TRRReader.hpp"
 #include "trr/TRRWriter.hpp"
 
@@ -63,6 +66,10 @@ inline DeferedReader read(std::string_view filename)
     {
         return DeferedReader(std::make_unique<DCDReader>(std::string(filename)));
     }
+    else if(ext == ".pdb")
+    {
+        return DeferedReader(std::make_unique<PDBReader>(std::string(filename)));
+    }
     else if(ext == ".trr")
     {
         return DeferedReader(std::make_unique<TRRReader>(std::string(filename)));
@@ -75,7 +82,7 @@ inline DeferedReader read(std::string_view filename)
     {
         log::fatal("from mill::read(file):\n",
                    " -> unknown file extension \"", ext, "\".\n",
-                   "    supported formats are \".dcd\", \".trr\", and \".xyz\".");
+                   "    supported formats are \".dcd\", \"pdb\", \".trr\", and \".xyz\".");
     }
 }
 
@@ -129,6 +136,10 @@ inline TrajWriter writer(std::string_view filename)
     {
         return TrajWriter(std::make_unique<DCDWriter>(std::string(filename)));
     }
+    else if(ext == ".pdb")
+    {
+        return TrajWriter(std::make_unique<PDBWriter>(std::string(filename)));
+    }
     else if(ext == ".trr")
     {
         return TrajWriter(std::make_unique<TRRWriter>(std::string(filename)));
@@ -141,7 +152,7 @@ inline TrajWriter writer(std::string_view filename)
     {
         log::fatal("from mill::write(file):\n",
                    " -> unknown file extension \"", ext, "\".\n",
-                   "    supported formats are \".dcd\", \".trr\", and \".xyz\".");
+                   "    supported formats are \".dcd\", \"pdb\", \".trr\", and \".xyz\".");
     }
 }
 
