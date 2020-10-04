@@ -32,15 +32,13 @@ endif()
 include_directories(${PROJECT_SOURCE_DIR}/include)
 include_directories(${PROJECT_SOURCE_DIR}/extlib)
 
+add_subdirectory(src)
+
+# tests --------------------------------------------------------------------
+
 find_package(Boost)
 if(Boost_FOUND)
     message(STATUS "Boost ${Boost_VERSION} found at ${Boost_INCLUDE_DIRS}")
     include_directories(${Boost_INCLUDE_DIRS})
-endif()
-
-add_subdirectory(src)
-
-# test codes depend on Boost.test
-if(Boost_FOUND)
     add_subdirectory(tests)
 endif()
