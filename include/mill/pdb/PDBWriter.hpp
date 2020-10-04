@@ -65,7 +65,8 @@ class PDBWriter final : public WriterBase
     {
         using namespace std::literals::string_literals;
         this->current_ += 1;
-        this->pdb_ << "MODEL " << this->current_ << '\n';
+        this->pdb_ << "MODEL     "
+                   << std::setw(4) << std::right << this->current_ << '\n';
 
         char chain = '\0';
         std::int64_t serial = 0;
