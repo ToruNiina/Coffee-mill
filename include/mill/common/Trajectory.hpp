@@ -85,6 +85,19 @@ class Trajectory
     container_type &      snapshots()       noexcept {return snapshots_;}
     container_type const& snapshots() const noexcept {return snapshots_;}
 
+    void merge_attributes(Trajectory& other)
+    {
+        attributes_.merge(other.attributes_);
+        if(this->size() == other.size())
+        {
+            for(std::size_t i=0; i<this->size(); ++i)
+            {
+                this->at(i).merge_attributes(other.at(i));
+            }
+        }
+        return;
+    }
+
   private:
     attribute_container_type attributes_;
     container_type           snapshots_;
