@@ -13,8 +13,8 @@
 #include <mill/common/Trajectory.hpp>
 #include <mill/common/WriterBase.hpp>
 #include <mill/util/logger.hpp>
+#include <iomanip>
 #include <fstream>
-#include <sstream>
 #include <cstdio>
 
 namespace mill
