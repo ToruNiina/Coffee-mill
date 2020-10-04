@@ -72,7 +72,7 @@ class PDBWriter final : public WriterBase
         for(const auto& p : frame)
         {
             serial += 1;
-            const auto atom          = p.at("name"    ).try_string().value_or(" C  "s).c_str();
+            const auto atom          = p.at("name"    ).try_string().value_or(" C  "s);
             const auto current_chain = p.at("chain_id").try_string().value_or("A"s).front();
 
             // 80 chars + line feed + null
@@ -96,12 +96,13 @@ class PDBWriter final : public WriterBase
                 p.at("charge"     ).try_string()  .value_or("  "s).c_str());
             pdb_ << buffer.data();
 
-            if(chain != current_chain)
+            if(chain != '\0' && chain != current_chain)
             {
-                pdb << "TER\n";
+                pdb_ << "TER\n";
             }
             chain = current_chain;
         }
+        pdb_ << "TER\n";
         pdb_ << "ENDMDL\n";
         return;
     }
