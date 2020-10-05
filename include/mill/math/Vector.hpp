@@ -47,7 +47,7 @@ realT length(const Vector<realT, 3>& lhs) noexcept
     return std::sqrt(length_sq(lhs));
 }
 
-template<typename coordT>
+template<typename realT>
 Vector<realT, 3> regularize(const Vector<realT, 3>& v) noexcept
 {
     return v * (1.0 / length(v));
