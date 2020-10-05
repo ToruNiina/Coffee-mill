@@ -12,15 +12,10 @@ namespace mill
 class JacobiEigenSolver
 {
   public:
-    constexpr static std::size_t max_loop = 10000;
-
-  public:
-    JacobiEigenSolver() = default;
-    ~JacobiEigenSolver() = default;
 
     template<typename scalarT, std::size_t N>
     std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
-    solve(const Matrix<scalarT, N, N>& mat) const;
+    solve(Matrix<scalarT, N, N> mat) const;
 
   private:
 
@@ -52,43 +47,42 @@ class JacobiEigenSolver
 
 template<typename scalarT, std::size_t N>
 std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
-JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
+JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
 {
-    if(not this->is_symmetric(mat))
+    constexpr auto abs_tol = absolute_tolerance<scalarT>();
+    constexpr auto rel_tol = relative_tolerance<scalarT>();
+    constexpr std::size_t max_loop = 10000;
+
+    if(not this->is_symmetric(m))
     {
         throw std::invalid_argument("asymmetric matrix");
     }
 
-    typedef Matrix<scalarT, N, N> Matrix_type;
-    typedef Matrix<scalarT, N, 1> Vector_type;
-    typedef scalarT               Real;
+    auto Ps = Matrix<scalarT, N, N>::identity();
 
-    Matrix_type m  = mat;
-    Matrix_type Ps = Matrix_type::identity();
-
-    std::size_t loop=0;
+    std::size_t loop = 0;
     for(; loop < max_loop; ++loop)
     {
         const auto [i, j] = this->max_element(m);
-        if(std::abs(m(i, j)) < absolute_tolerance<Real>())
+        if(std::abs(m(i, j)) < abs_tol)
         {
             break;
         }
 
-        const Real alpha = (m(i, i) - m(j, j)) * 0.5;
-        const Real beta  = -1. * m(i, j);
-        const Real gamma = std::abs(alpha) / std::sqrt(alpha * alpha + beta * beta);
-        const Real cos_t = std::sqrt(0.5 + gamma * 0.5);
-        const Real sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
+        const auto alpha = (m(i, i) - m(j, j)) * 0.5;
+        const auto beta  = -1.0 * m(i, j);
+        const auto gamma = std::abs(alpha) / std::sqrt(alpha * alpha + beta * beta);
+        const auto cos_t = std::sqrt(0.5 + gamma * 0.5);
+        const auto sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
 
-        Matrix_type P = Matrix_type::identity();
+        auto P = Matrix<scalarT, N, N>::identity();
         P(i, i) =  cos_t;
         P(i, j) =  sin_t;
         P(j, i) = -sin_t;
         P(j, j) =  cos_t;
 
-        Matrix_type tmp = transpose(P) * m * P;
-        if(this->max_relative_diff(m, tmp) < relative_tolerance<Real>())
+        auto tmp = transpose(P) * m * P;
+        if(this->max_relative_diff(m, tmp) < rel_tol)
         {
             break;
         }
@@ -104,10 +98,10 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
         throw std::logic_error("cannot solve with the tolerance");
     }
 
-    std::array<std::pair<Real, Vector_type>, N> retval;
+    std::array<std::pair<scalarT, Vector<scalarT, N>>, N> retval;
     for(std::size_t i=0; i<N; ++i)
     {
-        Vector_type eigen;
+        Vector<scalarT, N> eigen;
         for(std::size_t j=0; j<N; ++j)
         {
             eigen[j] = Ps(j, i);
@@ -117,15 +111,15 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     return retval;
 }
 
-
 template<typename scalarT, std::size_t N>
 bool JacobiEigenSolver::is_symmetric(const Matrix<scalarT, N, N>& mat) const
 {
+    constexpr auto rel_tol = relative_tolerance<scalarT>();
     for(std::size_t i=0; i<N-1; ++i)
     {
         for(std::size_t j=i+1; j<N; ++j)
         {
-            if(std::abs(mat(i, j)/mat(j, i) - 1.) > relative_tolerance<scalarT>())
+            if(std::abs(mat(i, j) / mat(j, i) - 1.0) > rel_tol)
             {
                 return false;
             }
