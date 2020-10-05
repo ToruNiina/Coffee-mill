@@ -1,5 +1,6 @@
 #include "mode_calc_rmsd.hpp"
 
+#include <mill/util/scalar_type_of.hpp>
 #include <mill/util/file_extension.hpp>
 #include <mill/math/RMSDCalculator.hpp>
 #include <mill/math/BestFitStructure.hpp>
