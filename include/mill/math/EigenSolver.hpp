@@ -63,7 +63,7 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
     typedef Matrix<scalarT, N, 1> Vector_type;
     typedef scalarT               Real;
 
-    Matrix_type m = mat;
+    Matrix_type m  = mat;
     Matrix_type Ps = Matrix_type::identity();
 
     std::size_t loop=0;
@@ -92,15 +92,17 @@ JacobiEigenSolver::solve(const Matrix<scalarT, N, N>& mat) const
         {
             break;
         }
-        tmp(i, j) = 0.;
-        tmp(j, i) = 0.;
+        tmp(i, j) = 0.0;
+        tmp(j, i) = 0.0;
 
-        m = tmp;
+        m   = tmp;
         tmp = Ps * P;
-        Ps = tmp;
+        Ps  = tmp;
     }
     if(loop == max_loop)
+    {
         throw std::logic_error("cannot solve with the tolerance");
+    }
 
     std::array<std::pair<Real, Vector_type>, N> retval;
     for(std::size_t i=0; i<N; ++i)
@@ -146,7 +148,7 @@ JacobiEigenSolver::max_element(const Matrix<scalarT, N, N>& mat) const
             if(max_elem < std::abs(mat(i, j)))
             {
                 max_elem = std::abs(mat(i, j));
-                retval = std::make_pair(i, j);
+                retval   = std::make_pair(i, j);
             }
         }
     }
@@ -160,7 +162,7 @@ scalarT JacobiEigenSolver::max_relative_diff(const Matrix<scalarT, N, N>& lhs,
     scalarT retval = 0.0;
     for(std::size_t i=0; i<N; ++i)
     {
-        const scalarT tmp = std::abs(lhs(i, i) / rhs(i, i));
+        const scalarT tmp = std::abs(lhs(i, i) / rhs(i, i) - 1.0);
         if(retval < tmp)
         {
             retval = tmp;
