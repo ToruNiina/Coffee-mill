@@ -1,7 +1,6 @@
 #ifndef COFFEE_MILL_MATH_VECTOR_HPP
 #define COFFEE_MILL_MATH_VECTOR_HPP
 #include "Matrix.hpp"
-#include <mill/util/scalar_type_of.hpp>
 #include <algorithm>
 #include <cmath>
 
@@ -12,59 +11,54 @@ template<typename realT, std::size_t N>
 using Vector = Matrix<realT, N, 1>;
 
 // for vector 3d
-template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-dot_product(const coordT& lhs, const coordT& rhs)
+template<typename realT>
+realT dot_product(const Vector<realT, 3>& lhs, const Vector<realT, 3>& rhs) noexcept
 {
     return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
 }
 
-template<typename coordT>
-inline coordT
-cross_product(const coordT& lhs, const coordT& rhs)
+template<typename realT>
+Vector<realT, 3>
+cross_product(const Vector<realT, 3>& lhs, const Vector<realT, 3>& rhs) noexcept
 {
-    return coordT(lhs[1] * rhs[2] - lhs[2] * rhs[1],
-                  lhs[2] * rhs[0] - lhs[0] * rhs[2],
-                  lhs[0] * rhs[1] - lhs[1] * rhs[0]);
+    return Vector<realT, 3>(lhs[1] * rhs[2] - lhs[2] * rhs[1],
+                            lhs[2] * rhs[0] - lhs[0] * rhs[2],
+                            lhs[0] * rhs[1] - lhs[1] * rhs[0]);
 }
 
-template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-scalar_triple_product(const coordT& lhs, const coordT& mid, const coordT& rhs)
+template<typename realT>
+realT scalar_triple_product(const Vector<realT, 3>& lhs,
+        const Vector<realT, 3>& mid, const Vector<realT, 3>& rhs) noexcept
 {
     return (lhs[1] * mid[2] - lhs[2] * mid[1]) * rhs[0] +
            (lhs[2] * mid[0] - lhs[0] * mid[2]) * rhs[1] +
            (lhs[0] * mid[1] - lhs[1] * mid[0]) * rhs[2];
 }
 
-template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-length_sq(const coordT& lhs)
+template<typename realT>
+realT length_sq(const Vector<realT, 3>& lhs) noexcept
 {
     return lhs[0] * lhs[0] + lhs[1] * lhs[1] + lhs[2] * lhs[2];
 }
 
-template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-length(const coordT& lhs)
+template<typename realT>
+realT length(const Vector<realT, 3>& lhs) noexcept
 {
     return std::sqrt(length_sq(lhs));
 }
 
 template<typename coordT>
-inline coordT regularize(const coordT& v)
+Vector<realT, 3> regularize(const Vector<realT, 3>& v) noexcept
 {
-    return v / length(v);
+    return v * (1.0 / length(v));
 }
 
-template<typename coordT>
-inline typename scalar_type_of<coordT>::type
-angle(const coordT& lhs, const coordT& rhs)
+template<typename realT>
+realT angle(const Vector<realT, 3>& lhs, const Vector<realT, 3>& rhs) noexcept
 {
-    using real_type = typename scalar_type_of<coordT>::type;
     const auto l_reg = regularize(lhs);
     const auto r_reg = regularize(rhs);
-    return std::acos(std::clamp<real_type>(dot_product(l_reg, r_reg), -1, 1));
+    return std::acos(std::clamp<realT>(dot_product(l_reg, r_reg), -1, 1));
 }
 
 } // mill
