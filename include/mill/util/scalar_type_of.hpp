@@ -6,9 +6,8 @@ namespace mill
 template<typename vectorT>
 struct scalar_type_of
 {
-    typedef typename vectorT::scalar_type type;
+    using type = typename vectorT::scalar_type;
 };
-
 template<typename vectorT>
 using scalar_type_of_t = typename scalar_type_of<vectorT>::type;
 
