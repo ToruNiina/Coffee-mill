@@ -342,10 +342,14 @@ class DCDReader final : public DeferedReaderBase
            (differs(beta,  90.0) && differs(beta,  std::cos(half_pi))) ||
            (differs(gamma, 90.0) && differs(gamma, std::cos(half_pi))))
         {
-            log::error("The unit cell is not a rectangle");
-            log::error("angle alpha = ", alpha);
-            log::error("angle beta  = ", beta );
-            log::error("angle gamma = ", gamma);
+            log::warn("angles are neither 90.0 nor cos(pi/2)!");
+            log::warn("The unit cell seems not to be a rectangle?");
+            log::warn("angle alpha = ", alpha);
+            log::warn("angle beta  = ", beta );
+            log::warn("angle gamma = ", gamma);
+            log::warn("length A = ", A);
+            log::warn("length B = ", B);
+            log::warn("length C = ", C);
         }
         return boundary_type(CuboidalPeriodicBoundary(
                 vector_type(0, 0, 0), vector_type(A, B, C)));
