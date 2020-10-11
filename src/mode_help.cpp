@@ -5,6 +5,7 @@
 #include "mode_pdb_help.hpp"
 #include "mode_ninfo_help.hpp"
 #include "mode_calc_help.hpp"
+#include "mode_traj_help.hpp"
 
 namespace mill
 {
@@ -20,6 +21,7 @@ const char* main_usage() noexcept
            " - dcd\n"
            " - ninfo\n"
            " - calc\n"
+           " - traj\n"
            " - help\n"
            "for more information, try `mill help [mode]`.\n"
            ;
@@ -54,6 +56,10 @@ int mode_help(std::deque<std::string_view> args)
     else if(command == "calc")
     {
         return mode_calc_help(std::move(args));
+    }
+    else if(command == "traj")
+    {
+        return mode_traj_help(std::move(args));
     }
     else
     {

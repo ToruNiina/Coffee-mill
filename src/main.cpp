@@ -6,6 +6,7 @@
 #include "mode_pdb.hpp"
 #include "mode_ninfo.hpp"
 #include "mode_calc.hpp"
+#include "mode_traj.hpp"
 
 void print_logo();
 std::deque<std::string_view> get_commands(int argc, char **argv);
@@ -40,6 +41,10 @@ int main(int argc, char **argv)
         else if(mode == "calc")
         {
             return mill::mode_calc(std::move(args));
+        }
+        else if(mode == "traj")
+        {
+            return mill::mode_traj(std::move(args));
         }
         else if(mode == "help")
         {
