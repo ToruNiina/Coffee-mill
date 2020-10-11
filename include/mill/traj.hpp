@@ -59,7 +59,7 @@ class DeferedReader
     std::unique_ptr<DeferedReaderBase> reader_;
 };
 
-inline DeferedReader read(std::string_view filename)
+inline DeferedReader reader(std::string_view filename)
 {
     const auto ext = extension_of(filename);
     if(ext == ".dcd")
@@ -80,7 +80,7 @@ inline DeferedReader read(std::string_view filename)
     }
     else
     {
-        log::fatal("from mill::read(file):\n",
+        log::fatal("from mill::reader(file):\n",
                    " -> unknown file extension \"", ext, "\".\n",
                    "    supported formats are \".dcd\", \"pdb\", \".trr\", and \".xyz\".");
     }

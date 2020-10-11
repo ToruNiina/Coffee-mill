@@ -71,7 +71,7 @@ int mode_calc_wham(std::deque<std::string_view> args)
                 std::make_unique<ReactionDistance>(i, j), k, v0);
 
         std::vector<double> rcs;
-        for(auto frame : read(toml::find<std::string>(trajectory, "trajectory")))
+        for(auto frame : reader(toml::find<std::string>(trajectory, "trajectory")))
         {
             rcs.push_back(potential->rc(frame));
         }

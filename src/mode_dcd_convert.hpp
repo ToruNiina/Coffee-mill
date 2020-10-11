@@ -60,8 +60,8 @@ inline int mode_dcd_convert(std::deque<std::string_view> args)
             ref_frame = reader.read_frame(); // read 1st frame
         }
 
-        auto reader = read(filename);
-        auto traj = reader.read();
+        auto r    = reader(filename);
+        auto traj = r.read();
 
         if(ref_frame)
         {

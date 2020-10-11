@@ -46,7 +46,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     if(extension_of(fname) == ".dcd" || extension_of(fname) == ".xyz")
     {
         log::info("mill calc rmsd: reading ", fname);
-        for(const auto& snapshot : read(fname))
+        for(const auto& snapshot : reader(fname))
         {
             std::vector<vector_type> ss; ss.reserve(snapshot.size());
             for(const auto& particle : snapshot)
