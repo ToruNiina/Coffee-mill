@@ -3,6 +3,7 @@
 #include "mode_traj_help.hpp"
 #include "mode_traj_convert.hpp"
 #include "mode_traj_extract.hpp"
+#include "mode_traj_join.hpp"
 #include <iostream>
 
 namespace mill
@@ -27,6 +28,10 @@ int mode_traj(std::deque<std::string_view> args)
     else if(command == "extract")
     {
         return mode_traj_extract(std::move(args));
+    }
+    else if(command == "join")
+    {
+        return mode_traj_join(std::move(args));
     }
     else if(command == "help")
     {
