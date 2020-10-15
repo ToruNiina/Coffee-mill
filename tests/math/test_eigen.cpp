@@ -57,9 +57,9 @@ BOOST_AUTO_TEST_CASE(eigenvalues)
                 M(j, j) -= ev.at(i).first;
 
             const mill::Vector<double, 3> vec = M * ev.at(i).second;
-            BOOST_CHECK_SMALL(vec[0], 1e-7);
-            BOOST_CHECK_SMALL(vec[1], 1e-7);
-            BOOST_CHECK_SMALL(vec[2], 1e-7);
+            BOOST_CHECK_SMALL(vec[0], 1e-6);
+            BOOST_CHECK_SMALL(vec[1], 1e-6);
+            BOOST_CHECK_SMALL(vec[2], 1e-6);
         }
     }
 }
