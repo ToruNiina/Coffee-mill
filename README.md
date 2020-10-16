@@ -4,13 +4,14 @@ A command line tool for Mjolnir/CafeMol users.
 
 ## Usage
 
-The command line tool has 3 modes.
+`mill` has the following modes.
 
+- `help` mode
 - `calc` mode
+- `traj` mode
 - `dcd` mode
 - `pdb` mode
 - `ninfo` mode
-- `help` mode
 
 And each mode has its own commands.
 
@@ -24,7 +25,7 @@ $ mill [mode] [command] help
 
 ### `calc` mode
 
-All the `dcd`, `xyz`, and `trr` formats are supported in `calc` mode.
+All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
 
 - `rmsd`
   - calculates RMSD of each frame, taking reference structure.
@@ -37,26 +38,36 @@ All the `dcd`, `xyz`, and `trr` formats are supported in `calc` mode.
 - `help`
   - prints help messages.
 
+### `traj` mode
+
+All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
+
+- `join`
+  - concatenates several trajectory files into one file.
+- `extract`
+  - extract a portion of frames in a trajectory.
+- `convert`
+  - converts a trajectory file to a different format.
+- `split`
+  - splits a DCD file for every N frames.
+- `help`
+  - prints help message.
+
 ### `dcd` mode
+
+As the name suggests, `dcd` mode only supports `.dcd` format.
 
 - `impose`
   - imposes all the frames onto a reference configuration by minimizing RMSD.
   - It is possible to ignore some of the particles/chains while superimpose.
 - `info`
   - dumps header information.
-- `join`
-  - concatenates several DCD files into one file.
-- `split`
-  - splits a DCD file for every N frames.
-- `extract`
-  - extracts frames from a DCD file and creates another dcd file.
-- `convert`
-  - converts DCD file into PDB format.
-  - It works without PDB or PSF files. But in that case, resulting PDB file will lose residue information.
 - `help`
   - prints help messages.
 
 ### `pdb` mode
+
+As the name suggests, `pdb` mode only supports `.pdb` format.
 
 - `seq`
   - prints sequence of the chains in a PDB file.
@@ -64,6 +75,8 @@ All the `dcd`, `xyz`, and `trr` formats are supported in `calc` mode.
   - prints help messages.
 
 ### `ninfo` mode
+
+As the name suggests, `ninfo` mode only supports `.ninfo` format.
 
 - `split`
   - splits an all-in-one ninfo file into one-by-one files.
