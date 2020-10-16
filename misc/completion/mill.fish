@@ -4,7 +4,7 @@
 # Copy this to ~/.config/fish/completions
 #
 
-set -l mill_commands help calc dcd pdb ninfo
+set -l mill_commands help calc dcd pdb ninfo traj
 
 complete -c mill -l quiet -d "suppresses all logs regardless of the level"
 complete -c mill -l debug -d "output all logs regardless of the level"
@@ -32,9 +32,11 @@ complete -c mill -n "__fish_seen_subcommand_from ninfo" -a split -d "split all-i
 complete -c mill -n "__fish_seen_subcommand_from ninfo" -a help  -d "print help message"
 
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a impose  -d "superimpose all the snapshots by minimizing RMSD"
-complete -c mill -n "__fish_seen_subcommand_from dcd" -a join    -d "concatenate several .dcd files"
-complete -c mill -n "__fish_seen_subcommand_from dcd" -a split   -d "split a .dcd files into several files"
-complete -c mill -n "__fish_seen_subcommand_from dcd" -a extract -d "extract some of the snapshots from a dcd file"
-complete -c mill -n "__fish_seen_subcommand_from dcd" -a convert -d "convert a dcd file into another format"
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a info    -d "dump header information of dcd file"
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a help    -d "print help message"
+
+complete -c mill -n "__fish_seen_subcommand_from traj" -a join    -d "concatenate several trajectory files"
+complete -c mill -n "__fish_seen_subcommand_from traj" -a split   -d "split a trajectory files into several files"
+complete -c mill -n "__fish_seen_subcommand_from traj" -a extract -d "extract some of the snapshots from trajectory file"
+complete -c mill -n "__fish_seen_subcommand_from traj" -a convert -d "convert a trajectory file into another format"
+complete -c mill -n "__fish_seen_subcommand_from traj" -a help    -d "print help message"
