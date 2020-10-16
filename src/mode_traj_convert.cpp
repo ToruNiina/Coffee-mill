@@ -56,11 +56,13 @@ int mode_traj_convert(std::deque<std::string_view> args)
     }
     w.write_header(header);
 
-    for(auto& frame : r)
+    for(auto frame : r)
     {
         if(ref_frame)
         {
-            Snapshot ref(*ref_frame); // copy reference info
+            // copy reference info because std::map::merge moves out the values
+            Snapshot ref(*ref_frame);
+
             frame.merge_attributes(ref);
         }
         w.write_frame(frame);
