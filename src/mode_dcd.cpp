@@ -1,11 +1,6 @@
 #include "mode_dcd.hpp"
 #include "mode_dcd_help.hpp"
-#include "mode_dcd_join.hpp"
-#include "mode_dcd_split.hpp"
-#include "mode_dcd_extract.hpp"
 #include "mode_dcd_impose.hpp"
-#include "mode_dcd_convert.hpp"
-#include "mode_dcd_calc_theta.hpp"
 #include "mode_dcd_info.hpp"
 #include <iostream>
 
@@ -23,30 +18,9 @@ int mode_dcd(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
-    if(command == "join")
-    {
-        // {"join", {"args"...}}
-        return mode_dcd_join(std::move(args));
-    }
-    else if(command == "extract")
-    {
-        return mode_dcd_extract(std::move(args));
-    }
-    else if(command == "split")
-    {
-        return mode_dcd_split(std::move(args));
-    }
-    else if(command == "impose")
+    if(command == "impose")
     {
         return mode_dcd_impose(std::move(args));
-    }
-    else if(command == "convert")
-    {
-        return mode_dcd_convert(std::move(args));
-    }
-    else if(command == "calc_theta")
-    {
-        return mode_dcd_calc_theta(std::move(args));
     }
     else if(command == "info")
     {
