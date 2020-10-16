@@ -1,6 +1,5 @@
 set(TEST_NAMES
     test_string
-    test_range
     test_file_extension
     )
 
