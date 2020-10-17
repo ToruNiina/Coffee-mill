@@ -5,6 +5,7 @@
 #include "mode_traj_extract.hpp"
 #include "mode_traj_join.hpp"
 #include "mode_traj_split.hpp"
+#include "mode_traj_impose.hpp"
 #include <iostream>
 
 namespace mill
@@ -37,6 +38,10 @@ int mode_traj(std::deque<std::string_view> args)
     else if(command == "split")
     {
         return mode_traj_split(std::move(args));
+    }
+    else if(command == "impose")
+    {
+        return mode_traj_impose(std::move(args));
     }
     else if(command == "help")
     {
