@@ -31,7 +31,6 @@ complete -c mill -n "__fish_seen_subcommand_from pdb" -a help -d "print help mes
 complete -c mill -n "__fish_seen_subcommand_from ninfo" -a split -d "split all-in-one ninfo into one-by-one"
 complete -c mill -n "__fish_seen_subcommand_from ninfo" -a help  -d "print help message"
 
-complete -c mill -n "__fish_seen_subcommand_from dcd" -a impose  -d "superimpose all the snapshots by minimizing RMSD"
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a info    -d "dump header information of dcd file"
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a help    -d "print help message"
 
@@ -39,4 +38,5 @@ complete -c mill -n "__fish_seen_subcommand_from traj" -a join    -d "concatenat
 complete -c mill -n "__fish_seen_subcommand_from traj" -a split   -d "split a trajectory files into several files"
 complete -c mill -n "__fish_seen_subcommand_from traj" -a extract -d "extract some of the snapshots from trajectory file"
 complete -c mill -n "__fish_seen_subcommand_from traj" -a convert -d "convert a trajectory file into another format"
+complete -c mill -n "__fish_seen_subcommand_from traj" -a impose  -d "superimpose all the snapshots by minimizing RMSD"
 complete -c mill -n "__fish_seen_subcommand_from traj" -a help    -d "print help message"
