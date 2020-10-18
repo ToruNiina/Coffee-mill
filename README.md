@@ -25,7 +25,7 @@ $ mill [mode] [command] help
 
 ### `calc` mode
 
-All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
+All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
 
 - `rmsd`
   - calculates RMSD of each frame, taking reference structure.
@@ -40,7 +40,7 @@ All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
 
 ### `traj` mode
 
-All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
+All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
 
 - `join`
   - concatenates several trajectory files into one file.
@@ -50,6 +50,8 @@ All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
   - converts a trajectory file to a different format.
 - `split`
   - splits a DCD file for every N frames.
+- `impose`
+  - imposes molecules onto the initial configuration by minimizing RMSD.
 - `help`
   - prints help message.
 
@@ -57,9 +59,6 @@ All the `dcd`, `pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
 
 As the name suggests, `dcd` mode only supports `.dcd` format.
 
-- `impose`
-  - imposes all the frames onto a reference configuration by minimizing RMSD.
-  - It is possible to ignore some of the particles/chains while superimpose.
 - `info`
   - dumps header information.
 - `help`
@@ -83,7 +82,8 @@ As the name suggests, `ninfo` mode only supports `.ninfo` format.
 - `help`
   - prints help messages.
 
-## Build
+
+### Build
 
 ```sh
 $ git clone https://github.com/ToruNiina/Coffee-mill.git --recursive
