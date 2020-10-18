@@ -24,21 +24,17 @@ const char* mode_dcd_help_usage() noexcept
 // argv := { "help" or "dcd", {args...} }
 int mode_dcd_help(std::deque<std::string_view> args)
 {
-    if(args.size() < 2)
+    if(args.empty())
     {
         log::info(mode_dcd_help_usage());
         return 0;
     }
 
-    const auto command = args.at(1);
+    const auto command = args.front();
 
-    using namespace std::literals::string_view_literals;
-    if(command == "impose")
+    if(command == "info")
     {
-        return mode_dcd_impose({"impose"sv, "help"sv});
-    }
-    else if(command == "info")
-    {
+        using namespace std::literals::string_view_literals;
         return mode_dcd_info({"info"sv, "help"sv});
     }
     else

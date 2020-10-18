@@ -1,12 +1,12 @@
 #include "mode_dcd.hpp"
 #include "mode_dcd_help.hpp"
 #include "mode_dcd_info.hpp"
+#include <mill/util/logger.hpp>
 #include <iostream>
 
 namespace mill
 {
 
-// argv := arrayof{ "dcd", "command-name", {rests...} }
 int mode_dcd(std::deque<std::string_view> args)
 {
     if(args.empty())
@@ -17,11 +17,7 @@ int mode_dcd(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
-    if(command == "impose")
-    {
-        return mode_dcd_impose(std::move(args));
-    }
-    else if(command == "info")
+    if(command == "info")
     {
         return mode_dcd_info(std::move(args));
     }
