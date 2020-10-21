@@ -119,6 +119,29 @@ enum class BoundaryConditionKind : std::size_t
     CuboidalPeriodic = 1,
 };
 
+inline std::ostream& operator<<(std::ostream& os, const BoundaryConditionKind kind)
+{
+    switch(kind)
+    {
+        case BoundaryConditionKind::Unlimited:
+        {
+            os << "Unlimited";
+            break;
+        }
+        case BoundaryConditionKind::CuboidalPeriodic:
+        {
+            os << "Periodic";
+            break;
+        }
+        default:
+        {
+            os << "Unknown";
+            break;
+        }
+    }
+    return os;
+}
+
 struct BoundaryCondition
 {
   public:
