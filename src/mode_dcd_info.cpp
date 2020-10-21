@@ -32,7 +32,8 @@ int mode_dcd_info(std::deque<std::string_view> args)
     if(extension_of(fname) == ".dcd")
     {
         DCDReader reader(fname);
-        const auto data = reader.read_header();
+        const auto data  = reader.read_header();
+        const auto frame = reader.read_frame();
 
         std::cout << "number of frames       : " << data.at("nset")       << std::endl;
         std::cout << "initial step           : " << data.at("istart")     << std::endl;
@@ -42,6 +43,7 @@ int mode_dcd_info(std::deque<std::string_view> args)
         std::cout << "number of particles    : " << data.at("nparticle")  << std::endl;
         std::cout << "delta t                : " << data.at("delta_t")    << std::endl;
         std::cout << "comment                : " << data.at("comment")    << std::endl;
+        std::cout << "boundary               : " << frame->boundary().kind() << std::endl;
         return 0;
     }
     else
