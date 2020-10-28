@@ -1,6 +1,10 @@
 #include <mill/util/logger.hpp>
 #include "mode_traj_help.hpp"
 #include "mode_traj_convert.hpp"
+#include "mode_traj_extract.hpp"
+#include "mode_traj_join.hpp"
+#include "mode_traj_split.hpp"
+#include "mode_traj_impose.hpp"
 
 namespace mill
 {
@@ -11,6 +15,14 @@ const char* mode_traj_help_usage() noexcept
            "    avaiable commands\n"
            "    - convert\n"
            "      : convert file format\n"
+           "    - extract\n"
+           "      : extract a part of trajectory\n"
+           "    - join\n"
+           "      : concatenate several traj files\n"
+           "    - split\n"
+           "      : split traj files into several fragments\n"
+           "    - impose\n"
+           "      : superimpose all the frames onto the initial frame\n"
            "    - help\n"
            "      : prints detailed explanation of each command\n";
 }
@@ -30,6 +42,22 @@ int mode_traj_help(std::deque<std::string_view> args)
     if(command == "convert")
     {
         return mode_traj_convert({"help"sv});
+    }
+    if(command == "extract")
+    {
+        return mode_traj_extract({"help"sv});
+    }
+    else if(command == "join")
+    {
+        return mode_traj_join({"help"sv});
+    }
+    else if(command == "split")
+    {
+        return mode_traj_split({"help"sv});
+    }
+    else if(command == "impose")
+    {
+        return mode_traj_impose({"help"sv});
     }
     if(command == "help")
     {
