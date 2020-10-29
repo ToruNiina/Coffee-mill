@@ -13,8 +13,11 @@ namespace mill
 
 const char* mode_calc_rmsd_usage() noexcept
 {
-    return "usage: mill calc rmsd [traj file] [ref file]\n"
-           "    files can be a pdb|xyz|dcd file.\n";
+    return "usage: mill calc rmsd [traj file] [ref file] [align(opt): \"true\"|\"false\"]\n"
+           "    files can be a pdb|xyz|dcd file.\n"
+           "    The last argument is optianl.\n"
+           "    If true (default), perform alignment by minimizing RMSD.\n"
+           "    otherwise, it calculates RMSD without minimization.\n";
 }
 
 int mode_calc_rmsd(std::deque<std::string_view> args)
@@ -94,15 +97,29 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         return 1;
     }
 
-    BestFit<typename scalar_type_of<vector_type>::type> bestfit;
-    bestfit.set_reference(ref);
+    const bool do_align = [&]{
+        if(args.size() == 2) {return true;}
+        return args.at(2) == "true";
+    }();
 
     std::ofstream ofs("mill_rmsd.dat");
     ofs << "#t rmsd\n";
-    for(std::size_t i=0; i<traj.size(); ++i)
+
+    if(do_align)
     {
-        ofs << i << ' ' << rmsd(ref, bestfit.fit(traj[i])) << '\n';
-//         ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
+        BestFit<typename scalar_type_of<vector_type>::type> bestfit;
+        bestfit.set_reference(ref);
+        for(std::size_t i=0; i<traj.size(); ++i)
+        {
+            ofs << i << ' ' << rmsd(ref, bestfit.fit(traj[i])) << '\n';
+        }
+    }
+    else
+    {
+        for(std::size_t i=0; i<traj.size(); ++i)
+        {
+            ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
+        }
     }
     return 0;
 }
