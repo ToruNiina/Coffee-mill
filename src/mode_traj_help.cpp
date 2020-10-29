@@ -5,6 +5,8 @@
 #include "mode_traj_join.hpp"
 #include "mode_traj_split.hpp"
 #include "mode_traj_impose.hpp"
+#include "mode_traj_rotate.hpp"
+#include "mode_traj_translate.hpp"
 
 namespace mill
 {
@@ -23,6 +25,10 @@ const char* mode_traj_help_usage() noexcept
            "      : split traj files into several fragments\n"
            "    - impose\n"
            "      : superimpose all the frames onto the initial frame\n"
+           "    - rotate\n"
+           "      : rotate molecules around an axis by a specified angle\n"
+           "    - translate\n"
+           "      : move molecules by a specified distance\n"
            "    - help\n"
            "      : prints detailed explanation of each command\n";
 }
@@ -58,6 +64,14 @@ int mode_traj_help(std::deque<std::string_view> args)
     else if(command == "impose")
     {
         return mode_traj_impose({"help"sv});
+    }
+    else if(command == "translate")
+    {
+        return mode_traj_translate({"help"sv});
+    }
+    else if(command == "rotate")
+    {
+        return mode_traj_rotate({"help"sv});
     }
     if(command == "help")
     {

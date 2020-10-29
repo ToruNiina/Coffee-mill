@@ -52,6 +52,10 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
   - splits a DCD file for every N frames.
 - `impose`
   - imposes molecules onto the initial configuration by minimizing RMSD.
+- `rotate`
+  - rotate molecules around x, y, or z axis by a specified angle.
+- `translate`
+  - move molecules by a specified distance.
 - `help`
   - prints help message.
 
