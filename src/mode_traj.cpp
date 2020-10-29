@@ -6,6 +6,8 @@
 #include "mode_traj_join.hpp"
 #include "mode_traj_split.hpp"
 #include "mode_traj_impose.hpp"
+#include "mode_traj_rotate.hpp"
+#include "mode_traj_translate.hpp"
 #include <iostream>
 
 namespace mill
@@ -42,6 +44,14 @@ int mode_traj(std::deque<std::string_view> args)
     else if(command == "impose")
     {
         return mode_traj_impose(std::move(args));
+    }
+    else if(command == "rotate")
+    {
+        return mode_traj_rotate(std::move(args));
+    }
+    else if(command == "translate")
+    {
+        return mode_traj_translate(std::move(args));
     }
     else if(command == "help")
     {
