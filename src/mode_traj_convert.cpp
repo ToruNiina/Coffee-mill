@@ -60,10 +60,20 @@ int mode_traj_convert(std::deque<std::string_view> args)
     {
         if(ref_frame)
         {
-            // copy reference info because std::map::merge moves out the values
-            Snapshot ref(*ref_frame);
-
-            frame.merge_attributes(ref);
+            if(ref_frame->size() != frame.size())
+            {
+                log::warn("number of particles in the reference file \"",
+                          args.front(), "\" (", ref_frame->size(),
+                          ") differs from the original \"", input, "\" (",
+                          frame.size(), "). Skipping.");
+            }
+            else
+            {
+                for(std::size_t i=0; i<frame.size(); ++i)
+                {
+                    frame.at(i).attributes() = ref_frame->at(i).attributes();
+                }
+            }
         }
         w.write_frame(frame);
     }
