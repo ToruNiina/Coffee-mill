@@ -2,6 +2,7 @@
 
 #include <mill/util/scalar_type_of.hpp>
 #include <mill/util/file_extension.hpp>
+#include <mill/util/cmdarg.hpp>
 #include <mill/math/RMSDCalculator.hpp>
 #include <mill/math/BestFitStructure.hpp>
 #include <mill/pdb/PDBReader.hpp>
@@ -13,11 +14,13 @@ namespace mill
 
 const char* mode_calc_rmsd_usage() noexcept
 {
-    return "usage: mill calc rmsd [traj file] [ref file] [align(opt): \"true\"|\"false\"]\n"
-           "    files can be a pdb|xyz|dcd file.\n"
-           "    The last argument is optianl.\n"
-           "    If true (default), perform alignment by minimizing RMSD.\n"
-           "    otherwise, it calculates RMSD without minimization.\n";
+    return "usage: mill calc rmsd [traj file] [ref file]\n"
+           "optinal args:\n"
+           "    --align=(true|false) [by default, true]\n"
+           "        If true (default), perform alignment by minimizing RMSD.\n"
+           "        otherwise, it calculates RMSD without minimization.\n"
+           "    --output=<filename>  [by default, \"mill_rmsd.dat\"]\n"
+           "        output data file.\n";
 }
 
 int mode_calc_rmsd(std::deque<std::string_view> args)
@@ -29,6 +32,10 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         log::error(mode_calc_rmsd_usage());
         return 1;
     }
+
+    // remove unordered argumnets
+    const auto do_align = pop_argument<bool       >(args, "align" ).value_or(true);
+    const auto output   = pop_argument<std::string>(args, "output").value_or("mill_rmsd.dat");
 
     const auto fname = args.front();
     if(fname == "help")
@@ -97,14 +104,8 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         return 1;
     }
 
-    const bool do_align = [&]{
-        if(args.size() == 2) {return true;}
-        return args.at(2) == "true";
-    }();
-
-    std::ofstream ofs("mill_rmsd.dat");
+    std::ofstream ofs(output);
     ofs << "#t rmsd\n";
-
     if(do_align)
     {
         BestFit<typename scalar_type_of<vector_type>::type> bestfit;
