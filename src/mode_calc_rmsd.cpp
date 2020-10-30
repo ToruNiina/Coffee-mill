@@ -51,19 +51,6 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         return 1;
     }
 
-    std::vector<std::vector<vector_type>> traj;
-    log::info("mill calc rmsd: reading ", fname);
-    for(const auto& snapshot : reader(fname))
-    {
-        std::vector<vector_type> ss; ss.reserve(snapshot.size());
-        for(const auto& particle : snapshot)
-        {
-            ss.push_back(particle.position());
-        }
-        traj.push_back(std::move(ss));
-    }
-    log::info("mill calc rmsd: done. ", fname, " has ", traj.size(), " snapshots.");
-
     const auto refname = args.at(1);
     std::vector<vector_type> ref;
     {
@@ -87,16 +74,33 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     {
         BestFit<typename scalar_type_of<vector_type>::type> bestfit;
         bestfit.set_reference(ref);
-        for(std::size_t i=0; i<traj.size(); ++i)
+
+        std::size_t tstep = 0;
+        for(const auto& frame : reader(fname))
         {
-            ofs << i << ' ' << rmsd(ref, bestfit.fit(traj[i])) << '\n';
+            std::vector<Vector<double, 3>> snapshot;
+            snapshot.reserve(frame.size());
+            for(const auto& particle : frame)
+            {
+                snapshot.push_back(particle.position());
+            }
+            ofs << tstep << ' ' << rmsd(ref, bestfit.fit(snapshot)) << '\n';
+            ++tstep;
         }
     }
     else
     {
-        for(std::size_t i=0; i<traj.size(); ++i)
+        std::size_t tstep = 0;
+        for(const auto& frame : reader(fname))
         {
-            ofs << i << ' ' << rmsd(ref, traj[i]) << '\n';
+            std::vector<Vector<double, 3>> snapshot;
+            snapshot.reserve(frame.size());
+            for(const auto& particle : frame)
+            {
+                snapshot.push_back(particle.position());
+            }
+            ofs << tstep << ' ' << rmsd(ref, snapshot) << '\n';
+            ++tstep;
         }
     }
     return 0;
