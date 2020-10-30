@@ -52,42 +52,25 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     }
 
     std::vector<std::vector<vector_type>> traj;
-
-    if(extension_of(fname) == ".dcd" || extension_of(fname) == ".xyz")
+    log::info("mill calc rmsd: reading ", fname);
+    for(const auto& snapshot : reader(fname))
     {
-        log::info("mill calc rmsd: reading ", fname);
-        for(const auto& snapshot : reader(fname))
+        std::vector<vector_type> ss; ss.reserve(snapshot.size());
+        for(const auto& particle : snapshot)
         {
-            std::vector<vector_type> ss; ss.reserve(snapshot.size());
-            for(const auto& particle : snapshot)
-            {
-                ss.push_back(particle.position());
-            }
-            traj.push_back(std::move(ss));
+            ss.push_back(particle.position());
         }
-        log::info("mill calc rmsd: done. ", fname, " has ", traj.size(),
-                        " snapshots.");
+        traj.push_back(std::move(ss));
     }
-    else
-    {
-        log::error("mill calc rmsd: unknown file format: ", fname);
-        log::error(mode_calc_rmsd_usage());
-        return 1;
-    }
+    log::info("mill calc rmsd: done. ", fname, " has ", traj.size(), " snapshots.");
 
     const auto refname = args.at(1);
     std::vector<vector_type> ref;
-
-    if(extension_of(refname) == ".pdb")
     {
-        log::error("mill calc rmsd: unknown file format: ", refname);
-        return 1;
-    }
-    else if(extension_of(refname) == ".xyz")
-    {
-        log::info("mill calc rmsd: reading ", refname, " as a XYZ file...");
-        XYZReader reader(refname);
-        if(const auto first_frame = reader.read_frame())
+        log::info("mill calc rmsd: reading ", refname, " as a reference file...");
+        auto r = reader(refname);
+        r.read_header();
+        if(const auto first_frame = r.read_frame())
         {
             for(const auto& particle : *first_frame)
             {
@@ -95,13 +78,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
             }
         }
         log::info("mill calc rmsd: done. reference structure has ",
-                        ref.size(), " particles.");
-    }
-    else
-    {
-        log::error("mill calc rmsd: invalid argument: ", refname);
-        log::error(mode_calc_rmsd_usage());
-        return 1;
+                  ref.size(), " particles.");
     }
 
     std::ofstream ofs(output);
