@@ -6,5 +6,6 @@
 #include "math/Matrix.hpp"
 #include "math/RMSDCalculator.hpp"
 #include "math/Vector.hpp"
+#include "math/Constants.hpp"
 
 #endif// COFFEE_MILL_INCLUDE_MATH_HPP
