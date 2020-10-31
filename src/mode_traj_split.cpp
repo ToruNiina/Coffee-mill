@@ -1,5 +1,6 @@
 #include <mill/util/logger.hpp>
 #include <mill/util/file_extension.hpp>
+#include <mill/util/cmdarg.hpp>
 #include <mill/traj.hpp>
 #include "mode_traj_split.hpp"
 #include <iostream>
@@ -29,16 +30,8 @@ int mode_traj_split(std::deque<std::string_view> args)
         log::error(mode_traj_split_usage());
         return 1;
     }
-
-    const bool skip_initial = [&args]() {
-        const auto found = std::find(args.begin(), args.end(), "--skip-initial"sv);
-        if(found != args.end())
-        {
-            args.erase(found);
-            return true;
-        }
-        return false;
-    }();
+    const bool skip_initial = pop_argument<void>(args, "skip-initial"sv).has_value();
+    log::debug("skip_initial = ", skip_initial);
 
     const auto fname = args.front();
     if(fname == "help")
