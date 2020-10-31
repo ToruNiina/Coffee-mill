@@ -1,6 +1,7 @@
 #include <mill/util/logger.hpp>
 #include <mill/util/file_extension.hpp>
 #include <mill/traj.hpp>
+#include <mill/math/Constants.hpp>
 #include "mode_traj_rotate.hpp"
 #include <iostream>
 
@@ -41,7 +42,7 @@ int mode_traj_rotate(std::deque<std::string_view> args)
     }
 
     const auto axis  = args.front();
-    const auto theta = std::stod(std::string(args.back())) * 3.14159265 / 180.0;
+    const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
 
     const auto cos_theta = std::cos(theta);
     const auto sin_theta = std::sin(theta);

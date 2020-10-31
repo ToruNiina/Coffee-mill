@@ -2,6 +2,7 @@
 
 #include <mill/traj.hpp>
 #include <mill/math/Vector.hpp>
+#include <mill/math/Constants.hpp>
 #include <toml/toml.hpp>
 
 namespace mill
@@ -34,7 +35,7 @@ int mode_calc_angle(std::deque<std::string_view> args)
         return 0;
     }
 
-    constexpr double rad_to_deg = 180.0 / 3.14159265358979;
+    constexpr double rad_to_deg = 180.0 / constants::pi;
 
     if(args.size() == 4) // traj.dcd i j k
     {
