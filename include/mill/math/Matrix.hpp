@@ -1,6 +1,8 @@
 #ifndef COFFEE_MILL_MATH_MATRIX_HPP
 #define COFFEE_MILL_MATH_MATRIX_HPP
 #include <array>
+#include <ostream>
+#include <type_traits>
 
 namespace mill
 {
@@ -104,6 +106,34 @@ template<typename realT, std::size_t Row, std::size_t Col>
 constexpr std::size_t Matrix<realT, Row, Col>::dim_col;
 template<typename realT, std::size_t Row, std::size_t Col>
 constexpr std::size_t Matrix<realT, Row, Col>::number_of_element;
+
+template<typename realT, std::size_t R, std::size_t C>
+typename std::enable_if_t<C != 1, std::ostream>::type&
+operator<<(std::ostream& os, const Matrix<realT, R, C>& mat)
+{
+    for(std::size_t i=0; i<R; ++i)
+    {
+        os << "[ ";
+        for(std::size_t j=0; j<C; ++j)
+        {
+            os << mat(i, j) << ' ';
+        }
+        os << "]\n";
+    }
+    return os;
+}
+template<typename realT, std::size_t R>
+std::ostream& operator<<(std::ostream& os, const Matrix<realT, R, 1>& mat)
+{
+    os << "[ ";
+    for(std::size_t j=0; j<R; ++j)
+    {
+        os << mat(0, j) << ' ';
+    }
+    os << ']';
+    return os;
+}
+
 
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>&
