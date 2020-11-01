@@ -155,9 +155,15 @@ class PDBReader final : public DeferedReaderBase
             }
         }
 
-        current_ += 1;
+        if(frame.empty())
+        {
+            return std::nullopt;
+        }
+
         pdb_.peek();
-        log::debug("mill::PDBReader: done.");
+        log::debug("mill::PDBReader: done. there are ", frame.size(), " particles.");
+        current_ += 1;
+
         return frame;
     }
 
