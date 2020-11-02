@@ -2,7 +2,10 @@
 #include <mill/util/logger.hpp>
 #include "mode_calc_help.hpp"
 #include "mode_calc_rmsd.hpp"
+#include "mode_calc_wham.hpp"
 #include "mode_calc_dist.hpp"
+#include "mode_calc_angle.hpp"
+#include "mode_calc_obb.hpp"
 
 namespace mill
 {
@@ -12,11 +15,15 @@ const char* mode_calc_help_usage() noexcept
     return "usage: mill calc [command] [parameters...]\n\n"
            "    avaiable commands\n"
            "    - rmsd\n"
-           "      : calculate RMSD\n"
-           "    - dist\n"
-           "      : calculate distance from traj file\n"
+           "      : calculate RMSD between a reference and frames in trajectory\n"
            "    - wham\n"
            "      : reconstruct free energy surface by WHAM\n"
+           "    - dist\n"
+           "      : calculate distance from traj file\n"
+           "    - angle\n"
+           "      : calculate angle from traj file\n"
+           "    - obb\n"
+           "      : construct OBB using covariances\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -35,11 +42,23 @@ int mode_calc_help(std::deque<std::string_view> args)
 
     if(command == "rmsd")
     {
-        return mode_calc_rmsd({"rmsd"sv, "help"sv});
+        return mode_calc_rmsd({"help"sv});
     }
     else if(command == "dist")
     {
-        return mode_calc_dist({"dist"sv, "help"sv});
+        return mode_calc_dist({"help"sv});
+    }
+    else if(command == "angle")
+    {
+        return mode_calc_angle({"help"sv});
+    }
+    else if(command == "wham")
+    {
+        return mode_calc_wham({"help"sv});
+    }
+    else if(command == "obb")
+    {
+        return mode_calc_obb({"help"sv});
     }
     else if(command == "help")
     {
