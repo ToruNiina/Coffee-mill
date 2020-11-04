@@ -1,6 +1,5 @@
 #include "mode_calc_rmsd.hpp"
 
-#include <mill/util/scalar_type_of.hpp>
 #include <mill/util/file_extension.hpp>
 #include <mill/util/cmdarg.hpp>
 #include <mill/math/RMSDCalculator.hpp>
@@ -72,7 +71,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     ofs << "#t rmsd\n";
     if(do_align)
     {
-        BestFit<typename scalar_type_of<vector_type>::type> bestfit;
+        BestFit<double> bestfit;
         bestfit.set_reference(ref);
 
         std::size_t tstep = 0;
