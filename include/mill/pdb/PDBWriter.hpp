@@ -79,7 +79,7 @@ class PDBWriter final : public WriterBase
             // 80 chars + line feed + null
             std::array<char, 82> buffer; buffer.fill('\0');
             std::snprintf(buffer.data(), buffer.size(),
-                "%-6s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
+                "%-6s%5lld %4s%c%3s %c%4lld%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
                 p.at("record"  ).try_string() .value_or("ATOM  "s).c_str(),
                 p.at("serial"  ).try_integer().value_or(serial),
                 p.at("name"    ).try_string() .value_or(" C  "s).c_str(),
