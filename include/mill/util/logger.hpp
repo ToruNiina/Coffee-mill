@@ -1,6 +1,6 @@
 #ifndef COFFEE_MILL_UTIL_LOGGER_HPP
 #define COFFEE_MILL_UTIL_LOGGER_HPP
-#include <mill/util/isatty.hpp>
+#include <mill/util/color.hpp>
 #include <vector>
 #include <deque>
 #include <map>
@@ -61,12 +61,11 @@ template<typename Exception = std::runtime_error, typename ... Ts>
 [[noreturn]] void fatal(Ts&& ... args)
 {
     using namespace std::literals::string_literals;
-    if(isatty(std::cerr)) {std::cerr << "\x1b[31mFATAL:\x1b[0m ";}
-    else                  {std::cerr <<         "FATAL: ";}
 
     std::ostringstream oss;
     const auto msg = fatal_printer(oss, std::forward<Ts>(args)...);
-    std::cerr << msg << std::endl;
+    std::cerr << color::bold << color::red << "FATAL: " << color::clear
+              << msg << std::endl;
 
     throw Exception("FATAL: "s + msg);
 }
@@ -76,8 +75,7 @@ void error(Ts&& ... args)
 {
     if(not logger.is_activated(level::error)) {return;}
 
-    if(isatty(std::cerr)) {std::cerr << "\x1b[31mError:\x1b[0m ";}
-    else                  {std::cerr <<         "Error: ";}
+    std::cerr << color::bold << color::red << "Error: " << color::clear;
     (std::cerr << ... << args);
     std::cerr << std::endl; // logs should be flashed every time
     return;
@@ -87,8 +85,7 @@ void warn(Ts&& ... args)
 {
     if(not logger.is_activated(level::warn)) {return;}
 
-    if(isatty(std::cerr)) {std::cerr << "\x1b[33mWarn :\x1b[0m ";}
-    else                  {std::cerr <<         "Warn : ";}
+    std::cerr << color::bold << color::yellow << "Warn : " << color::clear;
     (std::cerr << ... << args);
     std::cerr << std::endl; // logs should be flashed every time
     return;
@@ -98,8 +95,7 @@ void info(Ts&& ... args)
 {
     if(not logger.is_activated(level::info)) {return;}
 
-    if(isatty(std::cerr)) {std::cerr << "\x1b[32mInfo :\x1b[0m ";}
-    else                  {std::cerr <<         "Info : ";}
+    std::cerr << color::bold << color::green << "Info : " << color::clear;
     (std::cerr << ... << args);
     std::cerr << std::endl; // logs should be flashed every time
     return;
