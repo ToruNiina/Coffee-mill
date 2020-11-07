@@ -5,6 +5,7 @@
 #include "mode_calc_angle.hpp"
 #include "mode_calc_wham.hpp"
 #include "mode_calc_obb.hpp"
+#include "mode_calc_center.hpp"
 #include <mill/util/logger.hpp>
 
 namespace mill
@@ -40,6 +41,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "obb")
     {
         return mode_calc_obb(std::move(args));
+    }
+    else if(command == "center")
+    {
+        return mode_calc_center(std::move(args));
     }
     else if(command == "help")
     {

@@ -6,6 +6,7 @@
 #include "mode_calc_dist.hpp"
 #include "mode_calc_angle.hpp"
 #include "mode_calc_obb.hpp"
+#include "mode_calc_center.hpp"
 
 namespace mill
 {
@@ -24,6 +25,8 @@ const char* mode_calc_help_usage() noexcept
            "      : calculate angle from traj file\n"
            "    - obb\n"
            "      : construct OBB using covariances\n"
+           "    - center\n"
+           "      : calculate geometric center\n"
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -59,6 +62,10 @@ int mode_calc_help(std::deque<std::string_view> args)
     else if(command == "obb")
     {
         return mode_calc_obb({"help"sv});
+    }
+    else if(command == "center")
+    {
+        return mode_calc_center({"help"sv});
     }
     else if(command == "help")
     {
