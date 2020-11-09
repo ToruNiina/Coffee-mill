@@ -79,7 +79,7 @@ int mode_pdb_seq(std::deque<std::string_view> args)
 
     log::debug("seq = ", sequence);
 
-    for(const auto particle : frame.particles())
+    for(const auto& particle : frame.particles())
     {
         if(chain_id != particle.at("chain_id").as_string())
         {

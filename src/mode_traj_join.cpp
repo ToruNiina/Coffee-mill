@@ -75,7 +75,7 @@ int mode_traj_join(std::deque<std::string_view> args)
     for(const auto& file : files)
     {
         bool is_initial = true;
-        for(const auto frame : reader(file))
+        for(const auto& frame : reader(file))
         {
             if(!is_initial || include_initial)
             {

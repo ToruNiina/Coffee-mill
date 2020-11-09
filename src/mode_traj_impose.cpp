@@ -89,10 +89,8 @@ int mode_traj_impose(std::deque<std::string_view> args)
 
     w.write_header(r.read_header());
 
-    const auto& first_frame = *(r.read_frame());
-
     BestFit<double> bestfit;
-    bestfit.set_reference(remove_except_elements(first_frame, except_particle));
+    bestfit.set_reference(remove_except_elements(*(r.read_frame()), except_particle));
 
     for(auto frame : r)
     {

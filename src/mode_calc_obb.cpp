@@ -30,7 +30,7 @@ int mode_calc_obb(std::deque<std::string_view> args)
         return 0;
     }
 
-    for(const auto frame : reader(fname))
+    for(const auto& frame : reader(fname))
     {
         const auto center = std::accumulate(frame.begin(), frame.end(),
                 Vector<double, 3>(0, 0, 0), [](const auto c, const auto p) {

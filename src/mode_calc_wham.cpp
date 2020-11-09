@@ -59,7 +59,7 @@ int mode_calc_wham(std::deque<std::string_view> args)
 
     std::vector<std::pair<std::vector<double>,
                           std::unique_ptr<PotentialFunction>>> trajs;
-    for(const auto trajectory : input.at("trajectories").as_array())
+    for(const auto& trajectory : input.at("trajectories").as_array())
     {
         // assuming harmonic bond length ...
         const auto& pot   = toml::find(trajectory, "potential");

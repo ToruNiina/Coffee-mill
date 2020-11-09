@@ -47,9 +47,9 @@ int mode_calc_dist(std::deque<std::string_view> args)
         std::ofstream output(toml::find<std::string>(config, "output"));
         const auto traj  = toml::find<std::string>(config, "input");
         const auto pairs = toml::find<std::vector<std::pair<std::size_t, std::size_t>>>(config, "pairs");
-        for(const auto frame : reader(traj))
+        for(const auto& frame : reader(traj))
         {
-            for(const auto [i, j] : pairs)
+            for(const auto& [i, j] : pairs)
             {
                 output << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << ' ';
             }
@@ -60,7 +60,7 @@ int mode_calc_dist(std::deque<std::string_view> args)
     {
         const auto i = std::stoi(std::string(args.at(1)));
         const auto j = std::stoi(std::string(args.at(2)));
-        for(const auto frame : reader(fname))
+        for(const auto& frame : reader(fname))
         {
             std::cout << std::setprecision(16)
                       << length(frame[i].position() - frame[j].position()) << '\n';

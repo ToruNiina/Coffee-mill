@@ -42,7 +42,7 @@ int mode_calc_angle(std::deque<std::string_view> args)
         const auto i = std::stoi(std::string(args.at(1)));
         const auto j = std::stoi(std::string(args.at(2)));
         const auto k = std::stoi(std::string(args.at(3)));
-        for(const auto frame : reader(fname))
+        for(const auto& frame : reader(fname))
         {
             const auto v1 = frame[i].position() - frame[j].position();
             const auto v2 = frame[k].position() - frame[j].position();
@@ -56,7 +56,7 @@ int mode_calc_angle(std::deque<std::string_view> args)
         const auto k = std::stoi(std::string(args.at(3)));
         const auto l = std::stoi(std::string(args.at(4)));
 
-        for(const auto frame : reader(fname))
+        for(const auto& frame : reader(fname))
         {
             const auto v1 = frame[j].position() - frame[i].position();
             const auto v2 = frame[l].position() - frame[k].position();
