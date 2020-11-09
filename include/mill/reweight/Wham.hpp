@@ -1,12 +1,12 @@
 #ifndef COFFEE_MILL_REWEIGHT_WHAM_HPP
 #define COFFEE_MILL_REWEIGHT_WHAM_HPP
+#include <mill/util/logger.hpp>
 
 #include "Histogram.hpp"
 #include "ProbabilityDensity.hpp"
 #include "PotentialFunction.hpp"
 #include "ReactionCoordinate.hpp"
 
-#include <mill/util/logger.hpp>
 #include <vector>
 #include <cmath>
 
@@ -28,6 +28,8 @@ class WHAMSolver
     {
         return this->reconstruct(this->solve_f(trajs), trajs, bins);
     }
+
+    double kBT() const noexcept {return kBT_;}
 
   private:
 
