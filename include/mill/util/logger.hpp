@@ -2,7 +2,6 @@
 #define COFFEE_MILL_UTIL_LOGGER_HPP
 #include <mill/util/color.hpp>
 #include <vector>
-#include <deque>
 #include <map>
 #include <iostream>
 #include <sstream>
@@ -12,6 +11,7 @@ namespace mill
 {
 namespace log
 {
+
 enum class level : std::uint8_t
 {
     error,
@@ -37,15 +37,34 @@ struct Logger
 };
 inline Logger logger;
 
+template<typename T>
+std::void_t<decltype(std::declval<std::ostringstream&>() << std::declval<T>())>
+log_formatter(std::ostringstream& oss, T&& head)
+{
+    oss << std::forward<T>(head);
+    return ;
+}
+template<typename T, typename Alloc>
+void log_formatter(std::ostringstream& oss, const std::vector<T, Alloc>& vec)
+{
+    oss << "vector[";
+    for(std::size_t i=0; i<vec.size(); ++i)
+    {
+        if(i != 0) {oss << ", ";}
+        oss << vec[i];
+    }
+    oss << "]";
+    return ;
+}
+
 template<typename T, typename ... Ts>
-std::string fatal_printer(std::ostringstream& oss, T&& head, Ts&& ... args)
+std::string log_printer_helper(std::ostringstream& oss, T&& head, Ts&& ... args)
 {
     if(oss.str().back() == '\n')
     {
-        //     "FATAL: "
         oss << "     : ";
     }
-    oss << std::forward<T>(head);
+    log_formatter(oss, std::forward<T>(head));
 
     if constexpr (sizeof...(Ts) == 0)
     {
@@ -53,20 +72,25 @@ std::string fatal_printer(std::ostringstream& oss, T&& head, Ts&& ... args)
     }
     else
     {
-        return fatal_printer(oss, std::forward<Ts>(args)...);
+        return log_printer_helper(oss, std::forward<Ts>(args)...);
     }
+}
+
+template<typename ... Ts>
+std::string log_printer(Ts&& ... args)
+{
+    std::ostringstream oss;
+    return log_printer_helper(oss, std::forward<Ts>(args)...);
 }
 
 template<typename Exception = std::runtime_error, typename ... Ts>
 [[noreturn]] void fatal(Ts&& ... args)
 {
     using namespace std::literals::string_literals;
+    const auto msg = log_printer(std::forward<Ts>(args)...);
 
-    std::ostringstream oss;
-    const auto msg = fatal_printer(oss, std::forward<Ts>(args)...);
     std::cerr << color::bold << color::red << "FATAL: " << color::clear
               << msg << std::endl;
-
     throw Exception("FATAL: "s + msg);
 }
 
@@ -76,8 +100,7 @@ void error(Ts&& ... args)
     if(not logger.is_activated(level::error)) {return;}
 
     std::cerr << color::bold << color::red << "Error: " << color::clear;
-    (std::cerr << ... << args);
-    std::cerr << std::endl; // logs should be flashed every time
+    std::cerr << log_printer(std::forward<Ts>(args)...) << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -86,8 +109,7 @@ void warn(Ts&& ... args)
     if(not logger.is_activated(level::warn)) {return;}
 
     std::cerr << color::bold << color::yellow << "Warn : " << color::clear;
-    (std::cerr << ... << args);
-    std::cerr << std::endl; // logs should be flashed every time
+    std::cerr << log_printer(std::forward<Ts>(args)...) << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -96,8 +118,7 @@ void info(Ts&& ... args)
     if(not logger.is_activated(level::info)) {return;}
 
     std::cerr << color::bold << color::green << "Info : " << color::clear;
-    (std::cerr << ... << args);
-    std::cerr << std::endl; // logs should be flashed every time
+    std::cerr << log_printer(std::forward<Ts>(args)...) << std::endl;
     return;
 }
 template<typename ... Ts>
@@ -105,41 +126,10 @@ void debug(Ts&& ... args)
 {
     if(not logger.is_activated(level::debug)) {return;}
 
-    if(isatty(std::cerr)) {std::cerr << "\x1b[34mDebug:\x1b[0m ";}
-    else                  {std::cerr <<         "Debug: ";}
-    (std::cerr << ... << args);
-    std::cerr << std::endl; // logs should be flashed every time
+    std::cerr << color::bold << color::blue << "Debug: " << color::clear;
+    std::cerr << log_printer(std::forward<Ts>(args)...) << std::endl;
     return;
 }
-
-// ----------------------------------------------------------------------------
-// log output operator
-
-template<typename T, typename Alloc>
-std::ostream& operator<<(std::ostream& os, const std::vector<T, Alloc>& vec)
-{
-    os << "vector[";
-    for(std::size_t i=0; i<vec.size(); ++i)
-    {
-        if(i != 0) {os << ", ";}
-        os << vec[i];
-    }
-    os << "]";
-    return os;
-}
-template<typename T, typename Alloc>
-std::ostream& operator<<(std::ostream& os, const std::deque<T, Alloc>& deq)
-{
-    os << "deque[";
-    for(std::size_t i=0; i<deq.size(); ++i)
-    {
-        if(i != 0) {os << ", ";}
-        os << deq[i];
-    }
-    os << "]";
-    return os;
-}
-
 
 } // log
 } // mill
