@@ -44,6 +44,24 @@ log_formatter(std::ostringstream& oss, T&& head)
     oss << std::forward<T>(head);
     return ;
 }
+
+template<typename T1, typename T2>
+void log_formatter(std::ostringstream&, const std::pair<T1, T2>&);
+template<typename T, typename Alloc>
+void log_formatter(std::ostringstream&, const std::vector<T, Alloc>&);
+template<typename T>
+void log_formatter(std::ostringstream&, const std::optional<T>&);
+
+template<typename T1, typename T2>
+void log_formatter(std::ostringstream& oss, const std::pair<T1, T2>& p)
+{
+    oss << "pair[";
+    log_formatter(oss, p.first);
+    oss << ", ";
+    log_formatter(oss, p.second);
+    oss << "]";
+    return ;
+}
 template<typename T, typename Alloc>
 void log_formatter(std::ostringstream& oss, const std::vector<T, Alloc>& vec)
 {
@@ -51,9 +69,24 @@ void log_formatter(std::ostringstream& oss, const std::vector<T, Alloc>& vec)
     for(std::size_t i=0; i<vec.size(); ++i)
     {
         if(i != 0) {oss << ", ";}
-        oss << vec[i];
+        log_formatter(oss, vec[i]);
     }
     oss << "]";
+    return ;
+}
+template<typename T>
+void log_formatter(std::ostringstream& oss, const std::optional<T>& opt)
+{
+    if(opt)
+    {
+        oss << "optional[";
+        log_formatter(oss, *opt);
+        oss << "]";
+    }
+    else
+    {
+        oss << "optional[null]";
+    }
     return ;
 }
 
