@@ -85,7 +85,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
             if(ref_only)
             {
                 const auto [first, last] = *ref_only;
-                if(first_frame->size() <= first || first_frame->size() <= last)
+                if(first_frame->size() <= first || first_frame->size() < last)
                 {
                     log::fatal("The range specified by --ref-only (", *ref_only,
                         ") exceeds the size of snapshot (", first_frame->size(),
@@ -122,7 +122,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
             if(only)
             {
                 const auto [first, last] = *only;
-                if(frame.size() <= first || frame.size() <= last)
+                if(frame.size() <= first || frame.size() < last)
                 {
                     log::fatal("The range specified by --only (", *only,
                         ") exceeds the size of snapshot (", frame.size(), ").");
@@ -153,7 +153,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
             if(only)
             {
                 const auto [first, last] = *only;
-                if(frame.size() <= first || frame.size() <= last)
+                if(frame.size() <= first || frame.size() < last)
                 {
                     log::fatal("The range specified by --only (", *only,
                         ") exceeds the size of snapshot (", frame.size(), ").");
