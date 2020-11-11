@@ -19,7 +19,25 @@ const char* mode_calc_rmsd_usage() noexcept
            "        If true (default), perform alignment by minimizing RMSD.\n"
            "        otherwise, it calculates RMSD without minimization.\n"
            "    --output=<filename>  [by default, \"mill_rmsd.dat\"]\n"
-           "        output data file.\n";
+           "        output data file.\n"
+           "    --only=<begin>:<end>\n"
+           "    --ref-only=<begin>:<end>\n"
+           "        use [begin, end) region only.\n";
+}
+
+std::optional<std::pair<std::size_t, std::size_t>>
+pop_range(std::deque<std::string_view>& args, std::string_view name)
+{
+    if(const auto arg = pop_argument<std::string>(args, name))
+    {
+        return std::make_optional<std::pair<std::size_t, std::size_t>>(
+                std::stoull(arg->substr(0, arg->find(':'))),
+                std::stoull(arg->substr(arg->find(':') + 1)));
+    }
+    else
+    {
+        return std::nullopt;
+    }
 }
 
 int mode_calc_rmsd(std::deque<std::string_view> args)
@@ -35,6 +53,12 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     // remove unordered argumnets
     const auto do_align = pop_argument<bool       >(args, "align" ).value_or(true);
     const auto output   = pop_argument<std::string>(args, "output").value_or("mill_rmsd.dat");
+
+    const auto only     = pop_range(args, "only");
+    const auto ref_only = pop_range(args, "ref-only");
+
+    log::debug("only     = ", only);
+    log::debug("ref_only = ", ref_only);
 
     const auto fname = args.front();
     if(fname == "help")
@@ -58,9 +82,26 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         r.read_header();
         if(const auto first_frame = r.read_frame())
         {
-            for(const auto& particle : *first_frame)
+            if(ref_only)
             {
-                ref.push_back(particle.position());
+                const auto [first, last] = *ref_only;
+                if(first_frame->size() <= first || first_frame->size() <= last)
+                {
+                    log::fatal("The range specified by --ref-only (", *ref_only,
+                        ") exceeds the size of snapshot (", first_frame->size(),
+                        ").");
+                }
+                for(std::size_t i=first; i<last; ++i)
+                {
+                    ref.push_back(first_frame->at(i).position());
+                }
+            }
+            else
+            {
+                for(const auto& particle : *first_frame)
+                {
+                    ref.push_back(particle.position());
+                }
             }
         }
         log::info("mill calc rmsd: done. reference structure has ",
@@ -78,10 +119,26 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         for(const auto& frame : reader(fname))
         {
             std::vector<Vector<double, 3>> snapshot;
-            snapshot.reserve(frame.size());
-            for(const auto& particle : frame)
+            if(only)
             {
-                snapshot.push_back(particle.position());
+                const auto [first, last] = *only;
+                if(frame.size() <= first || frame.size() <= last)
+                {
+                    log::fatal("The range specified by --only (", *only,
+                        ") exceeds the size of snapshot (", frame.size(), ").");
+                }
+                for(std::size_t i=first; i<last; ++i)
+                {
+                    snapshot.push_back(frame.at(i).position());
+                }
+            }
+            else
+            {
+                snapshot.reserve(frame.size());
+                for(const auto& particle : frame)
+                {
+                    snapshot.push_back(particle.position());
+                }
             }
             ofs << tstep << ' ' << rmsd(ref, bestfit.fit(snapshot)) << '\n';
             ++tstep;
@@ -93,10 +150,26 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
         for(const auto& frame : reader(fname))
         {
             std::vector<Vector<double, 3>> snapshot;
-            snapshot.reserve(frame.size());
-            for(const auto& particle : frame)
+            if(only)
             {
-                snapshot.push_back(particle.position());
+                const auto [first, last] = *only;
+                if(frame.size() <= first || frame.size() <= last)
+                {
+                    log::fatal("The range specified by --only (", *only,
+                        ") exceeds the size of snapshot (", frame.size(), ").");
+                }
+                for(std::size_t i=first; i<last; ++i)
+                {
+                    snapshot.push_back(frame.at(i).position());
+                }
+            }
+            else
+            {
+                snapshot.reserve(frame.size());
+                for(const auto& particle : frame)
+                {
+                    snapshot.push_back(particle.position());
+                }
             }
             ofs << tstep << ' ' << rmsd(ref, snapshot) << '\n';
             ++tstep;
