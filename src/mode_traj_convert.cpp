@@ -33,6 +33,7 @@ int mode_traj_convert(std::deque<std::string_view> args)
     }
 
     const auto format = args.front();
+    log::debug("format is ", format);
     args.pop_front();
 
     using attribute_container_type = Trajectory::attribute_container_type;
@@ -40,12 +41,18 @@ int mode_traj_convert(std::deque<std::string_view> args)
     std::optional<Snapshot>                 ref_frame  = std::nullopt;
     if(!args.empty())
     {
+        log::debug("reference file is ", args.front());
+
         auto     r = reader(args.front());
         ref_header = r.read_header();
         ref_frame  = r.read_frame(); // read 1st frame
+
+        log::debug("reference file has ", ref_frame->size(), " particles.");
     }
 
     const std::string output = std::string(input) + "_converted." + std::string(format);
+    log::debug("output file is ", output);
+
     auto w = writer(output);
     auto r = reader(input);
 
@@ -54,6 +61,7 @@ int mode_traj_convert(std::deque<std::string_view> args)
     {
         header.merge(*ref_header);
     }
+
     w.write_header(header);
 
     for(auto frame : r)
