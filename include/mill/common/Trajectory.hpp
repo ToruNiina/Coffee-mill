@@ -59,6 +59,61 @@ class Trajectory
         return this->snapshots_.at(i);
     }
 
+    std::optional<attribute_type::boolean_type >
+    try_boolean (const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_boolean();
+        }
+        return std::nullopt;
+    }
+    std::optional<attribute_type::integer_type >
+    try_integer (const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_integer();
+        }
+        return std::nullopt;
+    }
+    std::optional<attribute_type::floating_type>
+    try_floating(const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_floating();
+        }
+        return std::nullopt;
+    }
+    std::optional<attribute_type::string_type>
+    try_string(const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_string();
+        }
+        return std::nullopt;
+    }
+    std::optional<attribute_type::vector_type>
+    try_vector(const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_vector();
+        }
+        return std::nullopt;
+    }
+    std::optional<attribute_type::array_type>
+    try_array(const std::string& name) const noexcept
+    {
+        if(auto attr = this->try_at(name))
+        {
+            return attr->try_array();
+        }
+        return std::nullopt;
+    }
+
     attribute_type& operator[](const std::string& name) {return attributes_[name];}
 
     attribute_type&       at(const std::string& name)       {return attributes_.at(name);}
