@@ -80,21 +80,21 @@ class PDBWriter final : public WriterBase
             std::array<char, 82> buffer; buffer.fill('\0');
             std::snprintf(buffer.data(), buffer.size(),
                 "%-6s%5lld %4s%c%3s %c%4lld%c   %8.3f%8.3f%8.3f%6.2f%6.2f          %2s%2s\n",
-                p.at("record"  ).try_string() .value_or("ATOM  "s).c_str(),
-                static_cast<long long int>(p.at("serial"  ).try_integer().value_or(serial)),
-                p.at("name"    ).try_string() .value_or(" C  "s).c_str(),
-                p.at("alt_loc" ).try_string() .value_or(" "s).front(),
-                p.at("res_name").try_string() .value_or("XXX"s).c_str(),
-                p.at("chain_id").try_string() .value_or("A"s).front(),
-                static_cast<long long int>(p.at("res_seq" ).try_integer().value_or(serial)),
-                p.at("i_code"  ).try_string() .value_or(" "s).front(),
+                p.try_string("record"  ).value_or("ATOM  "s).c_str(),
+                static_cast<long long>(p.try_integer("serial"  ).value_or(serial)),
+                p.try_string("name"    ).value_or(" C  "s).c_str(),
+                p.try_string("alt_loc" ).value_or(" "s).front(),
+                p.try_string("res_name").value_or("XXX"s).c_str(),
+                p.try_string("chain_id").value_or("A"s).front(),
+                static_cast<long long>(p.try_integer("res_seq" ).value_or(serial)),
+                p.try_string("i_code"  ).value_or(" "s).front(),
                 p.position()[0],
                 p.position()[1],
                 p.position()[2],
-                p.at("occupancy"  ).try_floating().value_or(  0.0),
-                p.at("temp_factor").try_floating().value_or(999.9),
-                p.at("element"    ).try_string()  .value_or(atom.substr(0, 2)).c_str(),
-                p.at("charge"     ).try_string()  .value_or("  "s).c_str());
+                p.try_floating("occupancy"  ).value_or(  0.0),
+                p.try_floating("temp_factor").value_or(999.9),
+                p.try_string  ("element"    ).value_or(atom.substr(0, 2)).c_str(),
+                p.try_string  ("charge"     ).value_or("  "s).c_str());
             pdb_ << buffer.data();
 
             if(chain != '\0' && chain != current_chain)
