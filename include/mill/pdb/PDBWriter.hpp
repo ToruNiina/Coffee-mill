@@ -73,8 +73,8 @@ class PDBWriter final : public WriterBase
         for(const auto& p : frame)
         {
             serial += 1;
-            const auto atom          = p.at("name"    ).try_string().value_or(" C  "s);
-            const auto current_chain = p.at("chain_id").try_string().value_or("A"s).front();
+            const auto atom          = p.try_string("name"    ).value_or(" C  "s);
+            const auto current_chain = p.try_string("chain_id").value_or("A"s).front();
 
             // 80 chars + line feed + null
             std::array<char, 82> buffer; buffer.fill('\0');
