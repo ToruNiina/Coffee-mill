@@ -59,6 +59,14 @@ class DeferedReader
     std::unique_ptr<DeferedReaderBase> reader_;
 };
 
+inline bool is_readable_extension(std::string_view ext)
+{
+    return ext == ".dcd" ||
+           ext == ".pdb" ||
+           ext == ".trr" ||
+           ext == ".xyz";
+}
+
 inline DeferedReader reader(std::string_view filename)
 {
     const auto ext = extension_of(filename);
@@ -127,6 +135,14 @@ class TrajWriter
 
     std::unique_ptr<WriterBase> writer_;
 };
+
+inline bool is_writable_extension(std::string_view ext)
+{
+    return ext == ".dcd" ||
+           ext == ".pdb" ||
+           ext == ".trr" ||
+           ext == ".xyz";
+}
 
 inline TrajWriter writer(std::string_view filename)
 {
