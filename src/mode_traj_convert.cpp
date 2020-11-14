@@ -33,7 +33,10 @@ int mode_traj_convert(std::deque<std::string_view> args)
     }
 
     const auto format = args.front();
-    log::debug("format is ", format);
+    if(not is_writable_extension(format))
+    {
+        log::fatal("format ", format, " is not supported");
+    }
     args.pop_front();
 
     using attribute_container_type = Trajectory::attribute_container_type;
