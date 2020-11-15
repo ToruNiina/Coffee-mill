@@ -40,9 +40,9 @@ int mode_traj_translate(std::deque<std::string_view> args)
         return 1;
     }
 
-    const auto x = std::stod(std::string(args.back())); args.pop_back();
-    const auto y = std::stod(std::string(args.back())); args.pop_back();
-    const auto z = std::stod(std::string(args.back())); args.pop_back();
+    const auto x = std::stod(std::string(args.front())); args.pop_front();
+    const auto y = std::stod(std::string(args.front())); args.pop_front();
+    const auto z = std::stod(std::string(args.front())); args.pop_front();
 
     Vector<double, 3> dr(x, y, z);
     const auto output = std::string(base_name_of(input)) + "_translated_"s +
