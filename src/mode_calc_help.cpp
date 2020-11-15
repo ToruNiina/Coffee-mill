@@ -5,6 +5,7 @@
 #include "mode_calc_wham.hpp"
 #include "mode_calc_dist.hpp"
 #include "mode_calc_angle.hpp"
+#include "mode_calc_aabb.hpp"
 #include "mode_calc_obb.hpp"
 #include "mode_calc_center.hpp"
 
@@ -23,6 +24,8 @@ const char* mode_calc_help_usage() noexcept
            "      : calculate distance from traj file\n"
            "    - angle\n"
            "      : calculate angle from traj file\n"
+           "    - aabb\n"
+           "      : construct AABB\n"
            "    - obb\n"
            "      : construct OBB using covariances\n"
            "    - center\n"
@@ -62,6 +65,10 @@ int mode_calc_help(std::deque<std::string_view> args)
     else if(command == "obb")
     {
         return mode_calc_obb({"help"sv});
+    }
+    else if(command == "aabb")
+    {
+        return mode_calc_aabb({"help"sv});
     }
     else if(command == "center")
     {
