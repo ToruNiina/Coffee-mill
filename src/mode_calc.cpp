@@ -4,6 +4,7 @@
 #include "mode_calc_dist.hpp"
 #include "mode_calc_angle.hpp"
 #include "mode_calc_wham.hpp"
+#include "mode_calc_aabb.hpp"
 #include "mode_calc_obb.hpp"
 #include "mode_calc_center.hpp"
 #include <mill/util/logger.hpp>
@@ -37,6 +38,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "wham")
     {
         return mode_calc_wham(std::move(args));
+    }
+    else if(command == "aabb")
+    {
+        return mode_calc_aabb(std::move(args));
     }
     else if(command == "obb")
     {
