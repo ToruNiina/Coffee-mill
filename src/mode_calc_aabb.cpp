@@ -1,6 +1,6 @@
 #include "mode_calc_aabb.hpp"
 
-#include <mill/math.hpp>
+#include <mill/math/math.hpp>
 #include <mill/traj.hpp>
 #include <toml/toml.hpp>
 #include <numeric>
