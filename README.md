@@ -35,6 +35,10 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
   - calculates angles of pairs of particles, taking input file.
 - `wham`
   - performs WHAM from results of umbrella sampling.
+- `aabb`
+  - calculate axis-aligned bounding box from a given point cloud
+- `obb`
+  - calculate oriented bounding box from a given point cloud using covariance
 - `help`
   - prints help messages.
 
