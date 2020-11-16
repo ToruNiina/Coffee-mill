@@ -27,6 +27,7 @@ complete -c mill -n "__fish_seen_subcommand_from calc" -a dist   -d "calc distan
 complete -c mill -n "__fish_seen_subcommand_from calc" -a angle  -d "calc angle formed by specified particles"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a wham   -d "perform WHAM from umbrella sampling traj"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a obb    -d "calculate best fit oriented bounding box"
+complete -c mill -n "__fish_seen_subcommand_from calc" -a aabb   -d "calculate axis aligned bounding box"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a center -d "calc geometric center of a molecule in trajectory"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a help   -d "print help message"
 
