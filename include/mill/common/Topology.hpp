@@ -22,6 +22,7 @@ class Topology
 
   public:
 
+    explicit Topology(std::size_t N): nodes_(N) {}
     Topology() = default;
     ~Topology() = default;
     Topology(Topology const&) = default;

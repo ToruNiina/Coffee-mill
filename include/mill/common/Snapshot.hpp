@@ -2,6 +2,7 @@
 #define COFFEE_MILL_COMMON_SNAPSHOT_HPP
 #include <mill/common/Particle.hpp>
 #include <mill/common/BoundaryCondition.hpp>
+#include <mill/common/Topology.hpp>
 #include <vector>
 #include <memory>
 
@@ -22,6 +23,7 @@ class Snapshot
     using iterator       = typename container_type::iterator;
     using const_iterator = typename container_type::const_iterator;
     using boundary_type  = BoundaryCondition;
+    using topology_type  = Topoplogy;
 
   public:
 
@@ -32,11 +34,11 @@ class Snapshot
     Snapshot& operator=(Snapshot const&) = default;
     Snapshot& operator=(Snapshot &&)     = default;
 
-    Snapshot(std::size_t N): particles_(N) {}
+    Snapshot(std::size_t N): particles_(N), topology_(N) {}
 
     Snapshot(attribute_container_type attr): attributes_(std::move(attr)) {}
-    Snapshot(container_type ps)  : particles_(std::move(ps))    {}
-    Snapshot(const std::vector<vector_type>& ps): particles_(ps.size())
+    Snapshot(container_type ps): particles_(std::move(ps)), topology_(particles_.size()) {}
+    Snapshot(const std::vector<vector_type>& ps): particles_(ps.size()), topology_(ps.size())
     {
         std::transform(ps.begin(), ps.end(), particles_.begin(),
                 [](const vector_type& pos) -> particle_type {
@@ -44,10 +46,16 @@ class Snapshot
                 });
     }
 
-    void clear() {attributes_.clear(); particles_.clear(); return;}
+    void clear()
+    {
+        attributes_.clear();
+        particles_.clear();
+        topology_.clear();
+        return;
+    }
     bool empty() const noexcept
     {
-        return attributes_.empty() && particles_.empty();
+        return attributes_.empty() && particles_.empty() && topology_.empty();
     }
     std::size_t size() const noexcept
     {
@@ -150,6 +158,8 @@ class Snapshot
     container_type const& particles() const noexcept {return particles_;}
     boundary_type &      boundary()       noexcept {return boundary_;}
     boundary_type const& boundary() const noexcept {return boundary_;}
+    topology_type &      topology()       noexcept {return topology_;}
+    topology_type const& topology() const noexcept {return topology_;}
 
     void merge_attributes(Snapshot& other)
     {
@@ -168,6 +178,7 @@ class Snapshot
     attribute_container_type attributes_;
     container_type           particles_;
     boundary_type            boundary_;
+    topology_type            topology_;
 };
 
 } // mill
