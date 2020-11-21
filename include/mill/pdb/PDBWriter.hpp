@@ -53,8 +53,34 @@ class PDBWriter final : public WriterBase
         }
         return; // xyz does not have any header info
     }
-    void write_footer(const trajectory_type&) override
+    void write_footer(const trajectory_type& traj) override
     {
+        using namespace std::literals::string_literals;
+        if(traj.empty())
+        {
+            return ;
+        }
+        const auto& topol = traj.at(0).topology();
+        if(topol.empty())
+        {
+            return;
+        }
+
+        for(std::size_t i=0; i<topol.size(); ++i)
+        {
+            const auto& bound = topol.list_connected(i, "bond"s);
+            for(std::size_t idx=0; idx<bound.size(); idx+=4)
+            {
+                pdb_ << "CONECT" << std::setw(5) << std::right << i;
+                pdb_ << std::setw(5) << std::right << bound.at(idx+0);
+                if(bound.size() <= idx+1) {break;}
+                pdb_ << std::setw(5) << std::right << bound.at(idx+1);
+                if(bound.size() <= idx+2) {break;}
+                pdb_ << std::setw(5) << std::right << bound.at(idx+2);
+                if(bound.size() <= idx+3) {break;}
+                pdb_ << std::setw(5) << std::right << bound.at(idx+3);
+            }
+        }
         return ;
     }
     void write(const trajectory_type& traj) override
