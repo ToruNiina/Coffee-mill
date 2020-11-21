@@ -25,11 +25,10 @@ namespace mill
 class XYZWriter final : public WriterBase
 {
   public:
-    using base_type                = WriterBase;
-    using trajectory_type          = base_type::trajectory_type;
-    using snapshot_type            = base_type::snapshot_type;
-    using particle_type            = base_type::particle_type;
-    using attribute_container_type = base_type::attribute_container_type;
+    using base_type       = WriterBase;
+    using trajectory_type = base_type::trajectory_type;
+    using snapshot_type   = base_type::snapshot_type;
+    using particle_type   = base_type::particle_type;
 
   public:
 
@@ -43,10 +42,15 @@ class XYZWriter final : public WriterBase
     }
     ~XYZWriter() override = default;
 
-    void write_header(const attribute_container_type&) override
+    void write_header(const trajectory_type&) override
     {
         return; // xyz does not have any header info
     }
+    void write_footer(const trajectory_type&) override
+    {
+        return; // xyz does not have any header info
+    }
+
     void write(const trajectory_type& traj) override
     {
         for(const auto& frame : traj)

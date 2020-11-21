@@ -23,11 +23,10 @@ namespace mill
 class PDBWriter final : public WriterBase
 {
   public:
-    using base_type                = WriterBase;
-    using trajectory_type          = base_type::trajectory_type;
-    using snapshot_type            = base_type::snapshot_type;
-    using particle_type            = base_type::particle_type;
-    using attribute_container_type = base_type::attribute_container_type;
+    using base_type       = WriterBase;
+    using trajectory_type = base_type::trajectory_type;
+    using snapshot_type   = base_type::snapshot_type;
+    using particle_type   = base_type::particle_type;
 
     PDBWriter(const std::string_view fname)
         : current_(0), file_name_(fname), pdb_(file_name_)
@@ -39,8 +38,9 @@ class PDBWriter final : public WriterBase
     }
     ~PDBWriter() override = default;
 
-    void write_header(const attribute_container_type& header) override
+    void write_header(const trajectory_type& traj) override
     {
+        const auto& header = traj.attributes();
         if(header.count("boundary_width") != 0)
         {
             const auto w = header.at("boundary_width").as_vector();
@@ -53,12 +53,18 @@ class PDBWriter final : public WriterBase
         }
         return; // xyz does not have any header info
     }
+    void write_footer(const trajectory_type&) override
+    {
+        return ;
+    }
     void write(const trajectory_type& traj) override
     {
+        this->write_header(traj);
         for(const auto& frame : traj)
         {
             this->write_frame(frame);
         }
+        this->write_footer(traj);
         return;
     }
     void write_frame(const snapshot_type& frame) override

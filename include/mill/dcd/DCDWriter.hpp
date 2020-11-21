@@ -28,7 +28,7 @@ class DCDWriter final : public WriterBase
   public:
     using base_type                = WriterBase;
     using trajectory_type          = base_type::trajectory_type         ;
-    using attribute_container_type = base_type::attribute_container_type;
+    using attribute_container_type = trajectory_type::attribute_container_type;
     using snapshot_type            = base_type::snapshot_type           ;
     using boundary_type            = base_type::boundary_type           ;
     using particle_type            = base_type::particle_type           ;
@@ -46,20 +46,25 @@ class DCDWriter final : public WriterBase
     }
     ~DCDWriter() override = default;
 
-    void write_header(const attribute_container_type& header) override
+    void write_header(const trajectory_type& traj) override
     {
-        this->write_head_block1(header);
-        this->write_head_block2(header);
-        this->write_head_block3(header);
+        this->write_head_block1(traj.attributes());
+        this->write_head_block2(traj.attributes());
+        this->write_head_block3(traj.attributes());
+        return;
+    }
+    void write_footer(const trajectory_type&) override
+    {
         return;
     }
     void write(const trajectory_type& traj) override
     {
-        this->write_header(traj.attributes());
+        this->write_header(traj);
         for(const auto& frame : traj)
         {
             this->write_frame(frame);
         }
+        this->write_footer(traj);
         return;
     }
     void write_frame(const snapshot_type& frame) override

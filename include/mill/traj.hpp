@@ -115,9 +115,13 @@ class TrajWriter
     TrajWriter(TrajWriter&&)                 = default;
     TrajWriter& operator=(TrajWriter&&)      = default;
 
-    void write_header(const attribute_container_type& header)
+    void write_header(const trajectory_type& traj)
     {
-        return writer_->write_header(header);
+        return writer_->write_header(traj);
+    }
+    void write_footer(const trajectory_type& traj)
+    {
+        return writer_->write_footer(traj);
     }
     void write(const trajectory_type& traj)
     {
