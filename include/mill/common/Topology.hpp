@@ -31,8 +31,9 @@ class Topology
     Topology& operator=(Topology &&)     = default;
 
     void resize(const std::size_t N) {nodes_.resize(N);}
-    void clear() {nodes_.clera();}
+    void clear() {nodes_.clear();}
     std::size_t size() const noexcept {return nodes_.size();}
+    bool empty() const noexcept {return nodes_.empty();}
 
     std::vector<std::size_t> const&
     list_connected(const std::size_t i, const std::string& name) const noexcept

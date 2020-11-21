@@ -23,7 +23,7 @@ class Snapshot
     using iterator       = typename container_type::iterator;
     using const_iterator = typename container_type::const_iterator;
     using boundary_type  = BoundaryCondition;
-    using topology_type  = Topoplogy;
+    using topology_type  = Topology;
 
   public:
 
