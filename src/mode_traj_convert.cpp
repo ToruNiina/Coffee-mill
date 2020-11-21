@@ -33,7 +33,11 @@ int mode_traj_convert(std::deque<std::string_view> args)
     }
 
     const auto format = args.front();
-    if(not is_writable_extension(format))
+
+    const std::string output = std::string(input) + "_converted." + std::string(format);
+    log::debug("output file is ", output);
+
+    if(not is_writable_extension(extension_of(output)))
     {
         log::fatal("format ", format, " is not supported");
     }
@@ -53,8 +57,6 @@ int mode_traj_convert(std::deque<std::string_view> args)
         log::debug("reference file has ", ref_frame->size(), " particles.");
     }
 
-    const std::string output = std::string(input) + "_converted." + std::string(format);
-    log::debug("output file is ", output);
 
     auto w = writer(output);
     auto r = reader(input);
