@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_PDB_READER_HPP
 #define COFFEE_MILL_PDB_READER_HPP
 #include <mill/util/logger.hpp>
+#include <mill/util/string.hpp>
 #include <mill/common/Trajectory.hpp>
 #include <mill/common/DeferedReader.hpp>
 #include <fstream>
@@ -41,9 +42,9 @@ class PDBReader final : public DeferedReaderBase
         // When a line is found, rollback to the beginning of first line
         std::string line;
         auto checkpoint = this->pdb_.tellg();
-        while(line.substr(0, 6) != "MODEL " &&
-              line.substr(0, 6) != "ATOM  " &&
-              line.substr(0, 6) != "HETATM")
+        while(not starts_with(line, "MODEL ") &&
+              not starts_with(line, "ATOM  ") &&
+              not starts_with(line, "HETATM"))
         {
             checkpoint = this->pdb_.tellg(); // save the beginning of 1st line
             std::getline(this->pdb_, line);
@@ -87,7 +88,7 @@ class PDBReader final : public DeferedReaderBase
         snapshot_type frame;
 
         std::string line; // buffer for getline
-        while(line.substr(0, 6) != "ENDMDL" && not this->is_eof())
+        while(not starts_with(line, "END") && not this->is_eof())
         {
             std::getline(this->pdb_, line);
 

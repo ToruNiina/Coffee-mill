@@ -1,6 +1,7 @@
 #ifndef COFFEE_MILL_UTIL_STRING_HPP
 #define COFFEE_MILL_UTIL_STRING_HPP
 #include <string>
+#include <string_view>
 #include <algorithm>
 
 namespace mill
@@ -29,6 +30,15 @@ remove_all(const charT c, const std::basic_string<charT, Traits, Alloc>& str)
     auto retval = str;
     retval.erase(std::remove(retval.begin(), retval.end(), c), retval.end());
     return retval;
+}
+
+constexpr inline bool starts_with(std::string_view src, std::string_view tgt)
+{
+    if(src.size() < tgt.size())
+    {
+        return false;
+    }
+    return src.substr(0, tgt.size()) == tgt;
 }
 
 } // mill
