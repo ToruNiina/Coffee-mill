@@ -12,6 +12,8 @@ const char* mode_traj_rotate_usage() noexcept
 {
     return "usage: mill traj rotate [trajfile] [x|y|z] [angle(degree)]\n"
            "       rotate the snapshot around x, y, or z axis by a specified angle.\n";
+           "     - mill traj rotate [trajfile] [vec x y z] [angle(degree)]\n"
+           "       rotate the snapshot around the axis\n";
 }
 
 int mode_traj_rotate(std::deque<std::string_view> args)
@@ -42,14 +44,15 @@ int mode_traj_rotate(std::deque<std::string_view> args)
     }
 
     const auto axis  = args.front();
-    const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
-
-    const auto cos_theta = std::cos(theta);
-    const auto sin_theta = std::sin(theta);
 
     auto rot = Matrix<double, 3, 3>::zero();
     if(axis == "x"sv)
     {
+        const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
+
+        const auto cos_theta = std::cos(theta);
+        const auto sin_theta = std::sin(theta);
+
         rot(0, 0) = 1.0;
         rot(1, 1) =  cos_theta;
         rot(1, 2) = -sin_theta;
@@ -58,6 +61,11 @@ int mode_traj_rotate(std::deque<std::string_view> args)
     }
     else if(axis == "y"sv)
     {
+        const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
+
+        const auto cos_theta = std::cos(theta);
+        const auto sin_theta = std::sin(theta);
+
         rot(0, 0) =  cos_theta;
         rot(0, 2) =  sin_theta;
         rot(1, 1) = 1.0;
@@ -66,11 +74,40 @@ int mode_traj_rotate(std::deque<std::string_view> args)
     }
     else if(axis == "z"sv)
     {
+        const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
+
+        const auto cos_theta = std::cos(theta);
+        const auto sin_theta = std::sin(theta);
+
         rot(0, 0) =  cos_theta;
         rot(0, 1) = -sin_theta;
         rot(1, 0) =  sin_theta;
         rot(1, 1) =  cos_theta;
         rot(2, 2) = 1.0;
+    }
+    else if(axis == "vec"sv)
+    {
+        Vector<double, 3> n;
+
+        n[0] = std::stod(std::string(args.front())); args.pop_front();
+        n[1] = std::stod(std::string(args.front())); args.pop_front();
+        n[2] = std::stod(std::string(args.front())); args.pop_front();
+
+        const auto theta = std::stod(std::string(args.back())) * constants::pi / 180.0;
+        const auto sin_t = std::sin(theta);
+        const auto cos_t = std::cos(theta);
+
+        rot(0, 0) = n[0] * n[0] * (1.0 - cos_t) +        cos_t;
+        rot(0, 1) = n[0] * n[1] * (1.0 - cos_t) - n[2] * sin_t;
+        rot(0, 2) = n[0] * n[2] * (1.0 - cos_t) + n[1] * sin_t;
+
+        rot(1, 0) = n[1] * n[0] * (1.0 - cos_t) + n[2] * sin_t;
+        rot(1, 1) = n[1] * n[1] * (1.0 - cos_t) +        cos_t;
+        rot(1, 2) = n[1] * n[2] * (1.0 - cos_t) - n[0] * sin_t;
+
+        rot(2, 0) = n[2] * n[0] * (1.0 - cos_t) - n[1] * sin_t;
+        rot(2, 1) = n[2] * n[1] * (1.0 - cos_t) + n[0] * sin_t;
+        rot(2, 2) = n[2] * n[2] * (1.0 - cos_t) +        cos_t;
     }
     else
     {
