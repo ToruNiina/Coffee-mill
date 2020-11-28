@@ -11,7 +11,7 @@ namespace mill
 const char* mode_traj_rotate_usage() noexcept
 {
     return "usage: mill traj rotate [trajfile] [x|y|z] [angle(degree)]\n"
-           "       rotate the snapshot around x, y, or z axis by a specified angle.\n";
+           "       rotate the snapshot around x, y, or z axis by a specified angle.\n"
            "     - mill traj rotate [trajfile] [vec x y z] [angle(degree)]\n"
            "       rotate the snapshot around the axis\n";
 }
