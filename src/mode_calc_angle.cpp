@@ -16,7 +16,9 @@ const char* mode_calc_angle_usage() noexcept
            "    2. mill calc angle traj.dcd [i:size_t] [j:size_t] [k:size_t] [l:size_t]\n"
            "       - angle formed by i->j vector and k->l vector will be calculated.\n"
            "       - NOTE THAT HERE IT CALCULATES THE ANGLE FORMED BY i->j and k->l VECTORS.\n"
-           "       - output will be printed on stdout.\n";
+           "       - output will be printed on stdout.\n"
+           "    3. mill calc angle [x y z] [x y z]\n"
+           "       - It just calculate angle formed by the two vectors.\n";
 }
 
 int mode_calc_angle(std::deque<std::string_view> args)
@@ -62,6 +64,16 @@ int mode_calc_angle(std::deque<std::string_view> args)
             const auto v2 = frame[l].position() - frame[k].position();
             std::cout << std::setprecision(16) << angle(v1, v2) * rad_to_deg << '\n';
         }
+    }
+    else if(args.size() == 6) // x y z x y z
+    {
+        Vector<double, 3> v1(std::stod(std::string(fname)),
+                             std::stod(std::string(args.at(1))),
+                             std::stod(std::string(args.at(2))));
+        Vector<double, 3> v2(std::stod(std::string(args.at(3))),
+                             std::stod(std::string(args.at(4))),
+                             std::stod(std::string(args.at(5))));
+        std::cout << std::setprecision(16) << angle(v1, v2) * rad_to_deg << '\n';
     }
     else
     {
