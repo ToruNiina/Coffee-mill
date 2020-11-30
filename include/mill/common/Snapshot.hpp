@@ -158,8 +158,22 @@ class Snapshot
     container_type const& particles() const noexcept {return particles_;}
     boundary_type &      boundary()       noexcept {return boundary_;}
     boundary_type const& boundary() const noexcept {return boundary_;}
-    std::optional<topology_type> &      topology()       noexcept {return topology_;}
-    std::optional<topology_type> const& topology() const noexcept {return topology_;}
+
+    bool has_topology() const noexcept {return static_cast<bool>(topology_);}
+
+    topology_type &      topology()
+    {
+        if(!topology_) {topology_ = Topology(this->particles_.size());}
+        return topology_.value();
+    }
+    topology_type const& topology() const
+    {
+        if(!topology_)
+        {
+            throw std::out_of_range("Snapshot::topology(): this snapshot does not contain topology.");
+        }
+        return topology_.value();
+    }
 
     void merge_attributes(Snapshot& other)
     {
