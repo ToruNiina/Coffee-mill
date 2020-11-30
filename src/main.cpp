@@ -7,6 +7,7 @@
 #include "mode_ninfo.hpp"
 #include "mode_calc.hpp"
 #include "mode_traj.hpp"
+#include "mode_psf.hpp"
 
 void print_logo();
 std::deque<std::string_view> get_commands(int argc, char **argv);
@@ -33,6 +34,10 @@ int main(int argc, char **argv)
         else if(mode == "pdb")
         {
             return mill::mode_pdb(std::move(args));
+        }
+        else if(mode == "psf")
+        {
+            return mill::mode_psf(std::move(args));
         }
         else if(mode == "ninfo")
         {
