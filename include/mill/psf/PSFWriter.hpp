@@ -12,56 +12,56 @@ namespace mill
 class PSFWriter
 {
   public:
-    using base_type       = WriterBase;
-    using trajectory_type = base_type::trajectory_type;
-    using snapshot_type   = base_type::snapshot_type;
-    using particle_type   = base_type::particle_type;
+    using trajectory_type = Trajectory;
+    using snapshot_type   = trajectory_type::snapshot_type;
+    using particle_type   = snapshot_type::particle_type;
 
   public:
 
     explicit PSFWriter(const std::string_view fname)
-        : current_(0), file_name_(fname), xyz_(file_name_)
+        : current_(0), file_name_(fname), psf_(file_name_)
     {
         if(!psf_.good())
         {
             log::fatal("PSFWriter: file open error: ", file_name_);
         }
     }
-    ~PSFWriter() override = default;
+    ~PSFWriter()  = default;
 
-    void write_header(const trajectory_type&) override
+    void write_header(const trajectory_type&)
     {
         return;
     }
-    void write_footer(const trajectory_type&) override
+    void write_footer(const trajectory_type&)
     {
         return;
     }
 
-    void write(const trajectory_type& traj) override
+    void write(const trajectory_type& traj)
     {
         this->write_frame(traj.at(0));
         return;
     }
-    void write_frame(const snapshot_type& frame) override
+    void write_frame(const snapshot_type& frame)
     {
         using namespace std::literals::string_literals;
         current_ += 1;
 
-        psf_ << frame.size() << " !NATOM\n";
 
-        const std::size_t idx_w = std::to_string(frame.size()).size();
+        const std::size_t idx_w = std::max<std::size_t>(8, std::to_string(frame.size()).size());
+        psf_ << std::setw(idx_w) << frame.size() << " !NATOM\n";
+
         std::size_t index=1;
         for(const auto& p : frame)
         {
             const auto name = p.try_string("name").value_or("X"s);
             const auto resn = p.try_string("res_name").value_or(name);
             const auto resi = p.try_integer("res_seq").value_or(1);
-            const auto chni = p.try_integer("chain_id").value_or("A"s);
+            const auto chni = p.try_string("chain_id").value_or("A"s);
             const auto chrg = p.try_floating("charge").value_or(0.0);
             const auto mass = p.try_floating("mass").value_or(0.0);
 
-            psf_ << std::setw(idx_w) << std::left << index << ' ';
+            psf_ << std::setw(idx_w) << std::right << index << ' ';
             psf_ << std::setw(7)     << chni << ' ';
             psf_ << std::setw(10)    << resi << ' ';
             psf_ << std::setw(7)     << resn << ' ';
@@ -73,18 +73,20 @@ class PSFWriter
             index += 1;
         }
 
-        if( ! frame.topology().has_value())
+        if( ! frame.has_topology())
         {
             return;
         }
 
         std::vector<std::pair<std::size_t, std::size_t>> bonds;
-        const auto& topol = frame.topology().value();
+        const auto& topol = frame.topology();
         for(std::size_t i=0; i<frame.size(); ++i)
         {
             for(const auto connected : topol.list_connected(i, "bond"))
             {
-                bonds.emplace_back(std::min(i, connected), std::max(i, connected));
+                const auto idx1 = i + 1;
+                const auto idx2 = connected + 1;
+                bonds.emplace_back(std::min(idx1, idx2), std::max(idx1, idx2));
             }
         }
 
@@ -113,8 +115,8 @@ class PSFWriter
         return;
     }
 
-    std::size_t      size()      const noexcept override {return current_;}
-    std::string_view file_name() const noexcept override {return file_name_;}
+    std::size_t      size()      const noexcept  {return current_;}
+    std::string_view file_name() const noexcept  {return file_name_;}
 
   private:
 
