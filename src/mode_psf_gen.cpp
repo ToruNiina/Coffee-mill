@@ -43,7 +43,7 @@ int mode_psf_gen(std::deque<std::string_view> args)
     Snapshot frame(particles.size());
     for(std::size_t i=0; i<particles.size(); ++i)
     {
-        frame.at(i) = Particle({{"name", toml::find<std::string>(particles.at(i), "name")}});
+        frame.at(i)["name"] = toml::find<std::string>(particles.at(i), "name");
     }
 
     frame.topology() = Topology(particles.size());
