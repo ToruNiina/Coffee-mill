@@ -10,4 +10,4 @@ const char* mode_calc_wham_usage() noexcept;
 int mode_calc_wham(std::deque<std::string_view> args);
 
 }//mill
-#endif /* COFFEE_MILL_CALC_RMSD */
+#endif /* COFFEE_MILL_CALC_WHAM */
