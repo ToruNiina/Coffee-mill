@@ -2,7 +2,6 @@
 
 #include <mill/util/file_extension.hpp>
 #include <mill/util/cmdarg.hpp>
-#include <mill/math/RMSDCalculator.hpp>
 #include <mill/math/BestFitStructure.hpp>
 #include <mill/pdb/PDBReader.hpp>
 #include <mill/traj.hpp>
@@ -38,6 +37,23 @@ pop_range(std::deque<std::string_view>& args, std::string_view name)
     {
         return std::nullopt;
     }
+}
+
+double rmsd(const std::vector<Vector<double, 3>>& lhs,
+            const std::vector<Vector<double, 3>>& rhs)
+{
+    const std::size_t s = lhs.size();
+    if(s != rhs.size())
+    {
+        log::fatal("mill calc rmsd: size differs");
+    }
+
+    double sigma = 0.;
+    for(std::size_t i=0; i<s; ++i)
+    {
+        sigma += length_sq(lhs[i] - rhs[i]);
+    }
+    return std::sqrt(sigma / static_cast<double>(s));
 }
 
 int mode_calc_rmsd(std::deque<std::string_view> args)
