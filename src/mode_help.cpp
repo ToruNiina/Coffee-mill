@@ -38,15 +38,14 @@ int mode_help(std::deque<std::string_view> args)
     }
 
     const auto command = args.front();
+    args.pop_front();
 
     if(command == "pdb")
     {
-        args.pop_front();
         return mode_pdb_help(std::move(args));
     }
     else if(command == "ninfo")
     {
-        args.pop_front();
         return mode_ninfo_help(std::move(args));
     }
     else if(command == "dcd")
