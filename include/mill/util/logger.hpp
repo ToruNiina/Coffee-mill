@@ -93,10 +93,6 @@ void log_formatter(std::ostringstream& oss, const std::optional<T>& opt)
 template<typename T, typename ... Ts>
 std::string log_printer_helper(std::ostringstream& oss, T&& head, Ts&& ... args)
 {
-    if(oss.str().back() == '\n')
-    {
-        oss << "     : ";
-    }
     log_formatter(oss, std::forward<T>(head));
 
     if constexpr (sizeof...(Ts) == 0)
@@ -113,7 +109,18 @@ template<typename ... Ts>
 std::string log_printer(Ts&& ... args)
 {
     std::ostringstream oss;
-    return log_printer_helper(oss, std::forward<Ts>(args)...);
+    auto output = log_printer_helper(oss, std::forward<Ts>(args)...);
+
+    const std::string prefix("     : ");
+
+    auto found = output.find('\n');
+    while(found != std::string::npos && found + 1 != output.size() &&
+          output.substr(found+1, prefix.size()) != prefix)
+    {
+        output.insert(found + 1, prefix);
+        found = output.find('\n', found + 1);
+    }
+    return output;
 }
 
 template<typename Exception = std::runtime_error, typename ... Ts>
