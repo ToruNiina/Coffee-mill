@@ -17,6 +17,7 @@ const char* mode_calc_wham_usage() noexcept
         "kBT       = 0.59587\n"
         "tolerance = 1e-4 # default\n"
         "bins      = 100  # default\n"
+        "output    = \"mill_wham.dat\" # default\n"
         "[[trajectories]]\n"
         "trajectory = \"traj1.dcd\"\n"
         "potential.type = \"Harmonic\"\n"
@@ -80,7 +81,8 @@ int mode_calc_wham(std::deque<std::string_view> args)
 
     const auto P = solver(trajs, bins);
 
-    std::ofstream ofs("mill_wham.dat");
+    const auto output = toml::find_or(input, "output", "mill_wham.dat");
+    std::ofstream ofs(output);
     ofs << "#x probability energy\n";
     for(std::size_t i=0; i<P.bins(); ++i)
     {
