@@ -7,6 +7,7 @@
 #include "mode_calc_aabb.hpp"
 #include "mode_calc_obb.hpp"
 #include "mode_calc_center.hpp"
+#include "mode_calc_autocorrelation.hpp"
 #include <mill/util/logger.hpp>
 
 namespace mill
@@ -50,6 +51,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "center")
     {
         return mode_calc_center(std::move(args));
+    }
+    else if(command == "autocorrelation")
+    {
+        return mode_calc_autocorrelation(std::move(args));
     }
     else if(command == "help")
     {
