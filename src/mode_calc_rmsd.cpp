@@ -59,16 +59,17 @@ double rmsd(const std::vector<Vector<double, 3>>& lhs,
 int mode_calc_rmsd(std::deque<std::string_view> args)
 {
     using vector_type = Vector<double, 3>;
+
+    // remove unordered argumnets
+    const auto do_align = pop_argument<bool       >(args, "align" ).value_or(true);
+    const auto output   = pop_argument<std::string>(args, "output").value_or("mill_rmsd.dat");
+
     if(args.empty())
     {
         log::error("mill calc rmsd: too few arguments.");
         log::error(mode_calc_rmsd_usage());
         return 1;
     }
-
-    // remove unordered argumnets
-    const auto do_align = pop_argument<bool       >(args, "align" ).value_or(true);
-    const auto output   = pop_argument<std::string>(args, "output").value_or("mill_rmsd.dat");
 
     const auto only     = pop_range(args, "only");
     const auto ref_only = pop_range(args, "ref-only");

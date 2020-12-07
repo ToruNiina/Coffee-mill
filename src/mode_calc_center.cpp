@@ -14,15 +14,15 @@ const char* mode_calc_center_usage() noexcept
 
 int mode_calc_center(std::deque<std::string_view> args)
 {
+    const auto out = pop_argument<std::string>(args, "output")
+        .value_or("mill_center.dat");
+
     if(args.empty())
     {
         log::error("mill calc center: too few arguments.");
         log::error(mode_calc_center_usage());
         return 1;
     }
-
-    const auto out = pop_argument<std::string>(args, "output")
-        .value_or("mill_center.dat");
 
     const auto filename = args.front();
     if(filename == "help")

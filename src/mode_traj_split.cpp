@@ -24,14 +24,16 @@ int mode_traj_split(std::deque<std::string_view> args)
 {
     using namespace std::literals::string_literals;
     using namespace std::literals::string_view_literals;
+
+    const bool skip_initial = pop_argument<void>(args, "skip-initial"sv).has_value();
+    log::debug("skip_initial = ", skip_initial);
+
     if(args.empty())
     {
         log::error("mill traj split: too few arguments");
         log::error(mode_traj_split_usage());
         return 1;
     }
-    const bool skip_initial = pop_argument<void>(args, "skip-initial"sv).has_value();
-    log::debug("skip_initial = ", skip_initial);
 
     const auto fname = args.front();
     if(fname == "help")
