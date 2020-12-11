@@ -29,6 +29,7 @@ complete -c mill -n "__fish_seen_subcommand_from calc" -a wham   -d "perform WHA
 complete -c mill -n "__fish_seen_subcommand_from calc" -a obb    -d "calculate best fit oriented bounding box"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a aabb   -d "calculate axis aligned bounding box"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a center -d "calc geometric center of a molecule in trajectory"
+complete -c mill -n "__fish_seen_subcommand_from calc" -a autocorrelation -d "calc autocorrelation of data"
 complete -c mill -n "__fish_seen_subcommand_from calc" -a help   -d "print help message"
 
 complete -c mill -n "__fish_seen_subcommand_from pdb" -a seq  -d "dump sequence of chains in pdb file"
@@ -39,6 +40,9 @@ complete -c mill -n "__fish_seen_subcommand_from ninfo" -a help  -d "print help 
 
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a info    -d "dump header information of dcd file"
 complete -c mill -n "__fish_seen_subcommand_from dcd" -a help    -d "print help message"
+
+complete -c mill -n "__fish_seen_subcommand_from psf" -a gen     -d "generate psf from mjolnir input for visualization purpose"
+complete -c mill -n "__fish_seen_subcommand_from psf" -a help    -d "print help message"
 
 complete -c mill -n "__fish_seen_subcommand_from traj" -a join      -d "concatenate several trajectory files"
 complete -c mill -n "__fish_seen_subcommand_from traj" -a split     -d "split a trajectory files into several files"
