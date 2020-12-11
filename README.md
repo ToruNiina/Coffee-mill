@@ -39,6 +39,8 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
   - calculate axis-aligned bounding box from a given point cloud
 - `obb`
   - calculate oriented bounding box from a given point cloud using covariance
+- `autocorrelation`
+  - calculate autocorrelation of data
 - `help`
   - prints help messages.
 
