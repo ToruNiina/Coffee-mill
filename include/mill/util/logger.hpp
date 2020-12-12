@@ -2,6 +2,7 @@
 #define COFFEE_MILL_UTIL_LOGGER_HPP
 #include <mill/util/color.hpp>
 #include <vector>
+#include <deque>
 #include <map>
 #include <iostream>
 #include <sstream>
@@ -66,6 +67,18 @@ template<typename T, typename Alloc>
 void log_formatter(std::ostringstream& oss, const std::vector<T, Alloc>& vec)
 {
     oss << "vector[";
+    for(std::size_t i=0; i<vec.size(); ++i)
+    {
+        if(i != 0) {oss << ", ";}
+        log_formatter(oss, vec[i]);
+    }
+    oss << "]";
+    return ;
+}
+template<typename T, typename Alloc>
+void log_formatter(std::ostringstream& oss, const std::deque<T, Alloc>& deq)
+{
+    oss << "deque[";
     for(std::size_t i=0; i<vec.size(); ++i)
     {
         if(i != 0) {oss << ", ";}
