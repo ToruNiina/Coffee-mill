@@ -79,10 +79,10 @@ template<typename T, typename Alloc>
 void log_formatter(std::ostringstream& oss, const std::deque<T, Alloc>& deq)
 {
     oss << "deque[";
-    for(std::size_t i=0; i<vec.size(); ++i)
+    for(std::size_t i=0; i<deq.size(); ++i)
     {
         if(i != 0) {oss << ", ";}
-        log_formatter(oss, vec[i]);
+        log_formatter(oss, deq[i]);
     }
     oss << "]";
     return ;
