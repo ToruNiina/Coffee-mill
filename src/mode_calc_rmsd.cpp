@@ -64,15 +64,15 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     const auto do_align = pop_argument<bool       >(args, "align" ).value_or(true);
     const auto output   = pop_argument<std::string>(args, "output").value_or("mill_rmsd.dat");
 
+    const auto only     = pop_range(args, "only");
+    const auto ref_only = pop_range(args, "ref-only");
+
     if(args.empty())
     {
         log::error("mill calc rmsd: too few arguments.");
         log::error(mode_calc_rmsd_usage());
         return 1;
     }
-
-    const auto only     = pop_range(args, "only");
-    const auto ref_only = pop_range(args, "ref-only");
 
     log::debug("only     = ", only);
     log::debug("ref_only = ", ref_only);
