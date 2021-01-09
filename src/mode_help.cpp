@@ -6,6 +6,7 @@
 #include "mode_ninfo_help.hpp"
 #include "mode_calc_help.hpp"
 #include "mode_traj_help.hpp"
+#include "mode_psf_help.hpp"
 
 namespace mill
 {
@@ -17,11 +18,12 @@ const char* main_usage() noexcept
            " - `--debug` shows debug informations.\n"
            " - `--quiet` disables all the status logs.\n"
            "# List of modes\n"
-           " - pdb\n"
-           " - dcd\n"
-           " - ninfo\n"
            " - calc\n"
            " - traj\n"
+           " - pdb\n"
+           " - dcd\n"
+           " - psf\n"
+           " - ninfo\n"
            " - help\n"
            "for more information, try `mill help [mode]`.\n"
            ;
@@ -59,6 +61,10 @@ int mode_help(std::deque<std::string_view> args)
     else if(command == "traj")
     {
         return mode_traj_help(std::move(args));
+    }
+    else if(command == "psf")
+    {
+        return mode_psf_help(std::move(args));
     }
     else
     {
