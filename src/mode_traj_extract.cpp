@@ -17,7 +17,7 @@ const char* mode_traj_extract_usage() noexcept
 int mode_traj_extract(std::deque<std::string_view> args)
 {
     using namespace std::literals::string_literals;
-    if(args.size() < 3)
+    if(args.size() < 1)
     {
         log::error("mill traj mode: too few arguments.");
         log::error(mode_traj_extract_usage());
@@ -29,6 +29,13 @@ int mode_traj_extract(std::deque<std::string_view> args)
     {
         log::info(mode_traj_extract_usage());
         return 0;
+    }
+
+    if(args.size() < 3)
+    {
+        log::error("mill traj mode: too few arguments.");
+        log::error(mode_traj_extract_usage());
+        return 1;
     }
 
     std::size_t beg = std::numeric_limits<std::size_t>::max();
