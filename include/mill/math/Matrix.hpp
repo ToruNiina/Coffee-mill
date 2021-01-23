@@ -66,6 +66,13 @@ class Matrix
         }
     }
 
+    Matrix(std::pair<std::size_t, std::size_t> size)
+    {
+        assert(size.first  == this->row());
+        assert(size.second == this->col());
+        values_.fill(0);
+    }
+
     Matrix& operator+=(const Matrix& mat)
     {
         assert(this->row() == mat.row());
@@ -179,7 +186,7 @@ operator+(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
     assert(lhs.row() == rhs.row());
     assert(lhs.col() == rhs.col());
 
-    Matrix<realT, R, C> retval;
+    Matrix<realT, R, C> retval(std::make_pair(lhs.row(), lhs.col()));
     for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] + rhs[i];
@@ -194,7 +201,7 @@ operator-(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
     assert(lhs.row() == rhs.row());
     assert(lhs.col() == rhs.col());
 
-    Matrix<realT, R, C> retval;
+    Matrix<realT, R, C> retval(std::make_pair(lhs.row(), lhs.col()));
     for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] - rhs[i];
@@ -206,7 +213,7 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>
 operator*(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
-    Matrix<realT, R, C> retval;
+    Matrix<realT, R, C> retval(std::make_pair(lhs.row(), lhs.col()));
     for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] * rhs;
@@ -218,7 +225,7 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>
 operator*(const realT lhs, const Matrix<realT, R, C>& rhs)
 {
-    Matrix<realT, R, C> retval;
+    Matrix<realT, R, C> retval(std::make_pair(rhs.row(), rhs.col()));
     for(std::size_t i=0; i<rhs.len(); ++i)
     {
         retval[i] = lhs * rhs[i];
@@ -230,7 +237,7 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>
 operator/(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
-    Matrix<realT, R, C> retval;
+    Matrix<realT, R, C> retval(std::make_pair(lhs.row(), lhs.col()));
     for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] / rhs;
@@ -244,7 +251,7 @@ operator*(const Matrix<realT, L, M>& lhs, const Matrix<realT, M, N>& rhs)
 {
     assert(lhs.col() == rhs.row());
 
-    Matrix<realT, L, N> retval;
+    Matrix<realT, L, N> retval(std::make_pair(lhs.row(), rhs.col()));
     for(std::size_t i=0; i < lhs.row(); ++i)
     {
         for(std::size_t j=0; j < rhs.col(); ++j)
@@ -261,7 +268,7 @@ operator*(const Matrix<realT, L, M>& lhs, const Matrix<realT, M, N>& rhs)
 template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, C, R> transpose(const Matrix<realT, R, C>& mat)
 {
-    Matrix<realT, C, R> retval;
+    Matrix<realT, C, R> retval(std::make_pair(mat.col(), mat.row()));
     for(std::size_t i=0; i<mat.row(); ++i)
     {
         for(std::size_t j=0; j<mat.col(); ++j)
