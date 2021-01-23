@@ -70,7 +70,7 @@ class Matrix
     {
         assert(this->row() == mat.row());
         assert(this->col() == mat.col());
-        for(std::size_t i=0; i<number_of_element; ++i)
+        for(std::size_t i=0; i<this->len(); ++i)
         {
             this->values_[i] += mat[i];
         }
@@ -80,7 +80,7 @@ class Matrix
     {
         assert(this->row() == mat.row());
         assert(this->col() == mat.col());
-        for(std::size_t i=0; i<number_of_element; ++i)
+        for(std::size_t i=0; i<this->len(); ++i)
         {
             this->values_[i] -= mat[i];
         }
@@ -89,7 +89,7 @@ class Matrix
 
     Matrix& operator*=(const scalar_type s)
     {
-        for(std::size_t i=0; i<number_of_element; ++i)
+        for(std::size_t i=0; i<this->len(); ++i)
         {
             this->values_[i] *= s;
         }
@@ -97,7 +97,7 @@ class Matrix
     }
     Matrix& operator/=(const scalar_type s)
     {
-        for(std::size_t i=0; i<number_of_element; ++i)
+        for(std::size_t i=0; i<this->len(); ++i)
         {
             this->values_[i] /= s;
         }
@@ -149,10 +149,10 @@ template<typename realT, std::size_t R, std::size_t C>
 typename std::enable_if_t<C != 1, std::ostream>::type&
 operator<<(std::ostream& os, const Matrix<realT, R, C>& mat)
 {
-    for(std::size_t i=0; i<R; ++i)
+    for(std::size_t i=0; i<mat.row(); ++i)
     {
         os << "[ ";
-        for(std::size_t j=0; j<C; ++j)
+        for(std::size_t j=0; j<mat.col(); ++j)
         {
             os << mat(i, j) << ' ';
         }
@@ -164,7 +164,7 @@ template<typename realT, std::size_t R>
 std::ostream& operator<<(std::ostream& os, const Matrix<realT, R, 1>& mat)
 {
     os << "[ ";
-    for(std::size_t j=0; j<R; ++j)
+    for(std::size_t j=0; j<mat.row(); ++j)
     {
         os << mat(0, j) << ' ';
     }
@@ -180,7 +180,7 @@ operator+(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
     assert(lhs.col() == rhs.col());
 
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R*C; ++i)
+    for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] + rhs[i];
     }
@@ -195,7 +195,7 @@ operator-(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
     assert(lhs.col() == rhs.col());
 
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R*C; ++i)
+    for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] - rhs[i];
     }
@@ -207,7 +207,7 @@ Matrix<realT, R, C>
 operator*(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R*C; ++i)
+    for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] * rhs;
     }
@@ -219,7 +219,7 @@ Matrix<realT, R, C>
 operator*(const realT lhs, const Matrix<realT, R, C>& rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R*C; ++i)
+    for(std::size_t i=0; i<rhs.len(); ++i)
     {
         retval[i] = lhs * rhs[i];
     }
@@ -231,7 +231,7 @@ Matrix<realT, R, C>
 operator/(const Matrix<realT, R, C>& lhs, const realT rhs)
 {
     Matrix<realT, R, C> retval;
-    for(std::size_t i=0; i<R*C; ++i)
+    for(std::size_t i=0; i<lhs.len(); ++i)
     {
         retval[i] = lhs[i] / rhs;
     }
@@ -245,11 +245,11 @@ operator*(const Matrix<realT, L, M>& lhs, const Matrix<realT, M, N>& rhs)
     assert(lhs.col() == rhs.row());
 
     Matrix<realT, L, N> retval;
-    for(std::size_t i=0; i < L; ++i)
+    for(std::size_t i=0; i < lhs.row(); ++i)
     {
-        for(std::size_t j=0; j < N; ++j)
+        for(std::size_t j=0; j < rhs.col(); ++j)
         {
-            for(std::size_t k=0; k < M; ++k)
+            for(std::size_t k=0; k < lhs.col(); ++k)
             {
                 retval(i, j) += lhs(i, k) * rhs(k, j);
             }
@@ -262,9 +262,9 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, C, R> transpose(const Matrix<realT, R, C>& mat)
 {
     Matrix<realT, C, R> retval;
-    for(std::size_t i=0; i<R; ++i)
+    for(std::size_t i=0; i<mat.row(); ++i)
     {
-        for(std::size_t j=0; j<C; ++j)
+        for(std::size_t j=0; j<mat.col(); ++j)
         {
             retval(j, i) = mat(i, j);
         }
