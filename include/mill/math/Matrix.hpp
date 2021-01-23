@@ -65,10 +65,39 @@ class Matrix
         }
     }
 
-    Matrix& operator+=(const Matrix& mat);
-    Matrix& operator-=(const Matrix& mat);
-    Matrix& operator*=(const scalar_type scl);
-    Matrix& operator/=(const scalar_type scl);
+    Matrix& operator+=(const Matrix& mat)
+    {
+        for(std::size_t i=0; i<number_of_element; ++i)
+        {
+            this->values_[i] += mat[i];
+        }
+        return *this;
+    }
+    Matrix& operator-=(const Matrix& mat)
+    {
+        for(std::size_t i=0; i<number_of_element; ++i)
+        {
+            this->values_[i] -= mat[i];
+        }
+        return *this;
+    }
+
+    Matrix& operator*=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<number_of_element; ++i)
+        {
+            this->values_[i] *= s;
+        }
+        return *this;
+    }
+    Matrix& operator/=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<number_of_element; ++i)
+        {
+            this->values_[i] /= s;
+        }
+        return *this;
+    }
 
     scalar_type  at(const std::size_t i, const std::size_t j) const
     {
@@ -132,51 +161,6 @@ std::ostream& operator<<(std::ostream& os, const Matrix<realT, R, 1>& mat)
     }
     os << ']';
     return os;
-}
-
-
-template<typename realT, std::size_t R, std::size_t C>
-Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator+=(const Matrix<realT, R, C>& mat)
-{
-    for(std::size_t i=0; i<number_of_element; ++i)
-    {
-        this->values_[i] += mat[i];
-    }
-    return *this;
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator-=(const Matrix<realT, R, C>& mat)
-{
-    for(std::size_t i=0; i<number_of_element; ++i)
-    {
-        this->values_[i] -= mat[i];
-    }
-    return *this;
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator*=(const scalar_type s)
-{
-    for(std::size_t i=0; i<number_of_element; ++i)
-    {
-        this->values_[i] *= s;
-    }
-    return *this;
-}
-
-template<typename realT, std::size_t R, std::size_t C>
-Matrix<realT, R, C>&
-Matrix<realT, R, C>::operator/=(const scalar_type s)
-{
-    for(std::size_t i=0; i<number_of_element; ++i)
-    {
-        this->values_[i] /= s;
-    }
-    return *this;
 }
 
 template<typename realT, std::size_t R, std::size_t C>
