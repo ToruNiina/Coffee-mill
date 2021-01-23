@@ -99,6 +99,10 @@ class Matrix
         return *this;
     }
 
+    constexpr std::size_t len() const noexcept {return values_.size();}
+    constexpr std::size_t row() const noexcept {return Row;}
+    constexpr std::size_t col() const noexcept {return Col;}
+
     scalar_type  at(const std::size_t i, const std::size_t j) const
     {
         return this->values_.at(i*dim_col + j);
