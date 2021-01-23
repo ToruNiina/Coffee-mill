@@ -3,6 +3,7 @@
 #include <array>
 #include <ostream>
 #include <type_traits>
+#include <cassert>
 
 namespace mill
 {
@@ -67,6 +68,8 @@ class Matrix
 
     Matrix& operator+=(const Matrix& mat)
     {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
         for(std::size_t i=0; i<number_of_element; ++i)
         {
             this->values_[i] += mat[i];
@@ -75,6 +78,8 @@ class Matrix
     }
     Matrix& operator-=(const Matrix& mat)
     {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
         for(std::size_t i=0; i<number_of_element; ++i)
         {
             this->values_[i] -= mat[i];
@@ -171,6 +176,9 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>
 operator+(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
+    assert(lhs.row() == rhs.row());
+    assert(lhs.col() == rhs.col());
+
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
     {
@@ -183,6 +191,9 @@ template<typename realT, std::size_t R, std::size_t C>
 Matrix<realT, R, C>
 operator-(const Matrix<realT, R, C>& lhs, const Matrix<realT, R, C>& rhs)
 {
+    assert(lhs.row() == rhs.row());
+    assert(lhs.col() == rhs.col());
+
     Matrix<realT, R, C> retval;
     for(std::size_t i=0; i<R*C; ++i)
     {
@@ -231,6 +242,8 @@ template<typename realT, std::size_t L, std::size_t M, std::size_t N>
 Matrix<realT, L, N>
 operator*(const Matrix<realT, L, M>& lhs, const Matrix<realT, M, N>& rhs)
 {
+    assert(lhs.col() == rhs.row());
+
     Matrix<realT, L, N> retval;
     for(std::size_t i=0; i < L; ++i)
     {
