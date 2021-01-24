@@ -57,7 +57,7 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
 
     if(not this->is_symmetric(m))
     {
-        throw std::invalid_argument("asymmetric matrix");
+        throw std::invalid_argument("JacobiEigenSolver: asymmetric matrix");
     }
 
     auto Ps = Matrix<realT, N, N>::identity(m.row(), m.col());
@@ -97,7 +97,7 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
     }
     if(loop == max_loop)
     {
-        throw std::logic_error("cannot solve with the tolerance");
+        throw std::runtime_error("JacobiEigenSolver: cannot solve with the tolerance");
     }
 
     std::array<std::pair<realT, Vector<realT, N>>, N> retval;
