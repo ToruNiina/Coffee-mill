@@ -65,4 +65,48 @@ BOOST_AUTO_TEST_CASE(eigenvalues)
 }
 
 
+BOOST_AUTO_TEST_CASE(eigenvalues_dynamic)
+{
+    std::mt19937 mt(seed);
+    std::uniform_real_distribution<double> uni(0.0, 1.0);
+    mill::JacobiEigenSolver solver;
 
+    for(std::size_t test_times=0; test_times<N; ++test_times)
+    {
+        mill::Matrix<double, mill::DYNAMIC, mill::DYNAMIC> mat({10u, 10u});
+        for(std::size_t i=0; i<mat.col(); ++i)
+        {
+            for(std::size_t j=i; j<mat.row(); ++j)
+            {
+                if(i == j)
+                {
+                    mat(i, j) = uni(mt);
+                }
+                else
+                {
+                    mat(i, j) = mat(j, i) = uni(mt);
+                }
+            }
+        }
+
+        auto ev = solver.solve(mat);
+        for(std::size_t i=0; i<mat.row(); ++i)
+        {
+            auto M = mat;
+
+            for(std::size_t j=0; j<mat.row(); ++j)
+            {
+                M(j, j) -= ev.at(i).first;
+            }
+
+            const auto vec = M * ev.at(i).second;
+            BOOST_CHECK(vec.len() == M.row());
+            BOOST_CHECK(vec.row() == M.row());
+            BOOST_CHECK(vec.col() == 1);
+            for(std::size_t j=0; j<vec.len(); ++j)
+            {
+                BOOST_CHECK_SMALL(vec[j], 1e-5);
+            }
+        }
+    }
+}
