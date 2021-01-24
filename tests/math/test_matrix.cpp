@@ -184,3 +184,45 @@ BOOST_AUTO_TEST_CASE(multi_matrix_3x4_4x2)
     }
 }
 
+BOOST_AUTO_TEST_CASE(multi_matrix_dynamic)
+{
+    std::mt19937 mt(seed);
+    std::uniform_real_distribution<double> uni(-1.0, 1.0);
+
+    for(std::size_t test_times=0; test_times<N; ++test_times)
+    {
+        mill::Matrix<double, mill::DYNAMIC, mill::DYNAMIC> lhs({10u, 10u});
+        mill::Matrix<double, mill::DYNAMIC, mill::DYNAMIC> rhs({10u, 10u});
+
+        for(std::size_t i=0; i<lhs.len(); ++i)
+        {
+            lhs[i] = uni(mt);
+            rhs[i] = uni(mt);
+        }
+
+        mill::Matrix<double, mill::DYNAMIC, mill::DYNAMIC> sum = lhs + rhs;
+        BOOST_TEST(sum.row() == 10u);
+        BOOST_TEST(sum.col() == 10u);
+        for(std::size_t i=0; i<lhs.len(); ++i)
+        {
+            BOOST_CHECK_EQUAL(sum[i], lhs[i] + rhs[i]);
+        }
+
+        mill::Matrix<double, mill::DYNAMIC, mill::DYNAMIC> mul = lhs * rhs;
+        BOOST_TEST(mul.row() == 10u);
+        BOOST_TEST(mul.col() == 10u);
+        for(std::size_t i=0; i<lhs.row(); ++i)
+        {
+            for(std::size_t j=0; j<rhs.col(); ++j)
+            {
+                double s=0;
+                for(std::size_t k=0; k<lhs.col(); ++k)
+                {
+                    s += lhs(i, k) * rhs(k, j);
+                }
+                BOOST_TEST(mul(i, j) == s, boost::test_tools::tolerance(1e-8));
+            }
+        }
+    }
+}
+
