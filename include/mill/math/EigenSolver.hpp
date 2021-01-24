@@ -53,7 +53,7 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
     constexpr auto rel_tol = relative_tolerance<realT>();
     constexpr std::size_t max_loop = 10000;
 
-    assert(mat.row() == mat.col());
+    assert(m.row() == m.col());
 
     if(not this->is_symmetric(m))
     {
@@ -157,9 +157,12 @@ template<typename realT, std::size_t N>
 realT JacobiEigenSolver::max_relative_diff(const Matrix<realT, N, N>& lhs,
         const Matrix<realT, N, N>& rhs) const
 {
-    assert(mat.row() == mat.col());
+    assert(lhs.row() == rhs.row());
+    assert(lhs.col() == rhs.col());
+    assert(lhs.row() == lhs.col());
+
     realT retval = 0.0;
-    for(std::size_t i=0; i<mat.row(); ++i)
+    for(std::size_t i=0; i<lhs.row(); ++i)
     {
         const realT tmp = std::abs(lhs(i, i) / rhs(i, i) - 1.0);
         if(retval < tmp)
