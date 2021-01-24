@@ -60,7 +60,7 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
         throw std::invalid_argument("asymmetric matrix");
     }
 
-    auto Ps = Matrix<scalarT, N, N>::identity();
+    auto Ps = Matrix<scalarT, N, N>::identity(m.row(), m.col());
 
     std::size_t loop = 0;
     for(; loop < max_loop; ++loop)
@@ -77,7 +77,7 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
         const auto cos_t = std::sqrt(0.5 + gamma * 0.5);
         const auto sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
 
-        auto P = Matrix<scalarT, N, N>::identity();
+        auto P = Matrix<scalarT, N, N>::identity(m.row(), m.col());
         P(i, i) =  cos_t;
         P(i, j) =  sin_t;
         P(j, i) = -sin_t;

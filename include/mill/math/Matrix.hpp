@@ -31,6 +31,21 @@ class Matrix
         return I;
     }
 
+    static Matrix zero(std::size_t r, std::size_t c) noexcept
+    {
+        return Matrix<realT, Row, Col>(std::make_pair(r, c));
+    }
+
+    static Matrix identity(std::size_t r, std::size_t c) noexcept
+    {
+        Matrix<realT, Row, Col> I(std::make_pair(r, c));
+        for(std::size_t i=0, e=std::min(Row, Col); i<e; ++i)
+        {
+            I(i, i) = 1.0;
+        }
+        return I;
+    }
+
   public:
 
     Matrix(){values_.fill(0);}
