@@ -3,6 +3,8 @@
 #include <array>
 #include <ostream>
 #include <type_traits>
+#include <vector>
+
 #include <cassert>
 
 namespace mill
@@ -136,6 +138,130 @@ class Matrix
     scalar_type& operator[](const std::size_t i)       noexcept {return values_[i];}
 
   private:
+    /* {a11, a12, ..., a1C, *
+     *  a21, a22, ..., a2C, *
+     *  aR1, aR2, ..., aRC} */
+    container_type values_;
+};
+
+constexpr inline std::size_t DYNAMIC = 0;
+
+template<typename realT>
+class Matrix<realT, 0, 0>
+{
+  public:
+    using real_type = realT;
+    using scalar_type = real_type;
+    using container_type = std::vector<real_type>;
+
+    static Matrix zero() noexcept
+    {
+        return Matrix<realT, 0, 0>();
+    }
+
+    static Matrix identity() noexcept
+    {
+        return Matrix<realT, 0, 0>();
+    }
+
+    static Matrix zero(std::size_t r, std::size_t c) noexcept
+    {
+        return Matrix<realT, 0, 0>(std::make_pair(r, c));
+    }
+
+    static Matrix identity(std::size_t r, std::size_t c) noexcept
+    {
+        Matrix<realT, 0, 0> I(std::make_pair(r, c));
+        for(std::size_t i=0, e=std::min(r, c); i<e; ++i)
+        {
+            I(i, i) = 1.0;
+        }
+        return I;
+    }
+
+  public:
+
+    Matrix() : row_(0), col_(0) {}
+    ~Matrix() = default;
+
+    Matrix(Matrix const& mat) = default;
+    Matrix(Matrix&&      mat) = default;
+    Matrix& operator=(Matrix const& mat) = default;
+    Matrix& operator=(Matrix&&      mat) = default;
+
+    Matrix(std::pair<std::size_t, std::size_t> size)
+        : row_(size.first), col_(size.second), values_(size.first * size.second, 0.0)
+    {}
+
+    Matrix& operator+=(const Matrix& mat)
+    {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] += mat[i];
+        }
+        return *this;
+    }
+    Matrix& operator-=(const Matrix& mat)
+    {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] -= mat[i];
+        }
+        return *this;
+    }
+
+    Matrix& operator*=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] *= s;
+        }
+        return *this;
+    }
+    Matrix& operator/=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] /= s;
+        }
+        return *this;
+    }
+
+    constexpr std::size_t len() const noexcept {return this->values_.size();}
+    constexpr std::size_t row() const noexcept {return this->row_;}
+    constexpr std::size_t col() const noexcept {return this->col_;}
+
+    scalar_type  at(const std::size_t i, const std::size_t j) const
+    {
+        return this->values_.at(i*col_ + j);
+    }
+    scalar_type& at(const std::size_t i, const std::size_t j)
+    {
+        return this->values_.at(i*col_ + j);
+    }
+
+    scalar_type  operator()(const std::size_t i, const std::size_t j) const noexcept
+    {
+        return this->values_[i*col_ + j];
+    }
+    scalar_type& operator()(const std::size_t i, const std::size_t j)       noexcept
+    {
+        return this->values_[i*col_ + j];
+    }
+
+    scalar_type  at(const std::size_t i) const {return values_.at(i);}
+    scalar_type& at(const std::size_t i)       {return values_.at(i);}
+    scalar_type  operator[](const std::size_t i) const noexcept {return values_[i];}
+    scalar_type& operator[](const std::size_t i)       noexcept {return values_[i];}
+
+  private:
+
+    std::size_t row_;
+    std::size_t col_;
     /* {a11, a12, ..., a1C, *
      *  a21, a22, ..., a2C, *
      *  aR1, aR2, ..., aRC} */
