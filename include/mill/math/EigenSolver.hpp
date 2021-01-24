@@ -14,7 +14,7 @@ class JacobiEigenSolver
   public:
 
     template<typename realT, std::size_t N>
-    std::array<std::pair<realT, Vector<realT, N>>, N>
+    std::vector<std::pair<realT, Vector<realT, N>>>
     solve(Matrix<realT, N, N> mat) const;
 
   private:
@@ -46,7 +46,7 @@ class JacobiEigenSolver
 };
 
 template<typename realT, std::size_t N>
-std::array<std::pair<realT, Vector<realT, N>>, N>
+std::vector<std::pair<realT, Vector<realT, N>>>
 JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
 {
     constexpr auto abs_tol = absolute_tolerance<realT>();
@@ -61,6 +61,9 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
     }
 
     auto Ps = Matrix<realT, N, N>::identity(m.row(), m.col());
+
+    assert(Ps.row() == m.row());
+    assert(Ps.col() == m.col());
 
     std::size_t loop = 0;
     for(; loop < max_loop; ++loop)
@@ -100,7 +103,8 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
         throw std::runtime_error("JacobiEigenSolver: cannot solve with the tolerance");
     }
 
-    std::array<std::pair<realT, Vector<realT, N>>, N> retval;
+
+    std::vector<std::pair<realT, Vector<realT, N>>> retval;
     for(std::size_t i=0; i<Ps.row(); ++i)
     {
         Vector<realT, N> eigen(std::make_pair(Ps.col(), std::size_t(1)));
@@ -108,7 +112,7 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
         {
             eigen[j] = Ps(j, i);
         }
-        retval[i] = std::make_pair(m(i, i), eigen);
+        retval.emplace_back(m(i, i), eigen);
     }
     return retval;
 }

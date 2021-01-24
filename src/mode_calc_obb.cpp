@@ -58,10 +58,11 @@ int mode_calc_obb(std::deque<std::string_view> args)
         log::debug("calculating eigenvalue ...");
 
         JacobiEigenSolver solver;
-        std::array<std::pair<double, Vector<double, 3>>, 3> es = solver.solve(cov);
+        auto es = solver.solve(cov);
         std::sort(es.begin(), es.end(), [](const auto& lhs, const auto& rhs) {
                     return lhs.first > rhs.first;
                 });
+        assert(es.size() == 3);
 
         log::debug("ev1 = ", es[0].first, ", ", es[0].second);
         log::debug("ev2 = ", es[1].first, ", ", es[1].second);
