@@ -53,6 +53,8 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
     constexpr auto rel_tol = relative_tolerance<scalarT>();
     constexpr std::size_t max_loop = 10000;
 
+    assert(mat.row() == mat.col());
+
     if(not this->is_symmetric(m))
     {
         throw std::invalid_argument("asymmetric matrix");
@@ -114,6 +116,7 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
 template<typename scalarT, std::size_t N>
 bool JacobiEigenSolver::is_symmetric(const Matrix<scalarT, N, N>& mat) const
 {
+    assert(mat.row() == mat.col());
     constexpr auto rel_tol = relative_tolerance<scalarT>();
     for(std::size_t i=0; i<N-1; ++i)
     {
@@ -132,6 +135,7 @@ template<typename scalarT, std::size_t N>
 std::pair<std::size_t, std::size_t>
 JacobiEigenSolver::max_element(const Matrix<scalarT, N, N>& mat) const
 {
+    assert(mat.row() == mat.col());
     scalarT max_elem = std::abs(mat(0, 1));
     std::pair<std::size_t, std::size_t> retval = std::make_pair(0, 1);
 
@@ -153,6 +157,7 @@ template<typename scalarT, std::size_t N>
 scalarT JacobiEigenSolver::max_relative_diff(const Matrix<scalarT, N, N>& lhs,
         const Matrix<scalarT, N, N>& rhs) const
 {
+    assert(mat.row() == mat.col());
     scalarT retval = 0.0;
     for(std::size_t i=0; i<N; ++i)
     {
