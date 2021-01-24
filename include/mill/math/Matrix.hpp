@@ -14,10 +14,7 @@ class Matrix
   public:
     using real_type = realT;
     using scalar_type = real_type;
-    constexpr static std::size_t dim_row = Row;
-    constexpr static std::size_t dim_col = Col;
-    constexpr static std::size_t number_of_element = Row * Col;
-    using container_type = std::array<real_type, number_of_element>;
+    using container_type = std::array<real_type, Row * Col>;
 
     static Matrix zero() noexcept
     {
@@ -47,17 +44,17 @@ class Matrix
     template<typename ... Ts>
     Matrix(Ts ... args) : values_{{static_cast<real_type>(args)...}}
     {
-        static_assert(sizeof...(Ts) == number_of_element);
+        static_assert(sizeof...(Ts) == Row * Col);
         static_assert(std::conjunction_v<std::is_convertible<Ts, realT>...>);
     }
 
     Matrix(std::initializer_list<std::initializer_list<real_type>> il)
     {
-        assert(il.size() == dim_row);
+        assert(il.size() == Row);
         std::size_t i=0;
         for(auto&& r : il)
         {
-            assert(r.size() == dim_col);
+            assert(r.size() == Col);
             for(auto&& e : r)
             {
                 values_[i] = e;
@@ -117,20 +114,20 @@ class Matrix
 
     scalar_type  at(const std::size_t i, const std::size_t j) const
     {
-        return this->values_.at(i*dim_col + j);
+        return this->values_.at(i*Col + j);
     }
     scalar_type& at(const std::size_t i, const std::size_t j)
     {
-        return this->values_.at(i*dim_col + j);
+        return this->values_.at(i*Col + j);
     }
 
     scalar_type  operator()(const std::size_t i, const std::size_t j) const noexcept
     {
-        return this->values_[i*dim_col + j];
+        return this->values_[i*Col + j];
     }
     scalar_type& operator()(const std::size_t i, const std::size_t j)       noexcept
     {
-        return this->values_[i*dim_col + j];
+        return this->values_[i*Col + j];
     }
 
     scalar_type  at(const std::size_t i) const {return values_.at(i);}
@@ -144,13 +141,6 @@ class Matrix
      *  aR1, aR2, ..., aRC} */
     container_type values_;
 };
-
-template<typename realT, std::size_t Row, std::size_t Col>
-constexpr std::size_t Matrix<realT, Row, Col>::dim_row;
-template<typename realT, std::size_t Row, std::size_t Col>
-constexpr std::size_t Matrix<realT, Row, Col>::dim_col;
-template<typename realT, std::size_t Row, std::size_t Col>
-constexpr std::size_t Matrix<realT, Row, Col>::number_of_element;
 
 template<typename realT, std::size_t R, std::size_t C>
 typename std::enable_if_t<C != 1, std::ostream>::type&
