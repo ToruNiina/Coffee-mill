@@ -15,6 +15,11 @@ class Matrix<realT, 0, 1>
     using scalar_type = real_type;
     using container_type = std::vector<real_type>;
 
+    static Matrix zero(const std::size_t len)
+    {
+        return Matrix<realT, 0, 1>({len, 1});
+    }
+
   public:
 
     Matrix() : row_(0) {}
