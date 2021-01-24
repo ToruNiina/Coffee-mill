@@ -113,11 +113,16 @@ class Matrix<realT, 0, 1>
 template<typename realT, std::size_t N>
 using Vector = Matrix<realT, N, 1>;
 
-// for vector 3d
-template<typename realT>
-realT dot_product(const Vector<realT, 3>& lhs, const Vector<realT, 3>& rhs) noexcept
+template<typename realT, std::size_t N>
+realT dot_product(const Vector<realT, N>& lhs, const Vector<realT, N>& rhs) noexcept
 {
-    return lhs[0] * rhs[0] + lhs[1] * rhs[1] + lhs[2] * rhs[2];
+    assert(lhs.len() == rhs.len());
+    realT sum = 0.0;
+    for(std::size_t i=0; i<lhs.len(); ++i)
+    {
+        sum += lhs[i] * rhs[i];
+    }
+    return sum;
 }
 
 template<typename realT>
