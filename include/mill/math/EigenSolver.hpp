@@ -13,44 +13,44 @@ class JacobiEigenSolver
 {
   public:
 
-    template<typename scalarT, std::size_t N>
-    std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
-    solve(Matrix<scalarT, N, N> mat) const;
+    template<typename realT, std::size_t N>
+    std::array<std::pair<realT, Vector<realT, N>>, N>
+    solve(Matrix<realT, N, N> mat) const;
 
   private:
 
-    template<typename scalarT, std::size_t N>
-    bool is_symmetric(const Matrix<scalarT, N, N>& mat) const;
+    template<typename realT, std::size_t N>
+    bool is_symmetric(const Matrix<realT, N, N>& mat) const;
 
-    template<typename scalarT, std::size_t N>
+    template<typename realT, std::size_t N>
     std::pair<std::size_t, std::size_t>
-    max_element(const Matrix<scalarT, N, N>& mat) const;
+    max_element(const Matrix<realT, N, N>& mat) const;
 
-    template<typename scalarT, std::size_t N>
-    scalarT max_relative_diff(const Matrix<scalarT, N, N>& lhs,
-                              const Matrix<scalarT, N, N>& rhs) const;
+    template<typename realT, std::size_t N>
+    realT max_relative_diff(const Matrix<realT, N, N>& lhs,
+                              const Matrix<realT, N, N>& rhs) const;
 
-    template<typename scalarT>
-    static constexpr scalarT relative_tolerance()
+    template<typename realT>
+    static constexpr realT relative_tolerance()
     {
-        if constexpr (std::is_same_v<scalarT, double>) {return 1e-13;}
+        if constexpr (std::is_same_v<realT, double>) {return 1e-13;}
         else {return 1e-5f;}
     }
 
-    template<typename scalarT>
-    static constexpr scalarT absolute_tolerance()
+    template<typename realT>
+    static constexpr realT absolute_tolerance()
     {
-        if constexpr (std::is_same_v<scalarT, double>) {return 1e-13;}
+        if constexpr (std::is_same_v<realT, double>) {return 1e-13;}
         else {return 1e-5f;}
     }
 };
 
-template<typename scalarT, std::size_t N>
-std::array<std::pair<scalarT, Vector<scalarT, N>>, N>
-JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
+template<typename realT, std::size_t N>
+std::array<std::pair<realT, Vector<realT, N>>, N>
+JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
 {
-    constexpr auto abs_tol = absolute_tolerance<scalarT>();
-    constexpr auto rel_tol = relative_tolerance<scalarT>();
+    constexpr auto abs_tol = absolute_tolerance<realT>();
+    constexpr auto rel_tol = relative_tolerance<realT>();
     constexpr std::size_t max_loop = 10000;
 
     assert(mat.row() == mat.col());
@@ -60,7 +60,7 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
         throw std::invalid_argument("asymmetric matrix");
     }
 
-    auto Ps = Matrix<scalarT, N, N>::identity(m.row(), m.col());
+    auto Ps = Matrix<realT, N, N>::identity(m.row(), m.col());
 
     std::size_t loop = 0;
     for(; loop < max_loop; ++loop)
@@ -77,7 +77,7 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
         const auto cos_t = std::sqrt(0.5 + gamma * 0.5);
         const auto sin_t = std::copysign(std::sqrt(0.5 - gamma * 0.5), alpha * beta);
 
-        auto P = Matrix<scalarT, N, N>::identity(m.row(), m.col());
+        auto P = Matrix<realT, N, N>::identity(m.row(), m.col());
         P(i, i) =  cos_t;
         P(i, j) =  sin_t;
         P(j, i) = -sin_t;
@@ -100,10 +100,10 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
         throw std::logic_error("cannot solve with the tolerance");
     }
 
-    std::array<std::pair<scalarT, Vector<scalarT, N>>, N> retval;
+    std::array<std::pair<realT, Vector<realT, N>>, N> retval;
     for(std::size_t i=0; i<N; ++i)
     {
-        Vector<scalarT, N> eigen;
+        Vector<realT, N> eigen;
         for(std::size_t j=0; j<N; ++j)
         {
             eigen[j] = Ps(j, i);
@@ -113,11 +113,11 @@ JacobiEigenSolver::solve(Matrix<scalarT, N, N> m) const
     return retval;
 }
 
-template<typename scalarT, std::size_t N>
-bool JacobiEigenSolver::is_symmetric(const Matrix<scalarT, N, N>& mat) const
+template<typename realT, std::size_t N>
+bool JacobiEigenSolver::is_symmetric(const Matrix<realT, N, N>& mat) const
 {
     assert(mat.row() == mat.col());
-    constexpr auto rel_tol = relative_tolerance<scalarT>();
+    constexpr auto rel_tol = relative_tolerance<realT>();
     for(std::size_t i=0; i<N-1; ++i)
     {
         for(std::size_t j=i+1; j<N; ++j)
@@ -131,12 +131,12 @@ bool JacobiEigenSolver::is_symmetric(const Matrix<scalarT, N, N>& mat) const
     return true;
 }
 
-template<typename scalarT, std::size_t N>
+template<typename realT, std::size_t N>
 std::pair<std::size_t, std::size_t>
-JacobiEigenSolver::max_element(const Matrix<scalarT, N, N>& mat) const
+JacobiEigenSolver::max_element(const Matrix<realT, N, N>& mat) const
 {
     assert(mat.row() == mat.col());
-    scalarT max_elem = std::abs(mat(0, 1));
+    realT max_elem = std::abs(mat(0, 1));
     std::pair<std::size_t, std::size_t> retval = std::make_pair(0, 1);
 
     for(std::size_t i=0; i<N-1; ++i)
@@ -153,15 +153,15 @@ JacobiEigenSolver::max_element(const Matrix<scalarT, N, N>& mat) const
     return retval;
 }
 
-template<typename scalarT, std::size_t N>
-scalarT JacobiEigenSolver::max_relative_diff(const Matrix<scalarT, N, N>& lhs,
-        const Matrix<scalarT, N, N>& rhs) const
+template<typename realT, std::size_t N>
+realT JacobiEigenSolver::max_relative_diff(const Matrix<realT, N, N>& lhs,
+        const Matrix<realT, N, N>& rhs) const
 {
     assert(mat.row() == mat.col());
-    scalarT retval = 0.0;
+    realT retval = 0.0;
     for(std::size_t i=0; i<N; ++i)
     {
-        const scalarT tmp = std::abs(lhs(i, i) / rhs(i, i) - 1.0);
+        const realT tmp = std::abs(lhs(i, i) / rhs(i, i) - 1.0);
         if(retval < tmp)
         {
             retval = tmp;
