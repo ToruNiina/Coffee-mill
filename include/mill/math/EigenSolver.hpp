@@ -101,10 +101,10 @@ JacobiEigenSolver::solve(Matrix<realT, N, N> m) const
     }
 
     std::array<std::pair<realT, Vector<realT, N>>, N> retval;
-    for(std::size_t i=0; i<N; ++i)
+    for(std::size_t i=0; i<Ps.row(); ++i)
     {
-        Vector<realT, N> eigen;
-        for(std::size_t j=0; j<N; ++j)
+        Vector<realT, N> eigen(std::make_pair(Ps.col(), std::size_t(1)));
+        for(std::size_t j=0; j<Ps.col(); ++j)
         {
             eigen[j] = Ps(j, i);
         }
@@ -118,9 +118,9 @@ bool JacobiEigenSolver::is_symmetric(const Matrix<realT, N, N>& mat) const
 {
     assert(mat.row() == mat.col());
     constexpr auto rel_tol = relative_tolerance<realT>();
-    for(std::size_t i=0; i<N-1; ++i)
+    for(std::size_t i=0; i<mat.row()-1; ++i)
     {
-        for(std::size_t j=i+1; j<N; ++j)
+        for(std::size_t j=i+1; j<mat.col(); ++j)
         {
             if(std::abs(mat(i, j) / mat(j, i) - 1.0) > rel_tol)
             {
@@ -139,9 +139,9 @@ JacobiEigenSolver::max_element(const Matrix<realT, N, N>& mat) const
     realT max_elem = std::abs(mat(0, 1));
     std::pair<std::size_t, std::size_t> retval = std::make_pair(0, 1);
 
-    for(std::size_t i=0; i<N-1; ++i)
+    for(std::size_t i=0; i<mat.row()-1; ++i)
     {
-        for(std::size_t j=i+1; j<N; ++j)
+        for(std::size_t j=i+1; j<mat.col(); ++j)
         {
             if(max_elem < std::abs(mat(i, j)))
             {
@@ -159,7 +159,7 @@ realT JacobiEigenSolver::max_relative_diff(const Matrix<realT, N, N>& lhs,
 {
     assert(mat.row() == mat.col());
     realT retval = 0.0;
-    for(std::size_t i=0; i<N; ++i)
+    for(std::size_t i=0; i<mat.row(); ++i)
     {
         const realT tmp = std::abs(lhs(i, i) / rhs(i, i) - 1.0);
         if(retval < tmp)
