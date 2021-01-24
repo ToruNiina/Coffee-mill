@@ -7,6 +7,104 @@
 namespace mill
 {
 
+template<typename realT>
+class Matrix<realT, 0, 1>
+{
+  public:
+    using real_type = realT;
+    using scalar_type = real_type;
+    using container_type = std::vector<real_type>;
+
+  public:
+
+    Matrix() : row_(0) {}
+    ~Matrix() = default;
+
+    Matrix(Matrix const& mat) = default;
+    Matrix(Matrix&&      mat) = default;
+    Matrix& operator=(Matrix const& mat) = default;
+    Matrix& operator=(Matrix&&      mat) = default;
+
+    Matrix(std::pair<std::size_t, std::size_t> size)
+        : row_(size.first), values_(size.first * size.second, 0.0)
+    {
+        assert(size.second == 1u);
+    }
+
+    Matrix& operator+=(const Matrix& mat)
+    {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] += mat[i];
+        }
+        return *this;
+    }
+    Matrix& operator-=(const Matrix& mat)
+    {
+        assert(this->row() == mat.row());
+        assert(this->col() == mat.col());
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] -= mat[i];
+        }
+        return *this;
+    }
+
+    Matrix& operator*=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] *= s;
+        }
+        return *this;
+    }
+    Matrix& operator/=(const scalar_type s)
+    {
+        for(std::size_t i=0; i<this->len(); ++i)
+        {
+            this->values_[i] /= s;
+        }
+        return *this;
+    }
+
+    constexpr std::size_t len() const noexcept {return this->values_.size();}
+    constexpr std::size_t row() const noexcept {return this->row_;}
+    constexpr std::size_t col() const noexcept {return 1;}
+
+    scalar_type  at(const std::size_t i, const std::size_t j) const
+    {
+        return this->values_.at(i + j);
+    }
+    scalar_type& at(const std::size_t i, const std::size_t j)
+    {
+        return this->values_.at(i + j);
+    }
+
+    scalar_type  operator()(const std::size_t i, const std::size_t j) const noexcept
+    {
+        return this->values_[i + j];
+    }
+    scalar_type& operator()(const std::size_t i, const std::size_t j)       noexcept
+    {
+        return this->values_[i + j];
+    }
+
+    scalar_type  at(const std::size_t i) const {return values_.at(i);}
+    scalar_type& at(const std::size_t i)       {return values_.at(i);}
+    scalar_type  operator[](const std::size_t i) const noexcept {return values_[i];}
+    scalar_type& operator[](const std::size_t i)       noexcept {return values_[i];}
+
+  private:
+
+    std::size_t row_;
+    /* {a11, a12, ..., a1C, *
+     *  a21, a22, ..., a2C, *
+     *  aR1, aR2, ..., aRC} */
+    container_type values_;
+};
+
 template<typename realT, std::size_t N>
 using Vector = Matrix<realT, N, 1>;
 
