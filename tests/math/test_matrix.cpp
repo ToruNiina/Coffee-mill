@@ -40,23 +40,6 @@ BOOST_AUTO_TEST_CASE(construct_matrix_3x3)
         BOOST_CHECK_EQUAL((mat(2, 1)), 8);
         BOOST_CHECK_EQUAL((mat(2, 2)), 9);
     }
-
-    {
-        mill::Matrix<double, 3, 3> mat = {
-            {1, 2, 3},
-            {4, 5, 6},
-            {7, 8, 9}
-        };
-        BOOST_CHECK_EQUAL((mat(0, 0)), 1);
-        BOOST_CHECK_EQUAL((mat(0, 1)), 2);
-        BOOST_CHECK_EQUAL((mat(0, 2)), 3);
-        BOOST_CHECK_EQUAL((mat(1, 0)), 4);
-        BOOST_CHECK_EQUAL((mat(1, 1)), 5);
-        BOOST_CHECK_EQUAL((mat(1, 2)), 6);
-        BOOST_CHECK_EQUAL((mat(2, 0)), 7);
-        BOOST_CHECK_EQUAL((mat(2, 1)), 8);
-        BOOST_CHECK_EQUAL((mat(2, 2)), 9);
-    }
 }
 
 

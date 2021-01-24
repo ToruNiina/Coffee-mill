@@ -63,21 +63,6 @@ class Matrix
         static_assert(std::conjunction_v<std::is_convertible<Ts, realT>...>);
     }
 
-    Matrix(std::initializer_list<std::initializer_list<real_type>> il)
-    {
-        assert(il.size() == Row);
-        std::size_t i=0;
-        for(auto&& r : il)
-        {
-            assert(r.size() == Col);
-            for(auto&& e : r)
-            {
-                values_[i] = e;
-                ++i;
-            }
-        }
-    }
-
     Matrix(std::pair<std::size_t, std::size_t> size)
     {
         assert(size.first  == this->row());
