@@ -8,6 +8,16 @@ set(MILL_SOURCE_FILES
     "mode_psf.cpp"   "mode_psf_help.cpp"   "mode_psf_gen.cpp"
     )
 
+# OpenMP ----------------------------------------------------------------------
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+    message(STATUS "OpenMP ${OpenMP_CXX_VERSION} found")
+    add_definitions("${OpenMP_CXX_FLAGS}")
+else()
+    message(WARNING "OpenMP not found. OpenMP support is disabled.")
+endif()
+
 # Eigen dependent modules -----------------------------------------------------
 
 find_package (Eigen3 3.3 NO_MODULE)
@@ -16,10 +26,18 @@ if(TARGET Eigen3::Eigen)
     set(MILL_SOURCE_FILES "${MILL_SOURCE_FILES}" "mode_calc_pca.cpp")
 endif(TARGET Eigen3::Eigen)
 
+# Compilation -----------------------------------------------------------------
+
 add_executable(mill main.cpp ${MILL_SOURCE_FILES})
 set_target_properties(mill PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
 
+# Link ------------------------------------------------------------------------
+
 if(TARGET Eigen3::Eigen)
     target_link_libraries(mill Eigen3::Eigen)
 endif(TARGET Eigen3::Eigen)
+
+if(OpenMP_CXX_FOUND)
+    target_link_libraries(mill ${OpenMP_CXX_LIBRARIES})
+endif()
