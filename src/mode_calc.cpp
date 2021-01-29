@@ -8,6 +8,11 @@
 #include "mode_calc_obb.hpp"
 #include "mode_calc_center.hpp"
 #include "mode_calc_autocorrelation.hpp"
+
+#ifdef MILL_WITH_EIGEN
+#include "mode_calc_pca.hpp"
+#endif
+
 #include <mill/util/logger.hpp>
 
 namespace mill
@@ -56,6 +61,12 @@ int mode_calc(std::deque<std::string_view> args)
     {
         return mode_calc_autocorrelation(std::move(args));
     }
+#ifdef MILL_WITH_EIGEN
+    else if(command == "pca")
+    {
+        return mode_calc_pca(std::move(args));
+    }
+#endif// MILL_WITH_EIGEN
     else if(command == "help")
     {
         return mode_calc_help(std::move(args));
