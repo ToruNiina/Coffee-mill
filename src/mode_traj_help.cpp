@@ -7,6 +7,7 @@
 #include "mode_traj_impose.hpp"
 #include "mode_traj_rotate.hpp"
 #include "mode_traj_translate.hpp"
+#include "mode_traj_running_average.hpp"
 
 namespace mill
 {
@@ -29,6 +30,8 @@ const char* mode_traj_help_usage() noexcept
            "      : rotate molecules around an axis by a specified angle\n"
            "    - translate\n"
            "      : move molecules by a specified distance\n"
+           "    - running_average\n"
+           "      : takes a running average of position by a specified window size\n"
            "    - help\n"
            "      : prints detailed explanation of each command\n";
 }
@@ -72,6 +75,10 @@ int mode_traj_help(std::deque<std::string_view> args)
     else if(command == "rotate")
     {
         return mode_traj_rotate({"help"sv});
+    }
+    else if(command == "running_average")
+    {
+        return mode_traj_running_average(std::move(args));
     }
     if(command == "help")
     {
