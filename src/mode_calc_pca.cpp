@@ -20,7 +20,7 @@ const char* mode_calc_pca_usage() noexcept
            "         determines principal component using customized input.\n"
            "         ```toml\n"
            "         input  = \"traj.dcd\"\n"
-           "         output = \"pca.dat\"\n"
+           "         output_basename = \"pca.dat\"\n"
            "         # (optional) how many components are reported.\n"
            "         # by default, 3.\n"
            "         top    = 10\n"
