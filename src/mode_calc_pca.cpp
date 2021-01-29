@@ -33,6 +33,7 @@ const char* mode_calc_pca_usage() noexcept
 
 int mode_calc_pca(std::deque<std::string_view> args)
 {
+    using namespace std::literals::string_literals;
     using Matrix = Eigen::MatrixXd;
     using Vector = Eigen::VectorXd;
 
@@ -279,7 +280,6 @@ int mode_calc_pca(std::deque<std::string_view> args)
     std::size_t idx=0;
     for(const auto& eigen : eigens)
     {
-        using namespace std::literals::string_literals;
         const auto [lower, upper] = component_range.at(idx);
 
         const auto dx = (upper - lower) / PC_movement_len;
