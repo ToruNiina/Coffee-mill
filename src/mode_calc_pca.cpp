@@ -14,7 +14,7 @@ namespace mill
 
 const char* mode_calc_pca_usage() noexcept
 {
-    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--output=(\"mill_pca.dat\" by default)]\n"
+    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--output=(\"{base name of trajectory}_pca.dat\" by default)]\n"
            "         determines principal component from traj file.\n"
            "       mill calc pca {input.toml}\n"
            "         determines principal component using customized input.\n"
@@ -33,13 +33,11 @@ const char* mode_calc_pca_usage() noexcept
 
 int mode_calc_pca(std::deque<std::string_view> args)
 {
-//     using Matrix = Matrix<double, DYNAMIC, DYNAMIC>;
-//     using Vector = Vector<double, DYNAMIC>;
     using Matrix = Eigen::MatrixXd;
     using Vector = Eigen::VectorXd;
 
     auto top = pop_argument<std::size_t>(args, "top"   ).value_or(3);
-    auto out = pop_argument<std::string>(args, "output").value_or("mill_pca.dat");
+    auto output_opt = pop_argument<std::string>(args, "output");
     std::vector<std::size_t> particles_to_be_used;
 
     if(args.empty())
@@ -67,9 +65,9 @@ int mode_calc_pca(std::deque<std::string_view> args)
         {
             top = toml::find<std::size_t>(data, "top");
         }
-        if(data.contains("output"))
+        if(data.contains("output_basename"))
         {
-            out = toml::find<std::string>(data, "output");
+            output_opt = toml::find<std::string>(data, "output_basename");
         }
         if(data.contains("use"))
         {
@@ -100,6 +98,13 @@ int mode_calc_pca(std::deque<std::string_view> args)
         particles_to_be_used.resize(reader(trajfile).read_frame()->size(), 0);
         std::iota(particles_to_be_used.begin(), particles_to_be_used.end(), 0);
     }
+
+    if(not output_opt.has_value())
+    {
+        output_opt = std::string(base_name_of(trajfile));
+    }
+    const std::string output_basename = output_opt.value();
+
     log::info("It will use ", particles_to_be_used.size(), " particles in total.");
 
     // we will use this `traj` to write the movement corresponds to the principal components.
@@ -133,13 +138,12 @@ int mode_calc_pca(std::deque<std::string_view> args)
     log::info("mean positions are calculated");
 
     // {x1, y1, z1, x2, y2, z2, ...}
-//     Matrix mat = Matrix::zero(particles_to_be_used.size() * 3,
-//                               particles_to_be_used.size() * 3);
     Matrix mat = Eigen::MatrixXd::Zero(particles_to_be_used.size() * 3,
                                        particles_to_be_used.size() * 3);
 
     for(const auto frame : traj)
     {
+        // the matrix often will be large enough for this
 #pragma omp parallel for
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
         {
@@ -191,9 +195,6 @@ int mode_calc_pca(std::deque<std::string_view> args)
         eigens[i].second = solver.eigenvectors().col(i);
     }
 
-//     JacobiEigenSolver solver;
-//     auto eigens = solver.solve(mat);
-
     std::sort(eigens.begin(), eigens.end(), [](const auto& lhs, const auto& rhs) {
             return lhs.first > rhs.first;
         });
@@ -209,10 +210,10 @@ int mode_calc_pca(std::deque<std::string_view> args)
             std::make_pair(std::numeric_limits<double>::max(),
                           -std::numeric_limits<double>::max()));
 
-    std::ofstream ofs(out);
+    std::ofstream ofs(output_basename + "_pca.dat"s);
     if(not ofs.good())
     {
-        log::fatal("file open error: ", out);
+        log::fatal("file open error: ", output_basename + "_pca.dat"s);
     }
 
     ofs << '#';
@@ -246,63 +247,62 @@ int mode_calc_pca(std::deque<std::string_view> args)
         ofs << '\n';
     }
 
-    log::info("movement along PCs are written in ", out);
+    log::info("trajectory along PCs are written in ", output_basename + "_pca.dat");
 
-    // output principal motion
+    // output principal motion ------------------------------------------------
+
+    // freeze the trajectory at the mean position to see the movement of selected particles
+    auto& init = traj.at(0);
+    for(std::size_t i=1; i<traj.size(); ++i)
     {
-        // freeze the trajectory at the mean position to see the movement of selected particles
-
-        auto& init = traj.at(0);
-        for(std::size_t i=1; i<traj.size(); ++i)
+        const auto frame = traj.at(i);
+        for(std::size_t p_idx=0; p_idx<frame.size(); ++p_idx)
         {
-            const auto frame = traj.at(i);
-            for(std::size_t p_idx=0; p_idx<frame.size(); ++p_idx)
+            init.at(p_idx).position() += frame.at(p_idx).position();
+        }
+    }
+    for(std::size_t p_idx=0; p_idx<init.size(); ++p_idx)
+    {
+        init.at(p_idx).position() *= normalize;
+    }
+
+    const std::size_t PC_movement_len = std::min<std::size_t>(1000, traj.size());
+    traj.snapshots().resize(PC_movement_len);
+
+    for(std::size_t i=1; i<traj.size(); ++i)
+    {
+        traj.at(i) = init;
+    }
+
+    // construct movement along PCs
+
+    std::size_t idx=0;
+    for(const auto& eigen : eigens)
+    {
+        using namespace std::literals::string_literals;
+        const auto [lower, upper] = component_range.at(idx);
+
+        const auto dx = (upper - lower) / PC_movement_len;
+        for(std::size_t t=0; t<PC_movement_len; ++t)
+        {
+            auto& frame = traj.at(t);
+
+            const auto x = lower + dx * t;
+            for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
             {
-                init.at(p_idx).position() += frame.at(p_idx).position();
+                frame.at(particles_to_be_used[i]).position()[0] = means.at(i*3+0) + eigen.second[i*3+0] * x;
+                frame.at(particles_to_be_used[i]).position()[1] = means.at(i*3+1) + eigen.second[i*3+1] * x;
+                frame.at(particles_to_be_used[i]).position()[2] = means.at(i*3+2) + eigen.second[i*3+2] * x;
             }
         }
-        for(std::size_t p_idx=0; p_idx<init.size(); ++p_idx)
-        {
-            init.at(p_idx).position() *= normalize;
-        }
+        const auto outtrajname = output_basename + "_PC"s +
+            std::to_string(idx+1) + std::string(extension_of(trajfile));
+        auto w = writer(outtrajname);
+        w.write(traj);
 
-        const std::size_t PC_movement_len = std::min<std::size_t>(1000, traj.size());
-        traj.snapshots().resize(PC_movement_len);
+        log::info("structure change along PC", idx, " is written in ", outtrajname);
 
-        for(std::size_t i=1; i<traj.size(); ++i)
-        {
-            traj.at(i) = init;
-        }
-
-        // construct movement along PCs
-
-        std::size_t idx=0;
-        for(const auto& eigen : eigens)
-        {
-            using namespace std::literals::string_literals;
-            const auto [lower, upper] = component_range.at(idx);
-
-            const auto dx = (upper - lower) / PC_movement_len;
-            for(std::size_t t=0; t<PC_movement_len; ++t)
-            {
-                auto& frame = traj.at(t);
-
-                const auto x = lower + dx * t;
-                for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
-                {
-                    frame.at(particles_to_be_used[i]).position()[0] = means.at(i*3+0) + eigen.second[i*3+0] * x;
-                    frame.at(particles_to_be_used[i]).position()[1] = means.at(i*3+1) + eigen.second[i*3+1] * x;
-                    frame.at(particles_to_be_used[i]).position()[2] = means.at(i*3+2) + eigen.second[i*3+2] * x;
-                }
-            }
-            const auto outtrajname = "mill_PC"s + std::to_string(idx+1) + std::string(extension_of(trajfile));
-            auto w = writer(outtrajname);
-            w.write(traj);
-
-            log::info("structure change along PC", idx, " is written in ", outtrajname);
-
-            ++idx;
-        }
+        ++idx;
     }
 
     return 0;
