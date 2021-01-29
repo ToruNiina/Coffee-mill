@@ -116,7 +116,7 @@ As the name suggests, `pdb` mode only supports `.pdb` format.
 
 ### `ninfo` mode
 
-As the name suggests, `ninfo` mode only supports `.ninfo` format that is specific to CafeMol[^1].
+As the name suggests, `ninfo` mode only supports `.ninfo` format that is specific to CafeMol¹].
 
 - `split`
   - splits an all-in-one ninfo file into one-by-one files.
@@ -136,4 +136,4 @@ To find Eigen3, you can use `cmake .. -DEigen3_DIR=/path/to/eigen-3.y.z/`.
 
 ## Reference
 
-[^1]: "CafeMol: A coarse-grained biomolecular simulator for simulating proteins at work. H. Kenzaki, N. Koga, N. Hori, R. Kanada, W. Li, K. Okazaki, XQ. Yao, and S. Takada Journal of Chemical Theory and Computation (2011) 7(6) pp1979-1989 DOI:10.1021/ct2001045"
+1. "CafeMol: A coarse-grained biomolecular simulator for simulating proteins at work. H. Kenzaki, N. Koga, N. Hori, R. Kanada, W. Li, K. Okazaki, XQ. Yao, and S. Takada Journal of Chemical Theory and Computation (2011) 7(6) pp1979-1989 DOI:10.1021/ct2001045"
