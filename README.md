@@ -15,7 +15,7 @@ A command line tool for Mjolnir/CafeMol users.
 
 And each mode has its own commands.
 
-To see the explanation of each command, run the following command.
+To see the usage and explanation of each command, run the following command.
 
 ```sh
 $ mill help [mode] [command]
@@ -40,7 +40,11 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
 - `obb`
   - calculate oriented bounding box from a given point cloud using covariance
 - `autocorrelation`
-  - calculate autocorrelation of data
+  - calculate autocorrelation of (single-column) data
+- `pca`
+  - performs Principal Component Analysis and output the trajectory and conformational changes along the PCs.
+  - *Note*: It is only available if you have already installed Eigen3.
+  - *Note*: It is parallelized via OpenMP, so choose the number of threads you want to use via `export OMP_NUM_THREADS=N`.
 - `help`
   - prints help messages.
 
@@ -62,6 +66,8 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `traj` mode.
   - rotate molecules around x, y, or z axis by a specified angle.
 - `translate`
   - move molecules by a specified distance.
+- `running-average`
+  - takes running average of particle positions with a specified window size.
 - `help`
   - prints help message.
 
@@ -101,6 +107,8 @@ $ cd build
 $ cmake ..
 $ make
 ```
+
+To find Eigen3, you can use `cmake .. -DEigen3_DIR=/path/to/eigen-3.y.z/`.
 
 ## Reference
 
