@@ -100,49 +100,58 @@ int mode_calc_pca(std::deque<std::string_view> args)
         particles_to_be_used.resize(reader(trajfile).read_frame()->size(), 0);
         std::iota(particles_to_be_used.begin(), particles_to_be_used.end(), 0);
     }
+    log::info("It will use ", particles_to_be_used.size(), " particles in total.");
 
     // we will use this `traj` to write the movement corresponds to the principal components.
     Trajectory traj = reader(trajfile).read();
 
-    log::debug("input files are loaded");
+    log::debug("input files are loaded.");
+    log::info("trajectory has ", traj.size(), " snapshots.");
 
     std::size_t num_frames = 0;
     std::vector<double> means(particles_to_be_used.size() * 3, 0.0);
     for(const auto frame : traj)
     {
+#pragma omp parallel for
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
         {
-            means[i*3+0] += frame.at(i).position()[0];
-            means[i*3+1] += frame.at(i).position()[1];
-            means[i*3+2] += frame.at(i).position()[2];
+            means[i*3+0] += frame.at(particles_to_be_used[i]).position()[0];
+            means[i*3+1] += frame.at(particles_to_be_used[i]).position()[1];
+            means[i*3+2] += frame.at(particles_to_be_used[i]).position()[2];
         }
         num_frames += 1;
     }
-    for(auto& mean : means)
+
+    const double normalize = 1.0 / num_frames;
+#pragma omp parallel for
+    for(std::size_t i=0; i<means.size(); ++i)
     {
-        mean /= num_frames;
+        auto& mean = means[i];
+        mean *= normalize;
     }
 
-    log::debug("mean positions calculated");
+    log::info("mean positions are calculated");
 
     // {x1, y1, z1, x2, y2, z2, ...}
 //     Matrix mat = Matrix::zero(particles_to_be_used.size() * 3,
 //                               particles_to_be_used.size() * 3);
     Matrix mat = Eigen::MatrixXd::Zero(particles_to_be_used.size() * 3,
                                        particles_to_be_used.size() * 3);
+
     for(const auto frame : traj)
     {
+#pragma omp parallel for
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
         {
-            const auto pix = frame.at(i).position()[0] - means[i*3+0];
-            const auto piy = frame.at(i).position()[1] - means[i*3+1];
-            const auto piz = frame.at(i).position()[2] - means[i*3+2];
+            const auto pix = frame.at(particles_to_be_used[i]).position()[0] - means[i*3+0];
+            const auto piy = frame.at(particles_to_be_used[i]).position()[1] - means[i*3+1];
+            const auto piz = frame.at(particles_to_be_used[i]).position()[2] - means[i*3+2];
 
             for(std::size_t j=i; j<particles_to_be_used.size(); ++j)
             {
-                const auto pjx = frame.at(j).position()[0] - means[j*3+0];
-                const auto pjy = frame.at(j).position()[1] - means[j*3+1];
-                const auto pjz = frame.at(j).position()[2] - means[j*3+2];
+                const auto pjx = frame.at(particles_to_be_used[j]).position()[0] - means[j*3+0];
+                const auto pjy = frame.at(particles_to_be_used[j]).position()[1] - means[j*3+1];
+                const auto pjz = frame.at(particles_to_be_used[j]).position()[2] - means[j*3+2];
 
                 mat(i*3+0, j*3+0) += pix * pjx;
                 mat(i*3+0, j*3+1) += pix * pjy;
@@ -159,25 +168,27 @@ int mode_calc_pca(std::deque<std::string_view> args)
         }
     }
 
+#pragma omp parallel for
     for(std::size_t i=0; i<particles_to_be_used.size() * 3; ++i)
     {
-        mat(i, i) /= num_frames;
+        mat(i, i) *= normalize;
         for(std::size_t j=i+1; j<particles_to_be_used.size() * 3; ++j)
         {
-            mat(i, j) /= num_frames;
+            mat(i, j) *= normalize;
             mat(j, i) = mat(i, j);
         }
     }
 
-    log::debug("co-variance matrix constructed");
+    log::info("co-variance matrix is constructed");
 
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(mat);
     std::vector<std::pair<double, Vector>> eigens(particles_to_be_used.size() * 3);
+
+#pragma omp parallel for
     for(std::size_t i=0; i<particles_to_be_used.size() * 3; ++i)
     {
         eigens[i].first  = solver.eigenvalues()[i];
         eigens[i].second = solver.eigenvectors().col(i);
-        log::debug(i, "-th eigenvalue = ", eigens[i].first);
     }
 
 //     JacobiEigenSolver solver;
@@ -192,15 +203,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
         eigens.resize(top);
     }
 
-    std::vector<double> ev;
-    for(const auto& eigen : eigens)
-    {
-        ev.push_back(eigen.first);
-    }
-    log::debug("top-", top, " eigenvalues = ", ev);
-
-
-    log::debug("eigenvalues are calculated");
+    log::info("eigenvalues are calculated");
 
     std::vector<std::pair<double, double>> component_range(eigens.size(),
             std::make_pair(std::numeric_limits<double>::max(),
@@ -219,15 +222,14 @@ int mode_calc_pca(std::deque<std::string_view> args)
     }
     ofs << '\n';
 
-
     for(const auto frame : traj)
     {
         Eigen::VectorXd snapshot = Eigen::VectorXd::Zero(particles_to_be_used.size() * 3);
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
         {
-            snapshot[i*3+0] = frame.at(i).position()[0] - means[i*3+0];
-            snapshot[i*3+1] = frame.at(i).position()[1] - means[i*3+1];
-            snapshot[i*3+2] = frame.at(i).position()[2] - means[i*3+2];
+            snapshot[i*3+0] = frame.at(particles_to_be_used[i]).position()[0] - means[i*3+0];
+            snapshot[i*3+1] = frame.at(particles_to_be_used[i]).position()[1] - means[i*3+1];
+            snapshot[i*3+2] = frame.at(particles_to_be_used[i]).position()[2] - means[i*3+2];
         }
 
         std::size_t idx=0;
@@ -244,10 +246,35 @@ int mode_calc_pca(std::deque<std::string_view> args)
         ofs << '\n';
     }
 
+    log::info("movement along PCs are written in ", out);
+
     // output principal motion
     {
+        // freeze the trajectory at the mean position to see the movement of selected particles
+
+        auto& init = traj.at(0);
+        for(std::size_t i=1; i<traj.size(); ++i)
+        {
+            const auto frame = traj.at(i);
+            for(std::size_t p_idx=0; p_idx<frame.size(); ++p_idx)
+            {
+                init.at(p_idx).position() += frame.at(p_idx).position();
+            }
+        }
+        for(std::size_t p_idx=0; p_idx<init.size(); ++p_idx)
+        {
+            init.at(p_idx).position() *= normalize;
+        }
+
         const std::size_t PC_movement_len = std::min<std::size_t>(1000, traj.size());
         traj.snapshots().resize(PC_movement_len);
+
+        for(std::size_t i=1; i<traj.size(); ++i)
+        {
+            traj.at(i) = init;
+        }
+
+        // construct movement along PCs
 
         std::size_t idx=0;
         for(const auto& eigen : eigens)
@@ -261,15 +288,19 @@ int mode_calc_pca(std::deque<std::string_view> args)
                 auto& frame = traj.at(t);
 
                 const auto x = lower + dx * t;
-                for(std::size_t i=0; i<frame.size(); ++i)
+                for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
                 {
-                    frame.at(i).position()[0] = means.at(i*3+0) + eigen.second[i*3+0] * x;
-                    frame.at(i).position()[1] = means.at(i*3+1) + eigen.second[i*3+1] * x;
-                    frame.at(i).position()[2] = means.at(i*3+2) + eigen.second[i*3+2] * x;
+                    frame.at(particles_to_be_used[i]).position()[0] = means.at(i*3+0) + eigen.second[i*3+0] * x;
+                    frame.at(particles_to_be_used[i]).position()[1] = means.at(i*3+1) + eigen.second[i*3+1] * x;
+                    frame.at(particles_to_be_used[i]).position()[2] = means.at(i*3+2) + eigen.second[i*3+2] * x;
                 }
             }
-            auto w = writer("mill_PC"s + std::to_string(idx+1) + std::string(extension_of(trajfile)));
+            const auto outtrajname = "mill_PC"s + std::to_string(idx+1) + std::string(extension_of(trajfile));
+            auto w = writer(outtrajname);
             w.write(traj);
+
+            log::info("structure change along PC", idx, " is written in ", outtrajname);
+
             ++idx;
         }
     }
