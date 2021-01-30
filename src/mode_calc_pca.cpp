@@ -14,9 +14,13 @@ namespace mill
 
 const char* mode_calc_pca_usage() noexcept
 {
-    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--output=(\"{base name of trajectory}_pca.dat\" by default)]\n"
+    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--top-contribution=(95% by default)] [--output=(\"{base name of trajectory}_pca.dat\" by default)]\n"
            "         determines principal component from traj file.\n"
-           "       mill calc pca {input.toml}\n"
+           "         --top=N specifies the number of component will be written out.\n"
+           "         --top-contribution=% specifies the number of component via the accumulated contribution rate.\n"
+           "         if you specify `--top=3 --top-contribution=95` and it would be found that top 5 components are\n"
+           "         needed to achieve 95% contribution, 5 components are written.\n"
+           "     $ mill calc pca {input.toml}\n"
            "         determines principal component using customized input.\n"
            "         ```toml\n"
            "         input  = \"traj.dcd\"\n"
@@ -24,6 +28,8 @@ const char* mode_calc_pca_usage() noexcept
            "         # (optional) how many components are reported.\n"
            "         # by default, 3.\n"
            "         top    = 10\n"
+           "         # (optional) instead of `top`, output top N% contributing PCs.\n"
+           "         top_contribution = 95 # %\n"
            "         # (optional) indices of particles to be used.\n"
            "         # by default, all the particles are used.\n"
            "         # {first, last} specifies the range. last is not included.\n"
@@ -37,8 +43,9 @@ int mode_calc_pca(std::deque<std::string_view> args)
     using Matrix = Eigen::MatrixXd;
     using Vector = Eigen::VectorXd;
 
-    auto top = pop_argument<std::size_t>(args, "top"   ).value_or(3);
-    auto output_opt = pop_argument<std::string>(args, "output");
+    auto top_n_opt       = pop_argument<std::size_t>(args, "top");
+    auto top_contrib_opt = pop_argument<double     >(args, "top-contribution");
+    auto output_opt      = pop_argument<std::string>(args, "output");
     std::vector<std::size_t> particles_to_be_used;
 
     if(args.empty())
@@ -46,6 +53,14 @@ int mode_calc_pca(std::deque<std::string_view> args)
         log::error("mill calc pca: too few arguments.");
         log::error(mode_calc_pca_usage());
         return 1;
+    }
+
+    for(const auto& arg : args)
+    {
+        if(arg.substr(0, 2) == "--")
+        {
+            log::error("unknown argument ", arg, " found. It will be ignored. please check it.");
+        }
     }
 
     const std::string fname(args.front());
@@ -64,8 +79,18 @@ int mode_calc_pca(std::deque<std::string_view> args)
 
         if(data.contains("top"))
         {
-            top = toml::find<std::size_t>(data, "top");
+            top_n_opt = toml::find<std::size_t>(data, "top");
         }
+
+        if(data.contains("top_contribution"))
+        {
+            top_contrib_opt = toml::find<double>(data, "top_contribution");
+        }
+        if(data.contains("top-contribution"))
+        {
+            top_contrib_opt = toml::find<double>(data, "top-contribution");
+        }
+
         if(data.contains("output_basename"))
         {
             output_opt = toml::find<std::string>(data, "output_basename");
@@ -104,9 +129,18 @@ int mode_calc_pca(std::deque<std::string_view> args)
     {
         output_opt = std::string(base_name_of(trajfile));
     }
+
     const std::string output_basename = output_opt.value();
 
     log::info("It will use ", particles_to_be_used.size(), " particles in total.");
+    if(top_n_opt.has_value())
+    {
+        log::info("It will output ", top_n_opt.value(), " components");
+    }
+    if(top_contrib_opt.has_value())
+    {
+        log::info("It will output top ", top_contrib_opt.value(), "% contributing components.");
+    }
     log::info("The results will be written in ", output_basename);
 
     // we will use this `traj` to write the movement corresponds to the principal components.
@@ -114,6 +148,9 @@ int mode_calc_pca(std::deque<std::string_view> args)
 
     log::debug("input files are loaded.");
     log::info("trajectory has ", traj.size(), " snapshots.");
+
+    // -----------------------------------------------------------------------
+    // constructing covariance matrix
 
     std::size_t num_frames = 0;
     std::vector<double> means(particles_to_be_used.size() * 3, 0.0);
@@ -187,6 +224,9 @@ int mode_calc_pca(std::deque<std::string_view> args)
 
     log::info("co-variance matrix is constructed");
 
+    // -----------------------------------------------------------------------
+    // calculating eigenvalues of covariance matrix
+
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(mat);
     std::vector<std::pair<double, Vector>> eigens(particles_to_be_used.size() * 3);
 
@@ -201,12 +241,59 @@ int mode_calc_pca(std::deque<std::string_view> args)
             return lhs.first > rhs.first;
         });
 
-    if(top < eigens.size())
+    log::info("eigenvalues are calculated");
+
+    // -----------------------------------------------------------------------
+    // determining contribution rate
+
+    const auto sum_eigenvalues = std::accumulate(eigens.begin(), eigens.end(),
+        0.0, [](const auto& acc, const auto& elem) {
+            return acc + elem.first;
+        }) * 0.01; // scale to the per-cent
+    std::vector<double> contribution_rate(eigens.size());
+    std::transform(eigens.begin(), eigens.end(), contribution_rate.begin(),
+            [sum_eigenvalues](const auto& eigenpair) noexcept -> double {
+                return eigenpair.first / sum_eigenvalues;
+            });
+
+    std::vector<double> accumulated_contribution_rate(eigens.size());
+    const double contribution_threshold = top_contrib_opt.value_or(95.0);
+    std::size_t top_contributions = 0;
+    double accum = 0.0;
+    std::transform(contribution_rate.begin(), contribution_rate.end(),
+            accumulated_contribution_rate.begin(),
+            [&accum, &top_contributions, contribution_threshold](const auto& rate) {
+                if(accum <= contribution_threshold)
+                {
+                    top_contributions += 1;
+                }
+                accum += rate;
+                return accum;
+            });
+
+    std::size_t num_components = std::max<std::size_t>(3, top_contributions);
+    if(top_n_opt.has_value())
     {
-        eigens.resize(top);
+        num_components = top_n_opt.value();
+    }
+    if(top_contrib_opt.has_value())
+    {
+        num_components = top_contributions;
+    }
+    if(top_n_opt.has_value() && top_contrib_opt.has_value())
+    {
+        num_components = std::max(top_contributions, top_n_opt.value());
     }
 
-    log::info("eigenvalues are calculated");
+    if(num_components < eigens.size())
+    {
+        eigens.resize(num_components);
+    }
+
+    log::info("top ", num_components, " components will be written");
+
+    // -----------------------------------------------------------------------
+    // writing trajectory along the eigenvector
 
     std::vector<std::pair<double, double>> component_range(eigens.size(),
             std::make_pair(std::numeric_limits<double>::max(),
@@ -222,6 +309,13 @@ int mode_calc_pca(std::deque<std::string_view> args)
     for(std::size_t i=0; i<eigens.size(); ++i)
     {
         ofs << " PC" << i;
+    }
+    ofs << '\n';
+
+    ofs << '#';
+    for(std::size_t i=0; i<eigens.size(); ++i)
+    {
+        ofs << " " << std::fixed << std::setprecision(5) << contribution_rate.at(i) << "%";
     }
     ofs << '\n';
 
@@ -251,7 +345,8 @@ int mode_calc_pca(std::deque<std::string_view> args)
 
     log::info("trajectory along PCs are written in ", output_basename + "_pca.dat");
 
-    // output principal motion ------------------------------------------------
+    // -----------------------------------------------------------------------
+    // output principal motion
 
     // freeze the trajectory at the mean position to see the movement of selected particles
     auto& init = traj.at(0);
@@ -301,7 +396,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
         auto w = writer(outtrajname);
         w.write(traj);
 
-        log::info("structure change along PC", idx, " is written in ", outtrajname);
+        log::info("structure change along PC", idx+1, " (", contribution_rate.at(idx) , "% contribution) is written in ", outtrajname);
 
         ++idx;
     }
