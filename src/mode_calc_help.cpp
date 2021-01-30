@@ -10,6 +10,10 @@
 #include "mode_calc_center.hpp"
 #include "mode_calc_autocorrelation.hpp"
 
+#ifdef MILL_WITH_EIGEN
+#include "mode_calc_pca.hpp"
+#endif
+
 namespace mill
 {
 
@@ -33,6 +37,10 @@ const char* mode_calc_help_usage() noexcept
            "      : calculate geometric center\n"
            "    - autocorrelation\n"
            "      : calculate autocorrelation of data\n"
+#ifdef MILL_WITH_EIGEN
+           "    - pca\n"
+           "      : performs principal component analysis\n"
+#endif
            "    - help\n"
            "      : print detailed explanation of each command\n";
 }
@@ -81,6 +89,12 @@ int mode_calc_help(std::deque<std::string_view> args)
     {
         return mode_calc_autocorrelation({"help"sv});
     }
+#ifdef MILL_WITH_EIGEN
+    else if(command == "pca")
+    {
+        return mode_calc_pca({"help"sv});
+    }
+#endif
     else if(command == "help")
     {
         log::info(mode_calc_help_usage());
