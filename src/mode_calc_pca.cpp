@@ -107,6 +107,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
     const std::string output_basename = output_opt.value();
 
     log::info("It will use ", particles_to_be_used.size(), " particles in total.");
+    log::info("The results will be written in ", output_basename);
 
     // we will use this `traj` to write the movement corresponds to the principal components.
     Trajectory traj = reader(trajfile).read();
