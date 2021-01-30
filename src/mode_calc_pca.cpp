@@ -290,7 +290,8 @@ int mode_calc_pca(std::deque<std::string_view> args)
         eigens.resize(num_components);
     }
 
-    log::info("top ", num_components, " components will be written");
+    log::info("top ", num_components, " components (",
+            accumulated_contribution_rate.at(num_components), "% contribution) will be written");
 
     // -----------------------------------------------------------------------
     // writing trajectory along the eigenvector
@@ -299,10 +300,10 @@ int mode_calc_pca(std::deque<std::string_view> args)
             std::make_pair(std::numeric_limits<double>::max(),
                           -std::numeric_limits<double>::max()));
 
-    std::ofstream ofs(output_basename + "_pca.dat"s);
+    std::ofstream ofs(output_basename + "_PCA.dat"s);
     if(not ofs.good())
     {
-        log::fatal("file open error: ", output_basename + "_pca.dat"s);
+        log::fatal("file open error: ", output_basename + "_PCA.dat"s);
     }
 
     ofs << '#';
@@ -343,7 +344,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
         ofs << '\n';
     }
 
-    log::info("trajectory along PCs are written in ", output_basename + "_pca.dat");
+    log::info("trajectory along PCs are written in ", output_basename + "_PCA.dat");
 
     // -----------------------------------------------------------------------
     // output principal motion
