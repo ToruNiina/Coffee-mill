@@ -40,8 +40,6 @@ const char* mode_calc_pca_usage() noexcept
 int mode_calc_pca(std::deque<std::string_view> args)
 {
     using namespace std::literals::string_literals;
-    using Matrix = Eigen::MatrixXd;
-    using Vector = Eigen::VectorXd;
 
     auto top_n_opt       = pop_argument<std::size_t>(args, "top");
     auto top_contrib_opt = pop_argument<double     >(args, "top-contribution");
@@ -177,8 +175,8 @@ int mode_calc_pca(std::deque<std::string_view> args)
     log::info("mean positions are calculated");
 
     // {x1, y1, z1, x2, y2, z2, ...}
-    Matrix mat = Eigen::MatrixXd::Zero(particles_to_be_used.size() * 3,
-                                       particles_to_be_used.size() * 3);
+    Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(particles_to_be_used.size() * 3,
+                                                particles_to_be_used.size() * 3);
 
     for(const auto frame : traj)
     {
