@@ -226,7 +226,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
     // calculating eigenvalues of covariance matrix
 
     Eigen::SelfAdjointEigenSolver<Eigen::MatrixXd> solver(mat);
-    std::vector<std::pair<double, Vector>> eigens(particles_to_be_used.size() * 3);
+    std::vector<std::pair<double, Eigen::VectorXd>> eigens(particles_to_be_used.size() * 3);
 
 #pragma omp parallel for
     for(std::size_t i=0; i<particles_to_be_used.size() * 3; ++i)
