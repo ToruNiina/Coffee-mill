@@ -44,14 +44,15 @@ int mode_traj_mean(std::deque<std::string_view> args)
         const auto& frame = traj.at(t);
         for(std::size_t i=0; i<frame.size(); ++i)
         {
-            traj.front().at(i).position() += frame.at(i).position();
+            traj.at(0).at(i).position() += frame.at(i).position();
         }
     }
 
     const double normalize = 1.0 / traj.size();
-    for(std::size_t i=0; i<frame.size(); ++i)
+    auto& front = traj.at(0);
+    for(std::size_t i=0; i<front.size(); ++i)
     {
-        traj.front().at(i).position() *= normalize;
+        front.at(i).position() *= normalize;
     }
     traj.snapshots().resize(1);
 
