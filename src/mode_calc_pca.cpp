@@ -400,6 +400,33 @@ int mode_calc_pca(std::deque<std::string_view> args)
         ++idx;
     }
 
+    // -----------------------------------------------------------------------
+    // output principal vectors as a trajectory
+
+    // normally, number of Eigen vectors to be written is smaller than 1000...
+    traj.snapshots().resize(eigens.size());
+    for(std::size_t i=0; i<eigens.size(); ++i)
+    {
+        const auto& [val, vec] = eigens.at(i);
+
+        auto& frame = traj.at(i);
+        for(auto& p : frame)
+        {
+            p.position() = Vector<double, 3>(0, 0, 0); // clear frame
+        }
+        // write eigen vector
+        for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
+        {
+            frame.at(particles_to_be_used[i]).position()[0] = vec[i*3+0];
+            frame.at(particles_to_be_used[i]).position()[1] = vec[i*3+1];
+            frame.at(particles_to_be_used[i]).position()[2] = vec[i*3+2];
+        }
+    }
+    const auto eigen_vec_name = output_basename + "_EigenVectors" +
+                                std::string(extension_of(trajfile));
+    auto w = writer(eigen_vec_name);
+    w.write(traj);
+
     return 0;
 }
 
