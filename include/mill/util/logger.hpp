@@ -50,6 +50,8 @@ template<typename T1, typename T2>
 void log_formatter(std::ostringstream&, const std::pair<T1, T2>&);
 template<typename T, typename Alloc>
 void log_formatter(std::ostringstream&, const std::vector<T, Alloc>&);
+template<typename T, typename Alloc>
+void log_formatter(std::ostringstream&, const std::deque<T, Alloc>&);
 template<typename T>
 void log_formatter(std::ostringstream&, const std::optional<T>&);
 
