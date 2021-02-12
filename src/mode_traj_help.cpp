@@ -8,6 +8,7 @@
 #include "mode_traj_rotate.hpp"
 #include "mode_traj_translate.hpp"
 #include "mode_traj_running_average.hpp"
+#include "mode_traj_mean.hpp"
 
 namespace mill
 {
@@ -32,6 +33,8 @@ const char* mode_traj_help_usage() noexcept
            "      : move molecules by a specified distance\n"
            "    - running_average\n"
            "      : takes a running average of position by a specified window size\n"
+           "    - mean\n"
+           "      : calculates mean structure\n"
            "    - help\n"
            "      : prints detailed explanation of each command\n";
 }
@@ -79,6 +82,10 @@ int mode_traj_help(std::deque<std::string_view> args)
     else if(command == "running_average")
     {
         return mode_traj_running_average(std::move(args));
+    }
+    else if(command == "mean")
+    {
+        return mode_traj_mean(std::move(args));
     }
     if(command == "help")
     {
