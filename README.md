@@ -93,6 +93,8 @@ You can use any of it, and even mix them in a single command.
   - rotates molecules around x, y, or z axis by a specified angle.
 - `running-average`
   - takes running average of particle positions with a specified window size.
+- `mean`
+  - calculates mean structure from a trajectory
 - `help`
   - prints help message.
 
