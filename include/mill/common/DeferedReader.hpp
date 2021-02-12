@@ -169,5 +169,46 @@ inline ReaderIteratorSentinel DeferedReaderBase::end()
     return ReaderIteratorSentinel(*this);
 }
 
+class DeferedReader
+{
+  public:
+    using trajectory_type = Trajectory;
+    using snapshot_type   = Snapshot;
+    using particle_type   = Particle;
+    using vector_type     = Particle::vector_type;
+    using attribute_container_type = trajectory_type::attribute_container_type;
+
+  public:
+
+    explicit DeferedReader(std::unique_ptr<DeferedReaderBase> reader)
+        : reader_(std::move(reader))
+    {}
+    ~DeferedReader() = default;
+    DeferedReader(const DeferedReader&)            = delete;
+    DeferedReader& operator=(const DeferedReader&) = delete;
+    DeferedReader(DeferedReader&&)                 = default;
+    DeferedReader& operator=(DeferedReader&&)      = default;
+
+    attribute_container_type read_header()    {return reader_->read_header();};
+    trajectory_type          read()           {return reader_->read();};
+    std::optional<snapshot_type> read_frame() {return reader_->read_frame();};
+    std::optional<snapshot_type> read_frame(const std::size_t idx)
+    {
+        return reader_->read_frame(idx);
+    }
+
+    ReaderIterator         begin() {return reader_->begin();}
+    ReaderIteratorSentinel end()   {return reader_->end();}
+
+    void             rewind()                   {return reader_->rewind()   ;}
+    bool             is_eof()    const noexcept {return reader_->is_eof()   ;}
+    std::size_t      current()   const noexcept {return reader_->current()  ;}
+    std::string_view file_name() const noexcept {return reader_->file_name();}
+
+  private:
+
+    std::unique_ptr<DeferedReaderBase> reader_;
+};
+
 } // mill
 #endif// COFFEE_MILL_COMMON_DEFERED_READER_HPP
