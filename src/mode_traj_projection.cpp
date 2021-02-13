@@ -43,19 +43,20 @@ int mode_traj_projection(std::deque<std::string_view> args)
     const auto axes_file = args.front(); args.pop_front();
     const auto orig_file = args.front(); args.pop_front();
 
-    const auto origin = reader(orig_file).read();
-    const auto axes   = reader(axes_file).read();
+    const auto origin_traj = reader(orig_file).read();
+    const auto axes        = reader(axes_file).read();
 
-    if(1 < origin.size())
+    if(1 < origin_traj.size())
     {
         log::warn("mill traj projection: origin file (", orig_file, ") has ",
-                  "multiple (", origin.size(), ") number of structures. Only "
+                  "multiple (", origin_traj.size(), ") number of structures. Only "
                   "the first frame is used as the origin.");
         return 1;
     }
+    const auto origin = origin_traj.at(0);
 
-    const auto output = std::string(base_name_of(input)) + "_projected_"s +
-        std::string(extension_of(input));
+    const auto output = std::string(base_name_of(traj)) + "_projected_"s +
+        std::string(extension_of(traj));
 
     std::ofstream ofs(output);
     if(!ofs.good())
@@ -64,10 +65,9 @@ int mode_traj_projection(std::deque<std::string_view> args)
         return 1;
     }
 
-    ofs << "# [frame], [coordinate along 1st axis], ...\n";
+    ofs << "# [frame index], [coordinate along 1st axis], [coordinate along 2nd axis], ...\n";
     std::size_t t = 0;
-    auto r = reader(input);
-    for(auto frame : r)
+    for(auto frame : reader(traj))
     {
         ofs << std::setw(8) << std::right << t ;
         for(const auto& axis : axes)
@@ -86,7 +86,7 @@ int mode_traj_projection(std::deque<std::string_view> args)
             double coord = 0;
             for(std::size_t i=0; i<frame.size(); ++i)
             {
-                coord += mill::dot_product(frame.at(i) - origin.at(i), axis.at(i));
+                coord += mill::dot_product(frame.at(i).position() - origin.at(i).position(), axis.at(i).position());
             }
             ofs << ' ' << std::setprecision(10) << coord << std::endl;
         }
