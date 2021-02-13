@@ -95,6 +95,8 @@ You can use any of it, and even mix them in a single command.
   - takes running average of particle positions with a specified window size.
 - `mean`
   - calculates mean structure from a trajectory
+- `projection`
+  - takes a dot product between 3N-dimensional vector (an axis) and snapshot from a specified origin.
 - `help`
   - prints help message.
 
