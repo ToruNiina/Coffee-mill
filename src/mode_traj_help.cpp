@@ -9,6 +9,7 @@
 #include "mode_traj_translate.hpp"
 #include "mode_traj_running_average.hpp"
 #include "mode_traj_mean.hpp"
+#include "mode_traj_projection.hpp"
 
 namespace mill
 {
@@ -35,6 +36,8 @@ const char* mode_traj_help_usage() noexcept
            "      : takes a running average of position by a specified window size\n"
            "    - mean\n"
            "      : calculates mean structure\n"
+           "    - projection\n"
+           "      : projects trajectory along axes\n"
            "    - help\n"
            "      : prints detailed explanation of each command\n";
 }
@@ -86,6 +89,10 @@ int mode_traj_help(std::deque<std::string_view> args)
     else if(command == "mean")
     {
         return mode_traj_mean(std::move(args));
+    }
+    else if(command == "projection")
+    {
+        return mode_traj_projection(std::move(args));
     }
     if(command == "help")
     {
