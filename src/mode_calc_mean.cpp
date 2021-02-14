@@ -3,31 +3,31 @@
 #include <mill/util/cmdarg.hpp>
 #include <mill/traj.hpp>
 
-#include "mode_traj_mean.hpp"
+#include "mode_calc_mean.hpp"
 
 namespace mill
 {
 
-const char* mode_traj_mean_usage() noexcept
+const char* mode_calc_mean_usage() noexcept
 {
-    return "usage: mill traj mean traj.dcd\n"
+    return "usage: mill calc mean traj.dcd\n"
            "     : It calculates mean structure from trajectory.\n";
 }
 
-int mode_traj_mean(std::deque<std::string_view> args)
+int mode_calc_mean(std::deque<std::string_view> args)
 {
     using namespace std::literals::string_literals;
     if(args.empty())
     {
-        log::error("error: mill traj mean: too few arguments");
-        log::error(mode_traj_mean_usage());
+        log::error("error: mill calc mean: too few arguments");
+        log::error(mode_calc_mean_usage());
         return 1;
     }
 
     const auto fname = args.front();
     if(fname == "help")
     {
-        log::info(mode_traj_mean_usage());
+        log::info(mode_calc_mean_usage());
         return 0;
     }
     args.pop_front();
@@ -35,7 +35,7 @@ int mode_traj_mean(std::deque<std::string_view> args)
     auto traj = reader(fname).read();
     if(traj.size() == 0)
     {
-        log::error("mill traj mean: trajectory ", fname, " does not have any frame.");
+        log::error("mill calc mean: trajectory ", fname, " does not have any frame.");
         return 0;
     }
 
