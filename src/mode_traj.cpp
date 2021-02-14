@@ -9,7 +9,6 @@
 #include "mode_traj_rotate.hpp"
 #include "mode_traj_translate.hpp"
 #include "mode_traj_running_average.hpp"
-#include "mode_traj_mean.hpp"
 #include "mode_traj_projection.hpp"
 
 namespace mill
@@ -58,10 +57,6 @@ int mode_traj(std::deque<std::string_view> args)
     else if(command == "running_average" || command == "running-average")
     {
         return mode_traj_running_average(std::move(args));
-    }
-    else if(command == "mean")
-    {
-        return mode_traj_mean(std::move(args));
     }
     else if(command == "projection")
     {

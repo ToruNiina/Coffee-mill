@@ -9,6 +9,7 @@
 #include "mode_calc_obb.hpp"
 #include "mode_calc_center.hpp"
 #include "mode_calc_autocorrelation.hpp"
+#include "mode_calc_mean.hpp"
 
 #ifdef MILL_WITH_EIGEN
 #include "mode_calc_pca.hpp"
@@ -37,6 +38,8 @@ const char* mode_calc_help_usage() noexcept
            "      : calculate geometric center\n"
            "    - autocorrelation\n"
            "      : calculate autocorrelation of data\n"
+           "    - mean\n"
+           "      : calculate mean structure in a trajectory\n"
 #ifdef MILL_WITH_EIGEN
            "    - pca\n"
            "      : performs principal component analysis\n"
@@ -88,6 +91,10 @@ int mode_calc_help(std::deque<std::string_view> args)
     else if(command == "autocorrelation")
     {
         return mode_calc_autocorrelation({"help"sv});
+    }
+    else if(command == "mean")
+    {
+        return mode_calc_mean({"help"sv});
     }
 #ifdef MILL_WITH_EIGEN
     else if(command == "pca")
