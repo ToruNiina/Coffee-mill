@@ -88,7 +88,7 @@ int mode_traj_projection(std::deque<std::string_view> args)
             {
                 coord += mill::dot_product(frame.at(i).position() - origin.at(i).position(), axis.at(i).position());
             }
-            ofs << ' ' << std::setprecision(10) << coord << std::endl;
+            ofs << ' ' << std::setprecision(10) << coord;
         }
         ofs << '\n';
     }
