@@ -1,5 +1,6 @@
 #include <mill/util/logger.hpp>
 #include <mill/util/file_extension.hpp>
+#include <mill/util/cmdarg.hpp>
 #include <mill/traj.hpp>
 #include "mode_traj_projection.hpp"
 #include <iostream>
@@ -9,7 +10,7 @@ namespace mill
 
 const char* mode_traj_projection_usage() noexcept
 {
-    return "usage: mill traj projection [trajfile] [axes] [origin]\n"
+    return "usage: mill traj projection [trajfile] [axes] [origin] --output=(optional)\n"
            "       project trajectory onto a 3N-dimensional vector (axes).\n"
            "       To pass a 3N dimensional vector, trajectory file can be used.\n"
            "       The file should have the same number of elements as the traj file.\n";
@@ -19,6 +20,7 @@ int mode_traj_projection(std::deque<std::string_view> args)
 {
     using namespace std::literals::string_view_literals;
     using namespace std::literals::string_literals;
+    const auto output_opt = pop_argument<std::string>(args, "output");
     if(args.empty())
     {
         log::error("mill traj projection: too few arguments");
@@ -55,8 +57,8 @@ int mode_traj_projection(std::deque<std::string_view> args)
     }
     const auto origin = origin_traj.at(0);
 
-    const auto output = std::string(base_name_of(traj)) + "_projected_"s +
-        std::string(extension_of(traj));
+    const auto output = output_opt.value_or(std::string(base_name_of(traj)) +
+                                            "_projected.dat"s);
 
     std::ofstream ofs(output);
     if(!ofs.good())
