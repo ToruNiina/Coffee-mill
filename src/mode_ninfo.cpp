@@ -21,7 +21,7 @@ int mode_ninfo(std::deque<std::string_view> args)
     {
         return mode_ninfo_split(std::move(args));
     }
-    if(command == "help")
+    else if(command == "help")
     {
         return mode_ninfo_help(std::move(args));
     }

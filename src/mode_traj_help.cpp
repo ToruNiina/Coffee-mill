@@ -55,7 +55,7 @@ int mode_traj_help(std::deque<std::string_view> args)
     {
         return mode_traj_convert({"help"sv});
     }
-    if(command == "extract")
+    else if(command == "extract")
     {
         return mode_traj_extract({"help"sv});
     }
@@ -87,7 +87,7 @@ int mode_traj_help(std::deque<std::string_view> args)
     {
         return mode_traj_projection(std::move(args));
     }
-    if(command == "help")
+    else if(command == "help")
     {
         log::info(mode_traj_help_usage());
         return 0;
