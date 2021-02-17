@@ -65,6 +65,8 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
   - *Note*: It does not condier the radius of particles.
 - `autocorrelation`
   - calculates autocorrelation of (single-column) data.
+- `mean`
+  - calculates mean structure from a trajectory
 - `pca`
   - performs Principal Component Analysis and output the trajectory and conformational changes along the PCs.
   - *Note*: It is only available if you have already installed Eigen3.
@@ -93,8 +95,6 @@ You can use any of it, and even mix them in a single command.
   - rotates molecules around x, y, or z axis by a specified angle.
 - `running-average`
   - takes running average of particle positions with a specified window size.
-- `mean`
-  - calculates mean structure from a trajectory
 - `projection`
   - takes a dot product between 3N-dimensional vector (an axis) and snapshot from a specified origin.
 - `help`
