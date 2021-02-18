@@ -50,6 +50,11 @@ class Trajectory
     snapshot_type&       at(std::size_t i)       {return snapshots_.at(i);}
     snapshot_type const& at(std::size_t i) const {return snapshots_.at(i);}
 
+    snapshot_type&       front()       noexcept {return snapshots_.front();}
+    snapshot_type const& front() const noexcept {return snapshots_.front();}
+    snapshot_type&       back()        noexcept {return snapshots_.back();}
+    snapshot_type const& back()  const noexcept {return snapshots_.back();}
+
     std::optional<snapshot_type> try_at(const std::size_t i) const noexcept
     {
         if(this->snapshots_.size() <= i)
