@@ -291,6 +291,34 @@ int mode_calc_pca(std::deque<std::string_view> args)
     log::info("top ", num_components, " components (",
             accumulated_contribution_rate.at(num_components), "% contribution) will be written");
 
+    // ------------------------------------------------------------------------
+    // determine direction (sign) of eigenvector to make the trajectory (-)->(+)
+
+    for(auto& [eigval, eigvec] : eigens)
+    {
+        Eigen::VectorXd first_frame = Eigen::VectorXd::Zero(particles_to_be_used.size() * 3);
+        for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
+        {
+            first_frame[i*3+0] = traj.front().at(particles_to_be_used[i]).position()[0] - means[i*3+0];
+            first_frame[i*3+1] = traj.front().at(particles_to_be_used[i]).position()[1] - means[i*3+1];
+            first_frame[i*3+2] = traj.front().at(particles_to_be_used[i]).position()[2] - means[i*3+2];
+        }
+        Eigen::VectorXd  last_frame = Eigen::VectorXd::Zero(particles_to_be_used.size() * 3);
+        for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
+        {
+            last_frame[i*3+0] = traj.back().at(particles_to_be_used[i]).position()[0] - means[i*3+0];
+            last_frame[i*3+1] = traj.back().at(particles_to_be_used[i]).position()[1] - means[i*3+1];
+            last_frame[i*3+2] = traj.back().at(particles_to_be_used[i]).position()[2] - means[i*3+2];
+        }
+
+        const auto first = eigvec.dot(first_frame);
+        const auto  last = eigvec.dot( last_frame);
+        if(last < first)
+        {
+            eigvec *= -1.0;
+        }
+    }
+
     // -----------------------------------------------------------------------
     // writing trajectory along the eigenvector
 
