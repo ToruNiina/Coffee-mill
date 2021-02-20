@@ -93,6 +93,8 @@ int mode_traj_projection(std::deque<std::string_view> args)
             ofs << ' ' << std::setprecision(10) << coord;
         }
         ofs << '\n';
+
+        ++t;
     }
     return 0;
 }
