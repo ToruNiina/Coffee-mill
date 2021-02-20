@@ -64,7 +64,6 @@ int mode_traj_impose(std::deque<std::string_view> args)
     }
     args.pop_front();
 
-
     std::string input;
     std::string output;
     std::vector<std::array<std::int64_t, 2>> except_particle{};
@@ -90,7 +89,12 @@ int mode_traj_impose(std::deque<std::string_view> args)
     w.write_header(r.read_header());
 
     BestFit<double> bestfit;
-    bestfit.set_reference(remove_except_elements(*(r.read_frame()), except_particle));
+    // set initial frame as a reference frame
+    {
+        const auto initial_frame = *(r.read_frame());
+        bestfit.set_reference(remove_except_elements(initial_frame, except_particle));
+        w.write_frame(initial_frame);
+    }
 
     for(auto frame : r)
     {
