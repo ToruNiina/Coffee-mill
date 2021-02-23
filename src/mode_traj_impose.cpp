@@ -91,8 +91,15 @@ int mode_traj_impose(std::deque<std::string_view> args)
     BestFit<double> bestfit;
     // set initial frame as a reference frame
     {
-        const auto initial_frame = *(r.read_frame());
-        bestfit.set_reference(remove_except_elements(initial_frame, except_particle));
+        auto initial_frame = *(r.read_frame());
+        const auto ref = remove_except_elements(initial_frame, except_particle);
+        bestfit.set_reference(ref);
+
+        const auto dx = bestfit.zeroing_vector(ref);
+        for(auto& particle : initial_frame)
+        {
+            particle.position() -= dx;
+        }
         w.write_frame(initial_frame);
     }
 
