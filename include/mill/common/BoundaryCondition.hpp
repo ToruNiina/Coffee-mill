@@ -67,23 +67,23 @@ struct CuboidalPeriodicBoundary
 
     vector_type adjust_direction(vector_type dr) const noexcept
     {
-        if     (dr[0] < -halfw_[0]) {dr[0] += width_[0];}
-        else if(dr[0] >= halfw_[0]) {dr[0] -= width_[0];}
-        if     (dr[1] < -halfw_[1]) {dr[1] += width_[1];}
-        else if(dr[1] >= halfw_[1]) {dr[1] -= width_[1];}
-        if     (dr[2] < -halfw_[2]) {dr[2] += width_[2];}
-        else if(dr[2] >= halfw_[2]) {dr[2] -= width_[2];}
+        while(dr[0] < -halfw_[0]) {dr[0] += width_[0];}
+        while(dr[0] >= halfw_[0]) {dr[0] -= width_[0];}
+        while(dr[1] < -halfw_[1]) {dr[1] += width_[1];}
+        while(dr[1] >= halfw_[1]) {dr[1] -= width_[1];}
+        while(dr[2] < -halfw_[2]) {dr[2] += width_[2];}
+        while(dr[2] >= halfw_[2]) {dr[2] -= width_[2];}
         return dr;
     }
 
     vector_type adjust_position(vector_type pos) const noexcept
     {
-        if     (pos[0] <  lower_[0]) {pos[0] += width_[0];}
-        else if(pos[0] >= upper_[0]) {pos[0] -= width_[0];}
-        if     (pos[1] <  lower_[1]) {pos[1] += width_[1];}
-        else if(pos[1] >= upper_[1]) {pos[1] -= width_[1];}
-        if     (pos[2] <  lower_[2]) {pos[2] += width_[2];}
-        else if(pos[2] >= upper_[2]) {pos[2] -= width_[2];}
+        while(pos[0] <  lower_[0]) {pos[0] += width_[0];}
+        while(pos[0] >= upper_[0]) {pos[0] -= width_[0];}
+        while(pos[1] <  lower_[1]) {pos[1] += width_[1];}
+        while(pos[1] >= upper_[1]) {pos[1] -= width_[1];}
+        while(pos[2] <  lower_[2]) {pos[2] += width_[2];}
+        while(pos[2] >= upper_[2]) {pos[2] -= width_[2];}
         return pos;
     }
 
