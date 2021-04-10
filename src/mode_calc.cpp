@@ -9,6 +9,7 @@
 #include "mode_calc_center.hpp"
 #include "mode_calc_autocorrelation.hpp"
 #include "mode_calc_mean.hpp"
+#include "mode_calc_BAR.hpp"
 
 #ifdef MILL_WITH_EIGEN
 #include "mode_calc_pca.hpp"
@@ -65,6 +66,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "mean")
     {
         return mode_calc_mean(std::move(args));
+    }
+    else if(command == "BAR" || command == "bar")
+    {
+        return mode_calc_BAR(std::move(args));
     }
 #ifdef MILL_WITH_EIGEN
     else if(command == "pca")
