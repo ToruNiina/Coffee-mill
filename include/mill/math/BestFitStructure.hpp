@@ -1,149 +1,151 @@
 #ifndef COFFEE_MILL_MATH_BEST_FIT_STRUCTURE_HPP
 #define COFFEE_MILL_MATH_BEST_FIT_STRUCTURE_HPP
+#include "Matrix.hpp"
+#include "Vector.hpp"
 #include "EigenSolver.hpp"
 #include <vector>
 
 namespace mill
 {
 
-template<typename scalarT>
 class BestFit
 {
   public:
-
-    using scalar_type    = scalarT;
-    using vector3_type   = Matrix<scalar_type, 3, 1>;
-    using vector4_type   = Matrix<scalar_type, 4, 1>;
-    using matrix33_type  = Matrix<scalar_type, 3, 3>;
-    using matrix44_type  = Matrix<scalar_type, 4, 4>;
-    using structure_type = std::vector<vector3_type>;
+    using real_type = double;
 
   public:
+
     BestFit() = default;
     ~BestFit() = default;
 
-    structure_type
-    fit(const structure_type& snapshot, const structure_type& reference) const;
+    std::vector<Vector<real_type, 3>>
+    fit(const std::vector<Vector<real_type, 3>>& snapshot,
+        const std::vector<Vector<real_type, 3>>& reference) const;
 
-    structure_type // with reference cash
-    fit(const structure_type& snapshot) const;
+    std::vector<Vector<real_type, 3>>
+    fit(const std::vector<Vector<real_type, 3>>& snapshot) const;
 
-    matrix33_type
-    rotational_matrix(const structure_type& snapshot,
-                      const structure_type& reference) const;
+    Matrix<real_type, 3, 3>
+    rotational_matrix(const std::vector<Vector<real_type, 3>>& snapshot,
+                      const std::vector<Vector<real_type, 3>>& reference) const;
 
-    matrix33_type // with cash
-    rotational_matrix(const structure_type& snapshot) const;
+    Matrix<real_type, 3, 3>
+    rotational_matrix(const std::vector<Vector<real_type, 3>>& snapshot) const; // use cache
 
-    vector3_type zeroing_vector(const structure_type& snapshot) const;
+    Vector<real_type, 3>
+    zeroing_vector(const std::vector<Vector<real_type, 3>>& snapshot) const;
 
-    structure_type const& reference() const {return reference_;}
-    void set_reference(const structure_type& snapshot);
-
-  private:
-
-    structure_type copy_to_center(const structure_type& str) const;
-    void           move_to_center(structure_type& str) const;
-
-    matrix33_type make_rotational_matrix(const structure_type& snapshot,
-                                         const structure_type& reference) const;
-    matrix33_type make_rotational_matrix(const vector4_type& quaternion) const;
-
-    matrix44_type make_score_matrix(const std::vector<vector3_type>& a,
-                                    const std::vector<vector3_type>& b) const;
-
+    std::vector<Vector<real_type, 3>> const& reference() const {return reference_;}
+    void set_reference(const std::vector<Vector<real_type, 3>>& snapshot);
 
   private:
 
-    vector3_type   center_;
-    structure_type reference_; //!< optional;
+    std::vector<Vector<real_type, 3>>
+    copy_to_center(const std::vector<Vector<real_type, 3>>& str) const;
+
+    void move_to_center(std::vector<Vector<real_type, 3>>& str) const;
+
+    Matrix<real_type, 3, 3>
+    make_rotational_matrix(const std::vector<Vector<real_type, 3>>& snapshot,
+                           const std::vector<Vector<real_type, 3>>& reference) const;
+
+    Matrix<real_type, 3, 3>
+    make_rotational_matrix(const Vector<real_type, 4>& quaternion) const;
+
+    Matrix<real_type, 4, 4>
+    make_score_matrix(const std::vector<Vector<real_type, 3>>& a,
+                      const std::vector<Vector<real_type, 3>>& b) const;
+  private:
+
+    Vector<real_type, 3> center_;
+    std::vector<Vector<real_type, 3>> reference_; //!< optional;
 };
 
-template<typename sclT>
-typename BestFit<sclT>::structure_type
-BestFit<sclT>::fit(const structure_type& str, const structure_type& ref) const
+inline std::vector<Vector<BestFit::real_type, 3>>
+BestFit::fit(const std::vector<Vector<real_type, 3>>& str,
+             const std::vector<Vector<real_type, 3>>& ref) const
 {
     if(str.size() != ref.size())
     {
-        throw std::invalid_argument("different structure in argument");
+        log::fatal("BestFit::fit(structure, reference): "
+                "number of particles differ from each other.");
     }
 
-    structure_type target = this->copy_to_center(str);
-    const structure_type reference = this->copy_to_center(ref);
+    auto target = this->copy_to_center(str);
+    const auto reference = this->copy_to_center(ref);
 
-    auto R = this->make_rotational_matrix(target, reference);
-    for(auto iter = target.begin(); iter != target.end(); ++iter)
+    const auto R = this->make_rotational_matrix(target, reference);
+    for(auto& vec : target)
     {
-        const vector3_type temp = R * (*iter);
-        *iter = temp;
+        vec = R * vec;
     }
-
     return target;
 }
 
-template<typename sclT>
-typename BestFit<sclT>::structure_type
-BestFit<sclT>::fit(const structure_type& str) const
+inline std::vector<Vector<BestFit::real_type, 3>>
+BestFit::fit(const std::vector<Vector<real_type, 3>>& str) const
 {
     if(str.size() != this->reference_.size())
     {
-        throw std::invalid_argument("different structure in argument");
+        log::fatal("BestFit::fit(structure): number of particles differ from "
+                "each other. Reference structure might not be defined");
     }
 
-    structure_type target = this->copy_to_center(str);
+    auto target = this->copy_to_center(str);
 
-    auto R = this->make_rotational_matrix(target, this->reference_);
-    for(auto iter = target.begin(); iter != target.end(); ++iter)
+    const auto R = this->make_rotational_matrix(target, this->reference_);
+    for(auto& vec : target)
     {
-        const vector3_type temp = R * (*iter) + this->center_;
-        *iter = temp;
+        vec = R * vec + this->center_;
     }
-
     return target;
 }
 
-template<typename sclT>
-typename BestFit<sclT>::matrix33_type
-BestFit<sclT>::rotational_matrix(
-        const structure_type& str, const structure_type& ref) const
+inline Matrix<BestFit::real_type, 3, 3>
+BestFit::rotational_matrix(const std::vector<Vector<real_type, 3>>& str,
+                           const std::vector<Vector<real_type, 3>>& ref) const
 {
     if(str.size() != ref.size())
     {
-        throw std::invalid_argument("different structure in argument");
+        log::fatal("BestFit::rotational_matrix(structure, reference): "
+                "number of particles differ from each other.");
     }
 
-    const structure_type target = this->copy_to_center(str);
-    const structure_type reference = this->copy_to_center(ref);
+    const auto target    = this->copy_to_center(str);
+    const auto reference = this->copy_to_center(ref);
 
     return this->make_rotational_matrix(target, reference);
 }
 
-template<typename sclT>
-typename BestFit<sclT>::matrix33_type
-BestFit<sclT>::rotational_matrix(const structure_type& str) const
+inline Matrix<BestFit::real_type, 3, 3>
+BestFit::rotational_matrix(const std::vector<Vector<real_type, 3>>& str) const
 {
     if(str.size() != this->reference_.size())
     {
-        throw std::invalid_argument("different structure in argument");
+        log::fatal("BestFit::rotational_matrix(structure): "
+                "number of particles differ from each other. "
+                "reference structure might not be set.");
     }
 
-    const structure_type target = this->copy_to_center(str);
+    const std::vector<Vector<real_type, 3>> target = this->copy_to_center(str);
 
     return this->make_rotational_matrix(target, this->reference_);
 }
 
-template<typename sclT>
-typename BestFit<sclT>::matrix33_type
-BestFit<sclT>::make_rotational_matrix(
-        const structure_type& structure, const structure_type& reference) const
+inline Matrix<BestFit::real_type, 3, 3>
+BestFit::make_rotational_matrix(
+        const std::vector<Vector<real_type, 3>>& structure,
+        const std::vector<Vector<real_type, 3>>& reference) const
 {
     if(structure.size() != reference.size())
     {
-        throw std::invalid_argument("different size structures");
+        log::fatal("BestFit::make_rotational_matrix(structure): "
+                "number of particles differ from each other. ");
+
     }
 
-    std::vector<vector3_type> rA(structure.size());
-    std::vector<vector3_type> rB(structure.size());
+    std::vector<Vector<real_type, 3>> rA(structure.size());
+    std::vector<Vector<real_type, 3>> rB(structure.size());
 
     for(std::size_t i=0; i < structure.size(); ++i)
     {
@@ -154,9 +156,12 @@ BestFit<sclT>::make_rotational_matrix(
     auto score = make_score_matrix(rA, rB);
 
     JacobiEigenSolver solver;
-    auto ev = solver.solve(score);
-    sclT eigenvalue = std::numeric_limits<sclT>::max();
+    const auto ev = solver.solve(score);
+
+    // find a quaternion that corresponds to the minimum score (minimum RMSD)
+    double eigenvalue = std::numeric_limits<double>::max();
     std::size_t index = 0;
+
     for(std::size_t i=0; i<4; ++i)
     {
         if(ev.at(i).first < eigenvalue)
@@ -165,36 +170,36 @@ BestFit<sclT>::make_rotational_matrix(
             index = i;
         }
     }
-    const vector4_type q = ev.at(index).second;
-    return this->make_rotational_matrix(q);
+
+    return this->make_rotational_matrix(ev.at(index).second);
 }
 
-template<typename sclT>
-typename BestFit<sclT>::matrix33_type
-BestFit<sclT>::make_rotational_matrix(const vector4_type& q) const
+inline Matrix<BestFit::real_type, 3, 3>
+BestFit::make_rotational_matrix(const Vector<real_type, 4>& q) const
 {
-    matrix33_type R;
-    R(0,0) = 2e0*q[0]*q[0] + 2e0*q[1]*q[1] - 1e0;
-    R(0,1) = 2e0*q[1]*q[2] - 2e0*q[0]*q[3];
-    R(0,2) = 2e0*q[1]*q[3] + 2e0*q[0]*q[2];
-    R(1,0) = 2e0*q[1]*q[2] + 2e0*q[0]*q[3];
-    R(1,1) = 2e0*q[0]*q[0] + 2e0*q[2]*q[2] - 1e0;
-    R(1,2) = 2e0*q[2]*q[3] - 2e0*q[0]*q[1];
-    R(2,0) = 2e0*q[1]*q[3] - 2e0*q[0]*q[2];
-    R(2,1) = 2e0*q[2]*q[3] + 2e0*q[0]*q[1];
-    R(2,2) = 2e0*q[0]*q[0] + 2e0*q[3]*q[3] - 1e0;
+    Matrix<real_type, 3, 3> R;
+    R(0,0) = 2 * q[0] * q[0] + 2 * q[1] * q[1] - 1.0;
+    R(0,1) = 2 * q[1] * q[2] - 2 * q[0] * q[3];
+    R(0,2) = 2 * q[1] * q[3] + 2 * q[0] * q[2];
+    R(1,0) = 2 * q[1] * q[2] + 2 * q[0] * q[3];
+    R(1,1) = 2 * q[0] * q[0] + 2 * q[2] * q[2] - 1.0;
+    R(1,2) = 2 * q[2] * q[3] - 2 * q[0] * q[1];
+    R(2,0) = 2 * q[1] * q[3] - 2 * q[0] * q[2];
+    R(2,1) = 2 * q[2] * q[3] + 2 * q[0] * q[1];
+    R(2,2) = 2 * q[0] * q[0] + 2 * q[3] * q[3] - 1.0;
     return R;
 }
 
-template<typename sclT>
-typename BestFit<sclT>::matrix44_type
-BestFit<sclT>::make_score_matrix(const std::vector<vector3_type>& a,
-                                 const std::vector<vector3_type>& b) const
+inline Matrix<BestFit::real_type, 4, 4>
+BestFit::make_score_matrix(const std::vector<Vector<real_type, 3>>& a,
+                           const std::vector<Vector<real_type, 3>>& b) const
 {
     if(a.size() != b.size())
-        throw std::invalid_argument("different size structures");
+    {
+        log::fatal("BestFit::make_score_matrix(): numbers of particle differ from each other.");
+    }
 
-    matrix44_type retval;
+    Matrix<real_type, 4, 4> retval;
     retval(0,0) = 0.;
     retval(0,1) = 0.;
     retval(0,2) = 0.;
@@ -206,7 +211,7 @@ BestFit<sclT>::make_score_matrix(const std::vector<vector3_type>& a,
     retval(2,3) = 0.;
     retval(3,3) = 0.;
 
-    for(std::size_t i(0); i<a.size(); ++i)
+    for(std::size_t i=0; i<a.size(); ++i)
     {
         retval(0,0) += (b[i][0]*b[i][0]) + (b[i][1]*b[i][1]) + (b[i][2]*b[i][2]);
         retval(0,1) += (a[i][2]*b[i][1]) - (a[i][1]*b[i][2]);
@@ -220,7 +225,7 @@ BestFit<sclT>::make_score_matrix(const std::vector<vector3_type>& a,
         retval(3,3) += (a[i][0]*a[i][0]) + (a[i][1]*a[i][1]) + (b[i][2]*b[i][2]);
     }
 
-    const sclT invN = 1. / static_cast<sclT>(a.size());
+    const real_type invN = 1. / static_cast<real_type>(a.size());
 
     retval(0,0) *= invN;
     retval(0,1) *= invN;
@@ -244,47 +249,30 @@ BestFit<sclT>::make_score_matrix(const std::vector<vector3_type>& a,
     return retval;
 }
 
-template<typename sclT>
-typename BestFit<sclT>::structure_type
-BestFit<sclT>::copy_to_center(const structure_type& str) const
+inline std::vector<Vector<BestFit::real_type, 3>>
+BestFit::copy_to_center(const std::vector<Vector<real_type, 3>>& str) const
 {
-    vector3_type sum(0., 0., 0.);
-    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
-    {
-        sum += *iter;
-    }
-    const sclT invN = 1. / static_cast<sclT>(str.size());
-    const vector3_type centroid = sum * invN;
+    const auto centroid = this->zeroing_vector(str);
 
-    structure_type retval(str.size());
+    std::vector<Vector<real_type, 3>> retval(str.size());
     for(std::size_t i = 0; i<str.size(); ++i)
     {
         retval[i] = str[i] - centroid;
     }
-
     return retval;
 }
 
-template<typename sclT>
-void BestFit<sclT>::move_to_center(structure_type& str) const
+inline void BestFit::move_to_center(std::vector<Vector<real_type, 3>>& str) const
 {
-    vector3_type sum(0., 0., 0.);
-    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+    const auto centroid = this->zeroing_vector(str);
+    for(auto& vec : str)
     {
-        sum += *iter;
-    }
-    const sclT invN = 1. / static_cast<sclT>(str.size());
-    const vector3_type centroid = sum * invN;
-
-    for(auto iter = str.begin(); iter != str.end(); ++iter)
-    {
-        *iter -= centroid;
+        vec -= centroid;
     }
     return ;
 }
 
-template<typename sclT>
-void BestFit<sclT>::set_reference(const structure_type& ref)
+inline void BestFit::set_reference(const std::vector<Vector<real_type, 3>>& ref)
 {
     this->reference_ = ref;
     this->center_    = this->zeroing_vector(ref);
@@ -292,19 +280,16 @@ void BestFit<sclT>::set_reference(const structure_type& ref)
     return;
 }
 
-template<typename sclT>
-typename BestFit<sclT>::vector3_type
-BestFit<sclT>::zeroing_vector(const structure_type& str) const
+inline Vector<BestFit::real_type, 3>
+BestFit::zeroing_vector(const std::vector<Vector<real_type, 3>>& str) const
 {
-    vector3_type sum(0., 0., 0.);
-    for(auto iter = str.cbegin(); iter != str.cend(); ++iter)
+    Vector<real_type, 3> sum(0., 0., 0.);
+    for(const auto& vec : str)
     {
-        sum += *iter;
+        sum += vec;
     }
-    const sclT invN = 1. / static_cast<sclT>(str.size());
-    return sum * invN;
+    return sum / static_cast<real_type>(str.size());
 }
 
 }// mill
-
 #endif /* COFFEE_MILL_BEST_FIT */
