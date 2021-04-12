@@ -141,7 +141,6 @@ BestFit::make_rotational_matrix(
     {
         log::fatal("BestFit::make_rotational_matrix(structure): "
                 "number of particles differ from each other. ");
-
     }
 
     std::vector<Vector<real_type, 3>> rA(structure.size());
