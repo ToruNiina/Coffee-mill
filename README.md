@@ -120,7 +120,7 @@ As the name suggests, `pdb` mode only supports `.pdb` format.
 
 ### `ninfo` mode
 
-As the name suggests, `ninfo` mode only supports `.ninfo` format that is specific to CafeMol¹].
+As the name suggests, `ninfo` mode only supports `.ninfo` format that is specific to CafeMol¹.
 
 - `split`
   - splits an all-in-one ninfo file into one-by-one files.
