@@ -129,7 +129,7 @@ int mode_calc_rmsd(std::deque<std::string_view> args)
     ofs << "#t rmsd\n";
     if(do_align)
     {
-        BestFit<double> bestfit;
+        BestFit bestfit;
         bestfit.set_reference(ref);
 
         std::size_t tstep = 0;

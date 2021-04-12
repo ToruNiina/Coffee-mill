@@ -1,4 +1,5 @@
 #include <mill/util/logger.hpp>
+#include <mill/util/cmdarg.hpp>
 #include <mill/util/file_extension.hpp>
 #include <mill/math/BestFitStructure.hpp>
 #include <mill/traj.hpp>
@@ -49,6 +50,9 @@ remove_except_elements(const Snapshot& frame,
 
 int mode_traj_impose(std::deque<std::string_view> args)
 {
+    const auto out = pop_argument<std::string>(args, "output")
+                     .value_or("");
+
     if(args.empty())
     {
         log::error("error: mill dcd impose: too few arguments");
@@ -79,8 +83,16 @@ int mode_traj_impose(std::deque<std::string_view> args)
     else
     {
         input  = std::string(fname);
-        output = std::string(base_name_of(fname)) + std::string("_imposed") +
-                 std::string(extension_of(fname));
+
+        if(out == "")
+        {
+            output = std::string(base_name_of(fname)) + std::string("_imposed") +
+                     std::string(extension_of(fname));
+        }
+        else
+        {
+            output = out;
+        }
     }
 
     auto r = reader(input);
@@ -88,7 +100,7 @@ int mode_traj_impose(std::deque<std::string_view> args)
 
     w.write_header(r.read_header());
 
-    BestFit<double> bestfit;
+    BestFit bestfit;
     // set initial frame as a reference frame
     {
         auto initial_frame = *(r.read_frame());
