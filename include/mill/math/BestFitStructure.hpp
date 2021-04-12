@@ -18,6 +18,10 @@ class BestFit
     BestFit() = default;
     ~BestFit() = default;
 
+    explicit BestFit(std::vector<Vector<real_type, 3>> reference)
+        : reference_(reference)
+    {}
+
     std::vector<Vector<real_type, 3>>
     fit(const std::vector<Vector<real_type, 3>>& snapshot,
         const std::vector<Vector<real_type, 3>>& reference) const;
