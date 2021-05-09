@@ -128,7 +128,7 @@ int mode_calc_BAR(std::deque<std::string_view> args)
     const std::size_t nC = (C_end - C_beg) / dC;
     const double rnC = 1.0 / nC;
 
-    ofs << "# C   weight1   weight2\n";
+    ofs << "# C   weight1   weight2 log(n1) log(n2)\n";
     for(std::size_t i=0; i<=nC; ++i)
     {
         std::ostringstream oss;
@@ -139,7 +139,7 @@ int mode_calc_BAR(std::deque<std::string_view> args)
         const auto C = C_beg * (1.0 - i * rnC) + C_end * (i * rnC);
         ofs << C << ' ' << calc_weights(es1,  C, beta)
                  << ' ' << calc_weights(es2, -C, beta)
-                 << ' ' << logn1n2 << std::endl;
+                 << ' ' << logn1n2 << '\n';
     }
 
     return 0;
