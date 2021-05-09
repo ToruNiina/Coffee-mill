@@ -122,6 +122,11 @@ int mode_calc_BAR(std::deque<std::string_view> args)
     ofs << "# C   weight1   weight2\n";
     for(std::size_t i=0; i<=nC; ++i)
     {
+        std::ostringstream oss;
+        for(std::size_t j=0; j<       (i*100/nC); ++j) {oss << '#';}
+        for(std::size_t j=0; j< 100 - (i*100/nC); ++j) {oss << ' ';}
+        std::cerr << "\r[" << oss.str() << ']';
+
         const auto C = C_beg * (1.0 - i * rnC) + C_end * (i * rnC);
         ofs << C << ' ' << calc_weights(es1,  C, beta)
                  << ' ' << calc_weights(es2, -C, beta)
