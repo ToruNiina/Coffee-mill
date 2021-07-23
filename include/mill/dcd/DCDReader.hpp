@@ -336,11 +336,9 @@ class DCDReader final : public DeferedReaderBase
             return abs_tol                     < std::abs(lhs - rhs) ||
                    rel_tol * 0.5 * (lhs + rhs) < std::abs(lhs - rhs);
         };
-        constexpr double half_pi = 1.57079632679;
-
-        if((differs(alpha, 90.0) && differs(alpha, std::cos(half_pi))) ||
-           (differs(beta,  90.0) && differs(beta,  std::cos(half_pi))) ||
-           (differs(gamma, 90.0) && differs(gamma, std::cos(half_pi))))
+        if((differs(alpha, 90.0) && differs(alpha, 0.0)) ||
+           (differs(beta,  90.0) && differs(beta,  0.0)) ||
+           (differs(gamma, 90.0) && differs(gamma, 0.0)))
         {
             log::warn("angles are neither 90.0 nor cos(pi/2)!");
             log::warn("The unit cell seems not to be a rectangle?");
