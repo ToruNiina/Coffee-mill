@@ -115,13 +115,27 @@ int mode_calc_BAR(std::deque<std::string_view> args)
 
     const auto C_beg = toml::find<double>(input, "output", "C", "start");
     const auto C_end = toml::find<double>(input, "output", "C", "stop");
+
+    if(C_end < C_beg)
+    {
+        std::cerr << toml::format_error("C_beg < C_end is not satisfied",
+                toml::find(input, "output", "C", "start"), "C_begin",
+                toml::find(input, "output", "C", "stop"), "C_end") << std::endl;
+        return 1;
+    }
+
     const auto dC    = toml::find<double>(input, "output", "C", "delta");
     const std::size_t nC = (C_end - C_beg) / dC;
     const double rnC = 1.0 / nC;
 
-    ofs << "# C   weight1   weight2\n";
+    ofs << "# C   weight1   weight2 log(n1) log(n2)\n";
     for(std::size_t i=0; i<=nC; ++i)
     {
+        std::ostringstream oss;
+        for(std::size_t j=0; j<       (i*100/nC); ++j) {oss << '#';}
+        for(std::size_t j=0; j< 100 - (i*100/nC); ++j) {oss << ' ';}
+        std::cerr << "\r[" << oss.str() << ']' << i * 100.0 / nC << '%' << std::flush;
+
         const auto C = C_beg * (1.0 - i * rnC) + C_end * (i * rnC);
         ofs << C << ' ' << calc_weights(es1,  C, beta)
                  << ' ' << calc_weights(es2, -C, beta)
