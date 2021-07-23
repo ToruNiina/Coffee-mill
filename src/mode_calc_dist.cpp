@@ -44,16 +44,35 @@ int mode_calc_dist(std::deque<std::string_view> args)
     if(extension_of(fname) == ".toml")
     {
         const auto config = toml::parse(std::string(fname));
-        std::ofstream output(toml::find<std::string>(config, "output"));
+
+        const auto out_fname = toml::find<std::string>(config, "output");
+        std::ofstream output(out_fname);
+        if(not output.good())
+        {
+            log::fatal("output file ", out_fname, " could not be opened.");
+        }
+
         const auto traj  = toml::find<std::string>(config, "input");
         const auto pairs = toml::find<std::vector<std::pair<std::size_t, std::size_t>>>(config, "pairs");
+
+        log::debug(pairs.size(), "pairs found.");
+        for(const auto& [i, j] : pairs)
+        {
+            log::debug(i,  ", ", j);
+        }
+
+        std::size_t f=0;
         for(const auto& frame : reader(traj))
         {
+            log::debug(f, "-th frame.");
+            output << std::setw(6) << std::right << f << ' ';
             for(const auto& [i, j] : pairs)
             {
-                output << std::setprecision(16) << length(frame[i].position() - frame[j].position()) << ' ';
+                log::debug("calculating distance between ", i, ", ", j, " pair");
+                output << std::setprecision(16) << std::setw(20) << length(frame[i].position() - frame[j].position()) << ' ';
             }
-            output << '\n';
+            output << std::endl;
+            f++;
         }
     }
     else if(args.size() == 3) // traj.dcd 100 110
