@@ -12,8 +12,9 @@ namespace mill
 const char* mode_calc_autocorrelation_usage() noexcept
 {
     return "usage: mill calc autocorrelation {filename} [--column=(0 by default)] [--output=(\"mill_autocorrelation.dat\" by default)]\n"
-           "       calculates autocorrelation using a column of a space-separated file.\n"
-           "       line starts with `#` will be skipped as a comment.";
+           "       calculates autocorrelation using a column (0-indexed) of a space-separated file.\n"
+           "       line starts with `#` will be skipped as a comment.\n"
+           ;
 }
 
 int mode_calc_autocorrelation(std::deque<std::string_view> args)
@@ -59,7 +60,7 @@ int mode_calc_autocorrelation(std::deque<std::string_view> args)
 
         std::string buf;
         std::istringstream iss(line);
-        for(std::size_t i=0; i<col; ++i)
+        for(std::size_t i=0; i<=col; ++i)
         {
             iss >> buf;
         }
@@ -78,12 +79,14 @@ int mode_calc_autocorrelation(std::deque<std::string_view> args)
     }
     for(std::size_t window=1; window<traj.size(); ++window)
     {
-        double sum = 0.0;
+        std::size_t num_sample = 0;
+        double      sum        = 0.0;
         for(std::size_t i=window; i < traj.size(); ++i)
         {
+            num_sample += 1;
             sum += traj.at(i) * traj.at(i - window);
         }
-        ofs << window << ' ' << sum / ((traj.size() - window) * window) << '\n';
+        ofs << window << ' ' << sum / static_cast<double>(num_sample) << '\n';
     }
     return 0;
 }
