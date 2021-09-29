@@ -35,9 +35,13 @@ class Topology
     std::size_t size() const noexcept {return nodes_.size();}
     bool empty() const noexcept {return nodes_.empty();}
 
-    std::vector<std::size_t> const&
+    std::vector<std::size_t>
     list_connected(const std::size_t i, const std::string& name) const noexcept
     {
+        if(nodes_.at(i).count(name) == 0)
+        {
+            return {};
+        }
         return nodes_.at(i).at(name);
     }
 
