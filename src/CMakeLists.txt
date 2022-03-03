@@ -24,6 +24,9 @@ find_package (Eigen3 3.3 NO_MODULE)
 if(TARGET Eigen3::Eigen)
     add_definitions("-DMILL_WITH_EIGEN")
     set(MILL_SOURCE_FILES "${MILL_SOURCE_FILES}" "mode_calc_pca.cpp")
+    message(STATUS "Eigen found. calc pca mode is turned on.")
+else()
+    message(WARNING "Eigen3 not found. PCA mode is disabled.")
 endif(TARGET Eigen3::Eigen)
 
 # Compilation -----------------------------------------------------------------
