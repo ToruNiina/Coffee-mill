@@ -52,6 +52,45 @@ pop_argument(std::deque<std::string_view>& args, std::string_view name)
     return std::nullopt;
 }
 
+// read boolean
+template<>
+inline std::optional<bool>
+pop_argument<bool, bool>(std::deque<std::string_view>& args, std::string_view name)
+{
+    const auto found = std::find_if(args.begin(), args.end(),
+        [name](const auto arg) -> bool {
+            if(arg.size() <= 3 + name.size())
+            {
+                return false;
+            }
+            if(arg.substr(0, 2) == "--" && arg.substr(2, name.size()) == name &&
+                arg.at(2 + name.size()) == '=')
+            {
+                return true;
+            }
+            return false;
+        });
+
+    if(found != args.end())
+    {
+        std::istringstream iss(std::string(found->substr(3 + name.size())));
+        std::string value;
+        iss >> value;
+        args.erase(found);
+
+        if(value == "true" || value == "True" || value == "TRUE" ||
+           value == "T" || value == "t" || value == "1")
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+    return std::nullopt;
+}
+
 // It pops `--arg`. If exists, retval would have value.
 template<>
 inline std::optional<std::monostate>
