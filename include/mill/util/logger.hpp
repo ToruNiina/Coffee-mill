@@ -4,6 +4,7 @@
 #include <vector>
 #include <deque>
 #include <map>
+#include <optional>
 #include <iostream>
 #include <sstream>
 #include <cstdint>

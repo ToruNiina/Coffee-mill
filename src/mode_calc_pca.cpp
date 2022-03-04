@@ -14,12 +14,13 @@ namespace mill
 
 const char* mode_calc_pca_usage() noexcept
 {
-    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--top-contribution=(95% by default)] [--output=(\"{base name of trajectory}_pca.dat\" by default)]\n"
-           "         determines principal component from traj file.\n"
+    return "usage: mill calc pca {trajectory} [--top=(3 by default)] [--top-contribution=(95% by default)] [--output=(\"{base name of trajectory}_pca.dat\" by default)] [--scaled=(true|false)]\n"
+           "         determines principal component from traj file and outputs trajectory along the axes.\n"
            "         --top=N specifies the number of component will be written out.\n"
            "         --top-contribution=% specifies the number of component via the accumulated contribution rate.\n"
            "         if you specify `--top=3 --top-contribution=95` and it would be found that top 5 components are\n"
            "         needed to achieve 95% contribution, 5 components are written.\n"
+           "         if --scaled=true, the output trajectory along PC axes are scaled by the corresponding variance.\n"
            "     $ mill calc pca {input.toml}\n"
            "         determines principal component using customized input.\n"
            "         ```toml\n"
@@ -44,6 +45,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
     auto top_n_opt       = pop_argument<std::size_t>(args, "top");
     auto top_contrib_opt = pop_argument<double     >(args, "top-contribution");
     auto output_opt      = pop_argument<std::string>(args, "output");
+    auto scaled_opt      = pop_argument<bool       >(args, "scaled");
     std::vector<std::size_t> particles_to_be_used;
 
     if(args.empty())
@@ -87,6 +89,11 @@ int mode_calc_pca(std::deque<std::string_view> args)
         if(data.contains("top-contribution"))
         {
             top_contrib_opt = toml::find<double>(data, "top-contribution");
+        }
+
+        if(data.contains("scaled"))
+        {
+            scaled_opt = toml::find<bool>(data, "scaled");
         }
 
         if(data.contains("output_basename"))
@@ -147,12 +154,22 @@ int mode_calc_pca(std::deque<std::string_view> args)
     log::debug("input files are loaded.");
     log::info("trajectory has ", traj.size(), " snapshots.");
 
+    log::debug("scaled = ", scaled_opt);
+    if(scaled_opt.has_value() && scaled_opt.value())
+    {
+        log::info("The output trajectory will be scaled by the corresponding variance.");
+    }
+    else
+    {
+        log::info("The output trajectory will not be scaled and the eigenvector is regularized.");
+    }
+
     // -----------------------------------------------------------------------
     // constructing covariance matrix
 
     std::size_t num_frames = 0;
     std::vector<double> means(particles_to_be_used.size() * 3, 0.0);
-    for(const auto frame : traj)
+    for(const auto& frame : traj)
     {
 #pragma omp parallel for
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
@@ -178,7 +195,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
     Eigen::MatrixXd mat = Eigen::MatrixXd::Zero(particles_to_be_used.size() * 3,
                                                 particles_to_be_used.size() * 3);
 
-    for(const auto frame : traj)
+    for(const auto& frame : traj)
     {
         // the matrix often will be large enough for this
 #pragma omp parallel for
@@ -346,7 +363,7 @@ int mode_calc_pca(std::deque<std::string_view> args)
     }
     ofs << '\n';
 
-    for(const auto frame : traj)
+    for(const auto& frame : traj)
     {
         Eigen::VectorXd snapshot = Eigen::VectorXd::Zero(particles_to_be_used.size() * 3);
         for(std::size_t i=0; i<particles_to_be_used.size(); ++i)
@@ -359,7 +376,11 @@ int mode_calc_pca(std::deque<std::string_view> args)
         std::size_t idx=0;
         for(const auto& eigen : eigens)
         {
-            const auto component = snapshot.dot(eigen.second);
+            auto component = snapshot.dot(eigen.second);
+            if(scaled_opt.has_value() && scaled_opt.value())
+            {
+                component /= eigen.first;
+            }
             ofs << component << ' ';
 
             component_range.at(idx).first  = std::min(component, component_range.at(idx).first);
