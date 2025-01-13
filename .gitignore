@@ -3,6 +3,7 @@ lib/*
 build/*
 data/*
 doc/*
+.cache/*
 !.gitkeep
 doxyfile
 
