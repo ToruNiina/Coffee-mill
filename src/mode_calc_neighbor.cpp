@@ -43,7 +43,7 @@ int mode_calc_neighbor(std::deque<std::string_view> args)
             for(std::size_t j=0; j<frame.size(); ++j)
             {
                 if(i == j) {continue;}
-                const auto rj = frame.at(i).position();
+                const auto rj = frame.at(j).position();
                 const auto dr = length(ri - rj);
 
                 if(dr < rc)
