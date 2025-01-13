@@ -10,6 +10,7 @@
 #include "mode_calc_autocorrelation.hpp"
 #include "mode_calc_mean.hpp"
 #include "mode_calc_BAR.hpp"
+#include "mode_calc_neighbor.hpp"
 
 #ifdef MILL_WITH_EIGEN
 #include "mode_calc_pca.hpp"
@@ -77,6 +78,10 @@ int mode_calc(std::deque<std::string_view> args)
         return mode_calc_pca(std::move(args));
     }
 #endif// MILL_WITH_EIGEN
+    else if(command == "neighbor")
+    {
+        return mode_calc_neighbor(std::move(args));
+    }
     else if(command == "help")
     {
         return mode_calc_help(std::move(args));

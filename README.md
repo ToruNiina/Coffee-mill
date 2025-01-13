@@ -71,6 +71,8 @@ All the `.dcd`, `.pdb`, `.trr`, and `.xyz` formats are supported in `calc` mode.
   - performs Principal Component Analysis and output the trajectory and conformational changes along the PCs.
   - *Note*: It is only available if you have already installed Eigen3.
   - *Note*: It is parallelized via OpenMP, so choose the number of threads you want to use via `export OMP_NUM_THREADS=N`.
+- `neighbors`
+  - lists neighboring particles within some cutoff.
 - `help`
   - prints help messages.
 
