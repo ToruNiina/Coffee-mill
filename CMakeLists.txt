@@ -8,7 +8,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS       OFF)
-set(CMAKE_CXX_STANDARD          17)
+set(CMAKE_CXX_STANDARD          20)
 
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-O2"           COMPILER_SUPPORTS_O2)
