@@ -39,8 +39,14 @@ if(COMPILER_SUPPORTS_MTUNE_NATIVE)
     add_definitions(-mtune=native)
 endif()
 
+CPMAddPackage(
+    NAME toml11
+    GITHUB_REPOSITORY "ToruNiina/toml11"
+    VERSION 4.3.0
+    OPTIONS "TOML11_PRECOMPILE ON" "CMAKE_CXX_STANDARD 20"
+    )
+
 include_directories(${PROJECT_SOURCE_DIR}/include)
-include_directories(${PROJECT_SOURCE_DIR}/extlib)
 
 add_subdirectory(src)
 
