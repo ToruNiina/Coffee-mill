@@ -69,6 +69,7 @@ class Matrix
     {
         assert(size.first  == this->row());
         assert(size.second == this->col());
+        (void)size;
         values_.fill(0);
     }
 
