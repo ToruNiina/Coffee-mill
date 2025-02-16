@@ -11,6 +11,7 @@
 #include "mode_calc_mean.hpp"
 #include "mode_calc_BAR.hpp"
 #include "mode_calc_neighbor.hpp"
+#include "mode_calc_local.hpp"
 
 #ifdef MILL_WITH_EIGEN
 #include "mode_calc_pca.hpp"
@@ -81,6 +82,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "neighbor")
     {
         return mode_calc_neighbor(std::move(args));
+    }
+    else if(command == "local")
+    {
+        return mode_calc_local(std::move(args));
     }
     else if(command == "help")
     {
