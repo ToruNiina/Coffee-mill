@@ -10,15 +10,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS       OFF)
 set(CMAKE_CXX_STANDARD          17)
 
-execute_process(COMMAND git submodule update --init --recursive WORKING_DIRECTORY ${PROJECT_SOURCE_DIR})
-
 include(CheckCXXCompilerFlag)
-check_cxx_compiler_flag("-O2"        COMPILER_SUPPORTS_O2)
+check_cxx_compiler_flag("-O2"           COMPILER_SUPPORTS_O2)
 check_cxx_compiler_flag("-march=native" COMPILER_SUPPORTS_MARCH_NATIVE)
 check_cxx_compiler_flag("-mtune=native" COMPILER_SUPPORTS_MTUNE_NATIVE)
-check_cxx_compiler_flag("-Wall"      COMPILER_SUPPORTS_Wall)
-check_cxx_compiler_flag("-Wextra"    COMPILER_SUPPORTS_Wextra)
-check_cxx_compiler_flag("-Wpedantic" COMPILER_SUPPORTS_Wpedantic)
+check_cxx_compiler_flag("-Wall"         COMPILER_SUPPORTS_Wall)
+check_cxx_compiler_flag("-Wextra"       COMPILER_SUPPORTS_Wextra)
+check_cxx_compiler_flag("-Wpedantic"    COMPILER_SUPPORTS_Wpedantic)
 
 if(COMPILER_SUPPORTS_O2)
     add_definitions(-O2)
@@ -39,15 +37,15 @@ if(COMPILER_SUPPORTS_MTUNE_NATIVE)
     add_definitions(-mtune=native)
 endif()
 
+include(cmake/CPM.cmake)
 CPMAddPackage(
     NAME toml11
     GITHUB_REPOSITORY "ToruNiina/toml11"
     VERSION 4.3.0
-    OPTIONS "TOML11_PRECOMPILE ON" "CMAKE_CXX_STANDARD 20"
+    OPTIONS "TOML11_PRECOMPILE ON" "CMAKE_CXX_STANDARD 17"
     )
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
-
 add_subdirectory(src)
 
 # tests --------------------------------------------------------------------

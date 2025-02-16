@@ -34,6 +34,7 @@ endif(TARGET Eigen3::Eigen)
 add_executable(mill main.cpp ${MILL_SOURCE_FILES})
 set_target_properties(mill PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin")
+target_link_libraries(mill toml11::toml11)
 
 # Link ------------------------------------------------------------------------
 

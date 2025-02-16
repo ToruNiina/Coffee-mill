@@ -1,7 +1,7 @@
 #include "mode_calc_dist.hpp"
 
 #include <mill/traj.hpp>
-#include <toml/toml.hpp>
+#include <toml.hpp>
 
 namespace mill
 {

@@ -4,7 +4,7 @@
 #include <mill/math/BestFitStructure.hpp>
 #include <mill/traj.hpp>
 #include "mode_traj_impose.hpp"
-#include <toml/toml.hpp>
+#include <toml.hpp>
 #include <iostream>
 
 namespace mill

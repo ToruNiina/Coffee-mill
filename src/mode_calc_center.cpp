@@ -2,7 +2,7 @@
 #include <mill/traj.hpp>
 #include <mill/math/Vector.hpp>
 #include <mill/util/cmdarg.hpp>
-#include <toml/toml.hpp>
+#include <toml.hpp>
 
 namespace mill
 {

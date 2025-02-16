@@ -4,7 +4,7 @@
 #include <mill/math/Vector.hpp>
 // #include <mill/math/EigenSolver.hpp>
 #include <mill/traj.hpp>
-#include <toml/toml.hpp>
+#include <toml.hpp>
 #include <numeric>
 
 #include <Eigen/Dense>

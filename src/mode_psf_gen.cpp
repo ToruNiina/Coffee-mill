@@ -4,7 +4,7 @@
 #include <mill/psf/PSFWriter.hpp>
 #include <mill/util/file_extension.hpp>
 #include <mill/util/logger.hpp>
-#include <toml/toml.hpp>
+#include <toml.hpp>
 
 namespace mill
 {
