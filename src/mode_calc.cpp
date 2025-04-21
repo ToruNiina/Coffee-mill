@@ -3,6 +3,7 @@
 #include "mode_calc_rmsd.hpp"
 #include "mode_calc_dist.hpp"
 #include "mode_calc_angle.hpp"
+#include "mode_calc_dihd.hpp"
 #include "mode_calc_wham.hpp"
 #include "mode_calc_aabb.hpp"
 #include "mode_calc_obb.hpp"
@@ -44,6 +45,10 @@ int mode_calc(std::deque<std::string_view> args)
     else if(command == "angle")
     {
         return mode_calc_angle(std::move(args));
+    }
+    else if(command == "dihd")
+    {
+        return mode_calc_dihd(std::move(args));
     }
     else if(command == "wham")
     {
