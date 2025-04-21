@@ -8,7 +8,7 @@ if(Boost_FOUND)
     add_subdirectory(common)
     add_subdirectory(xyz)
 else()
-    message(FATAL_ERROR "Boost is not found")
+    message(STATUS "Boost is not found")
 endif()
 
 
