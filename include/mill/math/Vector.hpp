@@ -152,7 +152,7 @@ realT length_sq(const Vector<realT, 3>& lhs) noexcept
 template<typename realT>
 realT length(const Vector<realT, 3>& lhs) noexcept
 {
-    return std::sqrt(length_sq(lhs));
+    return std::sqrt(std::max<realT>(0, length_sq(lhs)));
 }
 
 template<typename realT>
@@ -167,6 +167,22 @@ realT angle(const Vector<realT, 3>& lhs, const Vector<realT, 3>& rhs) noexcept
     const auto l_reg = regularize(lhs);
     const auto r_reg = regularize(rhs);
     return std::acos(std::clamp<realT>(dot_product(l_reg, r_reg), -1, 1));
+}
+
+template<typename realT>
+realT dihedral(const Vector<realT, 3>& ri, const Vector<realT, 3>& rj,
+               const Vector<realT, 3>& rk, const Vector<realT, 3>& rl) noexcept
+{
+    const auto rji = ri - rj; // j->i
+    const auto rjk = rk - rj; // j->k
+    const auto rlk = rk - rl; // l->k
+
+    const auto m = regularize(cross_product(rji, rjk));
+    const auto n = regularize(cross_product(rjk, rlk));
+
+    const auto dot_mn = dot_product(m, n);
+    const auto cos_mn = std::clamp(dot_mn, realT(-1), realT(1));
+    return std::copysign(std::acos(cos_mn), dot_product(rji, n));
 }
 
 } // mill
