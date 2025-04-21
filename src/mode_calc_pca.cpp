@@ -2,9 +2,11 @@
 
 #include <mill/util/cmdarg.hpp>
 #include <mill/math/Vector.hpp>
-// #include <mill/math/EigenSolver.hpp>
 #include <mill/traj.hpp>
 #include <toml.hpp>
+
+#if defined(MILL_WITH_EIGEN)
+
 #include <numeric>
 
 #include <Eigen/Dense>
@@ -480,3 +482,23 @@ int mode_calc_pca(std::deque<std::string_view> args)
 }
 
 } // mill
+
+#else
+
+namespace mill
+{
+
+const char* mode_calc_pca_usage() noexcept
+{
+    return "mill calc pca requires Eigen3 but it is not found while building.";
+}
+
+int mode_calc_pca(std::deque<std::string_view>)
+{
+    log::error(mode_calc_pca_usage());
+    return 1;
+}
+
+} // mill
+
+#endif
