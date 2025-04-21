@@ -50,9 +50,8 @@ add_subdirectory(src)
 
 # tests --------------------------------------------------------------------
 
-find_package(Boost)
-if(Boost_FOUND)
-    message(STATUS "Boost ${Boost_VERSION} found at ${Boost_INCLUDE_DIRS}")
-    include_directories(${Boost_INCLUDE_DIRS})
+include(CTest)
+
+if(${BUILD_TESTING} AND ${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME})
     add_subdirectory(tests)
 endif()
